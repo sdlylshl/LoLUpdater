@@ -6,7 +6,7 @@ using System.Linq;
 using System.Management;
 using System.Threading.Tasks;
 
-namespace LoLUpdater_Updater
+namespace LoLUpdater_Uninstall
 {
     internal static class Program
     {
