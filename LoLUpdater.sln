@@ -5,20 +5,33 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater", "LoLUpdater\LoLUpdater.csproj", "{3A989472-219D-4231-95DA-3718BA16CC66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater Updater", "LoLUpdater Updater\LoLUpdater Updater.csproj", "{0DA59380-AAED-41D7-9A21-175ED4768612}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater Updater", "LoLUpdater Updater\LoLUpdater Updater.csproj", "{78A06910-1572-4580-AC79-EBD3606739DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater Uninstall", "LoLUpdater Uninstall\LoLUpdater Uninstall.csproj", "{0DA59380-AAED-41D7-9A21-175ED4768612}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 		Release-MT|Any CPU = Release-MT|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A989472-219D-4231-95DA-3718BA16CC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A989472-219D-4231-95DA-3718BA16CC66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Release-MT|Any CPU.Build.0 = Release|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
+		{78A06910-1572-4580-AC79-EBD3606739DC}.Release-MT|Any CPU.Build.0 = Release|Any CPU
 		{0DA59380-AAED-41D7-9A21-175ED4768612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0DA59380-AAED-41D7-9A21-175ED4768612}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA59380-AAED-41D7-9A21-175ED4768612}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA59380-AAED-41D7-9A21-175ED4768612}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0DA59380-AAED-41D7-9A21-175ED4768612}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
 		{0DA59380-AAED-41D7-9A21-175ED4768612}.Release-MT|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
