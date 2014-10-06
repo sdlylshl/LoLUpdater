@@ -24,7 +24,7 @@ namespace LoLUpdater_Updater
                 {
                     if (new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                                     .Cast<ManagementBaseObject>()
-                                    .Sum(item => int.Parse(item["NumberOfCores"].ToString())) >= 2)
+                                    .Sum(item => int.Parse(item["NumberOfCores"].ToString())) > 1)
                     {
                         Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
                         {
