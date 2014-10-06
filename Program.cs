@@ -523,7 +523,7 @@ new FileInfo(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"
 
         private static int ToInt(string value)
         {
-            int result = 0;
+            int result;
             int.TryParse(value, out result);
             return result;
         }
