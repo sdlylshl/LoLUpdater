@@ -42,12 +42,37 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Cg-3.1_April2012_Setup.exe" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="LoLUpdater.ico" />
+    <None Include="Resources\NPSWF32.dll" />
+    <None Include="Resources\Adobe AIR.dll" />
+    <None Include="Resources\tbbST.dll" />
+    <None Include="Resources\SSEST.dll" />
+    <None Include="Resources\SSE2ST.dll" />
+    <None Include="Resources\tbb.dll" />
+    <None Include="Resources\SSE.dll" />
+    <None Include="Resources\SSE2.dll" />
+    <None Include="Resources\AVX.dll" />
+    <None Include="Resources\Haswell.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Adobe_AIR" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Adobe AIR.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CfgString" xml:space="preserve">
+    <value>DefaultMultiThreading=1</value>
+  </data>
+  <data name="Cg_3_1_April2012_Setup" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Cg-3.1_April2012_Setup.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done!</value>
+  </data>
+  <data name="Error1" xml:space="preserve">
+    <value>Your {0} is missing the versions folder, please repair your installation.</value>
+  </data>
+  <data name="NPSWF32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NPSWF32.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Patching" xml:space="preserve">
+    <value>Patching...</value>
+  </data>
+  <data name="Terms" xml:space="preserve">
+    <value>"THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+IF YOU SHARE THE LICENSED MATERIAL (INCLUDING IN MODIFIED FORM), YOU MUST:
+RETAIN THE FOLLOWING IF IT IS SUPPLIED BY THE LICENSOR WITH THE LICENSED MATERIAL:
+IDENTIFICATION OF THE CREATOR(S) OF THE LICENSED MATERIAL AND ANY OTHERS DESIGNATED TO RECEIVE ATTRIBUTION, IN ANY REASONABLE MANNER REQUESTED BY THE LICENSOR (INCLUDING BY PSEUDONYM IF DESIGNATED);
+A COPYRIGHT NOTICE;
+A NOTICE THAT REFERS TO THIS PUBLIC LICENSE;
+A NOTICE THAT REFERS TO THE DISCLAIMER OF WARRANTIES;
+A URI OR HYPERLINK TO THE LICENSED MATERIAL TO THE EXTENT REASONABLY PRACTICABLE;
+INDICATE IF YOU MODIFIED THE LICENSED MATERIAL AND RETAIN AN INDICATION OF ANY PREVIOUS MODIFICATIONS; AND
+INDICATE THE LICENSED MATERIAL IS LICENSED UNDER THIS PUBLIC LICENSE, AND INCLUDE THE TEXT OF, OR THE URI OR HYPERLINK TO, THIS PUBLIC LICENSE.
+YOU MAY SATISFY THE CONDITIONS IN SECTION 3(A)(1) IN ANY REASONABLE MANNER BASED ON THE MEDIUM, MEANS, AND CONTEXT IN WHICH YOU SHARE THE LICENSED MATERIAL. FOR EXAMPLE, IT MAY BE REASONABLE TO SATISFY THE CONDITIONS BY PROVIDING A URI OR HYPERLINK TO A RESOURCE THAT INCLUDES THE REQUIRED INFORMATION.
+IF REQUESTED BY THE LICENSOR, YOU MUST REMOVE ANY OF THE INFORMATION REQUIRED BY SECTION 3(A)(1)(A) TO THE EXTENT REASONABLY PRACTICABLE.
+IF YOU SHARE ADAPTED MATERIAL YOU PRODUCE, THE ADAPTER'S LICENSE YOU APPLY MUST NOT PREVENT RECIPIENTS OF THE ADAPTED MATERIAL FROM COMPLYING WITH THIS PUBLIC LICENSE."
+Do you accept these Terms? (Y/N)</value>
+  </data>
+  <data name="Uninst" xml:space="preserve">
+    <value>Uninstalling...</value>
+  </data>
+  <data name="UninstPrompt" xml:space="preserve">
+    <value>Do you want to uninstall, Y/N, if you updated lolupdater then"N" will take you to the update installation.</value>
+  </data>
+  <data name="AVX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AVX.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Haswell" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Haswell.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SSE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SSE.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SSE2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SSE2.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SSE2ST" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SSE2ST.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SSEST" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SSEST.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tbb.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="tbbST" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tbbST.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>
