@@ -6,7 +6,7 @@ using System.Management;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace LoLUpdater_Updater
+namespace LoLUpdater_Updaterr
 {
     internal static class Program
     {
