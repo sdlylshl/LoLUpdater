@@ -16,25 +16,26 @@ namespace LoLUpdater
         private static readonly string Sln = Version("solutions", "lol_game_client_sln");
         private static readonly string Air = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
-        private static readonly Version TbblatestVersion = new Version(4, 3, 0, 0);
-        private static readonly Version FlashLatestVersion = new Version(15, 0, 0, 192);
-        private static readonly Version AirLatestVersion = new Version(15, 0, 0, 297);
-        private static readonly Version CgLatestVersion = new Version(3, 1, 0013);
 
-        private static Version _tbbcurrent = new Version(
+        private static readonly bool TbbUpdateNeeded = (Directory.Exists("RADS") ? new Version(
                                 FileVersionInfo.GetVersionInfo(CopyPath("solutions", "lol_game_client_sln",
                                     "tbb.dll", Sln))
-                                    .FileVersion);
+                                    .ProductVersion) : new Version(
+                            FileVersionInfo.GetVersionInfo(Path.Combine("Game", "tbb.dll")).ProductVersion)) < new Version(4, 3, 0, 0);
 
-        private static Version _aircurrent = new Version(
-                                 FileVersionInfo.GetVersionInfo(CopyPath("projects", "lol_air_client",
-                                     Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air))
-                                     .FileVersion);
-
-        private static Version _flashcurrent = new Version(
+        private static readonly bool FlashUpdateNeeded = (Directory.Exists("RADS") ? new Version(
                                 FileVersionInfo.GetVersionInfo(CopyPath("projects", "lol_air_client",
                                     Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "Adobe AIR.dll"), Air))
-                                    .FileVersion);
+                                    .ProductVersion) : new Version(
+                            FileVersionInfo.GetVersionInfo(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")).ProductVersion)) < new Version(15, 0, 0, 192);
+
+        private static readonly bool AirUpdateNeeded = (Directory.Exists("RADS") ? new Version(
+                                 FileVersionInfo.GetVersionInfo(CopyPath("projects", "lol_air_client",
+                                     Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air))
+                                     .ProductVersion) : new Version(
+                            FileVersionInfo.GetVersionInfo(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll")).ProductVersion)) < new Version(15, 0, 0, 297);
+
+        private static readonly Version CgLatestVersion = new Version(3, 1, 0013);
 
         private static readonly string PmbUninstall = Path.Combine(Environment.Is64BitProcess
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
@@ -63,7 +64,6 @@ namespace LoLUpdater
             Kill(LoLProccessStrings);
             using (WebClient webClient = new WebClient())
             {
-                // Todo: elaborate this call (future auto-check)
                 if (!Directory.Exists("Backup"))
                 {
                     if (Directory.Exists("RADS"))
@@ -94,7 +94,6 @@ namespace LoLUpdater
                     GCopy(Path.Combine("Game", "DATA", "CFG", "defaults"), "GamePermanent_zh_MY.cfg");
                     GCopy(Path.Combine("Game", "DATA", "CFG", "defaults"), "GamePermanent_en_SG.cfg");
                 }
-                // end todo
 
                 if (Directory.Exists("RADS"))
                 {
@@ -142,7 +141,7 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        if (_tbbcurrent < TbblatestVersion)
+                        if (TbbUpdateNeeded)
                         {
                             webClient.DownloadFile(
                                 new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/LoLUpdater/Resources/"),
@@ -161,7 +160,7 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        if (_flashcurrent < FlashLatestVersion)
+                        if (FlashUpdateNeeded)
                         {
                             webClient.DownloadFile(
                                 new Uri(
@@ -181,7 +180,7 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        if (_aircurrent < AirLatestVersion)
+                        if (AirUpdateNeeded)
                         {
                             webClient.DownloadFile(
                                 new Uri(
@@ -277,11 +276,7 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    _aircurrent =
-                        new Version(
-                            FileVersionInfo.GetVersionInfo(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")).FileVersion);
-
-                    if (_aircurrent < AirLatestVersion)
+                    if (FlashUpdateNeeded)
                     {
                         webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/blob/master/Resources/NPSWF32.dll?raw=true"),
                            Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"));
@@ -295,11 +290,7 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    _aircurrent =
-                       new Version(
-                            FileVersionInfo.GetVersionInfo(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll")).FileVersion);
-
-                    if (_aircurrent < AirLatestVersion)
+                    if (AirUpdateNeeded)
                     {
                         webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/blob/master/Resources/Adobe%20AIR.dll?raw=true"),
                           Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"));
@@ -315,10 +306,7 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    _tbbcurrent = new Version(
-                            FileVersionInfo.GetVersionInfo(Path.Combine("Game", "tbb.dll")).FileVersion);
-
-                    if (_tbbcurrent < TbblatestVersion)
+                    if (TbbUpdateNeeded)
                     {
                         webClient.DownloadFile(
                             new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/LoLUpdater/Resources/"),
