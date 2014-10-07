@@ -36,15 +36,17 @@ namespace LoLUpdater_Uninstall
                     Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), Air);
                 Directory.Delete("Backup", true);
             }
-            if (!Directory.Exists("Game")) return;
-            Copy("Cg.dll", "Backup", "Game");
-            Copy("CgGL.dll", "Backup", "Game");
-            Copy("CgD3D9.dll", "Backup", "Game");
-            Copy("Tbb.dll", "Backup", "Game");
-            Copy("NPSWF32.dll", "Backup",
-                Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"));
-            Copy("Adobe AIR.dll", "Backup", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"));
-            Directory.Delete("Backup", true);
+            else
+            {
+                Copy("Cg.dll", "Backup", "Game");
+                Copy("CgGL.dll", "Backup", "Game");
+                Copy("CgD3D9.dll", "Backup", "Game");
+                Copy("Tbb.dll", "Backup", "Game");
+                Copy("NPSWF32.dll", "Backup",
+                    Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"));
+                Copy("Adobe AIR.dll", "Backup", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"));
+                Directory.Delete("Backup", true);
+            }
         }
 
         private static void CopyY(string folder, string folder1, string file, string to, string version)
