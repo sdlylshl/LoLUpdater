@@ -5,6 +5,8 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LoLUpdater_Updater
@@ -41,78 +43,24 @@ namespace LoLUpdater_Updater
             {
                 if (!File.Exists("LoLUpdater.exe"))
                 {
-                    try
-                    {
-                        Console.WriteLine("LoLUpdater not found, downloading...");
-                        webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
-                        if (File.Exists("LoLUpdater.exe")) return;
-                        DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
-                        Process.Start("LoLUpdater.exe");
-                        _notdone = false;
-                        Environment.Exit(0);
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("Critical error occured!");
-                        Console.ReadLine();
-                        Environment.Exit(0);
-                    }
+                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
+                    if (File.Exists("LoLUpdater.exe")) return;
+                    DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
+                    Process.Start("LoLUpdater.exe");
+                    _notdone = false;
+                    Environment.Exit(0);
                 }
                 else
                 {
-                    try
-                    {
-                        using (MemoryStream stream = new MemoryStream(webClient.DownloadData("http://www.svenskautogrupp.se/LoLUpdater.txt")))
-                        {
-                            webClient.DownloadData("http://www.svenskautogrupp.se/LoLUpdater.txt");
-                            stream.Position = 0;
-                            var sr = new StreamReader(stream);
-
-                            var current = new Version(FileVersionInfo.GetVersionInfo("LoLUpdater.exe").FileVersion);
-                            var latest = new Version(sr.ReadToEnd());
-                            if (current > latest)
-                            {
-                                Console.WriteLine(
-                                    "You are using a newer version then the latest one, please report this bug at www.lolupdater.com");
-                                Console.ReadLine();
-                            }
-                            if (current == latest)
-                            {
-                                Console.WriteLine("LoLUpdater up to date!");
-                                Console.ReadLine();
-                            }
-                            if (current < latest)
-                            {
-                                Console.WriteLine("LoLUpdater has an update!, downloading...");
-                                webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
-                                    "LoLUpdater.exe");
-                            }
-                            if (File.Exists("LoLUpdater.exe")) return;
-                            DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
-                            Process.Start("LoLUpdater.exe");
-                            _notdone = false;
-                            Environment.Exit(0);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            Console.WriteLine("File corrupt, redownloading...");
-                            webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
-                            if (File.Exists("LoLUpdater.exe")) return;
-                            DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
-                            Process.Start("LoLUpdater.exe");
-                            _notdone = false;
-                            Environment.Exit(0);
-                        }
-                        catch (Exception)
-                        {
-                            Console.WriteLine("Critical error occured!");
-                            Console.ReadLine();
-                            Environment.Exit(0);
-                        }
-                    }
+                    if (!Md5(GetLine(1, webClient))) return;
+                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
+                    if (File.Exists("LoLUpdater.exe")) return;
+                    DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
+                    Process.Start("LoLUpdater.exe");
+                    _notdone = false;
+                    Console.WriteLine("LoLUpdater updated!");
+                    Console.ReadLine();
+                    Environment.Exit(0);
                 }
             }
         }
@@ -122,6 +70,38 @@ namespace LoLUpdater_Updater
             int result;
             Int32.TryParse(value, out result);
             return result;
+        }
+
+        private static string GetLine(int line, WebClient webClient)
+        {
+            using (
+                MemoryStream stream =
+                    new MemoryStream(webClient.DownloadData("http://www.svenskautogrupp.se/LoLUpdater.txt")))
+            {
+                using (var sr = new StreamReader(stream))
+                {
+                    for (int i = 1; i < line; i++)
+                        sr.ReadLine();
+                    return sr.ReadLine();
+                }
+            }
+        }
+
+        private static bool Md5(string md5)
+        {
+            using (FileStream fs = new FileStream("LoLUpdater.exe", FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                StringBuilder sb = new StringBuilder();
+
+                fs.Seek(0, SeekOrigin.Begin);
+
+                foreach (byte b in MD5.Create().ComputeHash(fs))
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
+            }
         }
 
         [DllImport("kernel32.dll")]

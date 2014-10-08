@@ -401,7 +401,7 @@ namespace LoLUpdater
                     sb.Append(b.ToString("x2"));
                 }
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
         }
 
