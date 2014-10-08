@@ -19,7 +19,6 @@ namespace LoLUpdater
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
 
         // Md5 checksums last updated 2014-10-08
-
         private const string Avx2 = "db0767dc94a2d1a757c783f6c7994301";
 
         private const string Avx = "2f178dadd7202b6a13a3409543a6fa86";
@@ -114,7 +113,6 @@ namespace LoLUpdater
                             Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Air);
                         CopyToBak("projects", "lol_air_client",
                             Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
-                        if (!File.Exists(Path.Combine("Config", "game.cfg"))) return;
                         Copy("game.cfg", "Config", "Backup");
                     }
                     else
@@ -145,14 +143,7 @@ namespace LoLUpdater
                     RemoveReadOnly("projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
 
-                    if (IsMultiCore && File.Exists(Path.Combine("Config", "game.cfg")))
-                    {
-                        Cfg("game.cfg", "Config", true);
-                    }
-                    if (!IsMultiCore && File.Exists(Path.Combine("Config", "game.cfg")))
-                    {
-                        Cfg("game.cfg", "Config", false);
-                    }
+                    Cfg("game.cfg", "Config", IsMultiCore);
                     Download(webClient, "tbb.dll", Tbbmd5, FinaltbbVersionUri, "solutions", "lol_game_client_sln", Sln);
                     Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri, "projects", "lol_air_client", Air);
                     Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, "projects", "lol_air_client", Air);
@@ -184,42 +175,12 @@ namespace LoLUpdater
                     RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty, string.Empty, string.Empty);
                     RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, string.Empty, string.Empty);
 
-                    if (IsMultiCore)
-                    {
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg")))
-                        {
-                            Cfg("game.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), true);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg")))
-                        {
-                            Cfg("GamePermanent.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), true);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg")))
-                        {
-                            Cfg("GamePermanent_zh_MY.cfg",
-                                Path.Combine("Game", "DATA", "CFG", "defaults"), true);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg")))
-                        { Cfg("GamePermanent_en_SG.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), true); }
-                    }
-                    if (!IsMultiCore)
-                    {
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg")))
-                        {
-                            Cfg("game.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), false);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg")))
-                        {
-                            Cfg("GamePermanent.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), false);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg")))
-                        {
-                            Cfg("GamePermanent_zh_MY.cfg",
-                                Path.Combine("Game", "DATA", "CFG", "defaults"), false);
-                        }
-                        if (File.Exists(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg")))
-                        { Cfg("GamePermanent_en_SG.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), false); }
-                    }
+                    Cfg("game.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                    Cfg("GamePermanent.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                    Cfg("GamePermanent_zh_MY.cfg",
+                        Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                    Cfg("GamePermanent_en_SG.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+
                     Copy("cg.dll",
                         _cgBinPath,
                         "Game");
