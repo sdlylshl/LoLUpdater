@@ -389,11 +389,11 @@ namespace LoLUpdater
 
         private static string HighestSupportedInstruction()
         {
-            if (IsAvx2)
+            if (Environment.Is64BitProcess && Environment.OSVersion.Version.Major >= 6 && IsAvx2)
             { return "AVX2.dll"; }
             if (IsMultiCore)
             {
-                if (IsProcessorFeaturePresent(17))
+                if (Environment.Is64BitProcess && Environment.OSVersion.Version.Major >= 6 && IsProcessorFeaturePresent(17))
                 {
                     return "AVX.dll";
                 }
