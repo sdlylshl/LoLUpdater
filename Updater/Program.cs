@@ -8,16 +8,10 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace LoLUpdater_Updater
+namespace LoLUpdaterDll
 {
     internal static class Program
     {
-        private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Sum(item => int.Parse(item["NumberOfCores"].ToString())) > 1;
-
-        private static readonly string[] LoLUpdaterprocs = { "LoLUpdater Uninstall", "LoLUpdater" };
-
         private static void Main()
         {
             using (WebClient webClient = new WebClient())
@@ -98,29 +92,5 @@ namespace LoLUpdater_Updater
                 }
             }
         }
-
-        private static void Kill(IEnumerable process)
-        {
-            if (IsMultiCore)
-            {
-                Parallel.ForEach(Process.GetProcessesByName(process.ToString()), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
-            }
-            else
-            {
-                foreach (Process proc in Process.GetProcessesByName(process.ToString()))
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                }
-            }
-        }
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void DeleteFile(string fileName);
     }
 }
