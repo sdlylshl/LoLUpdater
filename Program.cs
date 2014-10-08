@@ -7,6 +7,7 @@ using System.Management;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
@@ -16,6 +17,22 @@ namespace LoLUpdater
         private static readonly string Sln = Version("solutions", "lol_game_client_sln");
         private static readonly string Air = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
+
+        // Md5 checksums last updated 2014-10-08
+        private const string Avx2 = "db0767dc94a2d1a757c783f6c7994301";
+
+        private const string Avx = "2f178dadd7202b6a13a3409543a6fa86";
+        private const string Sse2 = "1639aa390bfd02962c5c437d201045cc";
+        private const string Sse = "3bf888228b83c4407d2eea6a5ab532bd";
+        private const string Tbb = "44dde7926b6dfef4686f2ddd19c04e2d";
+        private const string Sse2St = "82ed3be353217c61ff13a01bc85f1395";
+        private const string SseSt = "eacd37174f1a4316345f985dc456a961";
+        private const string TbbSt = "b389f80072bc877a6ef5ff33ade88a64";
+        private const string Aair = "179a1fcfcb54e3e87365e77c719a723f";
+        private const string AFlash = "9700dbdebffe429e1715727a9f76317b";
+
+        // Will return the appropriate tbb string from above
+        private static readonly string Tbbmd5 = Path.GetFileNameWithoutExtension(HighestSupportedInstruction());
 
         private static Uri _tbbVersionUri;
 
@@ -66,7 +83,7 @@ namespace LoLUpdater
             {
                 Kill("PMB"); Process.Start(new ProcessStartInfo { FileName = PmbUninstall, Arguments = "/silent" });
             }
-            Console.WriteLine("Patching...");
+            Console.WriteLine("Please Wait!");
             Console.WriteLine("");
             Kill(LoLProccessStrings);
             using (WebClient webClient = new WebClient())
@@ -130,18 +147,52 @@ namespace LoLUpdater
                             Cfg("game.cfg", "Config", false);
                         }
                     }
-                    webClient.DownloadFile(
-                        FinaltbbVersionUri,
-                        DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"));
+                    if (!File.Exists(DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll")))
+                    {
+                        webClient.DownloadFile(
+    FinaltbbVersionUri,
+    DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"));
+                    }
+                    else
+                    {
+                        if (Md5(DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"), Tbbmd5))
+                        {
+                            webClient.DownloadFile(
+                            FinaltbbVersionUri,
+                            DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"));
+                        }
+                    }
 
-                    webClient.DownloadFile(
-                        FlashUri,
-                        DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")));
-
-                    webClient.DownloadFile(
-                        AirUri,
-                        DirPath("projects", "lol_air_client", Air,
-                            Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll")));
+                    if (!File.Exists(DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"))))
+                    {
+                        webClient.DownloadFile(
+                                                FlashUri,
+                                                DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")));
+                    }
+                    else
+                    {
+                        if (Md5(DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")), AFlash))
+                        {
+                            webClient.DownloadFile(
+                                                    FlashUri,
+                                                    DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")));
+                        }
+                    }
+                    if (!File.Exists(DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe Air.dll"))))
+                    {
+                        webClient.DownloadFile(
+                                                AirUri,
+                                                DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe Air.dll")));
+                    }
+                    else
+                    {
+                        if (Md5(DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe Air.dll")), Aair))
+                        {
+                            webClient.DownloadFile(
+                                                    AirUri,
+                                                    DirPath("projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe Air.dll")));
+                        }
+                    }
 
                     CopyCg(
                         "cg.dll", "solutions", "lol_game_client_sln", Sln);
@@ -156,12 +207,6 @@ namespace LoLUpdater
                     Unblock("projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
                     Unblock(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
-                    using (var md5 = MD5.Create())
-                    {
-                        File.WriteAllText("LoLUpdater.txt", string.Format("// MD5 Hashes used to find updates (DO NOT MODIFY) {2} tbb {0}: {1} {2} air: {3} {2} flash: {4}", HighestSupportedInstruction(), md5.ComputeHash(File.OpenRead(DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"))), Environment.NewLine, md5.ComputeHash(File.OpenRead(DirPath("projects", "lol_air_client", Air, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll")))), md5.ComputeHash(File.OpenRead(DirPath("projects", "lol_air_client", Air, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"))))));
-                        File.SetAttributes("LoLUpdater.txt",
-                        FileAttributes.ReadOnly);
-                    }
                 }
                 else
                 {
@@ -219,18 +264,51 @@ namespace LoLUpdater
                         _cgBinPath,
                         "Game");
                     Copy("cgD3D9.dll", _cgBinPath, "Game");
-
-                    webClient.DownloadFile(
-                        FlashUri,
-                        Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"));
-
-                    webClient.DownloadFile(
-                        AirUri,
-                        Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"));
-
-                    webClient.DownloadFile(
-                        FinaltbbVersionUri,
-                        Path.Combine("Game", "tbb.dll"));
+                    if (!File.Exists(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll")))
+                    {
+                        webClient.DownloadFile(
+                            FlashUri,
+                            Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"));
+                    }
+                    else
+                    {
+                        if (Md5(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash))
+                        {
+                            webClient.DownloadFile(
+                             FlashUri,
+                             Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"));
+                        }
+                    }
+                    if (!File.Exists(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll")))
+                    {
+                        webClient.DownloadFile(
+                            AirUri,
+                            Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"));
+                    }
+                    else
+                    {
+                        if (Md5(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Aair))
+                        {
+                            webClient.DownloadFile(
+                             AirUri,
+                             Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"));
+                        }
+                    }
+                    if (!File.Exists(Path.Combine("Game", "tbb.dll")))
+                    {
+                        webClient.DownloadFile(
+                            FinaltbbVersionUri,
+                            Path.Combine("Game", "tbb.dll"));
+                    }
+                    else
+                    {
+                        if (Md5(Path.Combine("Game", "tbb.dll"), Tbbmd5))
+                        {
+                            webClient.DownloadFile(
+                             FinaltbbVersionUri,
+                             Path.Combine("Game", "tbb.dll"));
+                        }
+                    }
 
                     Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
                     Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
@@ -385,14 +463,6 @@ namespace LoLUpdater
             }
         }
 
-        private static void Md5(string hash)
-        {
-            var oldLines = File.ReadAllLines("LoLUpdater.txt");
-            if (oldLines.Contains(hash)) return;
-            var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=1")).Select(lineInfo => lineInfo.Line);
-            File.WriteAllLines("LoLUpdater.txt", newLines);
-        }
-
         private static string Version(string folder, string folder1)
         {
             return Directory.Exists("RADS") ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", folder, folder1, "releases")).Max()) : string.Empty;
@@ -409,25 +479,25 @@ namespace LoLUpdater
         private static string HighestSupportedInstruction()
         {
             if (Environment.Is64BitProcess && Environment.OSVersion.Version.Major >= 6 && IsAvx2)
-            { return "AVX2.dll"; }
+            { return "Avx2.dll"; }
             if (IsMultiCore)
             {
                 if (Environment.Is64BitProcess && Environment.OSVersion.Version.Major >= 6 && IsProcessorFeaturePresent(17))
                 {
-                    return "AVX.dll";
+                    return "Avx.dll";
                 }
                 if (IsProcessorFeaturePresent(10))
                 {
-                    return "SSE2.dll";
+                    return "Sse2.dll";
                 }
-                return IsProcessorFeaturePresent(6) ? "SSE.dll" : "tbb.dll";
+                return IsProcessorFeaturePresent(6) ? "Sse.dll" : "Tbb.dll";
             }
             if (IsProcessorFeaturePresent(10))
             {
                 return "SSE2ST.dll";
             }
 
-            return IsProcessorFeaturePresent(6) ? "SSEST.dll" : "tbbST.dll";
+            return IsProcessorFeaturePresent(6) ? "SseSt.dll" : "TbbSt.dll";
         }
 
         private static int ToInt(string value)
@@ -435,6 +505,20 @@ namespace LoLUpdater
             int result;
             int.TryParse(value, out result);
             return result;
+        }
+
+        private static bool Md5(string file, string md5)
+        {
+            byte[] firstHash = MD5.Create().ComputeHash(File.OpenRead(file));
+            byte[] secondHash = Encoding.ASCII.GetBytes(md5);
+
+            if (secondHash.Length != firstHash.Length) return false;
+            int i = 0;
+            while ((i < secondHash.Length) && (secondHash[i] == firstHash[i]))
+            {
+                i += 1;
+            }
+            return i == secondHash.Length;
         }
     }
 }

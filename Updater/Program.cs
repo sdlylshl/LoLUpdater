@@ -40,6 +40,7 @@ namespace LoLUpdater_Updater
                         {
                             var current = new Version(FileVersionInfo.GetVersionInfo("LoLUpdater.exe").FileVersion);
                             var latest = new Version(sr.ReadToEnd());
+
                             if (current < latest)
                             {
                                 Console.WriteLine("LoLUpdater has an update!, downloading...");
