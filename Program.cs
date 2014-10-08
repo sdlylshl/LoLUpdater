@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace LoLUpdater
         private static readonly string Sln = Version("solutions", "lol_game_client_sln");
         private static readonly string Air = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
+        private static readonly string[] Avx2Cpu = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         // Md5 checksums last updated 2014-10-08
         private const string Avx2 = "db0767dc94a2d1a757c783f6c7994301";
@@ -48,16 +50,7 @@ namespace LoLUpdater
 
         private const string AFlash = "9700dbdebffe429e1715727a9f76317b";
 
-        // TODO: Shorten this or find another method
-        private static readonly bool IsAvx2 = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Any(item => item["Name"].ToString().Contains("Haswell")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Any(item => item["Name"].ToString().Contains("Broadwell")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Any(item => item["Name"].ToString().Contains("Skylake")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Any(item => item["Name"].ToString().Contains("Cannonlake"));
+        private static readonly bool IsAvx2 = CpuNameExist(Avx2Cpu);
 
         private static readonly string HighestSupportedInstruction = IsMultiCore
                 ? (Isx64 && (IsAtLeastWinNt6 || IsUnix) && IsAvx2
@@ -138,8 +131,6 @@ namespace LoLUpdater
 
             if (Directory.Exists("RADS"))
             {
-                RemoveReadOnly(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
-
                 Cfg("game.cfg", "Config", IsMultiCore);
                 Download("tbb.dll", Tbbmd5, FinaltbbVersionUri, "solutions", "lol_game_client_sln", Sln);
                 Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri, "projects", "lol_air_client", Air);
@@ -168,11 +159,11 @@ namespace LoLUpdater
                     Path.Combine("Game", "cgD3D9.dll"));
             }
             Console.WriteLine("Done!");
-            Console.ReadLine();
             if (File.Exists("lol_launcher.exe"))
             {
                 Process.Start("lol_launcher.exe");
             }
+            Console.ReadLine();
             Environment.Exit(0);
         }
 
@@ -384,6 +375,13 @@ namespace LoLUpdater
 
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
+        }
+
+        private static bool CpuNameExist(IEnumerable str)
+        {
+            return new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+                .Cast<ManagementBaseObject>()
+                .Any(item => item["Name"].ToString().Contains(str.ToString()));
         }
     }
 }
