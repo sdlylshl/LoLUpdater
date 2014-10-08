@@ -17,17 +17,29 @@ namespace LoLUpdater_Updater
 
         private static void Main()
         {
+            if (IsMultiCore)
+            {
+                Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                });
+            }
+            if (!IsMultiCore)
+            {
+                foreach (Process proc in Process.GetProcessesByName("LoLUpdater"))
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                }
+            }
+
             using (WebClient webClient = new WebClient())
             {
                 if (!File.Exists("LoLUpdater.exe"))
                 {
                     Console.WriteLine("LoLUpdater not found, downloading...");
-
                     webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
-                    if (!File.Exists("LoLUpdater.exe")) return;
-                    DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
-                    Process.Start("LoLUpdater.exe");
-                    Environment.Exit(0);
                 }
                 else
                 {
@@ -40,21 +52,30 @@ namespace LoLUpdater_Updater
                         {
                             var current = new Version(FileVersionInfo.GetVersionInfo("LoLUpdater.exe").FileVersion);
                             var latest = new Version(sr.ReadToEnd());
-
+                            if (current > latest)
+                            {
+                                Console.WriteLine("You are using a newer version then the latest one, please report this bug at www.lolupdater.com");
+                                Console.ReadLine();
+                            }
+                            if (current == latest)
+                            {
+                                Console.WriteLine("LoLUpdater up to date!");
+                                Console.ReadLine();
+                            }
                             if (current < latest)
                             {
                                 Console.WriteLine("LoLUpdater has an update!, downloading...");
+                                webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("No update found, press Enter to re-download");
-                            Console.ReadLine();
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine();
+                            Console.WriteLine("File corrupt, redownloading...");
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                         }
                     }
-                    Kill("LoLUpdater.exe");
-                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                     if (!File.Exists("LoLUpdater.exe")) return;
                     DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
                     Process.Start("LoLUpdater.exe");
@@ -73,25 +94,5 @@ namespace LoLUpdater_Updater
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string file);
-
-        private static void Kill(string process)
-        {
-            if (IsMultiCore)
-            {
-                Parallel.ForEach(Process.GetProcessesByName(process), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
-            }
-            else
-            {
-                foreach (Process proc in Process.GetProcessesByName(process))
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                }
-            }
-        }
     }
 }
