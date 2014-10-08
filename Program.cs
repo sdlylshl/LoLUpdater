@@ -30,22 +30,6 @@ namespace LoLUpdater
         private static readonly string[] Avx2Cpu = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         // Md5 checksums last updated 2014-10-08
-        private const string Avx2 = "db0767dc94a2d1a757c783f6c7994301";
-
-        private const string Avx = "2f178dadd7202b6a13a3409543a6fa86";
-
-        private const string Sse2 = "1639aa390bfd02962c5c437d201045cc";
-
-        private const string Sse = "3bf888228b83c4407d2eea6a5ab532bd";
-
-        private const string Tbb = "44dde7926b6dfef4686f2ddd19c04e2d";
-
-        private const string Sse2St = "82ed3be353217c61ff13a01bc85f1395";
-
-        private const string SseSt = "eacd37174f1a4316345f985dc456a961";
-
-        private const string TbbSt = "b389f80072bc877a6ef5ff33ade88a64";
-
         private const string AAir = "179a1fcfcb54e3e87365e77c719a723f";
 
         private const string AFlash = "9700dbdebffe429e1715727a9f76317b";
@@ -60,7 +44,13 @@ namespace LoLUpdater
                         : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Tbb.dll")))
                 : (HasSse2 ? "Sse2St.dll" : (HasSse ? "SseSt.dll" : "TbbSt.dll"));
 
-        private static readonly string Tbbmd5 = Path.GetFileNameWithoutExtension(HighestSupportedInstruction);
+        private static readonly string Tbbmd5 = IsMultiCore
+                ? (Isx64 && (IsAtLeastWinNt6 || IsUnix) && IsAvx2
+                    ? "db0767dc94a2d1a757c783f6c7994301"
+                    : (Isx64 && (IsAtLeastWinNt6 || IsUnix) && IsProcessorFeaturePresent(17)
+                        ? "2f178dadd7202b6a13a3409543a6fa86"
+                        : (HasSse2 ? "1639aa390bfd02962c5c437d201045cc" : HasSse ? "3bf888228b83c4407d2eea6a5ab532bd" : "44dde7926b6dfef4686f2ddd19c04e2d")))
+                : (HasSse2 ? "82ed3be353217c61ff13a01bc85f1395" : (HasSse ? "eacd37174f1a4316345f985dc456a961" : "b389f80072bc877a6ef5ff33ade88a64"));
 
         private static Uri _tbbVersionUri;
 
@@ -158,6 +148,7 @@ namespace LoLUpdater
                 Copy(Path.Combine(_cgBinPath, "cg.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
                     Path.Combine("Game", "cgD3D9.dll"));
             }
+            Console.Clear();
             Console.WriteLine("Done!");
             if (File.Exists("lol_launcher.exe"))
             {
