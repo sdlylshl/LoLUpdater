@@ -87,10 +87,6 @@ namespace LoLUpdater
 
         private static void Main()
         {
-            if (File.Exists("LoLUpdater.txt"))
-            {
-                RemoveReadOnly("LoLUpdater.txt", string.Empty, string.Empty, string.Empty);
-            }
             if (File.Exists("LoLUpdater Updater.exe"))
             { Unblock("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty); }
             if (File.Exists("LoLUpdater Uninstall.exe"))
@@ -149,23 +145,17 @@ namespace LoLUpdater
                     RemoveReadOnly("projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
 
-                    if (IsMultiCore)
+                    if (IsMultiCore && File.Exists(Path.Combine("Config", "game.cfg")))
                     {
-                        if (File.Exists(Path.Combine("Config", "game.cfg")))
-                        {
-                            Cfg("game.cfg", "Config", true);
-                        }
+                        Cfg("game.cfg", "Config", true);
                     }
-                    if (!IsMultiCore)
+                    if (!IsMultiCore && File.Exists(Path.Combine("Config", "game.cfg")))
                     {
-                        if (File.Exists(Path.Combine("Config", "game.cfg")))
-                        {
-                            Cfg("game.cfg", "Config", false);
-                        }
+                        Cfg("game.cfg", "Config", false);
                     }
-                    Download(webClient, "solutions", "lol_game_client_sln", Sln, "tbb.dll", Tbbmd5, FinaltbbVersionUri);
-                    Download(webClient, "projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri);
-                    Download(webClient, "projects", "lol_air_client", Air, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri);
+                    Download(webClient, "tbb.dll", Tbbmd5, FinaltbbVersionUri, "solutions", "lol_game_client_sln", Sln);
+                    Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri, "projects", "lol_air_client", Air);
+                    Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, "projects", "lol_air_client", Air);
 
                     CopyCg(
                         "cg.dll", "solutions", "lol_game_client_sln", Sln);
@@ -237,9 +227,9 @@ namespace LoLUpdater
                         _cgBinPath,
                         "Game");
                     Copy("cgD3D9.dll", _cgBinPath, "Game");
-                    Download(webClient, string.Empty, string.Empty, string.Empty, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AFlash, FlashUri);
-                    Download(webClient, string.Empty, string.Empty, string.Empty, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri);
-                    Download(webClient, string.Empty, string.Empty, string.Empty, Path.Combine("Game", "tbb.dll"), Tbbmd5, FinaltbbVersionUri);
+                    Download(webClient, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AFlash, FlashUri, string.Empty, string.Empty, string.Empty);
+                    Download(webClient, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, string.Empty, string.Empty, string.Empty);
+                    Download(webClient, Path.Combine("Game", "tbb.dll"), Tbbmd5, FinaltbbVersionUri, string.Empty, string.Empty, string.Empty);
                     Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
                     Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
                     Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty, string.Empty, string.Empty);
@@ -261,20 +251,11 @@ namespace LoLUpdater
             }
         }
 
-        private static void Download(WebClient webClient, string path, string path1, string version, string file, string md5, Uri uri)
+        private static void Download(WebClient webClient, string file, string md5, Uri uri, string path, string path1, string version)
         {
-            if (Md5(DirPath(path, path1, version, file), md5))
-            {
-                webClient.DownloadFile(
-                    uri,
-                    DirPath(path, path1, version, file));
-            }
-            if (Md5(file, md5))
-            {
-                webClient.DownloadFile(
-                    uri,
-                    file);
-            }
+            webClient.DownloadFile(
+                uri,
+                Md5(DirPath(path, path1, version, file), md5) ? DirPath(path, path1, version, file) : file);
         }
 
         private static void Unblock(string file, string path1, string path2, string ver)
@@ -283,8 +264,8 @@ namespace LoLUpdater
             {
                 DeleteFile(DirPath(path1, path2, ver, file) + ":Zone.Identifier");
             }
-            if (File.Exists(file))
-            { DeleteFile(file + ":Zone.Identifier"); }
+            if (!File.Exists(file)) return;
+            DeleteFile(file + ":Zone.Identifier");
         }
 
         private static void RemoveReadOnly(string file, string path1, string path2, string ver)
@@ -299,13 +280,10 @@ namespace LoLUpdater
                     ver, file),
                     FileAttributes.Normal);
             }
-            if (File.Exists(file) &&
-    new FileInfo(file).Attributes
-        .Equals(FileAttributes.ReadOnly))
-            {
-                File.SetAttributes(file,
-                    FileAttributes.Normal);
-            }
+            if (!File.Exists(file) || !new FileInfo(file).Attributes
+                .Equals(FileAttributes.ReadOnly)) return;
+            File.SetAttributes(file,
+                FileAttributes.Normal);
         }
 
         private static void CgCheck(WebClient webClient)
@@ -313,7 +291,9 @@ namespace LoLUpdater
             if (!string.IsNullOrEmpty(_cgBinPath) && new Version(
                 FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= CgLatestVersion)
                 return;
-            webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"), "Cg-3.1_April2012_Setup.exe");
+            webClient.DownloadFile(
+                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"),
+                "Cg-3.1_April2012_Setup.exe");
             Unblock("Cg-3.1_April2012_Setup.exe", string.Empty, string.Empty, string.Empty);
 
             Process cg = new Process
@@ -355,13 +335,11 @@ namespace LoLUpdater
 
         private static void CopyToBak(string folder, string folder1, string file, string version)
         {
-            if (File.Exists(Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file)))
-            {
-                File.Copy(
-                    Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file)
-                    , Path.Combine("Backup", file),
-                    true);
-            }
+            if (!File.Exists(Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file))) return;
+            File.Copy(
+                Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file)
+                , Path.Combine("Backup", file),
+                true);
         }
 
         private static string DirPath(string folder, string folder1, string version, string file)
@@ -371,23 +349,20 @@ namespace LoLUpdater
 
         private static void CopyCg(string file, string folder, string folder1, string version)
         {
-            if (File.Exists(Path.Combine(
-                  _cgBinPath, file)))
-            {
-                File.Copy(
-                 Path.Combine(
-                     _cgBinPath, file),
-                 Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file), true);
-            }
+            if (!File.Exists(Path.Combine(
+                _cgBinPath, file))) return;
+
+            File.Copy(
+             Path.Combine(
+                 _cgBinPath, file),
+             Path.Combine("RADS", folder, folder1, "releases", version, "deploy", file), true);
         }
 
         private static void Copy(string file, string from, string to)
         {
-            if (File.Exists(Path.Combine(from, file)) && Directory.Exists(to))
-            {
-                File.Copy(Path.Combine(from, file),
-                    Path.Combine(to, file), true);
-            }
+            if (!File.Exists(Path.Combine(@from, file)) || !Directory.Exists(to)) return;
+            File.Copy(Path.Combine(@from, file),
+                Path.Combine(to, file), true);
         }
 
         private static void Cfg(string file, string path, bool mode)
@@ -418,32 +393,19 @@ namespace LoLUpdater
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsProcessorFeaturePresent(uint processorFeature);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string fileName);
 
         private static string HighestSupportedInstruction()
         {
-            if ((Isx64 && IsAtLeastWinNt6 && IsAvx2) || (Isx64 && IsUnix && IsAvx2))
-            { return "Avx2.dll"; }
-            if (IsMultiCore)
-            {
-                if ((Isx64 && IsAtLeastWinNt6 && HasAvx) || (Isx64 && IsUnix && HasAvx))
-                {
-                    return "Avx.dll";
-                }
-                if (HasSse2)
-                {
-                    return "Sse2.dll";
-                }
-                return HasSse ? "Sse.dll" : "Tbb.dll";
-            }
-            if (HasSse2)
-            {
-                return "SSE2ST.dll";
-            }
-
-            return HasSse ? "SseSt.dll" : "TbbSt.dll";
+            return (Isx64 && IsAtLeastWinNt6 && IsAvx2) || (Isx64 && IsUnix && IsAvx2)
+                ? "Avx2.dll"
+                : (IsMultiCore
+                    ? ((Isx64 && IsAtLeastWinNt6 && HasAvx) || (Isx64 && IsUnix && HasAvx)
+                        ? "Avx.dll"
+                        : (HasSse2 ? "Sse2.dll" : (HasSse ? "Sse.dll" : "Tbb.dll")))
+                    : (HasSse2 ? "SSE2ST.dll" : (HasSse ? "SseSt.dll" : "TbbSt.dll")));
         }
 
         private static int ToInt(string value)
@@ -455,35 +417,19 @@ namespace LoLUpdater
 
         private static bool Md5(string file, string md5)
         {
-            byte[] firstHash = Encoding.ASCII.GetBytes(HashFile(file));
-
-            byte[] secondHash = Encoding.ASCII.GetBytes(md5);
-
-            return firstHash.Where((t, i) => t != secondHash[i]).Any();
-        }
-
-        private static string HashFile(string filePath)
-        {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return HashFile(fs);
+                StringBuilder sb = new StringBuilder();
+
+                fs.Seek(0, SeekOrigin.Begin);
+
+                foreach (byte b in MD5.Create().ComputeHash(fs))
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
-        }
-
-        private static string HashFile(Stream stream)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if (stream == null) return sb.ToString();
-            stream.Seek(0, SeekOrigin.Begin);
-
-            byte[] hash = MD5.Create().ComputeHash(stream);
-            foreach (byte b in hash)
-                sb.Append(b.ToString("x2"));
-
-            stream.Seek(0, SeekOrigin.Begin);
-
-            return sb.ToString();
         }
     }
 }
