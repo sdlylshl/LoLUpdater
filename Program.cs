@@ -509,16 +509,35 @@ namespace LoLUpdater
 
         private static bool Md5(string file, string md5)
         {
-            byte[] firstHash = MD5.Create().ComputeHash(File.OpenRead(file));
+            byte[] firstHash = Encoding.ASCII.GetBytes(HashFile(file));
+
             byte[] secondHash = Encoding.ASCII.GetBytes(md5);
 
-            if (secondHash.Length != firstHash.Length) return false;
-            int i = 0;
-            while ((i < secondHash.Length) && (secondHash[i] == firstHash[i]))
+            return firstHash.Where((t, i) => t != secondHash[i]).Any();
+        }
+
+        private static string HashFile(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                i += 1;
+                return HashFile(fs);
             }
-            return i == secondHash.Length;
+        }
+
+        private static string HashFile(Stream stream)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (stream == null) return sb.ToString();
+            stream.Seek(0, SeekOrigin.Begin);
+
+            byte[] hash = MD5.Create().ComputeHash(stream);
+            foreach (byte b in hash)
+                sb.Append(b.ToString("x2"));
+
+            stream.Seek(0, SeekOrigin.Begin);
+
+            return sb.ToString();
         }
     }
 }
