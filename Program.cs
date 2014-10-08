@@ -38,9 +38,15 @@ namespace LoLUpdater
             .Cast<ManagementBaseObject>()
             .Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
-        private static readonly bool IsHaswell = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+        private static readonly bool IsAvx2 = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
             .Cast<ManagementBaseObject>()
-            .Any(item => item["Name"].ToString().Contains("Haswell"));
+            .Any(item => item["Name"].ToString().Contains("Haswell")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+            .Cast<ManagementBaseObject>()
+            .Any(item => item["Name"].ToString().Contains("Broadwell")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+            .Cast<ManagementBaseObject>()
+            .Any(item => item["Name"].ToString().Contains("Skylake")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+            .Cast<ManagementBaseObject>()
+            .Any(item => item["Name"].ToString().Contains("Cannonlake"));
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
@@ -133,15 +139,15 @@ namespace LoLUpdater
                         "cg.dll", "solutions", "lol_game_client_sln", Sln);
                     Copy(
                         "cgD3D9.dll", "solutions", "lol_game_client_sln", Sln);
-                    UnblockFile(string.Empty, "solutions", "lol_game_client_sln", "tbb.dll", Sln);
-                    UnblockFile(string.Empty, "solutions", "lol_game_client_sln", "cg.dll", Sln);
-                    UnblockFile(string.Empty, "solutions", "lol_game_client_sln", "cgGL.dll", Sln);
-                    UnblockFile(string.Empty, "solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
-                    UnblockFile(string.Empty, "projects", "lol_air_client",
+                    Unblock(string.Empty, "solutions", "lol_game_client_sln", "tbb.dll", Sln);
+                    Unblock(string.Empty, "solutions", "lol_game_client_sln", "cg.dll", Sln);
+                    Unblock(string.Empty, "solutions", "lol_game_client_sln", "cgGL.dll", Sln);
+                    Unblock(string.Empty, "solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
+                    Unblock(string.Empty, "projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
-                    UnblockFile(string.Empty, "projects", "lol_air_client",
+                    Unblock(string.Empty, "projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
-                    UnblockFile("Config", string.Empty, string.Empty, "game.cfg", string.Empty);
+                    Unblock("Config", string.Empty, string.Empty, "game.cfg", string.Empty);
                 }
                 else
                 {
@@ -212,16 +218,16 @@ namespace LoLUpdater
                         FinaltbbVersionUri,
                         Path.Combine("Game", "tbb.dll"));
 
-                    UnblockFile("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "game.cfg"), string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, "tbb.dll", string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, "cg.dll", string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, "cgGl.dll", string.Empty);
-                    UnblockFile("Game", string.Empty, string.Empty, "cgD3D9.dll", string.Empty);
-                    UnblockFile("Air", string.Empty, string.Empty, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty);
-                    UnblockFile("Air", string.Empty, string.Empty, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "game.cfg"), string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, "tbb.dll", string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, "cg.dll", string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, "cgGl.dll", string.Empty);
+                    Unblock("Game", string.Empty, string.Empty, "cgD3D9.dll", string.Empty);
+                    Unblock("Air", string.Empty, string.Empty, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty);
+                    Unblock("Air", string.Empty, string.Empty, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty);
                 }
                 Console.WriteLine("Done!");
                 Console.ReadLine();
@@ -241,16 +247,14 @@ namespace LoLUpdater
             }
         }
 
-        private static void UnblockFile(string path, string path1, string path2, string file, string ver)
+        private static void Unblock(string path, string path1, string path2, string file, string ver)
         {
             if (File.Exists(CopyPath(path1, path2, file, ver)))
             {
-                Unblock(CopyPath(path1, path2, file, ver));
+                DeleteFile(CopyPath(path1, path2, file, ver) + ":Zone.Identifier");
             }
             if (File.Exists(Path.Combine(path, file)))
-            {
-                Unblock(Path.Combine(path, file));
-            }
+            { DeleteFile(Path.Combine(path, file) + ":Zone.Identifier"); }
         }
 
         private static void RemoveReadOnly(string path, string path1, string path2, string file, string ver)
@@ -280,7 +284,7 @@ namespace LoLUpdater
                 FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= CgLatestVersion)
                 return;
             webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"), "Cg-3.1_April2012_Setup.exe");
-            Unblock("Cg-3.1_April2012_Setup.exe");
+            Unblock(string.Empty, string.Empty, string.Empty, "Cg-3.1_April2012_Setup.exe", string.Empty);
 
             Process cg = new Process
             {
@@ -384,28 +388,36 @@ namespace LoLUpdater
             return Directory.Exists("RADS") ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", folder, folder1, "releases")).Max()) : string.Empty;
         }
 
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsProcessorFeaturePresent(uint processorFeature);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern void DeleteFile(string fileName);
+
         private static string HighestSupportedInstruction()
         {
-            if (IsHaswell)
+            if (IsAvx2)
             { return "AVX2.dll"; }
             if (IsMultiCore)
             {
-                if (Environment.Is64BitProcess && (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 17)
+                if (IsProcessorFeaturePresent(17))
                 {
                     return "AVX.dll";
                 }
-                if ((ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 10)
+                if (IsProcessorFeaturePresent(10))
                 {
                     return "SSE2.dll";
                 }
-                return (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 6 ? "SSE.dll" : "tbb.dll";
+                return IsProcessorFeaturePresent(6) ? "SSE.dll" : "tbb.dll";
             }
-            if ((ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 10)
+            if (IsProcessorFeaturePresent(10))
             {
                 return "SSE2ST.dll";
             }
 
-            return (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 6 ? "SSEST.dll" : "tbbST.dll";
+            return IsProcessorFeaturePresent(6) ? "SSEST.dll" : "tbbST.dll";
         }
 
         private static int ToInt(string value)
@@ -413,15 +425,6 @@ namespace LoLUpdater
             int result;
             int.TryParse(value, out result);
             return result;
-        }
-
-        [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteFile(string name);
-
-        private static void Unblock(string fileName)
-        {
-            DeleteFile(fileName + ":Zone.Identifier");
         }
     }
 }
