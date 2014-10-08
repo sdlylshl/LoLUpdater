@@ -26,13 +26,13 @@ namespace LoLUpdater_Uninstall
             Kill(LoLProcces);
             if (Directory.Exists("RADS"))
             {
-                CopyY("Cg.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
-                CopyY("CgD3D9.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
-                CopyY("CgGL.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
-                CopyY("tbb.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
-                CopyY("Adobe AIR.dll", "projects", "lol_air_client",
+                CopyFromBak("Cg.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
+                CopyFromBak("CgD3D9.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
+                CopyFromBak("CgGL.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
+                CopyFromBak("tbb.dll", "solutions", "lol_game_client_sln", string.Empty, Sln);
+                CopyFromBak("Adobe AIR.dll", "projects", "lol_air_client",
                     Path.Combine("Adobe Air", "Versions", "1.0"), Air);
-                CopyY("NPSWF32.dll", "projects", "lol_air_client",
+                CopyFromBak("NPSWF32.dll", "projects", "lol_air_client",
                     Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), Air);
                 Directory.Delete("Backup", true);
             }
@@ -51,7 +51,7 @@ namespace LoLUpdater_Uninstall
             File.Delete("LoLUpdater Uninstall.exe");
         }
 
-        private static void CopyY(string folder, string folder1, string file, string to, string version)
+        private static void CopyFromBak(string folder, string folder1, string file, string to, string version)
         {
             File.Copy(Path.Combine("Backup", file)
 

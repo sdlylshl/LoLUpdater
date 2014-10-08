@@ -6,6 +6,7 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
@@ -53,6 +54,10 @@ namespace LoLUpdater
 
         private static void Main()
         {
+            if (File.Exists("LoLUpdater.txt"))
+            {
+                RemoveReadOnly("LoLUpdater.txt", string.Empty, string.Empty, string.Empty);
+            }
             if (File.Exists("LoLUpdater Updater.exe"))
             { Unblock("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty); }
             if (File.Exists("LoLUpdater Uninstall.exe"))
@@ -151,6 +156,12 @@ namespace LoLUpdater
                     Unblock("projects", "lol_air_client",
                         Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
                     Unblock(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
+                    using (var md5 = MD5.Create())
+                    {
+                        File.WriteAllText("LoLUpdater.txt", string.Format("// MD5 Hashes used to find updates (DO NOT MODIFY) {2} tbb {0}: {1} {2} air: {3} {2} flash: {4}", HighestSupportedInstruction(), md5.ComputeHash(File.OpenRead(DirPath("solutions", "lol_game_client_sln", Sln, "tbb.dll"))), Environment.NewLine, md5.ComputeHash(File.OpenRead(DirPath("projects", "lol_air_client", Air, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll")))), md5.ComputeHash(File.OpenRead(DirPath("projects", "lol_air_client", Air, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"))))));
+                        File.SetAttributes("LoLUpdater.txt",
+                        FileAttributes.ReadOnly);
+                    }
                 }
                 else
                 {
@@ -372,6 +383,14 @@ namespace LoLUpdater
                 var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=1")).Select(lineInfo => lineInfo.Line);
                 File.WriteAllLines(Path.Combine(path, file), newLines);
             }
+        }
+
+        private static void Md5(string hash)
+        {
+            var oldLines = File.ReadAllLines("LoLUpdater.txt");
+            if (oldLines.Contains(hash)) return;
+            var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=1")).Select(lineInfo => lineInfo.Line);
+            File.WriteAllLines("LoLUpdater.txt", newLines);
         }
 
         private static string Version(string folder, string folder1)
