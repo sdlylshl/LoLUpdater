@@ -14,6 +14,16 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+    .Cast<ManagementBaseObject>()
+    .Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+
+        private static readonly bool IsUnix = (int)Environment.OSVersion.Platform == 6;
+        private static readonly bool IsAtLeastWinNt6 = Environment.OSVersion.Version.Major >= 6;
+        private static readonly bool Isx64 = Environment.Is64BitProcess;
+        private static readonly bool HasAvx = IsProcessorFeaturePresent(17);
+        private static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
+        private static readonly bool HasSse = IsProcessorFeaturePresent(6);
         private static readonly string Sln = Version("solutions", "lol_game_client_sln");
         private static readonly string Air = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
@@ -39,26 +49,6 @@ namespace LoLUpdater
 
         private const string AFlash = "9700dbdebffe429e1715727a9f76317b";
 
-        // Will return the appropriate tbb string from above
-        private static readonly string Tbbmd5 = Path.GetFileNameWithoutExtension(HighestSupportedInstruction());
-
-        private static Uri _tbbVersionUri;
-
-        private static readonly Uri FinaltbbVersionUri = Uri.TryCreate(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/"),
-                HighestSupportedInstruction(), out _tbbVersionUri) ? _tbbVersionUri : new Uri(string.Empty);
-
-        private static readonly Uri FlashUri =
-            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/NPSWF32.dll");
-
-        private static readonly Uri AirUri =
-    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Adobe AIR.dll");
-
-        private static readonly Version CgLatestVersion = new Version("3.1.13");
-
-        private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-            .Cast<ManagementBaseObject>()
-            .Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
-
         private static readonly bool IsAvx2 = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
             .Cast<ManagementBaseObject>()
             .Any(item => item["Name"].ToString().Contains("Haswell")) || new ManagementObjectSearcher("Select * from Win32_Processor").Get()
@@ -69,12 +59,28 @@ namespace LoLUpdater
             .Cast<ManagementBaseObject>()
             .Any(item => item["Name"].ToString().Contains("Cannonlake"));
 
-        private static readonly bool IsUnix = (int)Environment.OSVersion.Platform == 6;
-        private static readonly bool IsAtLeastWinNt6 = Environment.OSVersion.Version.Major >= 6;
-        private static readonly bool Isx64 = Environment.Is64BitProcess;
-        private static readonly bool HasAvx = IsProcessorFeaturePresent(17);
-        private static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
-        private static readonly bool HasSse = IsProcessorFeaturePresent(6);
+        private static readonly string HighestSupportedInstruction = IsMultiCore
+                ? ((Isx64 && IsAtLeastWinNt6 && IsAvx2) || (Isx64 && IsUnix && IsAvx2)
+                    ? "Avx2.dll"
+                    : ((Isx64 && IsAtLeastWinNt6 && HasAvx) || (Isx64 && IsUnix && HasAvx)
+                        ? "Avx.dll"
+                        : (HasSse2 ? "Sse2.dll" : (HasSse ? "Sse.dll" : "Tbb.dll"))))
+                : (HasSse2 ? "SSE2ST.dll" : (HasSse ? "SseSt.dll" : "TbbSt.dll"));
+
+        private static readonly string Tbbmd5 = Path.GetFileNameWithoutExtension(HighestSupportedInstruction);
+
+        private static Uri _tbbVersionUri;
+
+        private static readonly Uri FinaltbbVersionUri = new Uri((Uri.TryCreate(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources"),
+            HighestSupportedInstruction, out _tbbVersionUri) ? _tbbVersionUri : new Uri(string.Empty)).ToString());
+
+        private static readonly Uri FlashUri =
+            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/NPSWF32.dll");
+
+        private static readonly Uri AirUri =
+    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Adobe AIR.dll");
+
+        private static readonly Version CgLatestVersion = new Version("3.1.13");
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
@@ -86,144 +92,200 @@ namespace LoLUpdater
 
         private static void Main()
         {
+            Console.WriteLine("Please Wait!");
+            Console.WriteLine("");
             if (File.Exists("LoLUpdater Updater.exe"))
-            { Unblock("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty); }
+            {
+                Unblock("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
+            }
             if (File.Exists("LoLUpdater Uninstall.exe"))
-            { Unblock("LoLUpdater Uninstall.exe", string.Empty, string.Empty, string.Empty); }
+            {
+                Unblock("LoLUpdater Uninstall.exe", string.Empty, string.Empty, string.Empty);
+            }
             if (File.Exists(PmbUninstall))
             {
                 Kill("PMB"); Process.Start(new ProcessStartInfo { FileName = PmbUninstall, Arguments = "/silent" });
             }
-            Console.WriteLine("Please Wait!");
-            Console.WriteLine("");
             Kill(LoLProccessStrings);
-            using (WebClient webClient = new WebClient())
-            {
-                CgCheck(webClient);
-                if (!Directory.Exists("Backup"))
-                {
-                    Directory.CreateDirectory("Backup");
-                    if (Directory.Exists("RADS"))
-                    {
-                        CopyToBak("solutions", "lol_game_client_sln", "cg.dll", Sln);
-                        CopyToBak("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
-                        CopyToBak("solutions", "lol_game_client_sln", "cgGL.dll", Sln);
-                        CopyToBak("solutions", "lol_game_client_sln", "tbb.dll", Sln);
-                        CopyToBak("projects", "lol_air_client",
-                            Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Air);
-                        CopyToBak("projects", "lol_air_client",
-                            Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
-                        Copy("game.cfg", "Config", "Backup");
-                    }
-                    else
-                    {
-                        Copy("cg.dll", "Game", "Backup");
-                        Copy("cgGL.dll", "Game", "Backup");
-                        Copy("cgD3D9.dll", "Game", "Backup");
-                        Copy("tbb.dll", "Game", "Backup");
-                        Copy("Adobe AIR.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Backup");
-                        Copy("NPSWF32.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"),
-                            "Backup");
-                        Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), "Backup", "game.cfg");
-                        Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), "Backup", "GamePermanent.cfg");
-                        Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), "Backup", "GamePermanent_zh_MY.cfg");
-                        Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), "Backup", "GamePermanent_en_SG.cfg");
-                    }
-                }
 
+            if (!Directory.Exists("Backup"))
+            {
+                Directory.CreateDirectory("Backup");
                 if (Directory.Exists("RADS"))
                 {
-                    RemoveReadOnly(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly("solutions", "lol_game_client_sln", "tbb.dll", Sln);
-                    RemoveReadOnly("solutions", "lol_game_client_sln", "cg.dll", Sln);
-                    RemoveReadOnly("solutions", "lol_game_client_sln", "cgGl.dll", Sln);
-                    RemoveReadOnly("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
-                    RemoveReadOnly("projects", "lol_air_client",
-                        Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
-                    RemoveReadOnly("projects", "lol_air_client",
-                        Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
-
-                    Cfg("game.cfg", "Config", IsMultiCore);
-                    Download(webClient, "tbb.dll", Tbbmd5, FinaltbbVersionUri, "solutions", "lol_game_client_sln", Sln);
-                    Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri, "projects", "lol_air_client", Air);
-                    Download(webClient, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, "projects", "lol_air_client", Air);
-
-                    CopyCg(
-                        "cg.dll", "solutions", "lol_game_client_sln", Sln);
-                    CopyCg(
-                        "cgD3D9.dll", "solutions", "lol_game_client_sln", Sln);
-                    Unblock("solutions", "lol_game_client_sln", "tbb.dll", Sln);
-                    Unblock("solutions", "lol_game_client_sln", "cg.dll", Sln);
-                    Unblock("solutions", "lol_game_client_sln", "cgGL.dll", Sln);
-                    Unblock("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
-                    Unblock("projects", "lol_air_client",
-                        Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
-                    Unblock("projects", "lol_air_client",
-                        Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
-                    Unblock(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
+                    CopyToBak("solutions", "lol_game_client_sln", "cg.dll", Sln);
+                    CopyToBak("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
+                    CopyToBak("solutions", "lol_game_client_sln", "cgGL.dll", Sln);
+                    CopyToBak("solutions", "lol_game_client_sln", "tbb.dll", Sln);
+                    CopyToBak("projects", "lol_air_client",
+                        Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Air);
+                    CopyToBak("projects", "lol_air_client",
+                        Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
+                    Copy("game.cfg", "Config", "Backup");
                 }
                 else
                 {
-                    RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "tbb.dll"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "cg.dll"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "cgGL.dll"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Game", "cgD3D9.dll"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty, string.Empty, string.Empty);
-                    RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, string.Empty, string.Empty);
-
-                    Cfg("game.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
-                    Cfg("GamePermanent.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
-                    Cfg("GamePermanent_zh_MY.cfg",
-                        Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
-                    Cfg("GamePermanent_en_SG.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
-
-                    Copy("cg.dll",
-                        _cgBinPath,
-                        "Game");
-                    Copy("cgGL.dll",
-                        _cgBinPath,
-                        "Game");
-                    Copy("cgD3D9.dll", _cgBinPath, "Game");
-                    Download(webClient, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AFlash, FlashUri, string.Empty, string.Empty, string.Empty);
-                    Download(webClient, Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, string.Empty, string.Empty, string.Empty);
-                    Download(webClient, Path.Combine("Game", "tbb.dll"), Tbbmd5, FinaltbbVersionUri, string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "tbb.dll"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "cg.dll"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "cgGl.dll"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Game", "cgD3D9.dll"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty, string.Empty, string.Empty);
-                    Unblock(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, string.Empty, string.Empty);
+                    Copy("cg.dll", "Game", "Backup");
+                    Copy("cgGL.dll", "Game", "Backup");
+                    Copy("cgD3D9.dll", "Game", "Backup");
+                    Copy("tbb.dll", "Game", "Backup");
+                    Copy("Adobe AIR.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Backup");
+                    Copy("NPSWF32.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"),
+                        "Backup");
+                    Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), "Backup", "game.cfg");
+                    Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), "Backup", "GamePermanent.cfg");
+                    Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), "Backup", "GamePermanent_zh_MY.cfg");
+                    Copy(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), "Backup", "GamePermanent_en_SG.cfg");
                 }
-                Console.WriteLine("Done!");
-                Console.ReadLine();
-                if (File.Exists("lol_launcher.exe"))
+            }
+
+            if (Directory.Exists("RADS"))
+            {
+                RemoveReadOnly(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly("solutions", "lol_game_client_sln", "tbb.dll", Sln);
+                RemoveReadOnly("solutions", "lol_game_client_sln", "cg.dll", Sln);
+                RemoveReadOnly("solutions", "lol_game_client_sln", "cgGl.dll", Sln);
+                RemoveReadOnly("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
+                RemoveReadOnly("projects", "lol_air_client",
+                    Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
+                RemoveReadOnly("projects", "lol_air_client",
+                    Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
+
+                Cfg("game.cfg", "Config", IsMultiCore);
+                Download("tbb.dll", Tbbmd5, FinaltbbVersionUri, "solutions", "lol_game_client_sln", Sln);
+                Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), AFlash, FlashUri, "projects", "lol_air_client", Air);
+                Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, "projects", "lol_air_client", Air);
+
+                CopyCg(
+                    "cg.dll", "solutions", "lol_game_client_sln", Sln);
+                CopyCg(
+                    "cgD3D9.dll", "solutions", "lol_game_client_sln", Sln);
+                Unblock("solutions", "lol_game_client_sln", "tbb.dll", Sln);
+                Unblock("solutions", "lol_game_client_sln", "cg.dll", Sln);
+                Unblock("solutions", "lol_game_client_sln", "cgGL.dll", Sln);
+                Unblock("solutions", "lol_game_client_sln", "cgD3D9.dll", Sln);
+                Unblock("projects", "lol_air_client",
+                    Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Air);
+                Unblock("projects", "lol_air_client",
+                    Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Air);
+                Unblock(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty);
+            }
+            else
+            {
+                RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "tbb.dll"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "cg.dll"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "cgGL.dll"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Game", "cgD3D9.dll"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty, string.Empty, string.Empty);
+                RemoveReadOnly(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, string.Empty, string.Empty);
+
+                Cfg("game.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                Cfg("GamePermanent.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                Cfg("GamePermanent_zh_MY.cfg",
+                    Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                Cfg("GamePermanent_en_SG.cfg", Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+
+                Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AFlash, FlashUri, string.Empty, string.Empty, string.Empty);
+                Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AAir, AirUri, string.Empty, string.Empty, string.Empty);
+                Download(Path.Combine("Game", "tbb.dll"), Tbbmd5, FinaltbbVersionUri, string.Empty, string.Empty, string.Empty);
+                Copy("cg.dll",
+_cgBinPath,
+"Game");
+                Copy("cgGL.dll",
+                    _cgBinPath,
+                    "Game");
+                Copy("cgD3D9.dll", _cgBinPath, "Game");
+                Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "game.cfg"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent.cfg"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_zh_MY.cfg"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "DATA", "CFG", "defaults", "GamePermanent_en_SG.cfg"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "tbb.dll"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "cg.dll"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "cgGl.dll"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Game", "cgD3D9.dll"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), string.Empty, string.Empty, string.Empty);
+                Unblock(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, string.Empty, string.Empty);
+            }
+            Console.WriteLine("Done!");
+            Console.ReadLine();
+            if (File.Exists("lol_launcher.exe"))
+            {
+                Process.Start("lol_launcher.exe");
+            }
+            Environment.Exit(0);
+        }
+
+        private static void Download(string file, string md5, Uri uri, string path, string path1, string version)
+        {
+            using (WebClient webClient = new WebClient())
+            {
+                if (Directory.Exists("RADS"))
                 {
-                    Process.Start("lol_launcher.exe");
+                    if (File.Exists(DirPath(path, path1, version, file)))
+                    {
+                        if (Md5(DirPath(path, path1, version, file), md5))
+                        {
+                            webClient.DownloadFile(
+                                uri,
+                                DirPath(path, path1, version, file));
+                        }
+                    }
+                    else
+                    {
+                        webClient.DownloadFile(
+                              uri,
+                              DirPath(path, path1, version, file));
+                    }
                 }
-                Environment.Exit(0);
+                else
+                {
+                    if (File.Exists(file))
+                    {
+                        if (Md5(file, md5))
+                        {
+                            webClient.DownloadFile(uri, file);
+                        }
+                    }
+                    else
+                    {
+                        webClient.DownloadFile(uri, file);
+                    }
+                }
+                if (!string.IsNullOrEmpty(_cgBinPath) && new Version(
+    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= CgLatestVersion)
+                    return;
+                webClient.DownloadFile(
+                    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"),
+                    "Cg-3.1_April2012_Setup.exe");
+                Unblock("Cg-3.1_April2012_Setup.exe", string.Empty, string.Empty, string.Empty);
+
+                Process cg = new Process
+                {
+                    StartInfo =
+                        new ProcessStartInfo
+                        {
+                            FileName =
+                                "Cg-3.1_April2012_Setup.exe",
+                            Arguments = "/silent /TYPE=compact"
+                        }
+                };
+                cg.Start();
+                cg.WaitForExit();
+                File.Delete("Cg-3.1_April2012_Setup.exe");
+                _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                    EnvironmentVariableTarget.User);
             }
         }
 
-        private static void Download(WebClient webClient, string file, string md5, Uri uri, string path, string path1, string version)
+        private static void Unblock(string file, string path, string path1, string ver)
         {
-            webClient.DownloadFile(
-                uri,
-                Md5(DirPath(path, path1, version, file), md5) ? DirPath(path, path1, version, file) : file);
-        }
-
-        private static void Unblock(string file, string path1, string path2, string ver)
-        {
-            if (File.Exists(DirPath(path1, path2, ver, file)))
+            if (File.Exists(DirPath(path, path1, ver, file)))
             {
-                DeleteFile(DirPath(path1, path2, ver, file) + ":Zone.Identifier");
+                DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
             }
             if (!File.Exists(file)) return;
             DeleteFile(file + ":Zone.Identifier");
@@ -245,33 +307,6 @@ namespace LoLUpdater
                 .Equals(FileAttributes.ReadOnly)) return;
             File.SetAttributes(file,
                 FileAttributes.Normal);
-        }
-
-        private static void CgCheck(WebClient webClient)
-        {
-            if (!string.IsNullOrEmpty(_cgBinPath) && new Version(
-                FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= CgLatestVersion)
-                return;
-            webClient.DownloadFile(
-                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"),
-                "Cg-3.1_April2012_Setup.exe");
-            Unblock("Cg-3.1_April2012_Setup.exe", string.Empty, string.Empty, string.Empty);
-
-            Process cg = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            "Cg-3.1_April2012_Setup.exe",
-                        Arguments = "/silent /TYPE=compact"
-                    }
-            };
-            cg.Start();
-            cg.WaitForExit();
-            File.Delete("Cg-3.1_April2012_Setup.exe");
-            _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                EnvironmentVariableTarget.User);
         }
 
         private static void Kill(IEnumerable process)
@@ -354,20 +389,9 @@ namespace LoLUpdater
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsProcessorFeaturePresent(uint processorFeature);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string fileName);
-
-        private static string HighestSupportedInstruction()
-        {
-            return (Isx64 && IsAtLeastWinNt6 && IsAvx2) || (Isx64 && IsUnix && IsAvx2)
-                ? "Avx2.dll"
-                : (IsMultiCore
-                    ? ((Isx64 && IsAtLeastWinNt6 && HasAvx) || (Isx64 && IsUnix && HasAvx)
-                        ? "Avx.dll"
-                        : (HasSse2 ? "Sse2.dll" : (HasSse ? "Sse.dll" : "Tbb.dll")))
-                    : (HasSse2 ? "SSE2ST.dll" : (HasSse ? "SseSt.dll" : "TbbSt.dll")));
-        }
 
         private static int ToInt(string value)
         {
