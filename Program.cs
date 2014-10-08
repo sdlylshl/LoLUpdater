@@ -16,7 +16,10 @@ namespace LoLUpdater
         private static readonly string Air = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccessStrings = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" };
 
-        private static readonly Uri TbbVersionUri = new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/"), new Uri(HighestSupportedInstruction(), UriKind.Relative));
+        private static Uri _tbbVersionUri;
+
+        private static readonly Uri FinaltbbVersionUri = Uri.TryCreate(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/"),
+                HighestSupportedInstruction(), out _tbbVersionUri) ? _tbbVersionUri : new Uri(string.Empty);
 
         private static readonly Uri FlashUri =
             new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/NPSWF32.dll");
@@ -113,7 +116,7 @@ namespace LoLUpdater
                         }
                     }
                     webClient.DownloadFile(
-                        TbbVersionUri,
+                        FinaltbbVersionUri,
                         CopyPath("solutions", "lol_game_client_sln", "tbb.dll", Sln));
 
                     webClient.DownloadFile(
@@ -206,7 +209,7 @@ namespace LoLUpdater
                         Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"));
 
                     webClient.DownloadFile(
-                        TbbVersionUri,
+                        FinaltbbVersionUri,
                         Path.Combine("Game", "tbb.dll"));
 
                     UnblockFile("Game", string.Empty, string.Empty, Path.Combine("DATA", "CFG", "defaults", "game.cfg"), string.Empty);
@@ -384,7 +387,7 @@ namespace LoLUpdater
         private static string HighestSupportedInstruction()
         {
             if (IsHaswell)
-            { return "Haswell.dll"; }
+            { return "AVX2.dll"; }
             if (IsMultiCore)
             {
                 if (Environment.Is64BitProcess && (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 17)
@@ -397,11 +400,11 @@ namespace LoLUpdater
                 }
                 return (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 6 ? "SSE.dll" : "tbb.dll";
             }
-            if (IsMultiCore) return string.Empty;
             if ((ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 10)
             {
                 return "SSE2ST.dll";
             }
+
             return (ushort)new ManagementObject("Win32_Processor.DeviceID='CPU0'")["Architecture"] == 6 ? "SSEST.dll" : "tbbST.dll";
         }
 
