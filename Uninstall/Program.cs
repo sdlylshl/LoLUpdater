@@ -47,6 +47,8 @@ namespace LoLUpdater_Uninstall
                 Copy("Adobe AIR.dll", "Backup", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"));
                 Directory.Delete("Backup", true);
             }
+            File.Delete("LoLUpdater.exe");
+            File.Delete("LoLUpdater Uninstall.exe");
         }
 
         private static void CopyY(string folder, string folder1, string file, string to, string version)

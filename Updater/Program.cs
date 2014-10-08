@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace LoLUpdater_Updater
@@ -52,6 +53,9 @@ namespace LoLUpdater_Updater
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                         }
                     }
+                    if (File.Exists("LoLUpdater.exe"))
+                    { DeleteFile("LoLUpdater.exe" + ":Zone.Identifier"); }
+
                     Kill(LoLUpdaterprocs);
                 }
                 if (!File.Exists("LoLUpdater Uninstall.exe"))
@@ -87,6 +91,8 @@ namespace LoLUpdater_Updater
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater Uninstall.exe"), "LoLUpdater Uninstall.exe");
                         }
                     }
+                    if (File.Exists("LoLUpdater Uninstall.exe"))
+                    { DeleteFile("LoLUpdater Uninstall.exe" + ":Zone.Identifier"); }
                     Kill(LoLUpdaterprocs);
                 }
             }
@@ -111,5 +117,9 @@ namespace LoLUpdater_Updater
                 }
             }
         }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern void DeleteFile(string fileName);
     }
 }
