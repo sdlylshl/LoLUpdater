@@ -7,7 +7,7 @@
     <ProjectGuid>{78A06910-1572-4580-AC79-EBD3606739DC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LoLUpdaterDll</RootNamespace>
+    <RootNamespace>LoLUpdater_Updater</RootNamespace>
     <AssemblyName>LoLUpdater Updater</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
