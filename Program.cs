@@ -37,7 +37,7 @@ namespace LoLUpdater
         private static readonly string AirFolder = Version("projects", "lol_air_client");
         private static readonly string[] LoLProccess = { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends", "PMB" };
 
-        // Not sure if this tweak is designed for multi-core or not Currently this patch removes
+        // Not sure if this tweak is designed for multi-core or not, currently this patch removes
         // this tweak from single core systems, I dont know what effect this has.
         private const string CfgTweak = "DefaultParticleMultiThreading=1";
 
