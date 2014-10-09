@@ -63,11 +63,6 @@ namespace LoLUpdater
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
-        private static readonly string Pmb = Path.Combine(Isx64
-    ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-    : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-    "Pando Networks", "Media Booster", "uninst.exe");
-
         private const string AirMd5 = "179a1fcfcb54e3e87365e77c719a723f";
         private const string FlashMd5 = "9700dbdebffe429e1715727a9f76317b";
         private const string CgMd5 = "ae87223e882670029450b3f86e8e9300";
@@ -133,10 +128,6 @@ namespace LoLUpdater
             else
             {
                 Console.WriteLine("Installing, please wait...");
-                if (File.Exists(Pmb))
-                {
-                    Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
-                }
                 if (File.Exists("LoLUpdater Updater.exe"))
                 {
                     FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty, false);
