@@ -22,7 +22,7 @@ namespace LoLUpdater
         private static readonly bool IsInstalling = _userInput == 1;
         private static bool _notdone;
         private static Uri _tempUri;
-        private static readonly bool IsNotGarena = Directory.Exists("RADS");
+        private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool AvxCheck = Isx64 && (Environment.OSVersion.Version.Major >= 6 || (int)Environment.OSVersion.Platform == 6);
         private static readonly bool HasSse = IsProcessorFeaturePresent(6);
@@ -106,7 +106,7 @@ namespace LoLUpdater
             if (_userInput == 2)
             {
                 Console.WriteLine("Uninstalling, please wait...");
-                if (IsNotGarena)
+                if (IsRads)
                 {
                     BakCopy("Cg.dll", "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
                     BakCopy("CgD3D9.dll", "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
@@ -145,7 +145,7 @@ namespace LoLUpdater
                 {
                     Directory.CreateDirectory("Backup");
                 }
-                if (IsNotGarena)
+                if (IsRads)
                 {
                     BakCopy("solutions", "lol_game_client_sln", "cg.dll", SlnFolder, string.Empty, IsInstalling);
                     BakCopy("solutions", "lol_game_client_sln", "cgD3D9.dll", SlnFolder, string.Empty, IsInstalling);
@@ -200,7 +200,7 @@ namespace LoLUpdater
         private static void FinishedPrompt(string message)
         {
             Console.Clear();
-            if (IsNotGarena)
+            if (IsRads)
             {
                 Md5Check("projects", "lol_air_client", AirFolder,
                     Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
@@ -217,7 +217,8 @@ namespace LoLUpdater
             }
             else
             {
-                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll");
+                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5);
+                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
                 Md5Check(Path.Combine("Game", "cg.dll"), CgMd5);
                 Md5Check(Path.Combine("Game", "cgGL.dll"), CgGlMd5);
                 Md5Check(Path.Combine("Game", "cgD3D9.dll"), CgD3D9Md5);
@@ -261,7 +262,7 @@ namespace LoLUpdater
         {
             using (WebClient webClient = new WebClient())
             {
-                if (IsNotGarena)
+                if (IsRads)
                 {
                     FileFix(path, path1, file, version, true);
                     if (!File.Exists(DirPath(path, path1, version, file)))
@@ -384,21 +385,15 @@ namespace LoLUpdater
 
         private static void Copy(string from, string file, string path, string path1, string ver, string to)
         {
-            if (IsNotGarena)
+            if (IsRads)
             {
                 FileFix(path, path1, file, SlnFolder, true);
                 if (!File.Exists(Path.Combine(
                     _cgBinPath, file))) return;
-                try
-                {
-                    File.Copy(
-                     Path.Combine(
-                         _cgBinPath, file),
-                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", file), false);
-                    FileFix(path, path1, file, SlnFolder, false);
-                }
-                catch (IOException e) { }
-                }
+                File.Copy(Path.Combine(
+                    _cgBinPath, file), DirPath(path, path1, ver, file), true);
+                FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty, false);
+            }
             else
             {
                 FileFix(Path.Combine(@from, file), String.Empty, String.Empty, String.Empty, true);
@@ -431,7 +426,7 @@ namespace LoLUpdater
 
         private static string Version(string path, string path1)
         {
-            return IsNotGarena ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
+            return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
         }
 
         [DllImport("kernel32.dll")]
