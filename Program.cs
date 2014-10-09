@@ -68,6 +68,8 @@ namespace LoLUpdater
 
         private const string FlashMd5 = "9700dbdebffe429e1715727a9f76317b";
         private const string CgMd5 = "ae87223e882670029450b3f86e8e9300";
+        private const string CgGlMd5 = "68dbb8778903f5cf0a80c00ffbf494d2";
+        private const string CgD3D9Md5 = "9981b512f27b566d811b53590f6ee526";
 
         private static readonly string TbbMd5 = IsMultiCore
                 ? (Isx64 && (IsAtLeastWinNt6 || IsUnix) && IsAvx2
@@ -157,6 +159,8 @@ namespace LoLUpdater
                         "cg.dll", "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
                     Copy(string.Empty,
                         "cgD3D9.dll", "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                    Copy(string.Empty,
+    "cgGL.dll", "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
                 }
                 else
                 {
@@ -181,9 +185,9 @@ namespace LoLUpdater
                     Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
                     Copy(Path.Combine(_cgBinPath, "cg.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
                         Path.Combine("Game", "cg.dll"));
-                    Copy(Path.Combine(_cgBinPath, "cg.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
+                    Copy(Path.Combine(_cgBinPath, "cgGL.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
                         Path.Combine("Game", "cgGL.dll"));
-                    Copy(Path.Combine(_cgBinPath, "cg.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
+                    Copy(Path.Combine(_cgBinPath, "cgD3D9.dll"), string.Empty, string.Empty, string.Empty, string.Empty,
                         Path.Combine("Game", "cgD3D9.dll"));
                 }
                 FinishedPrompt("Done Installing!");
@@ -202,9 +206,9 @@ namespace LoLUpdater
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
         "cg.dll", CgMd5);
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
-    "cgGL.dll", CgMd5);
+    "cgGL.dll", CgGlMd5);
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
-    "cgD3D9.dll", CgMd5);
+    "cgD3D9.dll", CgD3D9Md5);
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
     "tbb.dll", TbbMd5);
             }
@@ -292,33 +296,32 @@ namespace LoLUpdater
                     }
                     FileFix(file, String.Empty, String.Empty, String.Empty, false);
                 }
-
                 // Check already exists for the latest cg, but a double check might not hurt.
                 if (!String.IsNullOrEmpty(_cgBinPath) && new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= LatestCg)
-                    return;
+                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= LatestCg) return;
                 webClient.DownloadFile(
                     new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/Cg-3.1_April2012_Setup.exe"),
                     "Cg-3.1_April2012_Setup.exe");
-            }
-            FileFix("Cg-3.1_April2012_Setup.exe", String.Empty, String.Empty, String.Empty, true);
-            FileFix("Cg-3.1_April2012_Setup.exe", String.Empty, String.Empty, String.Empty, false);
 
-            Process cg = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            "Cg-3.1_April2012_Setup.exe",
-                        Arguments = "/silent /TYPE=compact"
-                    }
-            };
-            cg.Start();
-            cg.WaitForExit();
-            File.Delete("Cg-3.1_April2012_Setup.exe");
-            _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                EnvironmentVariableTarget.User);
+                FileFix("Cg-3.1_April2012_Setup.exe", String.Empty, String.Empty, String.Empty, true);
+                FileFix("Cg-3.1_April2012_Setup.exe", String.Empty, String.Empty, String.Empty, false);
+
+                Process cg = new Process
+                {
+                    StartInfo =
+                        new ProcessStartInfo
+                        {
+                            FileName =
+                                "Cg-3.1_April2012_Setup.exe",
+                            Arguments = "/silent /TYPE=compact"
+                        }
+                };
+                cg.Start();
+                cg.WaitForExit();
+                File.Delete("Cg-3.1_April2012_Setup.exe");
+                _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                    EnvironmentVariableTarget.User);
+            }
         }
 
         private static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
@@ -385,17 +388,16 @@ namespace LoLUpdater
                 FileFix(path, path1, file, SlnFolder, true);
                 if (!File.Exists(Path.Combine(
                     _cgBinPath, file))) return;
-
                 File.Copy(
-                 Path.Combine(
-                     _cgBinPath, file),
-                 Path.Combine("RADS", path, path1, "releases", ver, "deploy", file), false);
+                    Path.Combine(
+                        _cgBinPath, file),
+                    Path.Combine("RADS", path, path1, "releases", ver, "deploy", file), false);
                 FileFix(path, path1, file, SlnFolder, false);
             }
             else
             {
                 FileFix(Path.Combine(@from, file), String.Empty, String.Empty, String.Empty, true);
-                if (!File.Exists(Path.Combine(@from, file)) || !Directory.Exists(to)) return;
+                if (!File.Exists(Path.Combine(@from, file)) && Directory.Exists(to)) return;
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
                 FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty, false);
             }
