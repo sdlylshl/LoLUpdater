@@ -200,12 +200,12 @@ namespace LoLUpdater
         private static void FinishedPrompt(string message)
         {
             Console.Clear();
-            Md5Check("projects", "lol_air_client", AirFolder,
-                  Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
-            Md5Check("projects", "lol_air_client", AirFolder,
-    Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5);
             if (IsNotGarena)
             {
+                Md5Check("projects", "lol_air_client", AirFolder,
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
+                Md5Check("projects", "lol_air_client", AirFolder,
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5);
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
         "cg.dll", CgMd5);
                 Md5Check("solutions", "lol_game_client_sln", SlnFolder,
@@ -217,10 +217,11 @@ namespace LoLUpdater
             }
             else
             {
-                Md5Check(string.Empty, string.Empty, string.Empty, Path.Combine("Game", "cg.dll"), CgMd5);
-                Md5Check(string.Empty, string.Empty, string.Empty, Path.Combine("Game", "cgGL.dll"), CgGlMd5);
-                Md5Check(string.Empty, string.Empty, string.Empty, Path.Combine("Game", "cgD3D9.dll"), CgD3D9Md5);
-                Md5Check(string.Empty, string.Empty, string.Empty, Path.Combine("Game", "tbb.dll"), TbbMd5);
+                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll");
+                Md5Check(Path.Combine("Game", "cg.dll"), CgMd5);
+                Md5Check(Path.Combine("Game", "cgGL.dll"), CgGlMd5);
+                Md5Check(Path.Combine("Game", "cgD3D9.dll"), CgD3D9Md5);
+                Md5Check(Path.Combine("Game", "tbb.dll"), TbbMd5);
             }
 
             Console.WriteLine("{0}", message);
@@ -235,18 +236,16 @@ namespace LoLUpdater
 
         private static void Md5Check(string path, string path1, string ver, string file, string md5)
         {
-            if (IsNotGarena)
-            {
-                Console.WriteLine(
-                    !Md5Compare(DirPath(path, path1, ver, file), md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
-                    file);
-            }
-            else
-            {
-                Console.WriteLine(
-                    !Md5Compare(file, md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
-                    file);
-            }
+            Console.WriteLine(
+                !Md5Compare(DirPath(path, path1, ver, file), md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                file);
+        }
+
+        private static void Md5Check(string file, string md5)
+        {
+            Console.WriteLine(
+                !Md5Compare(file, md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                file);
         }
 
         static private int DisplayMenu()
@@ -390,12 +389,16 @@ namespace LoLUpdater
                 FileFix(path, path1, file, SlnFolder, true);
                 if (!File.Exists(Path.Combine(
                     _cgBinPath, file))) return;
-                File.Copy(
-                    Path.Combine(
-                        _cgBinPath, file),
-                    Path.Combine("RADS", path, path1, "releases", ver, "deploy", file), false);
-                FileFix(path, path1, file, SlnFolder, false);
-            }
+                try
+                {
+                    File.Copy(
+                     Path.Combine(
+                         _cgBinPath, file),
+                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", file), false);
+                    FileFix(path, path1, file, SlnFolder, false);
+                }
+                catch (IOException e) { }
+                }
             else
             {
                 FileFix(Path.Combine(@from, file), String.Empty, String.Empty, String.Empty, true);
