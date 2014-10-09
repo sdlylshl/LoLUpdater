@@ -381,8 +381,7 @@ namespace LoLUpdater
                 FileFix(path, path1, file, SlnFolder, true);
                 if (!File.Exists(Path.Combine(
                     _cgBinPath, file))) return;
-                File.Copy(Path.Combine(
-                    _cgBinPath, file), DirPath(path, path1, ver, file), true);
+                File.Copy(Path.Combine(_cgBinPath, file), DirPath(path, path1, ver, file), true);
                 FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty, false);
             }
             else

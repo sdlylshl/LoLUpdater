@@ -1,0 +1,24 @@
+{
+  "name": "LoLUpdater",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Loggan08/LoLUpdater.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Loggan08/LoLUpdater/issues"
+  },
+  "homepage": "https://www.lolupdater.com",
+  "devDependencies": {
+    "coffee-script": "^1.8.0",
+    "del": "^0.1.3",
+    "gulp": "^3.8.8",
+    "gulp-coffee": "^2.2.0",
+    "gulp-download-atom-shell": "0.0.4",
+    "gulp-filter": "^1.0.2",
+    "gulp-if": "^1.2.4",
+    "gulp-jsonminify": "0.0.2",
+    "gulp-load-plugins": "^0.6.0",
+    "gulp-uglify": "^1.0.1"
+  }
+}
