@@ -181,16 +181,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                   file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                  file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             }
                         }
                     }
@@ -340,16 +340,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                                 {
-                                    Copy(_cgBinPath,
-                                        file, "solutions", "lol_game_client_sln", SlnFolder);
+                                    Copy(Path.Combine(_cgBinPath,
+                                       file), "solutions", "lol_game_client_sln", SlnFolder, file);
                                 });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                   file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             }
                         }
                     }
