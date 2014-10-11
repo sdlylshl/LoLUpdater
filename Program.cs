@@ -20,7 +20,6 @@ namespace LoLUpdater
         private static int _userInput;
         private static bool IsInstalling;
         private static bool _notdone;
-        private static readonly string[] args = Environment.GetCommandLineArgs();
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
