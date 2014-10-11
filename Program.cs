@@ -83,6 +83,7 @@ namespace LoLUpdater
             if (!IsSupportedPlatform)
             {
                 Console.WriteLine("Unsupported Platform");
+                Console.WriteLine("Only Windows XP -> Windows 8.1 is supported, untested on Windows 10");
                 Console.ReadLine();
                 Environment.Exit(0);
             }
