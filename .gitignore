@@ -311,11 +311,7 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
-<<<<<<< HEAD
-### bower ###
-=======
 ### Bower ###
->>>>>>> origin/atom-shell
 components
 
 ### Custom ###
