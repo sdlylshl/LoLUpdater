@@ -129,14 +129,14 @@ namespace LoLUpdater
                 {
                     Parallel.ForEach(files, file =>
                     {
-                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
+                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, IsInstalling);
                     });
                 }
                 if (!IsMultiCore)
                 {
                     foreach (string file in files)
                     {
-                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
+                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, IsInstalling);
                     }
                 }
             }
@@ -170,9 +170,9 @@ namespace LoLUpdater
                     }
                     if (IsRads)
                     {
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, IsInstalling);
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, IsInstalling);
-                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, IsInstalling);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), IsInstalling);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), IsInstalling);
+                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, IsInstalling);
                         Cfg("game.cfg", "Config", IsMultiCore);
                         Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
                         Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
@@ -181,16 +181,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             }
                         }
                     }
@@ -299,14 +299,14 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(files, file =>
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, true);
+                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, true);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, true);
+                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, true);
                             }
                         }
                     }
@@ -331,9 +331,9 @@ namespace LoLUpdater
                     }
                     if (IsRads)
                     {
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, true);
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, true);
-                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, true);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), true);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), true);
+                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, true);
                         Cfg("game.cfg", "Config", IsMultiCore);
                         Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
                         Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
@@ -342,16 +342,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                                 {
-                                    Copy(Path.Combine(_cgBinPath, file),
-                                        file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                    Copy(_cgBinPath,
+                                        file, "solutions", "lol_game_client_sln", SlnFolder);
                                 });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             }
                         }
                     }
@@ -433,14 +433,14 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(files, file =>
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, false);
+                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, false);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, false);
+                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, false);
                             }
                         }
                     }
@@ -469,9 +469,9 @@ namespace LoLUpdater
                     }
                     if (IsRads)
                     {
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, false);
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, false);
-                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, false);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), false);
+                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), false);
+                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, false);
                         Cfg("game.cfg", "Config", IsMultiCore);
                         Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
                         Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
@@ -480,16 +480,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             }
                         }
                     }
@@ -702,6 +702,25 @@ namespace LoLUpdater
             }
         }
 
+        private static void BakCopy(string file, string path, string path1, string ver, bool mode)
+        {
+            if (mode)
+            {
+                File.Copy(
+                    Path.Combine("RADS", path, path1, "releases", ver, "deploy", file)
+                    , Path.Combine("Backup", file),
+                    true);
+            }
+            else
+            {
+                File.Copy(Path.Combine("Backup", file)
+
+                    , Path.Combine("RADS", path, path1, "releases", ver, "deploy", file),
+                    true);
+            }
+            FileFix(file, path, path1, ver);
+        }
+
         private static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
         {
             if (mode)
@@ -752,11 +771,10 @@ namespace LoLUpdater
             return Path.Combine("RADS", path, path1, "releases", ver, "deploy", file);
         }
 
-        private static void Copy(string from, string file, string path, string path1, string ver, string to)
+        private static void Copy(string file, string path, string path1, string ver, string to)
         {
             File.Copy(file, DirPath(path, path1, ver, file), true);
             FileFix(path, path1, file, SlnFolder);
-            FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
         }
 
         private static void Copy(string from, string file, string to, bool mode)
