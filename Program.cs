@@ -244,15 +244,17 @@ namespace LoLUpdater
             switch (args[0])
             {
                 case "--help":
-                    Help();
+                    Console.WriteLine("Command Line Switches");
+                    Console.WriteLine("-install : Installs LoLUpdater with default settings");
+                    Console.WriteLine("-uninst : Uninstalls LoLUpdater");
+                    Console.WriteLine("--help /? -h : Shows this menu");
+                    Console.ReadLine();
                     break;
 
                 case "/?":
-                    Help();
                     goto case "--help";
 
                 case "-h":
-                    Help();
                     goto case "--help";
 
                 case "-install":
@@ -532,15 +534,6 @@ namespace LoLUpdater
                     FinishedPrompt("Done Uninstalling!");
                     break;
             }
-        }
-
-        private static void Help()
-        {
-            Console.WriteLine("Command Line Switches");
-            Console.WriteLine("-install : Installs LoLUpdater with default settings");
-            Console.WriteLine("-uninst : Uninstalls LoLUpdater");
-            Console.WriteLine("-help : Shows this menu");
-            Console.ReadLine();
         }
 
         private static void FinishedPrompt(string message)
