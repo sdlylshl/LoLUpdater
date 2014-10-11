@@ -86,6 +86,14 @@ namespace LoLUpdater
                 Console.ReadLine();
                 Environment.Exit(0);
             }
+            bool result;
+            var mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out result);
+            if (!result)
+            {
+                return;
+            }
+
+            GC.KeepAlive(mutex);
             if (!Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");

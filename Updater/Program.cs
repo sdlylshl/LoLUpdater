@@ -19,8 +19,26 @@ namespace LoLUpdater_Updater
 .Cast<ManagementBaseObject>()
 .Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
+        private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
+        private static readonly bool IsSupportedPlatform = (Environment.OSVersion.Platform == PlatformID.Win32NT & Environment.OSVersion.Version.Major >= 5 & Environment.OSVersion.Version.Minor >= 1) || IsLinuxorMono;
+
         private static void Main()
         {
+            if (!IsSupportedPlatform)
+            {
+                Console.WriteLine("Unsupported Platform");
+                Console.WriteLine("Only Windows XP -> Windows 8.1 is supported, untested on Windows 10");
+                Console.ReadLine();
+                Environment.Exit(0);
+            }
+            bool result;
+            var mutex = new System.Threading.Mutex(true, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out result);
+            if (!result)
+            {
+                return;
+            }
+
+            GC.KeepAlive(mutex);
             do
             {
                 if (IsMultiCore)
