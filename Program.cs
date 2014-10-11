@@ -35,7 +35,7 @@ namespace LoLUpdater
         // There is a better way to do the AVX2 check
         private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
-        private static readonly string cgIntaller = "Cg-3.1_April2012_Setup.exe";
+        private static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         private static readonly string[] cgfiles = { "cg.dll", "cgGL.dll", "cgD3D9.dll" };
 
@@ -677,9 +677,9 @@ namespace LoLUpdater
                 {
                     webClient.DownloadFile(
                     new Uri(Uri,
-                cgIntaller), cgIntaller);
+                cgInstaller), cgInstaller);
 
-                    FileFix(cgIntaller, String.Empty, String.Empty, String.Empty);
+                    FileFix(cgInstaller, String.Empty, String.Empty, String.Empty);
 
                     Process cg = new Process
                     {
@@ -687,13 +687,13 @@ namespace LoLUpdater
                             new ProcessStartInfo
                             {
                                 FileName =
-                                    cgIntaller,
+                                    cgInstaller,
                                 Arguments = "/silent /TYPE=compact"
                             }
                     };
                     cg.Start();
                     cg.WaitForExit();
-                    File.Delete(cgIntaller);
+                    File.Delete(cgInstaller);
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
                 }
