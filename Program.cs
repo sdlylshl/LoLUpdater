@@ -87,6 +87,13 @@ namespace LoLUpdater
                 Environment.Exit(0);
             }
 
+            if (args[0] == "-help")
+            {
+                Console.WriteLine("Command Line Switches");
+                Console.WriteLine("-install : Installs LoLUpdater with default settings");
+                Console.WriteLine("-uninst : Uninstalls LoLUpdater");
+                Console.WriteLine("-help : Shows this menu");
+            }
             if (args[0] == "-install")
             {
                 Console.WriteLine("Installing, please wait...");
@@ -545,7 +552,7 @@ namespace LoLUpdater
 
                 if (IsMultiCore)
                 {
-                    Parallel.ForEach(cgfiles, file =>
+                    Parallel.ForEach(files, file =>
                     {
                         Md5Check("solutions", "lol_game_client_sln", SlnFolder,
                 file, MD5);
@@ -566,7 +573,7 @@ namespace LoLUpdater
                 Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
                 if (IsMultiCore)
                 {
-                    Parallel.ForEach(cgfiles, file =>
+                    Parallel.ForEach(files, file =>
                     {
                         Md5Check(Path.Combine("Game", file), MD5);
                     });
