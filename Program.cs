@@ -4,15 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
 {
-    internal static class Program
+    internal static class LoLUpdater
     {
         private static ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>().ToArray();
@@ -28,11 +26,11 @@ namespace LoLUpdater
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
         private static readonly bool IsSupportedPlatform = (Environment.OSVersion.Platform == PlatformID.Win32NT & Environment.OSVersion.Version.Major >= 5 & Environment.OSVersion.Version.Minor >= 1) || IsLinuxorMono;
         private static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
-        private static readonly bool HasSse = IsProcessorFeaturePresent(6);
-        private static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
+        private static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
+        private static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
 
         // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
-        private static readonly bool HasAvx = AvxCheck & IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
+        private static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
 
         // There is a better way to do the AVX2 check
         private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
@@ -166,7 +164,6 @@ namespace LoLUpdater
             {
                 case 1:
                     Console.WriteLine("Installing");
-                    Dots();
                     if (File.Exists("LoLUpdater Updater.exe"))
                     {
                         FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
@@ -262,7 +259,6 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    Dots();
                     if (!Directory.Exists("Backup"))
                     {
                         Directory.CreateDirectory("Backup");
@@ -401,7 +397,6 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    Dots();
                     do
                     {
                         string[] LoLProcces = new string[4];
@@ -550,15 +545,6 @@ namespace LoLUpdater
             Console.ReadLine();
         }
 
-        private static void Dots()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                Console.Write(".");
-                Thread.Sleep(500);
-            }
-        }
-
         private static void FinishedPrompt(string message)
         {
             Console.Clear();
@@ -686,9 +672,10 @@ namespace LoLUpdater
                     FileFix(file, String.Empty, String.Empty, String.Empty);
                 }
 
-                // This check is not perfect, fix later.
-                if (String.IsNullOrEmpty(_cgBinPath) || new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >= new Version("3.1.0.13"))
+                // checks this 3 times each install, 1 time might be enough, 2 free extra checks
+                // just cause some users might be pesky.
+                if (string.IsNullOrEmpty(_cgBinPath) || new Version(
+                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <= new Version("3.1.0.13"))
                 {
                     webClient.DownloadFile(
                     new Uri(Uri,
@@ -746,7 +733,7 @@ namespace LoLUpdater
                         ver, file),
                         FileAttributes.Normal);
                 }
-                DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
+                NativeMethods.DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
             }
             else
             {
@@ -756,7 +743,7 @@ namespace LoLUpdater
                     File.SetAttributes(file,
                       FileAttributes.Normal);
                 }
-                DeleteFile(file + ":Zone.Identifier");
+                NativeMethods.DeleteFile(file + ":Zone.Identifier");
             }
         }
 
@@ -809,20 +796,6 @@ namespace LoLUpdater
             // will not work if custom directories are in folder
             return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
         }
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool IsProcessorFeaturePresent(uint feature);
-
-        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        private static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void DeleteFile(string lpFileName);
 
         private static int ToInt(string value)
         {

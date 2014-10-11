@@ -70,7 +70,7 @@ namespace LoLUpdater_Updater
         private static void FinishPrompt(string message)
         {
             if (!File.Exists("LoLUpdater.exe")) return;
-            DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
+            NativeMethods.DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
             Process.Start("LoLUpdater.exe");
             _notdone = false;
             Console.WriteLine("{0}", message);
@@ -101,9 +101,5 @@ namespace LoLUpdater_Updater
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
         }
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void DeleteFile(string file);
     }
 }
