@@ -35,7 +35,7 @@ namespace LoLUpdater
         // There is a better way to do the AVX2 check
         private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
-        private static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+        private static readonly string cgIntaller = "Cg-3.1_April2012_Setup.exe";
 
         private static readonly string[] cgfiles = { "cg.dll", "cgGL.dll", "cgD3D9.dll" };
 
@@ -182,15 +182,15 @@ namespace LoLUpdater
                             Parallel.ForEach(cgfiles, file =>
                             {
                                 Copy(Path.Combine(_cgBinPath,
-                                   file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in cgfiles)
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             }
                         }
                     }
@@ -341,15 +341,15 @@ namespace LoLUpdater
                             Parallel.ForEach(cgfiles, file =>
                             {
                                 Copy(Path.Combine(_cgBinPath,
-                                   file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in cgfiles)
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             }
                         }
                     }
@@ -478,16 +478,16 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(cgfiles, file =>
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
                         if (!IsMultiCore)
                         {
                             foreach (string file in files)
                             {
-                                Copy(_cgBinPath,
-                                    file, "solutions", "lol_game_client_sln", SlnFolder);
+                                Copy(Path.Combine(_cgBinPath,
+                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             }
                         }
                     }
@@ -677,9 +677,9 @@ namespace LoLUpdater
                 {
                     webClient.DownloadFile(
                     new Uri(Uri,
-                cgInstaller), cgInstaller);
+                cgIntaller), cgIntaller);
 
-                    FileFix(cgInstaller, String.Empty, String.Empty, String.Empty);
+                    FileFix(cgIntaller, String.Empty, String.Empty, String.Empty);
 
                     Process cg = new Process
                     {
@@ -687,13 +687,13 @@ namespace LoLUpdater
                             new ProcessStartInfo
                             {
                                 FileName =
-                                    cgInstaller,
+                                    cgIntaller,
                                 Arguments = "/silent /TYPE=compact"
                             }
                     };
                     cg.Start();
                     cg.WaitForExit();
-                    File.Delete(cgInstaller);
+                    File.Delete(cgIntaller);
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
                 }
@@ -779,11 +779,11 @@ namespace LoLUpdater
             return Path.Combine("RADS", path, path1, "releases", ver, "deploy", file);
         }
 
-        private static void Copy(string file, string path, string path1, string ver, string to)
+        private static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (File.Exists(DirPath(path, path1, ver, file)))
             {
-                File.Copy(file, DirPath(path, path1, ver, file), true);
+                File.Copy(Path.Combine(from, file), DirPath(path, path1, ver, file), true);
                 FileFix(path, path1, file, SlnFolder);
             }
         }
