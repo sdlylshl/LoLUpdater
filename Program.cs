@@ -781,8 +781,11 @@ namespace LoLUpdater
 
         private static void Copy(string file, string path, string path1, string ver, string to)
         {
-            File.Copy(file, DirPath(path, path1, ver, file), true);
-            FileFix(path, path1, file, SlnFolder);
+            if (File.Exists(DirPath(path, path1, ver, file)))
+            {
+                File.Copy(file, DirPath(path, path1, ver, file), true);
+                FileFix(path, path1, file, SlnFolder);
+            }
         }
 
         private static void Copy(string from, string file, string to, bool mode)

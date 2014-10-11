@@ -5,8 +5,8 @@ namespace LoLUpdater_Updater
 {
     public class NativeMethods
     {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern void DeleteFile(string lpFileName);
+        internal static extern IntPtr DeleteFile(string lpFileName);
     }
 }
