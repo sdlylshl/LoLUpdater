@@ -1,0 +1,39 @@
+﻿Merge remote-tracking branch 'origin/atom-shell'
+
+Conflicts:
+	.gitignore
+	App.xaml
+	LoLUpdater.sln
+	LoLUpdater/LoLUpdater.ico
+	Properties/LoLUpdater.ico
+	Resources/Cg-3.1_April2012_Setup.exe
+	app.manifest
+	src/LoLUpdater.ico
+	src/index.html
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	deleted:    .gitattributes
+#	modified:   .gitignore
+#	deleted:    App.xaml
+#	modified:   README.md
+#	deleted:    src/LoLUpdater.ico
+#	modified:   src/index.html
+#
+# Untracked files:
+#	src/LoLUpdater.ico~HEAD
+#	src/LoLUpdater.ico~origin_atom-shell
+#
+
