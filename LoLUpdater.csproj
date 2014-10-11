@@ -37,6 +37,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <DebugSymbols>false</DebugSymbols>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Properties\LoLUpdater.ico</ApplicationIcon>
@@ -44,6 +45,7 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <ApplicationManifest>app1.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -53,7 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="app1.manifest" />
+    <None Include="app1.manifest">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\LoLUpdater.ico" />
