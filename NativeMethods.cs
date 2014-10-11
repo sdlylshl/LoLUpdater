@@ -9,14 +9,14 @@ namespace LoLUpdater
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool IsProcessorFeaturePresent(uint feature);
 
-        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        [DllImport("kernel32", CharSet = CharSet.Ansi, BestFitMapping = false)]
         internal static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
 
-        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
         internal static extern IntPtr LoadLibrary(string FileName);
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern void DeleteFile(string lpFileName);
+        internal static extern IntPtr DeleteFile(string lpFileName);
     }
 }

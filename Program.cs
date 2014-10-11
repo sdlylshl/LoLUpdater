@@ -187,10 +187,10 @@ namespace LoLUpdater
                         }
                         if (!IsMultiCore)
                         {
-                            foreach (string file in files)
+                            foreach (string file in cgfiles)
                             {
-                                Copy(Path.Combine(_cgBinPath,
-                                  file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             }
                         }
                     }
@@ -339,17 +339,17 @@ namespace LoLUpdater
                         if (IsMultiCore)
                         {
                             Parallel.ForEach(cgfiles, file =>
-                                {
-                                    Copy(Path.Combine(_cgBinPath,
-                                       file), "solutions", "lol_game_client_sln", SlnFolder, file);
-                                });
-                        }
-                        if (!IsMultiCore)
-                        {
-                            foreach (string file in files)
                             {
                                 Copy(Path.Combine(_cgBinPath,
                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                            });
+                        }
+                        if (!IsMultiCore)
+                        {
+                            foreach (string file in cgfiles)
+                            {
+                                Copy(_cgBinPath,
+                                    file, "solutions", "lol_game_client_sln", SlnFolder);
                             }
                         }
                     }
