@@ -213,8 +213,7 @@ namespace LoLUpdater
                             });
                             Parallel.ForEach(cgfiles, file =>
                             {
-                                Copy(_cgBinPath, file,
-                                    "Game", IsInstalling);
+                                Copy(_cgBinPath, file, "Game", IsInstalling);
                             });
                         }
                         if (!IsMultiCore)
@@ -226,8 +225,7 @@ namespace LoLUpdater
                             }
                             foreach (string file in files)
                             {
-                                Copy(_cgBinPath, file,
-                                    "Game", IsInstalling);
+                                Copy(_cgBinPath, file, "Game", IsInstalling);
                             }
                         }
                     }
