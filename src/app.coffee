@@ -1,6 +1,8 @@
 app = require "app"
 BrowserWindow = require "browser-window"
 
+path = require "path"
+
 # Report crashes to our server.
 # require("crash-reporter").start()
 
@@ -26,7 +28,7 @@ app.on "ready", ->
     "direct-write": true
   )
   # and load the index.html of the app.
-  mainWindow.loadUrl "file://" + __dirname + "/index.html"
+  mainWindow.loadUrl path.join __dirname, "index.html"
   # mainWindow.openDevTools()
 
   mainWindow.on "close", ->
@@ -35,4 +37,10 @@ app.on "ready", ->
   ipc = require "ipc"
   ipc.on "minimize", ->
     mainWindow.minimize()
+
+  ipc.on "patch", (e, cmdArg, LoLPath) ->
+    cp = require "child_process"
+    options =
+      cwd: LoLPath
+    cp.execFile path.join( __dirname, "LoLUpdater.exe"), [cmdArg], options
   return
