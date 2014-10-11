@@ -19,7 +19,7 @@ namespace LoLUpdater
         private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static int _userInput;
-        private static readonly bool IsInstalling = Convert.ToBoolean(_userInput);
+        private static bool IsInstalling;
         private static bool _notdone;
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
@@ -36,8 +36,12 @@ namespace LoLUpdater
         private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
         private static readonly string cgIntaller = "Cg-3.1_April2012_Setup.exe";
+
         private static readonly string[] cgfiles = { "cg.dll", "cgGL.dll", "cgD3D9.dll" };
+
+        // make the files string shorter
         private static readonly string[] files = { "cg.dll", "cgGL.dll", "cgD3D9.dll", "tbb.dll" };
+
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
         private static readonly string AirFolder = Version("projects", "lol_air_client");
 
@@ -74,7 +78,7 @@ namespace LoLUpdater
                         : (HasSse2 ? "1639aa390bfd02962c5c437d201045cc" : HasSse ? "3bf888228b83c4407d2eea6a5ab532bd" : "44dde7926b6dfef4686f2ddd19c04e2d")))
                 : (HasSse2 ? "82ed3be353217c61ff13a01bc85f1395" : (HasSse ? "eacd37174f1a4316345f985dc456a961" : "b389f80072bc877a6ef5ff33ade88a64"));
 
-        private static void Main()
+        private static void Main(string[] args)
         {
             if (!IsSupportedPlatform)
             {
@@ -82,167 +86,450 @@ namespace LoLUpdater
                 Console.ReadLine();
                 Environment.Exit(0);
             }
-            if (!Directory.Exists("Backup"))
-            {
-                Directory.CreateDirectory("Backup");
-            }
-            _userInput = DisplayMenu();
-            Console.Clear();
-            do
-            {
-                string[] LoLProcces = new string[4];
-                LoLProcces[0] = "LoLClient";
-                LoLProcces[1] = "LoLLauncher";
-                LoLProcces[2] = "LoLPatcher";
-                LoLProcces[3] = "League of Legends";
-                string LoLProcc = string.Join(string.Empty, LoLProcces);
 
-                if (IsMultiCore)
-                {
-                    Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                    {
-                        proc.Kill();
-                        proc.WaitForExit();
-                    });
-                }
-                if (!IsMultiCore)
-                {
-                    foreach (Process proc in Process.GetProcessesByName(LoLProcc))
-                    {
-                        proc.Kill();
-                        proc.WaitForExit();
-                    }
-                }
-            } while (_notdone);
-            if (IsRads)
+            if (args[0] == "-install")
             {
-                BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
-                   , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), IsInstalling);
-                BakCopy("NPSWF32.dll", "projects", "lol_air_client"
-                    , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), IsInstalling);
-                if (IsMultiCore)
+                Console.WriteLine("Installing, please wait...");
+                if (!Directory.Exists("Backup"))
                 {
-                    Parallel.ForEach(files, file =>
-                    {
-                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
-                    });
+                    Directory.CreateDirectory("Backup");
                 }
-                if (!IsMultiCore)
+                do
                 {
-                    foreach (string file in files)
-                    {
-                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
-                    }
-                }
-            }
-            else
-            {
-                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", IsInstalling);
-                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", IsInstalling);
-                if (IsMultiCore)
-                {
-                    Parallel.ForEach(files, file =>
-                    {
-                        Copy("Game", file, "Backup", IsInstalling);
-                    });
-                }
-                if (!IsMultiCore)
-                {
-                    foreach (string file in files)
-                    {
-                        Copy("Game", file, "Backup", IsInstalling);
-                    }
-                }
-            }
+                    string[] LoLProcces = new string[4];
+                    LoLProcces[0] = "LoLClient";
+                    LoLProcces[1] = "LoLLauncher";
+                    LoLProcces[2] = "LoLPatcher";
+                    LoLProcces[3] = "League of Legends";
+                    string LoLProcc = string.Join(string.Empty, LoLProcces);
 
-            switch (_userInput)
-            {
-                case 1:
-                    Console.WriteLine("Installing, please wait...");
-                    if (File.Exists("LoLUpdater Updater.exe"))
+                    if (IsMultiCore)
                     {
-                        FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
-                    }
-                    if (IsRads)
-                    {
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, IsInstalling);
-                        BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, IsInstalling);
-                        BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, IsInstalling);
-                        Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
-                        if (IsMultiCore)
+                        Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
                         {
-                            Parallel.ForEach(cgfiles, file =>
+                            proc.Kill();
+                            proc.WaitForExit();
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (Process proc in Process.GetProcessesByName(LoLProcc))
+                        {
+                            proc.Kill();
+                            proc.WaitForExit();
+                        }
+                    }
+                } while (_notdone);
+                if (IsRads)
+                {
+                    BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
+                       , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), true);
+                    BakCopy("NPSWF32.dll", "projects", "lol_air_client"
+                        , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), true);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, true);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, true);
+                        }
+                    }
+                }
+                else
+                {
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", true);
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", true);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            Copy("Game", file, "Backup", true);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            Copy("Game", file, "Backup", true);
+                        }
+                    }
+                }
+                if (IsRads)
+                {
+                    BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, true);
+                    BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, true);
+                    BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, true);
+                    Cfg("game.cfg", "Config", IsMultiCore);
+                    Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                    Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
+                    Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(cgfiles, file =>
+                            {
+                                Copy(Path.Combine(_cgBinPath, file),
+                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                            });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            Copy(Path.Combine(_cgBinPath, file),
+                                file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                        }
+                    }
+                }
+                else
+                {
+                    Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
+                    Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
+                    Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
+                    string[] cfgfiles = new string[4];
+                    cfgfiles[0] = "game.cfg";
+                    cfgfiles[1] = "GamePermanent.cfg";
+                    cfgfiles[2] = "GamePermanent_zh_MY.cfg";
+                    cfgfiles[3] = "GamePermanent_en_SG.cfg";
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(cfgfiles, file =>
+                            {
+                                Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
+                                Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                            });
+                        Parallel.ForEach(cgfiles, file =>
+                        {
+                            Copy(_cgBinPath, file,
+                                "Game", true);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in cfgfiles)
+                        {
+                            Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
+                            Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                        }
+                        foreach (string file in files)
+                        {
+                            Copy(_cgBinPath, file,
+                                "Game", true);
+                        }
+                    }
+                }
+                FinishedPrompt("Done Installing!");
+            }
+            if (args[0] == "-uninst")
+            {
+                Console.WriteLine("Uninstalling, please wait...");
+                do
+                {
+                    string[] LoLProcces = new string[4];
+                    LoLProcces[0] = "LoLClient";
+                    LoLProcces[1] = "LoLLauncher";
+                    LoLProcces[2] = "LoLPatcher";
+                    LoLProcces[3] = "League of Legends";
+                    string LoLProcc = string.Join(string.Empty, LoLProcces);
+
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
+                        {
+                            proc.Kill();
+                            proc.WaitForExit();
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (Process proc in Process.GetProcessesByName(LoLProcc))
+                        {
+                            proc.Kill();
+                            proc.WaitForExit();
+                        }
+                    }
+                } while (_notdone);
+                if (IsRads)
+                {
+                    BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
+                       , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), false);
+                    BakCopy("NPSWF32.dll", "projects", "lol_air_client"
+                        , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), false);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, false);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, false);
+                        }
+                    }
+                }
+                else
+                {
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", false);
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", false);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            Copy("Game", file, "Backup", false);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            Copy("Game", file, "Backup", false);
+                        }
+                    }
+                }
+                if (File.Exists("LoLUpdater Updater.exe"))
+                {
+                    FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
+                }
+                if (IsRads)
+                {
+                    BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, false);
+                    BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, false);
+                    BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, false);
+                    Cfg("game.cfg", "Config", IsMultiCore);
+                    Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                    Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
+                    Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(cgfiles, file =>
+                        {
+                            Copy(Path.Combine(_cgBinPath, file),
+                                file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            Copy(Path.Combine(_cgBinPath, file),
+                                file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                        }
+                    }
+                }
+                else
+                {
+                    Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
+                    Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
+                    Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
+                    string[] cfgfiles = new string[4];
+                    cfgfiles[0] = "game.cfg";
+                    cfgfiles[1] = "GamePermanent.cfg";
+                    cfgfiles[2] = "GamePermanent_zh_MY.cfg";
+                    cfgfiles[3] = "GamePermanent_en_SG.cfg";
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(cfgfiles, file =>
+                        {
+                            Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", false);
+                            Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                        });
+                        Parallel.ForEach(cgfiles, file =>
+                        {
+                            Copy(_cgBinPath, file,
+                                "Game", false);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in cfgfiles)
+                        {
+                            Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", false);
+                            Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                        }
+                        foreach (string file in files)
+                        {
+                            Copy(_cgBinPath, file,
+                                "Game", false);
+                        }
+                    }
+                }
+                Directory.Delete("Backup", false);
+                FinishedPrompt("Done Uninstalling!");
+            }
+            if (args[0] == null)
+            {
+                if (!Directory.Exists("Backup"))
+                {
+                    Directory.CreateDirectory("Backup");
+                }
+                _userInput = DisplayMenu();
+                IsInstalling = Convert.ToBoolean(_userInput);
+                Console.Clear();
+                do
+                {
+                    string[] LoLProcces = new string[4];
+                    LoLProcces[0] = "LoLClient";
+                    LoLProcces[1] = "LoLLauncher";
+                    LoLProcces[2] = "LoLPatcher";
+                    LoLProcces[3] = "League of Legends";
+                    string LoLProcc = string.Join(string.Empty, LoLProcces);
+
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
+                        {
+                            proc.Kill();
+                            proc.WaitForExit();
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (Process proc in Process.GetProcessesByName(LoLProcc))
+                        {
+                            proc.Kill();
+                            proc.WaitForExit();
+                        }
+                    }
+                } while (_notdone);
+                if (IsRads)
+                {
+                    BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
+                       , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), IsInstalling);
+                    BakCopy("NPSWF32.dll", "projects", "lol_air_client"
+                        , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), IsInstalling);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty, IsInstalling);
+                        }
+                    }
+                }
+                else
+                {
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", IsInstalling);
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", IsInstalling);
+                    if (IsMultiCore)
+                    {
+                        Parallel.ForEach(files, file =>
+                        {
+                            Copy("Game", file, "Backup", IsInstalling);
+                        });
+                    }
+                    if (!IsMultiCore)
+                    {
+                        foreach (string file in files)
+                        {
+                            Copy("Game", file, "Backup", IsInstalling);
+                        }
+                    }
+                }
+
+                switch (_userInput)
+                {
+                    case 1:
+                        Console.WriteLine("Installing, please wait...");
+                        if (File.Exists("LoLUpdater Updater.exe"))
+                        {
+                            FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
+                        }
+                        if (IsRads)
+                        {
+                            BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), string.Empty, IsInstalling);
+                            BakCopy("projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), string.Empty, IsInstalling);
+                            BakCopy(string.Empty, string.Empty, Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, IsInstalling);
+                            Cfg("game.cfg", "Config", IsMultiCore);
+                            Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                            Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
+                            Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
+                            if (IsMultiCore)
+                            {
+                                Parallel.ForEach(cgfiles, file =>
                                 {
                                     Copy(Path.Combine(_cgBinPath, file),
                                         file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
                                 });
-                        }
-                        if (!IsMultiCore)
-                        {
-                            foreach (string file in files)
+                            }
+                            if (!IsMultiCore)
                             {
-                                Copy(Path.Combine(_cgBinPath, file),
-                                    file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                foreach (string file in files)
+                                {
+                                    Copy(Path.Combine(_cgBinPath, file),
+                                        file, "solutions", "lol_game_client_sln", SlnFolder, string.Empty);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
-                        string[] cfgfiles = new string[4];
-                        cfgfiles[0] = "game.cfg";
-                        cfgfiles[1] = "GamePermanent.cfg";
-                        cfgfiles[2] = "GamePermanent_zh_MY.cfg";
-                        cfgfiles[3] = "GamePermanent_en_SG.cfg";
-                        if (IsMultiCore)
+                        else
                         {
-                            Parallel.ForEach(cfgfiles, file =>
+                            Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
+                            Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
+                            Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
+                            string[] cfgfiles = new string[4];
+                            cfgfiles[0] = "game.cfg";
+                            cfgfiles[1] = "GamePermanent.cfg";
+                            cfgfiles[2] = "GamePermanent_zh_MY.cfg";
+                            cfgfiles[3] = "GamePermanent_en_SG.cfg";
+                            if (IsMultiCore)
+                            {
+                                Parallel.ForEach(cfgfiles, file =>
                                 {
                                     Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
                                     Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
                                 });
-                            Parallel.ForEach(cgfiles, file =>
-                            {
-                                Copy(_cgBinPath, file,
-                                    "Game", IsInstalling);
-                            });
-                        }
-                        if (!IsMultiCore)
-                        {
-                            foreach (string file in cfgfiles)
-                            {
-                                Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
-                                Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                                Parallel.ForEach(cgfiles, file =>
+                                {
+                                    Copy(_cgBinPath, file,
+                                        "Game", IsInstalling);
+                                });
                             }
-                            foreach (string file in files)
+                            if (!IsMultiCore)
                             {
-                                Copy(_cgBinPath, file,
-                                    "Game", IsInstalling);
+                                foreach (string file in cfgfiles)
+                                {
+                                    Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
+                                    Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), IsMultiCore);
+                                }
+                                foreach (string file in files)
+                                {
+                                    Copy(_cgBinPath, file,
+                                        "Game", IsInstalling);
+                                }
                             }
                         }
-                    }
-                    FinishedPrompt("Done Installing!");
-                    break;
+                        FinishedPrompt("Done Installing!");
+                        break;
 
-                case 2:
-                    Directory.Delete("Backup", true);
-                    FinishedPrompt("Done Uninstalling!");
-                    break;
+                    case 2:
+                        Directory.Delete("Backup", true);
+                        FinishedPrompt("Done Uninstalling!");
+                        break;
 
-                default:
-                    Environment.Exit(0);
-                    break;
+                    default:
+                        Environment.Exit(0);
+                        break;
+                }
             }
         }
 
         private static void FinishedPrompt(string message)
         {
             Console.Clear();
+
             string[] Md5 = new string[4];
             Md5[0] = "ae87223e882670029450b3f86e8e9300";
             Md5[1] = "68dbb8778903f5cf0a80c00ffbf494d2";
@@ -323,31 +610,32 @@ namespace LoLUpdater
             Console.WriteLine("1. Install");
             Console.WriteLine("2. Uninstall");
             Console.WriteLine("3. Exit");
+            Console.WriteLine();
             return Convert.ToInt32(Console.ReadLine());
         }
 
-        private static void Download(string file, string md5, Uri uri, string path, string path1, string version)
+        private static void Download(string file, string md5, Uri uri, string path, string path1, string ver)
         {
             using (WebClient webClient = new WebClient())
             {
                 if (IsRads)
                 {
-                    if (!File.Exists(DirPath(path, path1, version, file)))
+                    if (!File.Exists(DirPath(path, path1, ver, file)))
                     {
                         webClient.DownloadFile(
                             uri,
-                            DirPath(path, path1, version, file));
+                            DirPath(path, path1, ver, file));
                     }
                     else
                     {
-                        if (Md5Compare(DirPath(path, path1, version, file), md5))
+                        if (Md5Compare(DirPath(path, path1, ver, file), md5))
                         {
                             webClient.DownloadFile(
                                 uri,
-                                DirPath(path, path1, version, file));
+                                DirPath(path, path1, ver, file));
                         }
                     }
-                    FileFix(path, path1, file, version);
+                    FileFix(path, path1, file, ver);
                 }
                 else
                 {
