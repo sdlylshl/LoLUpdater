@@ -37,10 +37,10 @@ namespace LoLUpdater
 
         private static readonly string cgIntaller = "Cg-3.1_April2012_Setup.exe";
 
-        private static readonly string[] cgfiles = { "cg.dll", "cgGL.dll", "cgD3D9.dll" };
+        private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
 
         // make the files string shorter
-        private static readonly string[] files = { "cg.dll", "cgGL.dll", "cgD3D9.dll", "tbb.dll" };
+        private static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
         private static readonly string AirFolder = Version("projects", "lol_air_client");
@@ -110,7 +110,7 @@ namespace LoLUpdater
                         proc.WaitForExit();
                     });
                 }
-                if (!IsMultiCore)
+                else
                 {
                     foreach (Process proc in Process.GetProcessesByName(LoLProcc))
                     {
@@ -132,7 +132,7 @@ namespace LoLUpdater
                         BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, IsInstalling);
                     });
                 }
-                if (!IsMultiCore)
+                else
                 {
                     foreach (string file in files)
                     {
@@ -151,7 +151,7 @@ namespace LoLUpdater
                         Copy("Game", file, "Backup", IsInstalling);
                     });
                 }
-                if (!IsMultiCore)
+                else
                 {
                     foreach (string file in files)
                     {
@@ -185,7 +185,7 @@ namespace LoLUpdater
                                     file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in cgfiles)
                             {
@@ -216,7 +216,7 @@ namespace LoLUpdater
                                 Copy(_cgBinPath, file, "Game", IsInstalling);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in cfgfiles)
                             {
@@ -278,7 +278,7 @@ namespace LoLUpdater
                                 proc.WaitForExit();
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (Process proc in Process.GetProcessesByName(LoLProcc))
                             {
@@ -300,7 +300,7 @@ namespace LoLUpdater
                                 BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, true);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in files)
                             {
@@ -319,7 +319,7 @@ namespace LoLUpdater
                                 Copy("Game", file, "Backup", true);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in files)
                             {
@@ -344,7 +344,7 @@ namespace LoLUpdater
                                     file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in cgfiles)
                             {
@@ -376,7 +376,7 @@ namespace LoLUpdater
                                     "Game", true);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in cfgfiles)
                             {
@@ -412,7 +412,7 @@ namespace LoLUpdater
                                 proc.WaitForExit();
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (Process proc in Process.GetProcessesByName(LoLProcc))
                             {
@@ -434,7 +434,7 @@ namespace LoLUpdater
                                 BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, false);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in files)
                             {
@@ -453,7 +453,7 @@ namespace LoLUpdater
                                 Copy("Game", file, "Backup", false);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in files)
                             {
@@ -482,7 +482,7 @@ namespace LoLUpdater
                                     file), "solutions", "lol_game_client_sln", SlnFolder, file);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in files)
                             {
@@ -514,7 +514,7 @@ namespace LoLUpdater
                                     "Game", false);
                             });
                         }
-                        if (!IsMultiCore)
+                        else
                         {
                             foreach (string file in cfgfiles)
                             {
@@ -568,7 +568,7 @@ namespace LoLUpdater
                 file, MD5);
                     });
                 }
-                if (!IsMultiCore)
+                else
                 {
                     foreach (string file in files)
                     {
@@ -588,7 +588,7 @@ namespace LoLUpdater
                         Md5Check(Path.Combine("Game", file), MD5);
                     });
                 }
-                if (!IsMultiCore)
+                else
                 {
                     foreach (string file in files)
                     {
@@ -705,11 +705,11 @@ namespace LoLUpdater
             if (mode)
             {
                 if (File.Exists(DirPath(path, path1,
-                       file, ver)))
+                       ver, file)))
                 {
                     File.Copy(
                       DirPath(path, path1,
-                       file, ver)
+                       ver, file)
                       , Path.Combine("Backup", file),
                       true);
                 }
@@ -717,16 +717,16 @@ namespace LoLUpdater
             else
             {
                 if (File.Exists(DirPath(path, path1,
-                     file, ver)))
+                     ver, file)))
                 {
                     File.Copy(Path.Combine("Backup", file)
 
                         , DirPath(path, path1,
-                        file, ver),
+                        ver, file),
                         true);
                 }
             }
-            FileFix(file, path, path1, ver);
+            FileFix(path, path1, ver, file);
         }
 
         private static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
@@ -745,15 +745,15 @@ namespace LoLUpdater
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
             }
-            FileFix(file, path, path1, ver);
+            FileFix(path, path1, ver, file);
         }
 
-        private static void FileFix(string file, string path, string path1, string ver)
+        private static void FileFix(string path, string path1, string ver, string file)
         {
             if (IsRads)
             {
                 if (new FileInfo(DirPath(path, path1,
-                     file, ver)).Attributes
+                     ver, file)).Attributes
                      .Equals(FileAttributes.ReadOnly))
                 {
                     File.SetAttributes(DirPath(path, path1,
@@ -781,9 +781,9 @@ namespace LoLUpdater
 
         private static void Copy(string from, string path, string path1, string ver, string file)
         {
-            if (File.Exists(DirPath(path, path1, ver, file)))
+            if (File.Exists(from))
             {
-                File.Copy(Path.Combine(from, file), DirPath(path, path1, ver, file), true);
+                File.Copy(from, DirPath(path, path1, ver, file), true);
                 FileFix(path, path1, file, SlnFolder);
             }
         }
@@ -803,20 +803,24 @@ namespace LoLUpdater
 
         private static void Cfg(string file, string path, bool mode)
         {
-            if (mode)
+            if (File.Exists(Path.Combine(path, file)))
             {
-                if (File.ReadAllText(Path.Combine(path, file))
-                    .Contains(CfgTweak)) return;
-                File.AppendAllText(Path.Combine(path, file),
-                    String.Format("{0}{1}", Environment.NewLine, CfgTweak));
+                if (mode)
+                {
+                    if (File.ReadAllText(Path.Combine(path, file))
+                        .Contains(CfgTweak)) return;
+                    File.AppendAllText(Path.Combine(path, file),
+                        String.Format("{0}{1}", Environment.NewLine, CfgTweak));
+                }
+                else
+                {
+                    var oldLines = File.ReadAllLines(Path.Combine(path, file));
+                    if (!oldLines.Contains(CfgTweak)) return;
+                    var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains(CfgTweak)).Select(lineInfo => lineInfo.Line);
+                    File.WriteAllLines(Path.Combine(path, file), newLines);
+                }
             }
-            else
-            {
-                var oldLines = File.ReadAllLines(Path.Combine(path, file));
-                if (!oldLines.Contains(CfgTweak)) return;
-                var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains(CfgTweak)).Select(lineInfo => lineInfo.Line);
-                File.WriteAllLines(Path.Combine(path, file), newLines);
-            }
+
             FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
         }
 
