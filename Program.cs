@@ -704,17 +704,27 @@ namespace LoLUpdater
         {
             if (mode)
             {
-                File.Copy(
-                    Path.Combine("RADS", path, path1, "releases", ver, "deploy", file)
-                    , Path.Combine("Backup", file),
-                    true);
+                if (File.Exists(DirPath(path, path1,
+                       file, ver)))
+                {
+                    File.Copy(
+                      DirPath(path, path1,
+                       file, ver)
+                      , Path.Combine("Backup", file),
+                      true);
+                }
             }
             else
             {
-                File.Copy(Path.Combine("Backup", file)
+                if (File.Exists(DirPath(path, path1,
+                     file, ver)))
+                {
+                    File.Copy(Path.Combine("Backup", file)
 
-                    , Path.Combine("RADS", path, path1, "releases", ver, "deploy", file),
-                    true);
+                        , DirPath(path, path1,
+                        file, ver),
+                        true);
+                }
             }
             FileFix(file, path, path1, ver);
         }
