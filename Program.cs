@@ -83,7 +83,7 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            Intro(out mutexresult, out mutex);
+            mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
             if (!mutexresult)
             {
                 return;
@@ -207,7 +207,7 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    Intro(out mutexresult, out mutex);
+                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
                     if (!mutexresult)
                     {
                         return;
@@ -294,7 +294,7 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    Intro(out mutexresult, out mutex);
+                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
                     if (!mutexresult)
                     {
                         return;
@@ -380,19 +380,6 @@ namespace LoLUpdater
                     FinishedPrompt("Done Uninstalling!");
                     break;
             }
-        }
-
-        private static void Intro(out bool result, out System.Threading.Mutex mutex)
-        {
-            if (!IsSupportedPlatform)
-            {
-                Console.WriteLine("Unsupported Platform");
-                Console.WriteLine("Only Windows XP -> Windows 8.1 is supported, untested on Windows 10");
-                Console.ReadLine();
-                Environment.Exit(0);
-            }
-
-            mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out result);
         }
 
         private static void FinishedPrompt(string message)
