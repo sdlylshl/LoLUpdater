@@ -1,5 +1,4 @@
-﻿using LoLUpdaterDLL;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,18 +13,23 @@ namespace LoLUpdater_Updater
 {
     internal static class Program
     {
+        private static bool _notdone;
+
+        private static bool mutexresult;
+        private static System.Threading.Mutex mutex;
+
         private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>()
-.Sum(item => DLL.ToInt(item["NumberOfCores"].ToString())) > 1;
+.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static void Main()
         {
-            if (!DLL.IsAlreadyRunning)
+            if (!mutexresult)
             {
                 return;
             }
 
-            GC.KeepAlive(DLL.mutex);
+            GC.KeepAlive(mutex);
             do
             {
                 Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
@@ -33,7 +37,7 @@ namespace LoLUpdater_Updater
                     proc.Kill();
                     proc.WaitForExit();
                 });
-            } while (DLL._notdone);
+            } while (_notdone);
 
             using (WebClient webClient = new WebClient())
             {
@@ -68,10 +72,17 @@ namespace LoLUpdater_Updater
             if (!File.Exists("LoLUpdater.exe")) return;
             NativeMethods.DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
             Process.Start("LoLUpdater.exe");
-            DLL._notdone = false;
+            _notdone = false;
             Console.WriteLine("{0}", message);
             Console.ReadLine();
             Environment.Exit(0);
+        }
+
+        private static int ToInt(string value)
+        {
+            int result;
+            Int32.TryParse(value, out result);
+            return result;
         }
 
         private static bool Md5(string md5)
