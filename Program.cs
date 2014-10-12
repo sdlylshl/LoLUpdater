@@ -42,7 +42,7 @@ namespace LoLUpdater
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
 
         // make the files string shorter
-        private static readonly string[] files = { string.Join(string.Empty, cgfiles), "tbb.dll" };
+        private static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
         private static readonly string AirFolder = Version("projects", "lol_air_client");
