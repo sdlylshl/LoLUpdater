@@ -14,9 +14,5 @@ namespace LoLUpdater
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         internal static extern IntPtr LoadLibrary(string FileName);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern void DeleteFile(string FileName);
     }
 }

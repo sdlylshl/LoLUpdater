@@ -36,11 +36,13 @@
     <ApplicationIcon>LoLUpdater.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LoLUpdater Library">
+      <HintPath>..\..\LoLUpdater Library\bin\Release\LoLUpdater Library.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Management" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoLUpdaterDLL;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,20 +16,16 @@ namespace LoLUpdater
         private static ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>().ToArray();
 
-        private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+        private static readonly bool IsMultiCore = CpuInfo.Sum(item => DLL.ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static int _userInput;
         private static bool IsInstalling;
-        private static bool _notdone;
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
         private static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
         private static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
         private static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
-
-                private static bool mutexresult;
-        private static bool IsAlreadyRunning new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult) ? mutexresult : !mutexresult
 
         // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
         private static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
@@ -81,13 +78,12 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            mutex = ;
-            if (!mutexresult)
+            if (!DLL.IsAlreadyRunning)
             {
                 return;
             }
 
-            GC.KeepAlive(mutex);
+            GC.KeepAlive(DLL.mutex);
             if (!Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
@@ -110,7 +106,7 @@ namespace LoLUpdater
                     proc.Kill();
                     proc.WaitForExit();
                 });
-            } while (_notdone);
+            } while (DLL._notdone);
             if (IsRads)
             {
                 BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -205,13 +201,12 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
-                    if (!mutexresult)
+                    if (!DLL.IsAlreadyRunning)
                     {
                         return;
                     }
 
-                    GC.KeepAlive(mutex);
+                    GC.KeepAlive(DLL.mutex);
                     if (!Directory.Exists("Backup"))
                     {
                         Directory.CreateDirectory("Backup");
@@ -230,7 +225,7 @@ namespace LoLUpdater
                             proc.Kill();
                             proc.WaitForExit();
                         });
-                    } while (_notdone);
+                    } while (DLL._notdone);
                     if (IsRads)
                     {
                         BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -292,13 +287,12 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
-                    if (!mutexresult)
+                    if (!DLL.IsAlreadyRunning)
                     {
                         return;
                     }
 
-                    GC.KeepAlive(mutex);
+                    GC.KeepAlive(DLL.mutex);
                     do
                     {
                         string[] LoLProcces = new string[4];
@@ -313,7 +307,7 @@ namespace LoLUpdater
                             proc.Kill();
                             proc.WaitForExit();
                         });
-                    } while (_notdone);
+                    } while (DLL._notdone);
                     if (IsRads)
                     {
                         BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -417,7 +411,7 @@ namespace LoLUpdater
             {
                 Process.Start("lol_launcher.exe");
             }
-            _notdone = false;
+            DLL._notdone = false;
             Console.ReadLine();
             Environment.Exit(0);
         }
@@ -575,7 +569,7 @@ namespace LoLUpdater
                         ver, file),
                         FileAttributes.Normal);
                 }
-                NativeMethods.DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
+                LoLUpdaterDLL.NativeMethods.DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
             }
             else
             {
@@ -585,7 +579,7 @@ namespace LoLUpdater
                     File.SetAttributes(file,
                       FileAttributes.Normal);
                 }
-                NativeMethods.DeleteFile(file + ":Zone.Identifier");
+                LoLUpdaterDLL.NativeMethods.DeleteFile(file + ":Zone.Identifier");
             }
         }
 
@@ -643,13 +637,6 @@ namespace LoLUpdater
         {
             // will not work if custom directories are in folder
             return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
-        }
-
-        private static int ToInt(string value)
-        {
-            int result;
-            Int32.TryParse(value, out result);
-            return result;
         }
 
         private static bool Md5Compare(string file, string md5)
