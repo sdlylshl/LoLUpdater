@@ -6,6 +6,7 @@ using System.Management;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
@@ -27,8 +28,8 @@ namespace LoLUpdater
         private static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
         private static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
 
-                private static bool mutexresult;
-        private static bool IsAlreadyRunning new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult) ? mutexresult : !mutexresult
+        private static bool IsAlreadyRunning;
+        private static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsAlreadyRunning);
 
         // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
         private static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
@@ -81,8 +82,7 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            mutex = ;
-            if (!mutexresult)
+            if (!IsAlreadyRunning)
             {
                 return;
             }
@@ -205,8 +205,7 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
-                    if (!mutexresult)
+                    if (!IsAlreadyRunning)
                     {
                         return;
                     }
@@ -292,8 +291,7 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    mutex = new System.Threading.Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out mutexresult);
-                    if (!mutexresult)
+                    if (!IsAlreadyRunning)
                     {
                         return;
                     }

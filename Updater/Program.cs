@@ -7,6 +7,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoLUpdater_Updater
@@ -15,8 +16,8 @@ namespace LoLUpdater_Updater
     {
         private static bool _notdone;
 
-        private static bool mutexresult;
-        private static System.Threading.Mutex mutex;
+        private static bool IsAlreadyRunning;
+        private static Mutex mutex = new Mutex(true, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out IsAlreadyRunning);
 
         private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>()
@@ -24,7 +25,7 @@ namespace LoLUpdater_Updater
 
         private static void Main()
         {
-            if (!mutexresult)
+            if (!IsAlreadyRunning)
             {
                 return;
             }
