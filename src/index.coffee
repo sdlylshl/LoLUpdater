@@ -1,4 +1,7 @@
 addEventListener "DOMContentLoaded", ->
+  $ = document.querySelector.bind(document)
+  $$ = document.querySelectorAll.bind(document)
+
   remote = require "remote"
   ipc = require "ipc"
 
@@ -9,19 +12,25 @@ addEventListener "DOMContentLoaded", ->
   minimizeApp = ->
     ipc.send "minimize"
 
-  document.getElementById("patch").addEventListener "click", ->
-    arg = document.querySelector("paper-radio-button.core-selected").dataset.arg
-    LoLPath = document.querySelector("lol-finder").value
-    document.querySelector(".patch-dialog").toggle()
+  $("#patch").addEventListener "click", (e) ->
+    arg = $("paper-radio-button.core-selected").dataset.arg
+    LoLPath = $("lol-finder").value
+    controlElements = $$("core-icon-button.exit, paper-radio-button, #patch,
+                          lol-finder /deep/ paper-input, lol-finder /deep/
+                          paper-button")
+
+    c.disabled = "disabled" for c in controlElements
+    e.srcElement.innerText = "Patching…"
+
     localStorage["LoLPath"] = LoLPath
+
     ipc.send "patch", arg, LoLPath
 
 
-  for exit in document.querySelectorAll(".exit")
-    exit.addEventListener "click", exitApp
+  exit.addEventListener "click", exitApp for exit in $$(".exit")
 
-  document.querySelector(".minimize").addEventListener "click", minimizeApp
+  $(".minimize").addEventListener "click", minimizeApp
 
-  document.querySelector(".bug").addEventListener "click", ->
+  $(".bug").addEventListener "click", ->
     shell = require "shell"
     shell.openExternal "https://github.com/Loggan08/LoLUpdater/issues"
