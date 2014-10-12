@@ -4,7 +4,8 @@ BrowserWindow = require "browser-window"
 path = require "path"
 
 # Report crashes to our server.
-# require("crash-reporter").start()
+# TODO: Use our own server for crash reporting.
+require("crash-reporter").start()
 
 # Keep a global reference of the window object, if you don't, the window will
 # be closed automatically when the javascript object is GCed.
