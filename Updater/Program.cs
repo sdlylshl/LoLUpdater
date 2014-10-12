@@ -15,25 +15,16 @@ namespace LoLUpdater_Updater
     {
         private static bool _notdone;
 
+        private static bool mutexresult;
+        private static System.Threading.Mutex mutex;
+
         private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>()
 .Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
-        private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
-        private static readonly bool IsSupportedPlatform = (Environment.OSVersion.Platform == PlatformID.Win32NT & Environment.OSVersion.Version.Major >= 5 & Environment.OSVersion.Version.Minor >= 1) || IsLinuxorMono;
-
         private static void Main()
         {
-            if (!IsSupportedPlatform)
-            {
-                Console.WriteLine("Unsupported Platform");
-                Console.WriteLine("Only Windows XP -> Windows 8.1 is supported, untested on Windows 10");
-                Console.ReadLine();
-                Environment.Exit(0);
-            }
-            bool result;
-            var mutex = new System.Threading.Mutex(true, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out result);
-            if (!result)
+            if (!mutexresult)
             {
                 return;
             }
@@ -41,20 +32,11 @@ namespace LoLUpdater_Updater
             GC.KeepAlive(mutex);
             do
             {
-                if (IsMultiCore)
-                {
-                    Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
-                    {
-                        proc.Kill();
-                        proc.WaitForExit();
-                    });
-                }
-                if (IsMultiCore) continue;
-                foreach (Process proc in Process.GetProcessesByName("LoLUpdater"))
+                Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
                 {
                     proc.Kill();
                     proc.WaitForExit();
-                }
+                });
             } while (_notdone);
 
             using (WebClient webClient = new WebClient())
@@ -111,10 +93,10 @@ namespace LoLUpdater_Updater
 
                 fs.Seek(0, SeekOrigin.Begin);
 
-                foreach (byte b in MD5.Create().ComputeHash(fs))
+                Parallel.ForEach(MD5.Create().ComputeHash(fs), b =>
                 {
                     sb.Append(b.ToString("x2"));
-                }
+                });
 
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
