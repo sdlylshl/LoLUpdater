@@ -5,7 +5,7 @@ namespace LoLUpdater
 {
     public static class NativeMethods
     {
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool IsProcessorFeaturePresent(uint feature);
 
