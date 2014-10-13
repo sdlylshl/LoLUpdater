@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace LoLUpdater
 {
     internal static class Program
-    {C:\Users\Elias\Documents\GitHub\LoLUpdater\Program.cs
+    {
         private static readonly bool IsMultiCore = Sha512.CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static int _userInput;
@@ -31,7 +31,7 @@ namespace LoLUpdater
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly string[] cfgfiles = new string[] { "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg", "GamePermanent_en_SG.cfg" };
 
-        // Make the files string shorter
+        // Todo: combine cfgfiles with tbb.dll
         private static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
@@ -40,7 +40,7 @@ namespace LoLUpdater
         private static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/");
 
-        // Possibly recompile the Tbbs for better performance
+        // Todo: Possibly recompile the Tbbs for better performance
         private static readonly Uri TbbUri =
             new Uri(Uri,
                 Sha512.IsAvx2
@@ -506,25 +506,10 @@ namespace LoLUpdater
             if (File.Exists(Path.Combine(path, file)))
             {
                 string text = File.ReadAllText(Path.Combine(path, file));
-                if (text.Contains("EnableParticleOptimization="))
-                {
-                    text = Regex.Replace(text, "EnableParticleOptimization=[01]", "EnableParticleOptimization=1");
-                    
-                }
-                else
-                {
-                    text += String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1");
-                }
+                text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$", String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
                 if (mode)
                 {
-                    if (text.Contains("DefaultParticleMultiThreading="))
-                    {
-                        text = Regex.Replace(text, "DefaultParticleMultiThreading=[01]", "DefaultParticleMultiThreading=1");
-                    }
-                    else
-                    {
-                        text += String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1");
-                    }
+                    text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$", String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
                 }
                 else
                 {
@@ -541,7 +526,7 @@ namespace LoLUpdater
 
         private static string Version(string path, string path1)
         {
-            // will not work if custom directories with !format x.x.x.x where x = (int)x
+            //Todo: add filter for custom folders (will not work if custom directories with !format x.x.x.x where x = (int)x)
             return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
         }
 

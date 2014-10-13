@@ -15,10 +15,11 @@ namespace LoLUpdater
         public static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
 
-        // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
+        // Todo: test for "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
+        //       and higher) bit.
         public static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
 
-        // There is a better way to do the AVX2 check
+        // Todo: Proper AVX2 check
         public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
         private static string _TbbSha512 = IsAvx2
