@@ -15,12 +15,11 @@ namespace LoLUpdater
 
         // Todo: Possibly recompile the Tbbs for better performance
         private static Uri TbbUri =
-            new Uri( new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb"), 
-                IsAvx2
+            new Uri( new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), IsAvx2
                         ? "Avx2.dll"
                         : (HasAvx
                             ? "Avx.dll"
-                            : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Tbb.dll")));
+                            : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Default.dll")));
 
         private static int _userInput;
 

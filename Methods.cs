@@ -290,9 +290,9 @@ namespace LoLUpdater
             using (WebClient wc = new WebClient())
             {
                 if (!Directory.Exists(AdobePath) || new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15"))
+                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version(15, 0 ,0 ,297))
                 {
-                    wc.DownloadFile(new Uri("http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), "air15_win.exe");
+                    wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", UriKind.Absolute), "air15_win.exe");
                     Process Air = new Process
                     {
                         StartInfo =
@@ -309,7 +309,7 @@ namespace LoLUpdater
                     File.Delete("air15_win.exe");
                 }
                 if (string.IsNullOrEmpty(_cgBinPath) || new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) < new Version("3.1.0.13"))
+                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) < new Version(3, 1, 0, 13))
                 {
                     wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cgInstaller);
