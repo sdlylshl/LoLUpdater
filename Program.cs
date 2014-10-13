@@ -45,7 +45,7 @@ namespace LoLUpdater
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly string[] cfgfiles = new string[] { "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg", "GamePermanent_en_SG.cfg" };
 
-        // make the files string shorter
+        // Make the files string shorter
         private static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
@@ -54,6 +54,7 @@ namespace LoLUpdater
         private static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/");
 
+        // Possibly recompile the Tbbs for better performance
         private static readonly Uri TbbUri =
             new Uri(Uri,
                 IsAvx2
@@ -356,6 +357,7 @@ namespace LoLUpdater
                     }
                     else
                     {
+                        FileFix(path, path1, file, ver);
                         if (Md5(DirPath(path, path1, ver, file), md5))
                         {
                             webClient.DownloadFile(
@@ -373,6 +375,7 @@ namespace LoLUpdater
                     }
                     else
                     {
+                        FileFix(file, String.Empty, String.Empty, String.Empty);
                         if (Md5(file, md5))
                         {
                             webClient.DownloadFile(uri, file);
@@ -416,7 +419,9 @@ namespace LoLUpdater
 
         private static void BakCopy(string file, string path, string path1, string ver, bool mode)
         {
-            if (mode)
+            FileFix(path, path1, ver, file);
+            if (mode & File.Exists(DirPath(path, path1,
+                       ver, file)))
             {
                 if (File.Exists(DirPath(path, path1,
                        ver, file)))
@@ -428,7 +433,7 @@ namespace LoLUpdater
                       true);
                 }
             }
-            else
+            if (!mode & File.Exists(Path.Combine("Backup", file)))
             {
                 if (File.Exists(DirPath(path, path1,
                      ver, file)))
@@ -445,14 +450,15 @@ namespace LoLUpdater
 
         private static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
         {
-            if (mode)
+            FileFix(path, path1, ver, file);
+            if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
                 File.Copy(
                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
                     , Path.Combine("Backup", file),
                     true);
             }
-            else
+            if (!mode & File.Exists(Path.Combine("Backup", file)))
             {
                 File.Copy(Path.Combine("Backup", file)
 
@@ -464,7 +470,8 @@ namespace LoLUpdater
 
         private static void FileFix(string path, string path1, string ver, string file)
         {
-            if (IsRads)
+            if (IsRads & File.Exists(DirPath(path, path1,
+                     ver, file)))
             {
                 if (new FileInfo(DirPath(path, path1,
                      ver, file)).Attributes
@@ -476,7 +483,7 @@ namespace LoLUpdater
                 }
                 NativeMethods.DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
             }
-            else
+            if (!IsRads & File.Exists(file))
             {
                 if (new FileInfo(file).Attributes
                  .Equals(FileAttributes.ReadOnly))
@@ -497,6 +504,7 @@ namespace LoLUpdater
         {
             if (File.Exists(from))
             {
+                FileFix(path, path1, file, SlnFolder);
                 File.Copy(from, DirPath(path, path1, ver, file), true);
                 FileFix(path, path1, file, SlnFolder);
             }
@@ -504,24 +512,24 @@ namespace LoLUpdater
 
         private static void Copy(string from, string file, string to, bool mode)
         {
-            if (mode)
+            FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
+            if (mode & File.Exists(Path.Combine(@from, file)))
             {
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
             }
-            else
+            if (!mode & File.Exists(Path.Combine(to, file)))
             {
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
             }
             FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
         }
 
+        // Todo: Make this method shorter
         private static void Cfg(string file, string path, bool mode)
         {
             FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
             if (File.Exists(Path.Combine(path, file)))
             {
-                FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
-
                 if (File.ReadAllText(Path.Combine(path, file))
 .Contains("EnableParticleOptimization=0"))
                 {
@@ -569,7 +577,7 @@ namespace LoLUpdater
 
         private static string Version(string path, string path1)
         {
-            // will not work if custom directories are in folder
+            // will not work if custom directories with !format x.x.x.x where x = (int)x
             return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
         }
 
@@ -593,7 +601,7 @@ namespace LoLUpdater
                     sb.Append(b.ToString("x2"));
                 });
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
         }
     }
