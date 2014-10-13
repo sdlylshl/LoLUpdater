@@ -338,12 +338,12 @@ namespace LoLUpdater
                     CompilerParameters parameters = new CompilerParameters()
                     {
                         GenerateInMemory = false,
-                        GenerateExecutable = false,
+                        GenerateExecutable = true,
                         TempFiles = new TempFileCollection(".", true),
                         IncludeDebugInformation = false,
                         CompilerOptions = "/optimize",
-                        MainClass = "Program.Main " + args[0],
-                        OutputAssembly = "LoLUpdaterDev.dll"
+                        MainClass = "Program.Main",
+                        OutputAssembly = "LoLUpdaterDev.exe"
                     };
                     parameters.ReferencedAssemblies.Add("System.dll");
                     parameters.ReferencedAssemblies.Add("System.Management.dll");
@@ -369,11 +369,11 @@ namespace LoLUpdater
                     File.Delete("Program.cs");
                     File.Delete("NativeMethods.cs");
                     Assembly assembly = result.CompiledAssembly;
-                    if (!Md5(result.PathToAssembly, assembly.GetHashCode().ToString()))
+                    if (!Md5("LoLUpdaterDev.exe", assembly.GetHashCode().ToString()))
                     {
                         Console.WriteLine("test1");
                         Console.ReadLine();
-                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main " + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
+                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
             }
