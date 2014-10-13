@@ -25,6 +25,7 @@ namespace LoLUpdater
         private static int _userInput;
         private static bool IsInstalling;
         private static bool _notdone;
+        private static readonly string[] sourceFiles = new string[] { "Program.cs", "NativeMethods.cs" };
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
@@ -330,25 +331,44 @@ namespace LoLUpdater
         {
             using (WebClient wc = new WebClient())
             {
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), "Program.cs");
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), "NativeMethods.cs");
                 using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
                 {
-                    CompilerParameters parameters = new CompilerParameters(new string[] { "System.dll", "System.Management.dll" })
+                    CompilerParameters parameters = new CompilerParameters()
                     {
                         GenerateInMemory = false,
                         GenerateExecutable = false,
-                        TempFiles = new TempFileCollection("Temp"),
+                        TempFiles = new TempFileCollection(".", true),
                         IncludeDebugInformation = false,
                         CompilerOptions = "/optimize",
                         MainClass = "Program.Main " + args[0],
-                        OutputAssembly = Path.Combine("Temp", "LoLUpdater.dll")
+                        OutputAssembly = "LoLUpdaterDev.dll"
                     };
+                    parameters.ReferencedAssemblies.Add("System.dll");
+                    parameters.ReferencedAssemblies.Add("System.Management.dll");
 
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
-                    File.Delete(Path.Combine("Temp", "Program.cs"));
-                    File.Delete(Path.Combine("Temp", "NativeMethods.cs"));
-                    Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(result.PathToAssembly));
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, sourceFiles);
+                    if (result.Errors.Count > 0)
+                    {
+                        Console.WriteLine("Errors building {0} into {1}",
+                            sourceFiles, result.PathToAssembly);
+                        foreach (CompilerError ce in result.Errors)
+                        {
+                            Console.WriteLine("  {0}", ce.ToString());
+                            Console.WriteLine();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Source {0} built into {1} successfully.",
+                            sourceFiles, result.PathToAssembly);
+                        Console.WriteLine("{0} temporary files created during the compilation.",
+                            result.TempFiles.Count.ToString());
+                    }
+                    File.Delete("Program.cs");
+                    File.Delete("NativeMethods.cs");
+                    Assembly assembly = result.CompiledAssembly;
                     if (!Md5(result.PathToAssembly, assembly.GetHashCode().ToString()))
                     {
                         Console.WriteLine("test1");
