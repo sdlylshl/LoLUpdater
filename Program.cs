@@ -35,7 +35,7 @@ namespace LoLUpdater
                 {
                     case "--help":
                         Console.WriteLine("Command Line Switches");
-                        Console.WriteLine("-install : Installs LoLUpdater with default settings");
+                        Console.WriteLine("-install : Installs LoLUpdater");
                         Console.WriteLine("-uninst : Uninstalls LoLUpdater");
                         Console.WriteLine("--help /? -h : Shows this menu");
                         Console.ReadLine();
