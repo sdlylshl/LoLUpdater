@@ -94,10 +94,9 @@ namespace LoLUpdater
             GC.KeepAlive(mutex);
             using (WebClient wc = new WebClient())
             {
-                var providerOptions = new Dictionary<string, string>();
-                providerOptions.Add("CompilerVersion", "v4.0");
-
-                using (CSharpCodeProvider Cscp = new CSharpCodeProvider(providerOptions))
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
+                using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
                 {
                     CompilerParameters parameters = new CompilerParameters();
                     parameters.GenerateInMemory = true;
@@ -108,13 +107,13 @@ namespace LoLUpdater
                     parameters.CompilerOptions = "/optimize";
                     parameters.TempFiles = new TempFileCollection("Temp");
                     parameters.IncludeDebugInformation = false;
-                    wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
-                    wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
                     CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
                     Assembly assembly = Assembly.Load("LoLUpdater.dll");
                     if (!Md5("LoLUpdater.dll", assembly.GetHashCode().ToString()))
                     {
-                        assembly.GetType("LoLUpdater.Main" + args[0]).GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
+                        Console.WriteLine("test1");
+                        Console.ReadLine();
+                        assembly.GetType("LoLUpdater").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
             }
