@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -16,29 +15,15 @@ using System.Threading.Tasks;
 namespace LoLUpdater
 {
     internal static class Program
-    {
-        private static ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-.Cast<ManagementBaseObject>().ToArray();
-
-        private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+    {C:\Users\Elias\Documents\GitHub\LoLUpdater\Program.cs
+        private static readonly bool IsMultiCore = Sha512.CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static int _userInput;
         private static readonly bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static readonly bool IsRads = Directory.Exists("RADS");
-        private static readonly bool Isx64 = Environment.Is64BitProcess;
-        private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
-        private static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
-        private static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
-        private static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
 
         private static bool IsSingle;
         private static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsSingle);
-
-        // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
-        private static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
-
-        // There is a better way to do the AVX2 check
-        private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
         private static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
@@ -57,26 +42,17 @@ namespace LoLUpdater
         // Possibly recompile the Tbbs for better performance
         private static readonly Uri TbbUri =
             new Uri(Uri,
-                IsAvx2
+                Sha512.IsAvx2
                         ? "Avx2.dll"
-                        : (HasAvx
+                        : (Sha512.HasAvx
                             ? "Avx.dll"
-                            : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Tbb.dll")));
+                            : (Sha512.HasSse2 ? "Sse2.dll" : Sha512.HasSse ? "Sse.dll" : "Tbb.dll")));
 
         private static readonly Uri FlashUri = new Uri(Uri, "NPSWF32.dll");
         private static readonly Uri AirUri = new Uri(Uri, "Adobe AIR.dll");
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
-
-        private const string AirSha512 = "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
-        private const string FlashSha512 = "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
-
-        private static readonly string TbbSha512 = IsAvx2
-                    ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
-                    : (HasAvx
-                        ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
-                        : (HasSse2 ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64" : HasSse ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec" : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
 
         private static void Main(string[] args)
         {
@@ -135,9 +111,9 @@ namespace LoLUpdater
                     if (IsRads)
                     {
                         Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
+                        Download("tbb.dll", Sha512.TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
                         Parallel.ForEach(cgfiles, file =>
                         {
                             Copy(Path.Combine(_cgBinPath,
@@ -146,9 +122,9 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Game", "tbb.dll"), Sha512.TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
@@ -204,9 +180,9 @@ namespace LoLUpdater
                         BakCopy("NPSWF32.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), true);
                         BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, true);
                         Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
+                        Download("tbb.dll", Sha512.TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
                         Parallel.ForEach(cgfiles, file =>
                         {
                             Copy(Path.Combine(_cgBinPath,
@@ -221,9 +197,9 @@ namespace LoLUpdater
                         });
                         Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", true);
                         Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", true);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Game", "tbb.dll"), Sha512.TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
@@ -281,33 +257,31 @@ namespace LoLUpdater
         private static void FinishedPrompt(string message)
         {
             Console.Clear();
-
             string[] SHA512 = new string[4];
             SHA512[0] = "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22";
             SHA512[1] = "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2";
             SHA512[2] = "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b";
-
-            SHA512[3] = TbbSha512;
-            string Sha512 = string.Join(string.Empty, SHA512);
+            SHA512[3] = Sha512.TbbSha512;
+            string check = string.Join(string.Empty, SHA512);
             if (IsRads)
             {
                 Sha512Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512);
                 Sha512Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512);
                 Parallel.ForEach(files, file =>
                 {
                     Sha512Check("solutions", "lol_game_client_sln", SlnFolder,
-            file, Sha512);
+            file, check);
                 });
             }
             else
             {
-                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
-                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
+                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), Sha512.FlashSha512);
+                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), Sha512.AirSha512);
                 Parallel.ForEach(files, file =>
                 {
-                    Sha512Check(Path.Combine("Game", file), Sha512);
+                    Sha512Check(Path.Combine("Game", file), check);
                 });
             }
 
