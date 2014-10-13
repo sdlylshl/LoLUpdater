@@ -25,7 +25,6 @@ namespace LoLUpdater
         private static int _userInput;
         private static bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static bool _notdone;
-        private static readonly string[] sourceFiles = new string[] { "Program.cs", "NativeMethods.cs" };
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
@@ -54,7 +53,7 @@ namespace LoLUpdater
         private static readonly string AirFolder = Version("projects", "lol_air_client");
 
         private static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
-        private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Binaries/");
+        private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/");
 
         private static readonly Uri TbbUri =
             new Uri(Uri,
@@ -91,20 +90,20 @@ namespace LoLUpdater
             _userInput = DisplayMenu();
             Console.Clear();
 
+            do
+            {
+                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                });
+            } while (_notdone);
+            if (!Directory.Exists("Backup") & IsInstalling)
+            {
+                Directory.CreateDirectory("Backup");
+            }
             if (_userInput != 3)
             {
-                do
-                {
-                    Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                    {
-                        proc.Kill();
-                        proc.WaitForExit();
-                    });
-                } while (_notdone);
-                if (!Directory.Exists("Backup"))
-                {
-                    Directory.CreateDirectory("Backup");
-                }
                 if (IsRads)
                 {
                     BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -126,6 +125,8 @@ namespace LoLUpdater
                         Copy("Game", file, "Backup", IsInstalling);
                     });
                 }
+                if (IsInstalling)
+                { CgCheck(); }
             }
             switch (_userInput)
             {
@@ -169,7 +170,7 @@ namespace LoLUpdater
                     FinishedPrompt("Done Uninstalling!");
                     break;
 
-                default:
+                case 3:
                     Environment.Exit(0);
                     break;
             }
@@ -192,7 +193,7 @@ namespace LoLUpdater
                 case "-install":
                     Console.WriteLine("Installing...");
                     Start();
-
+                    CgCheck();
                     if (!Directory.Exists("Backup"))
                     {
                         Directory.CreateDirectory("Backup");
@@ -345,7 +346,6 @@ namespace LoLUpdater
             Console.WriteLine("Menu");
             Console.WriteLine("1. Install");
             Console.WriteLine("2. Uninstall");
-            Console.WriteLine("3. Use Development-version");
             Console.WriteLine("4. Exit");
             Console.WriteLine();
             return Convert.ToInt32(Console.ReadLine());
@@ -389,13 +389,17 @@ namespace LoLUpdater
                     }
                     FileFix(file, String.Empty, String.Empty, String.Empty);
                 }
+            }
+        }
 
-                // checks this 3 times each install, 1 time might be enough, 2 free extra checks
-                // just cause some users might be pesky.
+        private static void CgCheck()
+        {
+            using (WebClient webclient = new WebClient())
+            {
                 if (string.IsNullOrEmpty(_cgBinPath) || new Version(
                     FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <= new Version("3.1.0.13"))
                 {
-                    webClient.DownloadFile(
+                    webclient.DownloadFile(
                     new Uri(Uri,
                 cgInstaller), cgInstaller);
 

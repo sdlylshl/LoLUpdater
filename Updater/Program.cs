@@ -71,6 +71,12 @@ namespace LoLUpdater_Updater
         private static void FinishPrompt(string message)
         {
             if (!File.Exists("LoLUpdater.exe")) return;
+            if (new FileInfo("LoLUpdater.exe").Attributes
+                 .Equals(FileAttributes.ReadOnly))
+            {
+                File.SetAttributes("LoLUpdater.exe",
+                    FileAttributes.Normal);
+            }
             NativeMethods.DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
             Process.Start("LoLUpdater.exe");
             _notdone = false;
