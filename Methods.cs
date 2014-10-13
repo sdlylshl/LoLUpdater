@@ -277,9 +277,9 @@ namespace LoLUpdater
             }
 
             Console.WriteLine("{0}", message);
-            if (File.Exists("lol_launcher.exe"))
+            if (File.Exists("lol.launcher.exe"))
             {
-                Process.Start("lol_launcher.exe");
+                Process.Start("lol.launcher.exe");
             }
             Console.ReadLine();
             Environment.Exit(0);
