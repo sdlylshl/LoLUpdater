@@ -104,22 +104,9 @@ namespace LoLUpdater
                     parameters.CompilerOptions = "/optimize";
                     parameters.IncludeDebugInformation = false;
                     parameters.MainClass = "LoLUpdater";
-
-                    using (MemoryStream ms = new MemoryStream(webClient.DownloadData(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"))))
-                    {
-                        using (BinaryReader br = new BinaryReader(ms))
-                        {
-                            Assembly assembly = foo.CompileAssemblyFromSource(parameters, Encoding.UTF8.GetString(br.ReadBytes(Convert.ToInt32(ms.Length)))).CompiledAssembly;
-                            Module[] modules = assembly.GetModules(false);
-                            Type type = (from t in modules[0].GetTypes()
-                                         where t.Name == "LoLUpdater"
-                                         select t).FirstOrDefault();
-                            MethodInfo method = (from m in type.GetMethods()
-                                                 where m.Name == "Main"
-                                                 select m).FirstOrDefault();
-                            Object ReturnValue = method.Invoke(assembly.CreateInstance("LoLUpdater.Main"), args);
-                        }
-                    }
+                    webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
+                    webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
+                    Object ReturnValue = foo.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") }).CompiledAssembly.GetType("LoLUpdater").GetMethod("Main").Invoke(null, args);
                 }
             }
 
