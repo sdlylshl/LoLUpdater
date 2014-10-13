@@ -307,32 +307,10 @@ namespace LoLUpdater
                     parameters.ReferencedAssemblies.Add("System.Core.dll");
 
                     CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, sourceFiles);
-                    if (result.Errors.Count > 0)
-                    {
-                        Console.WriteLine("Errors building {0} into {1}",
-                            sourceFiles, result.PathToAssembly);
-                        foreach (CompilerError ce in result.Errors)
-                        {
-                            Console.WriteLine("  {0}", ce.ToString());
-                            Console.WriteLine();
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Source {0} built into {1} successfully.",
-                            sourceFiles, result.PathToAssembly);
-                        Console.WriteLine("{0} temporary files created during the compilation.",
-                            result.TempFiles.Count.ToString());
-                    }
                     File.Delete("Program.cs");
                     File.Delete("NativeMethods.cs");
                     Assembly assembly = result.CompiledAssembly;
-                    if (!Md5("LoLUpdaterDev.exe", assembly.GetHashCode().ToString()))
-                    {
-                        Console.WriteLine("test1");
-                        Console.ReadLine();
-                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
-                    }
+                    assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                 }
             }
         }
