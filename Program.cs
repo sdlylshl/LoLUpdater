@@ -91,8 +91,8 @@ namespace LoLUpdater
             GC.KeepAlive(mutex);
             using (WebClient wc = new WebClient())
             {
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
                 using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
                 {
                     CompilerParameters parameters = new CompilerParameters();
@@ -100,16 +100,13 @@ namespace LoLUpdater
                     parameters.ReferencedAssemblies.Add("System.dll");
                     parameters.ReferencedAssemblies.Add("System.Management.dll");
                     parameters.GenerateExecutable = false;
-                    parameters.OutputAssembly = "LoLUpdater.dll";
                     parameters.CompilerOptions = "/optimize";
-                    parameters.TempFiles = new TempFileCollection("Temp");
                     parameters.IncludeDebugInformation = false;
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
-                    Assembly assembly = Assembly.Load("LoLUpdater.dll");
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") });
+                    Assembly assembly = result.CompiledAssembly;
                     if (!Md5("LoLUpdater.dll", assembly.GetHashCode().ToString()))
                     {
-                        Console.WriteLine("test1");
-                        Console.ReadLine();
+                        // Console.WriteLine("test1"); Console.ReadLine();
                         assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
