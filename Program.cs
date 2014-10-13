@@ -56,13 +56,11 @@ namespace LoLUpdater
 
         private static readonly Uri TbbUri =
             new Uri(Uri,
-                IsMultiCore
-                    ? (IsAvx2
+                IsAvx2
                         ? "Avx2.dll"
                         : (HasAvx
                             ? "Avx.dll"
-                            : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Tbb.dll")))
-                    : (HasSse2 ? "SseSt.dll" : (HasSse ? "SseSt.dll" : "TbbSt.dll")));
+                            : (HasSse2 ? "Sse2.dll" : HasSse ? "Sse.dll" : "Tbb.dll")));
 
         private static readonly Uri FlashUri = new Uri(Uri, "NPSWF32.dll");
         private static readonly Uri AirUri = new Uri(Uri, "Adobe AIR.dll");
@@ -73,13 +71,11 @@ namespace LoLUpdater
         private const string AirMd5 = "179a1fcfcb54e3e87365e77c719a723f";
         private const string FlashMd5 = "9700dbdebffe429e1715727a9f76317b";
 
-        private static readonly string TbbMd5 = IsMultiCore
-                ? (IsAvx2
-                    ? "db0767dc94a2d1a757c783f6c7994301"
+        private static readonly string TbbMd5 = IsAvx2
+                    ? "75caa85c6289710e6011c0857802ddd8"
                     : (HasAvx
-                        ? "2f178dadd7202b6a13a3409543a6fa86"
-                        : (HasSse2 ? "1639aa390bfd02962c5c437d201045cc" : HasSse ? "3bf888228b83c4407d2eea6a5ab532bd" : "44dde7926b6dfef4686f2ddd19c04e2d")))
-                : (HasSse2 ? "82ed3be353217c61ff13a01bc85f1395" : (HasSse ? "eacd37174f1a4316345f985dc456a961" : "b389f80072bc877a6ef5ff33ade88a64"));
+                        ? "c2575d2a1515780f665acf19c3c8e9a9"
+                        : (HasSse2 ? "8628d73f3c5fd9e745c48fa53472e6b9" : HasSse ? "3767791e8a35acaba2fe0b684692a0b5" : "dd81da1072d2528b5da490cbe4d1c2e7"));
 
         private static void Main(string[] args)
         {
@@ -123,7 +119,9 @@ namespace LoLUpdater
                     });
                 }
                 if (IsInstalling)
-                { CgCheck(); }
+                {
+                    CgCheck();
+                }
             }
             switch (_userInput)
             {
