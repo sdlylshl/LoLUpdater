@@ -44,6 +44,7 @@ namespace LoLUpdater
         private static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+        private static readonly string[] cfgfiles = new string[] { "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg", "GamePermanent_en_SG.cfg" };
 
         // make the files string shorter
         private static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
@@ -102,10 +103,13 @@ namespace LoLUpdater
                         GenerateExecutable = false,
                         TempFiles = new TempFileCollection("Temp"),
                         IncludeDebugInformation = false,
-                        CompilerOptions = "/optimize"
+                        CompilerOptions = "/optimize",
+                        MainClass = "Program"
                     };
 
                     CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
+                    File.Delete(Path.Combine("Temp", "Program.cs"));
+                    File.Delete(Path.Combine("Temp", "NativeMethods.cs"));
                     Assembly assembly = Assembly.Load(result.PathToAssembly);
                     if (!Md5(Path.Combine("Temp", "LoLUpdater.dll"), assembly.GetHashCode().ToString()))
                     {
@@ -180,11 +184,6 @@ namespace LoLUpdater
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
-                        string[] cfgfiles = new string[4];
-                        cfgfiles[0] = "game.cfg";
-                        cfgfiles[1] = "GamePermanent.cfg";
-                        cfgfiles[2] = "GamePermanent_zh_MY.cfg";
-                        cfgfiles[3] = "GamePermanent_en_SG.cfg";
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
@@ -271,11 +270,6 @@ namespace LoLUpdater
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
-                        string[] cfgfiles = new string[4];
-                        cfgfiles[0] = "game.cfg";
-                        cfgfiles[1] = "GamePermanent.cfg";
-                        cfgfiles[2] = "GamePermanent_zh_MY.cfg";
-                        cfgfiles[3] = "GamePermanent_en_SG.cfg";
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
@@ -337,11 +331,6 @@ namespace LoLUpdater
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
                         Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
-                        string[] cfgfiles = new string[4];
-                        cfgfiles[0] = "game.cfg";
-                        cfgfiles[1] = "GamePermanent.cfg";
-                        cfgfiles[2] = "GamePermanent_zh_MY.cfg";
-                        cfgfiles[3] = "GamePermanent_en_SG.cfg";
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", false);
