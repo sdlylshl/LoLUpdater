@@ -506,10 +506,15 @@ namespace LoLUpdater
             if (File.Exists(Path.Combine(path, file)))
             {
                 string text = File.ReadAllText(Path.Combine(path, file));
-                text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$", String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+
+                Regex regex = new Regex("\nEnableParticleOptimization=[01]|(?<!.EnableParticleOptimization=0)$", RegexOptions.Singleline);
+                text = regex.Replace(text, String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"), 1);
+
                 if (mode)
                 {
-                    text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$", String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                    regex = new Regex("\nDefaultParticleMultiThreading=[01]|(?<!.DefaultParticleMultiThreading=0)$", RegexOptions.Singleline);
+
+                    text = regex.Replace(text, String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"), 1);
                 }
                 else
                 {
