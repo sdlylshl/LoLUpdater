@@ -53,10 +53,6 @@ namespace LoLUpdater
         private static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
         private static readonly string AirFolder = Version("projects", "lol_air_client");
 
-        // Not sure if this tweak is designed for multi-core or not, currently this patch removes
-        // this tweak from single core systems, I dont know what effect this has.
-        private const string CfgTweak = "DefaultParticleMultiThreading=1";
-
         private static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Binaries/");
 
@@ -105,10 +101,7 @@ namespace LoLUpdater
                         proc.WaitForExit();
                     });
                 } while (_notdone);
-
-                Console.WriteLine("Pre-configuring...");
-                Console.WriteLine(string.Empty);
-                if (!Directory.Exists("Backup") & IsInstalling)
+                if (!Directory.Exists("Backup"))
                 {
                     Directory.CreateDirectory("Backup");
                 }
@@ -173,12 +166,7 @@ namespace LoLUpdater
                     break;
 
                 case 2:
-                    Directory.Delete("Backup", true);
                     FinishedPrompt("Done Uninstalling!");
-                    break;
-
-                case 3:
-                    Development(args);
                     break;
 
                 default:
@@ -187,10 +175,6 @@ namespace LoLUpdater
             }
             switch (args[0])
             {
-                case "-dev":
-                    Development(args);
-                    break;
-
                 case "--help":
                     Console.WriteLine("Command Line Switches");
                     Console.WriteLine("-install : Installs LoLUpdater with default settings");
@@ -282,36 +266,6 @@ namespace LoLUpdater
                     Directory.Delete("Backup", false);
                     FinishedPrompt("Done Uninstalling!");
                     break;
-            }
-        }
-
-        private static void Development(string[] args)
-        {
-            using (WebClient wc = new WebClient())
-            {
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), "Program.cs");
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), "NativeMethods.cs");
-                using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
-                {
-                    CompilerParameters parameters = new CompilerParameters()
-                    {
-                        GenerateInMemory = false,
-                        GenerateExecutable = true,
-                        TempFiles = new TempFileCollection(".", false),
-                        IncludeDebugInformation = false,
-                        CompilerOptions = "/optimize",
-                        OutputAssembly = "LoLUpdaterDev.exe"
-                    };
-                    parameters.ReferencedAssemblies.Add("System.dll");
-                    parameters.ReferencedAssemblies.Add("System.Management.dll");
-                    parameters.ReferencedAssemblies.Add("System.Core.dll");
-
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, sourceFiles);
-                    File.Delete("Program.cs");
-                    File.Delete("NativeMethods.cs");
-                    Assembly assembly = result.CompiledAssembly;
-                    assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
-                }
             }
         }
 
@@ -573,19 +527,46 @@ namespace LoLUpdater
             if (File.Exists(Path.Combine(path, file)))
             {
                 FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
+
+                if (File.ReadAllText(Path.Combine(path, file))
+.Contains("EnableParticleOptimization=0"))
+                {
+                    File.WriteAllLines(Path.Combine(path, file), File.ReadAllLines(Path.Combine(path, file)).Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("EnableParticleOptimization=0")).Select(lineInfo => lineInfo.Line));
+
+                    File.AppendAllText(Path.Combine(path, file),
+                      String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                }
+                if (!File.ReadAllText(Path.Combine(path, file))
+    .Contains("EnableParticleOptimization=1"))
+                {
+                    File.AppendAllText(Path.Combine(path, file),
+                      String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                }
                 if (mode)
                 {
                     if (File.ReadAllText(Path.Combine(path, file))
-                        .Contains(CfgTweak)) return;
-                    File.AppendAllText(Path.Combine(path, file),
-                        String.Format("{0}{1}", Environment.NewLine, CfgTweak));
+.Contains("DefaultParticleMultiThreading=0"))
+                    {
+                        File.WriteAllLines(Path.Combine(path, file), File.ReadAllLines(Path.Combine(path, file)).Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=0")).Select(lineInfo => lineInfo.Line));
+
+                        File.AppendAllText(Path.Combine(path, file),
+                          String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                    }
+
+                    if (!File.ReadAllText(Path.Combine(path, file))
+                        .Contains("DefaultParticleMultiThreading=1"))
+                    {
+                        File.AppendAllText(Path.Combine(path, file),
+                        String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                    }
                 }
                 else
                 {
                     var oldLines = File.ReadAllLines(Path.Combine(path, file));
-                    if (!oldLines.Contains(CfgTweak)) return;
-                    var newLines = oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains(CfgTweak)).Select(lineInfo => lineInfo.Line);
-                    File.WriteAllLines(Path.Combine(path, file), newLines);
+                    if (oldLines.Contains("DefaultParticleMultiThreading=1"))
+                    {
+                        File.WriteAllLines(Path.Combine(path, file), oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=1")).Select(lineInfo => lineInfo.Line));
+                    }
                 }
             }
 
