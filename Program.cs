@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace LoLUpdater
 {
-    internal static class LoLUpdater
+    internal static class Program
     {
         private static ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>().ToArray();
@@ -32,8 +32,8 @@ namespace LoLUpdater
         private static readonly bool HasSse = NativeMethods.IsProcessorFeaturePresent(6);
         private static readonly bool HasSse2 = NativeMethods.IsProcessorFeaturePresent(10);
 
-        private static bool IsAlreadyRunning;
-        private static Mutex mutex = new Mutex(false, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsAlreadyRunning);
+        private static bool IsSingle;
+        private static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsSingle);
 
         // test for "XSTATE_MASK_GSSE" and "XSTATE_MASK_AVX" for perfect test.
         private static readonly bool HasAvx = AvxCheck & NativeMethods.IsProcessorFeaturePresent(17) & NativeMethods.GetProcAddress(NativeMethods.LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
@@ -55,6 +55,7 @@ namespace LoLUpdater
         // this tweak from single core systems, I dont know what effect this has.
         private const string CfgTweak = "DefaultParticleMultiThreading=1";
 
+        private static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Binaries/");
 
         private static readonly Uri TbbUri =
@@ -86,11 +87,7 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            if (IsAlreadyRunning)
-            {
-                return;
-            }
-
+            NoDuplicate();
             GC.KeepAlive(mutex);
             using (WebClient wc = new WebClient())
             {
@@ -113,7 +110,7 @@ namespace LoLUpdater
                     {
                         Console.WriteLine("test1");
                         Console.ReadLine();
-                        assembly.GetType("LoLUpdater").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
+                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
             }
@@ -128,18 +125,7 @@ namespace LoLUpdater
             Console.Clear();
             do
             {
-                string[] LoLProcces = new string[4];
-                LoLProcces[0] = "LoLClient";
-                LoLProcces[1] = "LoLLauncher";
-                LoLProcces[2] = "LoLPatcher";
-                LoLProcces[3] = "League of Legends";
-                string LoLProcc = string.Join(string.Empty, LoLProcces);
-
-                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
+                Kill(LoLProcc);
             } while (_notdone);
             if (IsRads)
             {
@@ -235,10 +221,7 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    if (!IsAlreadyRunning)
-                    {
-                        return;
-                    }
+                    NoDuplicate();
 
                     GC.KeepAlive(mutex);
                     if (!Directory.Exists("Backup"))
@@ -247,18 +230,7 @@ namespace LoLUpdater
                     }
                     do
                     {
-                        string[] LoLProcces = new string[4];
-                        LoLProcces[0] = "LoLClient";
-                        LoLProcces[1] = "LoLLauncher";
-                        LoLProcces[2] = "LoLPatcher";
-                        LoLProcces[3] = "League of Legends";
-                        string LoLProcc = string.Join(string.Empty, LoLProcces);
-
-                        Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                        {
-                            proc.Kill();
-                            proc.WaitForExit();
-                        });
+                        Kill(LoLProcc);
                     } while (_notdone);
                     if (IsRads)
                     {
@@ -321,26 +293,12 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    if (!IsAlreadyRunning)
-                    {
-                        return;
-                    }
+                    NoDuplicate();
 
                     GC.KeepAlive(mutex);
                     do
                     {
-                        string[] LoLProcces = new string[4];
-                        LoLProcces[0] = "LoLClient";
-                        LoLProcces[1] = "LoLLauncher";
-                        LoLProcces[2] = "LoLPatcher";
-                        LoLProcces[3] = "League of Legends";
-                        string LoLProcc = string.Join(string.Empty, LoLProcces);
-
-                        Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                        {
-                            proc.Kill();
-                            proc.WaitForExit();
-                        });
+                        Kill(LoLProcc);
                     } while (_notdone);
                     if (IsRads)
                     {
@@ -406,6 +364,15 @@ namespace LoLUpdater
                     FinishedPrompt("Done Uninstalling!");
                     break;
             }
+        }
+
+        private static void Kill(string proclist)
+        {
+            Parallel.ForEach(Process.GetProcessesByName(proclist), proc =>
+            {
+                proc.Kill();
+                proc.WaitForExit();
+            });
         }
 
         private static void FinishedPrompt(string message)
@@ -699,9 +666,10 @@ namespace LoLUpdater
             }
         }
 
-        private interface IRunnable
+        private static void NoDuplicate()
         {
-            void Run();
+            if (!IsSingle)
+            { return; }
         }
     }
 }

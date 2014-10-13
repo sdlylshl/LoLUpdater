@@ -16,8 +16,8 @@ namespace LoLUpdater_Updater
     {
         private static bool _notdone;
 
-        private static bool IsAlreadyRunning;
-        private static Mutex mutex = new Mutex(false, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out IsAlreadyRunning);
+        private static bool IsSingle;
+        private static Mutex mutex = new Mutex(true, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out IsSingle);
 
         private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
 .Cast<ManagementBaseObject>()
@@ -25,7 +25,7 @@ namespace LoLUpdater_Updater
 
         private static void Main()
         {
-            if (IsAlreadyRunning)
+            if (!IsSingle)
             {
                 return;
             }
