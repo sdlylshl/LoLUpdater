@@ -92,20 +92,22 @@ namespace LoLUpdater
             GC.KeepAlive(mutex);
             using (WebClient wc = new WebClient())
             {
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
                 using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
                 {
-                    CompilerParameters parameters = new CompilerParameters();
-                    parameters.GenerateInMemory = true;
-                    parameters.ReferencedAssemblies.Add("System.dll");
-                    parameters.ReferencedAssemblies.Add("System.Management.dll");
-                    parameters.GenerateExecutable = false;
-                    parameters.CompilerOptions = "/optimize";
-                    parameters.IncludeDebugInformation = false;
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") });
-                    Assembly assembly = result.CompiledAssembly;
-                    if (!Md5("LoLUpdater.dll", assembly.GetHashCode().ToString()))
+                    CompilerParameters parameters = new CompilerParameters(new string[] { "System.dll", "System.Management.dll" })
+                    {
+                        GenerateInMemory = false,
+                        GenerateExecutable = false,
+                        TempFiles = new TempFileCollection("Temp"),
+                        IncludeDebugInformation = false,
+                        CompilerOptions = "/optimize"
+                    };
+
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
+                    Assembly assembly = Assembly.Load(result.PathToAssembly);
+                    if (!Md5(Path.Combine("Temp", "LoLUpdater.dll"), assembly.GetHashCode().ToString()))
                     {
                         // Console.WriteLine("test1"); Console.ReadLine();
                         assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
