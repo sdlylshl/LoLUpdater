@@ -393,8 +393,7 @@ namespace LoLUpdater
                     FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <= new Version("3.1.0.13"))
                 {
                     webclient.DownloadFile(
-                    new Uri(Uri,
-                cgInstaller), cgInstaller);
+                    new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cgInstaller);
 
                     FileFix(cgInstaller, String.Empty, String.Empty, String.Empty);
 
@@ -596,7 +595,7 @@ namespace LoLUpdater
                     sb.Append(b.ToString("x2"));
                 });
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
         }
     }
