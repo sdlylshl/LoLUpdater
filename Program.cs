@@ -69,14 +69,14 @@ namespace LoLUpdater
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
-        private const string AirMd5 = "179a1fcfcb54e3e87365e77c719a723f";
-        private const string FlashMd5 = "9700dbdebffe429e1715727a9f76317b";
+        private const string AirSha512 = "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
+        private const string FlashSha512 = "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
 
-        private static readonly string TbbMd5 = IsAvx2
-                    ? "75caa85c6289710e6011c0857802ddd8"
+        private static readonly string TbbSha512 = IsAvx2
+                    ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
                     : (HasAvx
-                        ? "c2575d2a1515780f665acf19c3c8e9a9"
-                        : (HasSse2 ? "8628d73f3c5fd9e745c48fa53472e6b9" : HasSse ? "3767791e8a35acaba2fe0b684692a0b5" : "dd81da1072d2528b5da490cbe4d1c2e7"));
+                        ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
+                        : (HasSse2 ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64" : HasSse ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec" : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
 
         private static void Main(string[] args)
         {
@@ -135,9 +135,9 @@ namespace LoLUpdater
                     if (IsRads)
                     {
                         Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
+                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
                         Parallel.ForEach(cgfiles, file =>
                         {
                             Copy(Path.Combine(_cgBinPath,
@@ -146,9 +146,9 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", IsInstalling);
@@ -204,9 +204,9 @@ namespace LoLUpdater
                         BakCopy("NPSWF32.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), true);
                         BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, true);
                         Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbMd5, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, "projects", "lol_air_client", AirFolder);
-                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, "projects", "lol_air_client", AirFolder);
+                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, "projects", "lol_air_client", AirFolder);
+                        Download(Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, "projects", "lol_air_client", AirFolder);
                         Parallel.ForEach(cgfiles, file =>
                         {
                             Copy(Path.Combine(_cgBinPath,
@@ -221,9 +221,9 @@ namespace LoLUpdater
                         });
                         Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", true);
                         Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", true);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5, FlashUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5, AirUri, string.Empty, string.Empty, string.Empty);
-                        Download(Path.Combine("Game", "tbb.dll"), TbbMd5, TbbUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512, FlashUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Air", "Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512, AirUri, string.Empty, string.Empty, string.Empty);
+                        Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                         Parallel.ForEach(cfgfiles, file =>
                         {
                             Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
@@ -282,31 +282,32 @@ namespace LoLUpdater
         {
             Console.Clear();
 
-            string[] Md5 = new string[4];
-            Md5[0] = "ae87223e882670029450b3f86e8e9300";
-            Md5[1] = "68dbb8778903f5cf0a80c00ffbf494d2";
-            Md5[2] = "9981b512f27b566d811b53590f6ee526";
-            Md5[3] = TbbMd5;
-            string MD5 = string.Join(string.Empty, Md5);
+            string[] SHA512 = new string[4];
+            SHA512[0] = "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22";
+            SHA512[1] = "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2";
+            SHA512[2] = "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b";
+
+            SHA512[3] = TbbSha512;
+            string Sha512 = string.Join(string.Empty, SHA512);
             if (IsRads)
             {
-                Md5Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
-                Md5Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5);
+                Sha512Check("projects", "lol_air_client", AirFolder,
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
+                Sha512Check("projects", "lol_air_client", AirFolder,
+                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
                 Parallel.ForEach(files, file =>
                 {
-                    Md5Check("solutions", "lol_game_client_sln", SlnFolder,
-            file, MD5);
+                    Sha512Check("solutions", "lol_game_client_sln", SlnFolder,
+            file, Sha512);
                 });
             }
             else
             {
-                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashMd5);
-                Md5Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirMd5);
+                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
+                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
                 Parallel.ForEach(files, file =>
                 {
-                    Md5Check(Path.Combine("Game", file), MD5);
+                    Sha512Check(Path.Combine("Game", file), Sha512);
                 });
             }
 
@@ -319,17 +320,17 @@ namespace LoLUpdater
             Environment.Exit(0);
         }
 
-        private static void Md5Check(string path, string path1, string ver, string file, string md5)
+        private static void Sha512Check(string path, string path1, string ver, string file, string Sha512)
         {
             Console.WriteLine(
-                !Md5(DirPath(path, path1, ver, file), md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                !Sha512Equal(DirPath(path, path1, ver, file), Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
                 file);
         }
 
-        private static void Md5Check(string file, string md5)
+        private static void Sha512Check(string file, string Sha512)
         {
             Console.WriteLine(
-                !Md5(file, md5) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                !Sha512Equal(file, Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
                 file);
         }
 
@@ -338,12 +339,12 @@ namespace LoLUpdater
             Console.WriteLine("Menu");
             Console.WriteLine("1. Install");
             Console.WriteLine("2. Uninstall");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("3. Exit");
             Console.WriteLine();
             return Convert.ToInt32(Console.ReadLine());
         }
 
-        private static void Download(string file, string md5, Uri uri, string path, string path1, string ver)
+        private static void Download(string file, string Sha512, Uri uri, string path, string path1, string ver)
         {
             using (WebClient webClient = new WebClient())
             {
@@ -358,7 +359,7 @@ namespace LoLUpdater
                     else
                     {
                         FileFix(path, path1, file, ver);
-                        if (Md5(DirPath(path, path1, ver, file), md5))
+                        if (Sha512Equal(DirPath(path, path1, ver, file), Sha512))
                         {
                             webClient.DownloadFile(
                                 uri,
@@ -376,7 +377,7 @@ namespace LoLUpdater
                     else
                     {
                         FileFix(file, String.Empty, String.Empty, String.Empty);
-                        if (Md5(file, md5))
+                        if (Sha512Equal(file, Sha512))
                         {
                             webClient.DownloadFile(uri, file);
                         }
@@ -588,7 +589,7 @@ namespace LoLUpdater
             return result;
         }
 
-        private static bool Md5(string file, string md5)
+        private static bool Sha512Equal(string file, string Sha512)
         {
             using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -596,12 +597,12 @@ namespace LoLUpdater
 
                 fs.Seek(0, SeekOrigin.Begin);
 
-                Parallel.ForEach(MD5.Create().ComputeHash(fs), b =>
+                Parallel.ForEach(SHA512.Create().ComputeHash(fs), b =>
                 {
                     sb.Append(b.ToString("x2"));
                 });
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(Sha512)[i]).Any();
             }
         }
     }

@@ -10,8 +10,6 @@ LoLUpdaterLauncher\Properties\Resources.Designer.cs
 *.suo
 *.user
 *.sln.docstates
-ia32
-Resources/fciv.exe
 
 # Build results
 [Dd]ebug/
