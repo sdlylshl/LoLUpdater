@@ -9,6 +9,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -499,52 +500,40 @@ namespace LoLUpdater
             FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
         }
 
-        // Todo: Make this method shorter
         private static void Cfg(string file, string path, bool mode)
         {
             FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
             if (File.Exists(Path.Combine(path, file)))
             {
-                if (File.ReadAllText(Path.Combine(path, file))
-.Contains("EnableParticleOptimization=0"))
+                string text = File.ReadAllText(Path.Combine(path, file));
+                if (text.Contains("EnableParticleOptimization="))
                 {
-                    File.WriteAllLines(Path.Combine(path, file), File.ReadAllLines(Path.Combine(path, file)).Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("EnableParticleOptimization=0")).Select(lineInfo => lineInfo.Line));
-
-                    File.AppendAllText(Path.Combine(path, file),
-                      String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                    text = Regex.Replace(text, "EnableParticleOptimization=[01]", "EnableParticleOptimization=1");
+                    
                 }
-                if (!File.ReadAllText(Path.Combine(path, file))
-    .Contains("EnableParticleOptimization=1"))
+                else
                 {
-                    File.AppendAllText(Path.Combine(path, file),
-                      String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                    text += String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1");
                 }
                 if (mode)
                 {
-                    if (File.ReadAllText(Path.Combine(path, file))
-.Contains("DefaultParticleMultiThreading=0"))
+                    if (text.Contains("DefaultParticleMultiThreading="))
                     {
-                        File.WriteAllLines(Path.Combine(path, file), File.ReadAllLines(Path.Combine(path, file)).Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=0")).Select(lineInfo => lineInfo.Line));
-
-                        File.AppendAllText(Path.Combine(path, file),
-                          String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                        text = Regex.Replace(text, "DefaultParticleMultiThreading=[01]", "DefaultParticleMultiThreading=1");
                     }
-
-                    if (!File.ReadAllText(Path.Combine(path, file))
-                        .Contains("DefaultParticleMultiThreading=1"))
+                    else
                     {
-                        File.AppendAllText(Path.Combine(path, file),
-                        String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                        text += String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1");
                     }
                 }
                 else
                 {
-                    var oldLines = File.ReadAllLines(Path.Combine(path, file));
-                    if (oldLines.Contains("DefaultParticleMultiThreading=1"))
+                    if (text.Contains("DefaultParticleMultiThreading=1"))
                     {
-                        File.WriteAllLines(Path.Combine(path, file), oldLines.Select(line => new { Line = line, Words = line.Split(' ') }).Where(lineInfo => !lineInfo.Words.Contains("DefaultParticleMultiThreading=1")).Select(lineInfo => lineInfo.Line));
+                        text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
                     }
                 }
+                File.WriteAllText(Path.Combine(path, file), text);
             }
 
             FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
