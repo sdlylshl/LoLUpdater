@@ -49,14 +49,15 @@ namespace LoLUpdater_Updater
                 }
                 else
                 {
+                    FileFix();
+
                     using (
     MemoryStream stream = new MemoryStream(webClient.DownloadData("http://www.svenskautogrupp.se/LoLUpdater.txt")))
                     {
                         using (var sr = new StreamReader(stream))
                         {
-                            for (int i = 1; i < 1; i++)
-                            { sr.ReadToEnd(); }
-                            if (Md5(sr.ReadLine()))
+                            sr.ReadToEnd();
+                            if (Sha512(sr.ReadLine()))
                             {
                                 webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                                 FinishPrompt("LoLUpdater updated!");
@@ -68,16 +69,21 @@ namespace LoLUpdater_Updater
             }
         }
 
-        private static void FinishPrompt(string message)
+        private static void FileFix()
         {
-            if (!File.Exists("LoLUpdater.exe")) return;
             if (new FileInfo("LoLUpdater.exe").Attributes
-                 .Equals(FileAttributes.ReadOnly))
+.Equals(FileAttributes.ReadOnly))
             {
                 File.SetAttributes("LoLUpdater.exe",
                     FileAttributes.Normal);
             }
             NativeMethods.DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
+        }
+
+        private static void FinishPrompt(string message)
+        {
+            if (!File.Exists("LoLUpdater.exe")) return;
+            FileFix();
             Process.Start("LoLUpdater.exe");
             _notdone = false;
             Console.WriteLine("{0}", message);
@@ -92,7 +98,7 @@ namespace LoLUpdater_Updater
             return result;
         }
 
-        private static bool Md5(string md5)
+        private static bool Sha512(string sha512)
         {
             using (FileStream fs = new FileStream("LoLUpdater.exe", FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -100,12 +106,12 @@ namespace LoLUpdater_Updater
 
                 fs.Seek(0, SeekOrigin.Begin);
 
-                Parallel.ForEach(MD5.Create().ComputeHash(fs), b =>
+                Parallel.ForEach(SHA512.Create().ComputeHash(fs), b =>
                 {
                     sb.Append(b.ToString("x2"));
                 });
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(md5)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).Any();
             }
         }
     }
