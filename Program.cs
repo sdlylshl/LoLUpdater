@@ -92,7 +92,7 @@ namespace LoLUpdater
             }
 
             GC.KeepAlive(mutex);
-            using (WebClient webClient = new WebClient())
+            using (WebClient wc = new WebClient())
             {
                 var providerOptions = new Dictionary<string, string>();
                 providerOptions.Add("CompilerVersion", "v4.0");
@@ -106,20 +106,15 @@ namespace LoLUpdater
                     parameters.GenerateExecutable = false;
                     parameters.OutputAssembly = "LoLUpdater.dll";
                     parameters.CompilerOptions = "/optimize";
+                    parameters.TempFiles = new TempFileCollection("Temp");
                     parameters.IncludeDebugInformation = false;
-                    webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
-                    webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") });
-                    Assembly assembly = result.CompiledAssembly;
-                    var Execute = Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null) as IRunnable;
-                    if (!File.Exists("LoLupdater.dll"))
+                    wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
+                    wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
+                    Assembly assembly = Assembly.Load("LoLUpdater.dll");
+                    if (!Md5("LoLUpdater.dll", assembly.GetHashCode().ToString()))
                     {
-                        Execute.Run();
-                    }
-                    else
-                    {
-                        if (Md5("LoLUpdater.dll", assembly.GetHashCode().ToString())) return;
-                        Execute.Run();
+                        assembly.GetType("LoLUpdater.Main" + args[0]).GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
             }
