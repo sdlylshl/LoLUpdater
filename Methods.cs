@@ -14,9 +14,9 @@ namespace LoLUpdater
 {
     internal class Methods : NativeMethods
     {
-        public static readonly string AdobePath = Path.Combine(Isx64 ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Common Files", "Adobe AIR", "Versions", "1.0");
+        public static readonly string AdobePath = Path.Combine(Isx64 ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Common Files", "Adobe AIR", "Versions", "1.0");
 
-        public static readonly string AirFolder = Version("projects", "lol_air_client");
+        public static readonly string Air = Version("projects", "lol_air_client");
 
         public static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
 
@@ -42,7 +42,7 @@ namespace LoLUpdater
         public static readonly bool IsRads = Directory.Exists("RADS");
         public static readonly bool Isx64 = Environment.Is64BitProcess;
         public static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
-        public static readonly string SlnFolder = Version("solutions", "lol_game_client_sln");
+        public static readonly string Sln = Version("solutions", "lol_game_client_sln");
 
         public static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
     EnvironmentVariableTarget.User);
@@ -114,14 +114,14 @@ namespace LoLUpdater
 
         public static void Cfg(string file, string path, bool mode)
         {
-            FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
+            FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty);
             if (File.Exists(Path.Combine(path, file)))
             {
                 string text = File.ReadAllText(Path.Combine(path, file));
-                text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$", String.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$", string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
                 if (mode)
                 {
-                    text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$", String.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
+                    text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$", string.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
                 }
                 else
                 {
@@ -133,22 +133,22 @@ namespace LoLUpdater
                 File.WriteAllText(Path.Combine(path, file), text);
             }
 
-            FileFix(Path.Combine(path, file), String.Empty, String.Empty, String.Empty);
+            FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty);
         }
 
         public static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (File.Exists(from))
             {
-                FileFix(path, path1, SlnFolder, file);
+                FileFix(path, path1, Sln, file);
                 File.Copy(from, DirPath(path, path1, ver, file), true);
-                FileFix(path, path1, SlnFolder, file);
+                FileFix(path, path1, Sln, file);
             }
         }
 
         public static void Copy(string from, string file, string to, bool mode)
         {
-            FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
+            FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
             if (mode & File.Exists(Path.Combine(@from, file)))
             {
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
@@ -157,7 +157,7 @@ namespace LoLUpdater
             {
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
             }
-            FileFix(Path.Combine(to, file), String.Empty, String.Empty, String.Empty);
+            FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
         }
 
         public static string DirPath(string path, string path1, string ver, string file)
@@ -207,13 +207,13 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        FileFix(file, String.Empty, String.Empty, String.Empty);
+                        FileFix(file, string.Empty, string.Empty, string.Empty);
                         if (Sha512Equal(file, Sha512))
                         {
                             webClient.DownloadFile(uri, file);
                         }
                     }
-                    FileFix(file, String.Empty, String.Empty, String.Empty);
+                    FileFix(file, string.Empty, string.Empty, string.Empty);
                 }
             }
         }
@@ -256,13 +256,13 @@ namespace LoLUpdater
             string check = string.Join(string.Empty, SHA512);
             if (IsRads)
             {
-                Sha512Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
-                Sha512Check("projects", "lol_air_client", AirFolder,
-                    Path.Combine("Adobe Air", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
+                Sha512Check("projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
+                Sha512Check("projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
                 Parallel.ForEach(files, file =>
                 {
-                    Sha512Check("solutions", "lol_game_client_sln", SlnFolder,
+                    Sha512Check("solutions", "lol_game_client_sln", Sln,
             file, check);
                 });
             }
@@ -285,14 +285,14 @@ namespace LoLUpdater
             Environment.Exit(0);
         }
 
-        public static void PreCheck()
+        public static void Check()
         {
             using (WebClient wc = new WebClient())
             {
-                if (!Directory.Exists(AdobePath) || new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version(15, 0 ,0 ,297))
+                if (new Version(
+                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
                 {
-                    wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", UriKind.Absolute), "air15_win.exe");
+                    wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), "air15_win.exe");
                     Process Air = new Process
                     {
                         StartInfo =
@@ -308,13 +308,12 @@ namespace LoLUpdater
                     Air.WaitForExit();
                     File.Delete("air15_win.exe");
                 }
-                if (string.IsNullOrEmpty(_cgBinPath) || new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) < new Version(3, 1, 0, 13))
+                if (new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) < new Version("3.1.0.13"))
                 {
                     wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cgInstaller);
 
-                    FileFix(cgInstaller, String.Empty, String.Empty, String.Empty);
+                    FileFix(cgInstaller, string.Empty, string.Empty, string.Empty);
 
                     Process cg = new Process
                     {
@@ -387,8 +386,24 @@ namespace LoLUpdater
 
         public static string Version(string path, string path1)
         {
-            //Todo: add filter for custom folders (will not work if custom directories with !format x.x.x.x where x = (int)x)
-            return IsRads ? Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max()) : String.Empty;
+            if (Directory.Exists(Path.Combine("RADS", path, path1, "releases")))
+            {
+                string dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();
+                if (dir.Length == 1)
+                {
+                    return dir;
+
+                }
+                else
+                {
+                    return Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
+
+                }
+            }
+            else
+            { return string.Empty; }
+
+
         }
     }
 }

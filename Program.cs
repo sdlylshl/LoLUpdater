@@ -12,6 +12,7 @@ namespace LoLUpdater
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+        private static readonly string Adobe = IsRads ? Path.Combine("RADS", "projects", "lol_air_client", "releases", Air, "deploy", "Adobe AIR", "Versions", "1.0") : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
 
         // Todo: Possibly recompile the Tbbs for better performance
         private static Uri TbbUri =
@@ -49,7 +50,7 @@ namespace LoLUpdater
                     case "-install":
                         Console.WriteLine("Installing...");
                         Start();
-                        PreCheck();
+                        Check();
                         if (!Directory.Exists("Backup"))
                         {
                             Directory.CreateDirectory("Backup");
@@ -58,19 +59,19 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(files, file =>
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, true);
+                                BakCopy(file, "solutions", "lol_game_client_sln", Sln, true);
                             });
-                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), true);
-                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), true);
+                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air, Path.Combine("Adobe AIR", "Versions", "1.0"), true);
+                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air, Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), true);
                             BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, true);
                             Cfg("game.cfg", "Config", IsMultiCore);
-                            Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Path.Combine("projects", "lol_air_client", AirFolder, "Adobe Air", "Versions", "1.0", "Resources"), true);
-                            Copy(AdobePath, "Adobe Air.dll", Path.Combine("projects", "lol_air_client", AirFolder, "Adobe Air", "Versions", "1.0"), true);
-                            Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                            Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Adobe, true);
+                            Copy(AdobePath, "Adobe AIR.dll", Adobe, true);
+                            Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", Sln);
                             Parallel.ForEach(cgfiles, file =>
                             {
                                 Copy(Path.Combine(_cgBinPath,
-                                    file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                                    file), "solutions", "lol_game_client_sln", Sln, file);
                             });
                         }
                         else
@@ -81,7 +82,7 @@ namespace LoLUpdater
                             });
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll", "Backup", true);
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", true);
-                            Copy(AdobePath, "Adobe Air.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), true);
+                            Copy(AdobePath, "Adobe AIR.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), true);
                             Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), true);
                             Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                             Parallel.ForEach(cfgfiles, file =>
@@ -103,12 +104,12 @@ namespace LoLUpdater
                         Start();
                         if (IsRads)
                         {
-                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), false);
-                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), false);
+                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air, Path.Combine("Adobe AIR", "Versions", "1.0"), false);
+                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air, Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), false);
                             BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, false);
                             Parallel.ForEach(files, file =>
                             {
-                                BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, false);
+                                BakCopy(file, "solutions", "lol_game_client_sln", Sln, false);
                             });
                         }
                         else
@@ -144,13 +145,13 @@ namespace LoLUpdater
                 if (IsRads)
                 {
                     BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
-                       , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0"), IsInstalling);
+                       , Air, Path.Combine("Adobe AIR", "Versions", "1.0"), IsInstalling);
                     BakCopy("NPSWF32.dll", "projects", "lol_air_client"
-                        , AirFolder, Path.Combine("Adobe Air", "Versions", "1.0", "Resources"), IsInstalling);
+                        , Air, Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), IsInstalling);
                     BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, IsInstalling);
                     Parallel.ForEach(files, file =>
                     {
-                        BakCopy(file, "solutions", "lol_game_client_sln", SlnFolder, IsInstalling);
+                        BakCopy(file, "solutions", "lol_game_client_sln", Sln, IsInstalling);
                     });
                 }
                 else
@@ -164,7 +165,7 @@ namespace LoLUpdater
                 }
                 if (IsInstalling)
                 {
-                    PreCheck();
+                    Check();
                 }
             }
             switch (_userInput)
@@ -177,20 +178,20 @@ namespace LoLUpdater
                     }
                     if (IsRads)
                     {
-                        Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Path.Combine("projects", "lol_air_client", AirFolder, "Adobe Air", "Versions", "1.0", "Resources"), true);
-                        Copy(AdobePath, "Adobe Air.dll", Path.Combine("projects", "lol_air_client", AirFolder, "Adobe Air", "Versions", "1.0"), true);
+                        Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Adobe, true);
+                        Copy(AdobePath, "Adobe AIR.dll", Adobe, true);
                         Cfg("game.cfg", "Config", IsMultiCore);
-                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", SlnFolder);
+                        Download("tbb.dll", TbbSha512, TbbUri, "solutions", "lol_game_client_sln", Sln);
                         Parallel.ForEach(cgfiles, file =>
                         {
                             Copy(Path.Combine(_cgBinPath,
-                                file), "solutions", "lol_game_client_sln", SlnFolder, file);
+                                file), "solutions", "lol_game_client_sln", Sln, file);
                         });
                     }
                     else
                     {
-                        Copy(AdobePath, "Adobe Air.dll", Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), true);
-                        Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), true);
+                        Copy(AdobePath, "Adobe AIR.dll", Adobe, true);
+                        Copy(AdobePath, Path.Combine("Resources", "NPSWF32.dll"), Adobe, true);
                         Download(Path.Combine("Game", "tbb.dll"), TbbSha512, TbbUri, string.Empty, string.Empty, string.Empty);
                         Parallel.ForEach(cfgfiles, file =>
                         {
