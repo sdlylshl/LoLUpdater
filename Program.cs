@@ -142,6 +142,7 @@ namespace LoLUpdater
             }
             if (_userInput != 3)
             {
+                Console.WriteLine("Configuring...");
                 if (IsRads)
                 {
                     BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -166,6 +167,7 @@ namespace LoLUpdater
                 if (IsInstalling)
                 {
                     Check();
+                    Console.WriteLine("");
                 }
             }
             switch (_userInput)

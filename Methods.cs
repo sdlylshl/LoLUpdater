@@ -292,6 +292,7 @@ namespace LoLUpdater
                 if (new Version(
                     FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
                 {
+                    Console.WriteLine("Doing prework...");
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), "air15_win.exe");
                     Process Air = new Process
                     {
@@ -310,6 +311,13 @@ namespace LoLUpdater
                 }
                 if (new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) < new Version("3.1.0.13"))
                 {
+                    if (new Version(
+                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
+                    {
+                        Console.WriteLine("");
+                        Console.WriteLine("Doing more prework...");
+                    }
+                    else { Console.WriteLine("Doing prework..."); }
                     wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cgInstaller);
 
@@ -337,14 +345,14 @@ namespace LoLUpdater
         public static void Sha512Check(string path, string path1, string ver, string file, string Sha512)
         {
             Console.WriteLine(
-                !Sha512Equal(DirPath(path, path1, ver, file), Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                !Sha512Equal(DirPath(path, path1, ver, file), Sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
                 Path.GetFileNameWithoutExtension(file));
         }
 
         public static void Sha512Check(string file, string Sha512)
         {
             Console.WriteLine(
-                !Sha512Equal(file, Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
+                !Sha512Equal(file, Sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
                 Path.GetFileNameWithoutExtension(file));
         }
 
