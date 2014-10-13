@@ -1,6 +1,7 @@
 ﻿using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -93,20 +94,26 @@ namespace LoLUpdater
             GC.KeepAlive(mutex);
             using (WebClient webClient = new WebClient())
             {
-                using (CSharpCodeProvider foo = new CSharpCodeProvider())
+                var providerOptions = new Dictionary<string, string>();
+                providerOptions.Add("CompilerVersion", "v4.0");
+
+                using (CSharpCodeProvider foo = new CSharpCodeProvider(providerOptions))
                 {
                     CompilerParameters parameters = new CompilerParameters();
-                    parameters.GenerateInMemory = false;
+                    parameters.GenerateInMemory = true;
                     parameters.ReferencedAssemblies.Add("System.dll");
                     parameters.ReferencedAssemblies.Add("System.Management.dll");
                     parameters.GenerateExecutable = false;
                     parameters.OutputAssembly = "LoLUpdater.dll";
                     parameters.CompilerOptions = "/optimize";
                     parameters.IncludeDebugInformation = false;
-                    parameters.MainClass = "LoLUpdater";
                     webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
                     webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
-                    Object ReturnValue = foo.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") }).CompiledAssembly.GetType("LoLUpdater").GetMethod("Main").Invoke(null, args);
+                    Assembly assembly = Assembly.LoadFile("LoLUpdater.dll");
+                    File.Delete(Path.Combine(Path.GetTempPath(), "Program.cs"));
+                    File.Delete(Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
+                    var runnable = Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null) as IRunnable;
+                    runnable.Run();
                 }
             }
 
@@ -691,12 +698,6 @@ namespace LoLUpdater
 
         private interface IRunnable
         {
-            /// <summary>
-            /// When an object implementing interface <see cref="IRunnable"/> is used to create a
-            /// thread, starting the thread causes the object's run method to be called in that
-            /// separately executing thread. The general contract of the method run is that it may
-            /// take any action whatsoever.
-            /// </summary>
             void Run();
         }
     }
