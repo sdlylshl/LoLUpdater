@@ -338,14 +338,14 @@ namespace LoLUpdater
         {
             Console.WriteLine(
                 !Sha512Equal(DirPath(path, path1, ver, file), Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
-                file);
+                Path.GetFileNameWithoutExtension(file));
         }
 
         public static void Sha512Check(string file, string Sha512)
         {
             Console.WriteLine(
                 !Sha512Equal(file, Sha512) ? "{0} Is an old patched version or the original" : "{0} Is the latest patched version",
-                file);
+                Path.GetFileNameWithoutExtension(file));
         }
 
         public static bool Sha512Equal(string file, string Sha512)
