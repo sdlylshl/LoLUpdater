@@ -23,8 +23,7 @@ namespace LoLUpdater
         private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static int _userInput;
-        private static bool IsInstalling = Convert.ToBoolean(_userInput = 1);
-        private static bool _notdone;
+        private static readonly bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static readonly bool IsRads = Directory.Exists("RADS");
         private static readonly bool Isx64 = Environment.Is64BitProcess;
         private static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
@@ -90,15 +89,13 @@ namespace LoLUpdater
             _userInput = DisplayMenu();
             Console.Clear();
 
-            do
+            Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
             {
-                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
-            } while (_notdone);
-            if (!Directory.Exists("Backup") & IsInstalling)
+                proc.Kill();
+                proc.WaitForExit();
+            });
+
+            if (IsInstalling & !Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
             }
@@ -275,14 +272,11 @@ namespace LoLUpdater
             if (!IsSingle)
             { return; }
             GC.KeepAlive(mutex);
-            do
+            Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
             {
-                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
-            } while (_notdone);
+                proc.Kill();
+                proc.WaitForExit();
+            });
         }
 
         private static void FinishedPrompt(string message)
@@ -322,7 +316,6 @@ namespace LoLUpdater
             {
                 Process.Start("lol_launcher.exe");
             }
-            _notdone = false;
             Console.ReadLine();
             Environment.Exit(0);
         }
