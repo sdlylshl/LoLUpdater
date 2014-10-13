@@ -104,17 +104,18 @@ namespace LoLUpdater
                         TempFiles = new TempFileCollection("Temp"),
                         IncludeDebugInformation = false,
                         CompilerOptions = "/optimize",
-                        MainClass = "Program"
+                        MainClass = "Program.Main " + args[0]
                     };
 
                     CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
                     File.Delete(Path.Combine("Temp", "Program.cs"));
                     File.Delete(Path.Combine("Temp", "NativeMethods.cs"));
-                    Assembly assembly = Assembly.Load(result.PathToAssembly);
-                    if (!Md5(Path.Combine("Temp", "LoLUpdater.dll"), assembly.GetHashCode().ToString()))
+                    Assembly assembly = result.CompiledAssembly;
+                    if (!Md5(result.PathToAssembly, assembly.GetHashCode().ToString()))
                     {
-                        // Console.WriteLine("test1"); Console.ReadLine();
-                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
+                        Console.WriteLine("test1");
+                        Console.ReadLine();
+                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main " + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
                     }
                 }
             }
