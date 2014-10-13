@@ -87,7 +87,8 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            NoDuplicate();
+            if (!IsSingle)
+            { return; }
             GC.KeepAlive(mutex);
             using (WebClient wc = new WebClient())
             {
@@ -122,7 +123,11 @@ namespace LoLUpdater
             Console.Clear();
             do
             {
-                Kill(LoLProcc);
+                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                });
             } while (_notdone);
             if (IsRads)
             {
@@ -218,17 +223,12 @@ namespace LoLUpdater
 
                 case "-install":
                     Console.WriteLine("Installing");
-                    NoDuplicate();
+                    Start();
 
-                    GC.KeepAlive(mutex);
                     if (!Directory.Exists("Backup"))
                     {
                         Directory.CreateDirectory("Backup");
                     }
-                    do
-                    {
-                        Kill(LoLProcc);
-                    } while (_notdone);
                     if (IsRads)
                     {
                         BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -290,13 +290,7 @@ namespace LoLUpdater
 
                 case "-uninst":
                     Console.WriteLine("Uninstalling");
-                    NoDuplicate();
-
-                    GC.KeepAlive(mutex);
-                    do
-                    {
-                        Kill(LoLProcc);
-                    } while (_notdone);
+                    Start();
                     if (IsRads)
                     {
                         BakCopy("Adobe AIR.dll", "projects", "lol_air_client"
@@ -363,13 +357,19 @@ namespace LoLUpdater
             }
         }
 
-        private static void Kill(string proclist)
+        private static void Start()
         {
-            Parallel.ForEach(Process.GetProcessesByName(proclist), proc =>
+            if (!IsSingle)
+            { return; }
+            GC.KeepAlive(mutex);
+            do
             {
-                proc.Kill();
-                proc.WaitForExit();
-            });
+                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
+                {
+                    proc.Kill();
+                    proc.WaitForExit();
+                });
+            } while (_notdone);
         }
 
         private static void FinishedPrompt(string message)
@@ -661,12 +661,6 @@ namespace LoLUpdater
 
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
-        }
-
-        private static void NoDuplicate()
-        {
-            if (!IsSingle)
-            { return; }
         }
     }
 }
