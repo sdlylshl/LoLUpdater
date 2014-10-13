@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Microsoft.CSharp;
+using System;
+using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -37,7 +40,7 @@ namespace LoLUpdater
         // There is a better way to do the AVX2 check
         private static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
 
-        private static readonly string cgIntaller = "Cg-3.1_April2012_Setup.exe";
+        private static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
 
@@ -51,7 +54,7 @@ namespace LoLUpdater
         // this tweak from single core systems, I dont know what effect this has.
         private const string CfgTweak = "DefaultParticleMultiThreading=1";
 
-        private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Resources/");
+        private static readonly Uri Uri = new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Binaries/");
 
         private static readonly Uri TbbUri =
             new Uri(Uri,
@@ -88,6 +91,38 @@ namespace LoLUpdater
             }
 
             GC.KeepAlive(mutex);
+            using (WebClient webClient = new WebClient())
+            {
+                using (CSharpCodeProvider foo = new CSharpCodeProvider())
+                {
+                    CompilerParameters parameters = new CompilerParameters();
+                    parameters.GenerateInMemory = false;
+                    parameters.ReferencedAssemblies.Add("System.dll");
+                    parameters.ReferencedAssemblies.Add("System.Management.dll");
+                    parameters.GenerateExecutable = false;
+                    parameters.OutputAssembly = "LoLUpdater.dll";
+                    parameters.CompilerOptions = "/optimize";
+                    parameters.IncludeDebugInformation = false;
+                    parameters.MainClass = "LoLUpdater";
+
+                    using (MemoryStream ms = new MemoryStream(webClient.DownloadData(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"))))
+                    {
+                        using (BinaryReader br = new BinaryReader(ms))
+                        {
+                            Assembly assembly = foo.CompileAssemblyFromSource(parameters, Encoding.UTF8.GetString(br.ReadBytes(Convert.ToInt32(ms.Length)))).CompiledAssembly;
+                            Module[] modules = assembly.GetModules(false);
+                            Type type = (from t in modules[0].GetTypes()
+                                         where t.Name == "LoLUpdater"
+                                         select t).FirstOrDefault();
+                            MethodInfo method = (from m in type.GetMethods()
+                                                 where m.Name == "Main"
+                                                 select m).FirstOrDefault();
+                            Object ReturnValue = method.Invoke(assembly.CreateInstance("LoLUpdater.Main"), args);
+                        }
+                    }
+                }
+            }
+
             if (!Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
@@ -436,7 +471,7 @@ namespace LoLUpdater
 
         static private int DisplayMenu()
         {
-            Console.WriteLine("Menu");
+            Console.WriteLine("Old Menu");
             Console.WriteLine("1. Install");
             Console.WriteLine("2. Uninstall");
             Console.WriteLine("3. Exit");
@@ -490,9 +525,9 @@ namespace LoLUpdater
                 {
                     webClient.DownloadFile(
                     new Uri(Uri,
-                cgIntaller), cgIntaller);
+                cgInstaller), cgInstaller);
 
-                    FileFix(cgIntaller, String.Empty, String.Empty, String.Empty);
+                    FileFix(cgInstaller, String.Empty, String.Empty, String.Empty);
 
                     Process cg = new Process
                     {
@@ -500,13 +535,13 @@ namespace LoLUpdater
                             new ProcessStartInfo
                             {
                                 FileName =
-                                    cgIntaller,
+                                    cgInstaller,
                                 Arguments = "/silent /TYPE=compact"
                             }
                     };
                     cg.Start();
                     cg.WaitForExit();
-                    File.Delete(cgIntaller);
+                    File.Delete(cgInstaller);
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
                 }
@@ -665,6 +700,17 @@ namespace LoLUpdater
 
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t == Encoding.ASCII.GetBytes(md5)[i]).Any();
             }
+        }
+
+        private interface IRunnable
+        {
+            /// <summary>
+            /// When an object implementing interface <see cref="IRunnable"/> is used to create a
+            /// thread, starting the thread causes the object's run method to be called in that
+            /// separately executing thread. The general contract of the method run is that it may
+            /// take any action whatsoever.
+            /// </summary>
+            void Run();
         }
     }
 }
