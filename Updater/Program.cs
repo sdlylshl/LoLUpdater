@@ -71,20 +71,13 @@ namespace LoLUpdater_Updater
                 else
                 {
                     FileFix();
-
-                    using (
-    MemoryStream stream = new MemoryStream(webClient.DownloadData("http://www.svenskautogrupp.se/LoLUpdater.txt")))
                     {
-                        using (var sr = new StreamReader(stream))
+                        if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt").ToString()))
                         {
-                            sr.ReadToEnd();
-                            if (Sha512(sr.ReadLine()))
-                            {
-                                webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
-                                FinishPrompt("LoLUpdater updated!");
-                            }
-                            FinishPrompt("No update found!");
+                            webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
+                            FinishPrompt("LoLUpdater updated!");
                         }
+                        FinishPrompt("No update found!");
                     }
                 }
             }
