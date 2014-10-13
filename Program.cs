@@ -108,7 +108,16 @@ namespace LoLUpdater
                     parameters.IncludeDebugInformation = false;
                     webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine(Path.GetTempPath(), "Program.cs"));
                     webClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs"));
-                    (Activator.CreateInstance(Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") }).CompiledAssembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null) as IRunnable).Run();
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine(Path.GetTempPath(), "Program.cs"), Path.Combine(Path.GetTempPath(), "NativeMethods.cs") });
+                    Assembly assembly = result.CompiledAssembly;
+                    var Execute = (Activator.CreateInstance(assembly.GetType("LoLUpdater.Main" + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null) as IRunnable);
+                    if (!File.Exists("LoLupdater.dll"))
+                    { Execute.Run(); }
+                    else
+                    {
+                        if (!Md5("LoLUpdater.dll", assembly.GetHashCode().ToString()))
+                        { Execute.Run(); }
+                    }
                 }
 
                 if (!Directory.Exists("Backup"))
