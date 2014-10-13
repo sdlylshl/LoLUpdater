@@ -91,34 +91,7 @@ namespace LoLUpdater
             if (!IsSingle)
             { return; }
             GC.KeepAlive(mutex);
-            using (WebClient wc = new WebClient())
-            {
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
-                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
-                using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
-                {
-                    CompilerParameters parameters = new CompilerParameters(new string[] { "System.dll", "System.Management.dll" })
-                    {
-                        GenerateInMemory = false,
-                        GenerateExecutable = false,
-                        TempFiles = new TempFileCollection("Temp"),
-                        IncludeDebugInformation = false,
-                        CompilerOptions = "/optimize",
-                        MainClass = "Program.Main " + args[0]
-                    };
-
-                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
-                    File.Delete(Path.Combine("Temp", "Program.cs"));
-                    File.Delete(Path.Combine("Temp", "NativeMethods.cs"));
-                    Assembly assembly = result.CompiledAssembly;
-                    if (!Md5(result.PathToAssembly, assembly.GetHashCode().ToString()))
-                    {
-                        Console.WriteLine("test1");
-                        Console.ReadLine();
-                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main " + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
-                    }
-                }
-            }
+            Development(args);
 
             if (!Directory.Exists("Backup"))
             {
@@ -209,6 +182,10 @@ namespace LoLUpdater
             }
             switch (args[0])
             {
+                case "-dev":
+                    Development(args);
+                    break;
+
                 case "--help":
                     Console.WriteLine("Command Line Switches");
                     Console.WriteLine("-install : Installs LoLUpdater with default settings");
@@ -346,6 +323,39 @@ namespace LoLUpdater
                     Directory.Delete("Backup", false);
                     FinishedPrompt("Done Uninstalling!");
                     break;
+            }
+        }
+
+        private static void Development(string[] args)
+        {
+            using (WebClient wc = new WebClient())
+            {
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Program.cs"), Path.Combine("Temp", "Program.cs"));
+                wc.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/NativeMethods.cs"), Path.Combine("Temp", "NativeMethods.cs"));
+                using (CSharpCodeProvider Cscp = new CSharpCodeProvider())
+                {
+                    CompilerParameters parameters = new CompilerParameters(new string[] { "System.dll", "System.Management.dll" })
+                    {
+                        GenerateInMemory = false,
+                        GenerateExecutable = false,
+                        TempFiles = new TempFileCollection("Temp"),
+                        IncludeDebugInformation = false,
+                        CompilerOptions = "/optimize",
+                        MainClass = "Program.Main " + args[0],
+                        OutputAssembly = Path.Combine("Temp", "LoLUpdater.dll")
+                    };
+
+                    CompilerResults result = Cscp.CompileAssemblyFromFile(parameters, new string[] { Path.Combine("Temp", "Program.cs"), Path.Combine("Temp", "NativeMethods.cs") });
+                    File.Delete(Path.Combine("Temp", "Program.cs"));
+                    File.Delete(Path.Combine("Temp", "NativeMethods.cs"));
+                    Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(result.PathToAssembly));
+                    if (!Md5(result.PathToAssembly, assembly.GetHashCode().ToString()))
+                    {
+                        Console.WriteLine("test1");
+                        Console.ReadLine();
+                        assembly.GetType("Program").GetMethod("Main").Invoke(Activator.CreateInstance(assembly.GetType("Program.Main " + args[0]), BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { args }, null), new object[] { args });
+                    }
+                }
             }
         }
 
