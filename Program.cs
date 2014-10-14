@@ -17,7 +17,7 @@ namespace LoLUpdater
             "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             "GamePermanent_en_SG.cfg"
         };
-
+        private static int _userInput;
         private static readonly string[] Cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
         private static readonly bool MultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
@@ -29,8 +29,6 @@ namespace LoLUpdater
                 : (Avx
                     ? "Avx.dll"
                     : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll")));
-
-        private static int _userInput;
 
         private static void Main(string[] args)
         {
@@ -171,6 +169,7 @@ namespace LoLUpdater
             switch (_userInput)
             {
                 case 1:
+                    Console.Clear();
                     Console.WriteLine("Installing...");
                     if (File.Exists("LoLUpdater Updater.exe"))
                     {

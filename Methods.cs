@@ -17,13 +17,12 @@ namespace LoLUpdater
         protected static readonly string AdobePath =
             Path.Combine(
                 Environment.Is64BitProcess
-                    ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
-                    : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Common Files", "Adobe AIR",
+                    ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
+                    : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), "Adobe AIR",
                 "Versions", "1.0");
 
         protected static readonly string Air = Version("projects", "lol_air_client");
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
-        private static readonly bool AdobeTest = new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297");
         protected static readonly ManagementBaseObject[] CpuInfo =
     new ManagementObjectSearcher("Select * from Win32_Processor").Get()
         .Cast<ManagementBaseObject>().ToArray();
@@ -143,9 +142,8 @@ namespace LoLUpdater
         {
             using (WebClient wc = new WebClient())
             {
-                if (AdobeTest)
+                if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
                 {
-                    Console.WriteLine("Doing prework...");
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                         "air15_win.exe");
                     FileFix("air15_win.exe", string.Empty, string.Empty, string.Empty);
@@ -164,17 +162,9 @@ namespace LoLUpdater
                     air.WaitForExit();
                     File.Delete("air15_win.exe");
                 }
-                if (new Version(FileVersionInfo.GetVersionInfo(Path.Combine(CgBinPath, "cg.dll")).FileVersion) >=
-                    new Version("3.1.0.13")) return;
-                if (AdobeTest)
-                {
-                    Console.WriteLine("");
-                    Console.WriteLine("Doing more prework...");
-                }
-                else
-                {
-                    Console.WriteLine("Doing prework...");
-                }
+                if (string.IsNullOrEmpty(CgBinPath) ||
+                     new Version(FileVersionInfo.GetVersionInfo(Path.Combine(CgBinPath, "cg.dll")).FileVersion) >=
+                     new Version("3.1.0.13")) return;
                 wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                     CgInstaller);
