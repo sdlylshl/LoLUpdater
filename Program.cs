@@ -8,13 +8,13 @@ namespace LoLUpdater
 {
     internal class Program : Methods
     {
-        private static readonly string[] cfgfiles = new string[] { "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg", "GamePermanent_en_SG.cfg" };
-        private static readonly string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+        private static const string[] cfgfiles = new string[] { "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg", "GamePermanent_en_SG.cfg" };
+        private static const string[] cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
         private static readonly string Adobe = IsRads ? Path.Combine("RADS", "projects", "lol_air_client", "releases", Air, "deploy", "Adobe AIR", "Versions", "1.0") : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
         // Todo: Possibly recompile the Tbbs for better performance
-        private static Uri TbbUri =
+        private static readonly Uri TbbUri =
             new Uri( new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), IsAvx2
                         ? "Avx2.dll"
                         : (HasAvx
