@@ -30,12 +30,15 @@ namespace LoLUpdater
 
         // Todo: test for "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
         //       and higher) bit.
-        public static readonly bool HasAvx = AvxCheck & IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary("kernel32.dll"), "GetEnabledXStateFeatures") != null;
+        // https://software.intel.com/en-us/articles/introduction-to-intel-advanced-vector-extensions
+        // http://insufficientlycomplicated.wordpress.com/2011/11/07/detecting-intel-advanced-vector-extensions-avx-in-visual-studio/
+        // For AVX support, call IsProcessorFeaturePresent(PF_XSAVE_ENABLED).  If that returns true, call GetProcAddress to find GetEnabledXStateFeatures, then call it if it exists.  If the XSTATE_MASK_AVX bit is set, and all those checks were true, the system has AVX in the CPU and the current Windows version supports it.
+        public static readonly bool HasAvx = AvxCheck & IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") =! null;
 
         public static readonly bool HasSse = IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
 
-        // Todo: Proper AVX2 check
+        // Todo: Proper AVX2 check, this works atm though.
         public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
 
         public static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
