@@ -25,9 +25,11 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-            if (!IsSingle)
-            { return; }
-            GC.KeepAlive(mutex);
+if(!mutex.WaitOne(TimeSpan.Zero, true))
+{
+return;
+}
+mutex.ReleaseMutex();
             if (args.Length > 0)
             {
                 switch (args[0])
