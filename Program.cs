@@ -13,7 +13,7 @@ namespace LoLUpdater
         private static readonly bool IsInstalling = Convert.ToBoolean(_userInput = 1);
         private static readonly bool IsMultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
         private static readonly string Adobe = IsRads ? Path.Combine("RADS", "projects", "lol_air_client", "releases", Air, "deploy", "Adobe AIR", "Versions", "1.0") : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
-
+        private static bool _notdone;
         // Todo: Possibly recompile the Tbbs for better performance
         private static Uri TbbUri =
             new Uri( new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), IsAvx2
@@ -129,13 +129,7 @@ namespace LoLUpdater
 
             _userInput = DisplayMenu();
             Console.Clear();
-
-            Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-            {
-                proc.Kill();
-                proc.WaitForExit();
-            });
-
+Kill();
             if (IsInstalling & !Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
