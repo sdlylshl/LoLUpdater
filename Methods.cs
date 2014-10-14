@@ -354,7 +354,7 @@ namespace LoLUpdater
             }
             else
             {
-                if ((!(!Riot & File.Exists(file)))) return;
+                if (Riot | !File.Exists(file)) return;
                 DeleteFile(file + ":Zone.Identifier");
                 if (!new FileInfo(file).Attributes
                     .Equals(FileAttributes.ReadOnly)) return;
