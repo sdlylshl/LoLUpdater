@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-private const string s_kernel = "kernel32.dll";
+public const string s_kernel = "kernel32.dll";
 namespace LoLUpdater
 {
     internal class NativeMethods
