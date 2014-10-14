@@ -5,7 +5,9 @@ namespace LoLUpdater
 {
     internal class NativeMethods
     {
-        public const string s_kernel = "kernel32.dll";
+        public static const string s_kernel = "kernel32.dll";
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724482%28v=vs.85%29.aspx
         
         [DllImport(s_kernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -20,5 +22,6 @@ namespace LoLUpdater
 
         [DllImport(s_kernel, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibrary(string file);
+        
     }
 }
