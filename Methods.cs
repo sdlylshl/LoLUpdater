@@ -29,7 +29,7 @@ namespace LoLUpdater
         // FeatureID == 2
         // Featuremask == 4
         // Should look something like this
-        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") == 2;
+        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & string.Join(string.Empty, new[] { GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures").ToString()}).Contains("XSTATE_MASK_AVX")
 
         public static readonly bool HasSse = IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
