@@ -71,10 +71,10 @@ namespace LoLUpdater
 
         protected static void BakCopy(string file, string path, string path1, string ver, bool mode)
         {
-            FileFix(path, path1, ver, file);
             if (mode & File.Exists(QuickPath(path, path1,
                 ver, file)))
             {
+                FileFix(path, path1, ver, file);
                 File.Copy(
                     QuickPath(path, path1,
                         ver, file)
@@ -83,6 +83,7 @@ namespace LoLUpdater
             }
             else
             {
+                FileFix(path, path1, ver, file);
                 if (mode | !File.Exists(Path.Combine("Backup", file))) return;
                 File.Copy(Path.Combine("Backup", file)
                     , QuickPath(path, path1,
@@ -93,9 +94,10 @@ namespace LoLUpdater
 
         protected static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
         {
-            FileFix(path, path1, ver, file);
+
             if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
+                FileFix(path, path1, ver, file);
                 File.Copy(
                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
                     , Path.Combine("Backup", file),
@@ -103,6 +105,7 @@ namespace LoLUpdater
             }
             else
             {
+                FileFix(path, path1, ver, file);
                 if (mode | !File.Exists(Path.Combine("Backup", file))) return;
                 File.Copy(Path.Combine("Backup", file)
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
@@ -112,24 +115,22 @@ namespace LoLUpdater
 
         protected static void Cfg(string file, string path, bool mode)
         {
+            if (!File.Exists(Path.Combine(path, file))) return;
             FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty);
-            if (File.Exists(Path.Combine(path, file)))
+            string text = File.ReadAllText(Path.Combine(path, file));
+            text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
+                string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+            if (mode)
             {
-                string text = File.ReadAllText(Path.Combine(path, file));
-                text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
-                    string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-                if (mode)
-                {
-                    text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
-                        string.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
-                }
-                else
-                {
-                    if (!text.Contains("DefaultParticleMultiThreading=1")) return;
-                    text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
-                }
-                File.WriteAllText(Path.Combine(path, file), text);
+                text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
+                    string.Format("{0}{1}", Environment.NewLine, "DefaultParticleMultiThreading=1"));
             }
+            else
+            {
+                if (!text.Contains("DefaultParticleMultiThreading=1")) return;
+                text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
+            }
+            File.WriteAllText(Path.Combine(path, file), text);
         }
 
         protected static void Check()
@@ -140,7 +141,8 @@ namespace LoLUpdater
                 {
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                         "air15_win.exe");
-                    FileFix("air15_win.exe", string.Empty, string.Empty, string.Empty);
+                    if(File.Exists("air15_win.exe"))
+                    { FileFix("air15_win.exe", string.Empty, string.Empty, string.Empty); }
                     Process air = new Process
                     {
                         StartInfo =
@@ -154,6 +156,7 @@ namespace LoLUpdater
 
                     air.Start();
                     air.WaitForExit();
+                    if (!File.Exists("air15_win.exe")) return;
                     File.Delete("air15_win.exe");
                 }
                 if (!string.IsNullOrEmpty(CgBinPath) &&
@@ -162,9 +165,8 @@ namespace LoLUpdater
                 wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                     CgInstaller);
-
-                FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
-
+                if(File.Exists(CgInstaller))
+                { FileFix(CgInstaller, string.Empty, string.Empty, string.Empty); }
                 Process cg = new Process
                 {
                     StartInfo =
@@ -177,32 +179,38 @@ namespace LoLUpdater
                 };
                 cg.Start();
                 cg.WaitForExit();
-                File.Delete(CgInstaller);
+
                 CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                     EnvironmentVariableTarget.User);
+                if (File.Exists(CgInstaller))
+                {
+                    File.Delete(CgInstaller);
+                }
             }
         }
 
         protected static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (!File.Exists(@from)) return;
+            FileFix(@from, string.Empty, string.Empty, string.Empty);
             File.Copy(@from, QuickPath(path, path1, ver, file), true);
-            FileFix(path, path1, Sln, file);
         }
 
         protected static void Copy(string from, string file, string to, bool mode)
         {
             if (mode & File.Exists(Path.Combine(@from, file)))
             {
+                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty);
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
             }
             else
             {
                 if (mode | !File.Exists(Path.Combine(to, file))) return;
+                FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
             }
 
-            FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
+
         }
 
         protected static int DisplayMenu()
@@ -250,6 +258,7 @@ namespace LoLUpdater
 
 
             }
+            if (!File.Exists(QuickPath(path, path1, ver, file))) return;
             FileFix(path, path1, ver, file);   
         }
 
@@ -323,6 +332,7 @@ namespace LoLUpdater
 
         protected static void Updater()
         {
+            if (!File.Exists("LoLUpdater Updater.exe")) return;
             FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
         }
 
@@ -333,8 +343,7 @@ namespace LoLUpdater
 
         private static void FileFix(string path, string path1, string ver, string file)
         {
-            if (Riot & File.Exists(QuickPath(path, path1,
-                ver, file)))
+            if (Riot)
             {
                 DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
                 if (!new FileInfo(QuickPath(path, path1,
@@ -346,7 +355,6 @@ namespace LoLUpdater
             }
             else
             {
-                if (Riot | !File.Exists(file)) return;
                 DeleteFile(file + ":Zone.Identifier");
                 if (!new FileInfo(file).Attributes
                     .Equals(FileAttributes.ReadOnly)) return;
