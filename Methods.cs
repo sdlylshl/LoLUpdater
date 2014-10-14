@@ -18,14 +18,14 @@ namespace LoLUpdater
         public static bool _notdone;
         public static readonly string Air = Version("projects", "lol_air_client");
 
-        public static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
+        public static readonly bool AvxCheck = Isx64 & ((Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1) || IsLinuxorMono);
 
         public static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         public static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
         .Cast<ManagementBaseObject>().ToArray();
 
-        // Todo: combine cfgfiles with tbb.dll
+        // Todo: combine cfgfiles string with "tbb.dll"
         public static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         // Todo: test for "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
@@ -36,7 +36,7 @@ namespace LoLUpdater
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
 
         // Todo: Proper AVX2 check
-        public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.ToString()));
+        public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
 
         public static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
         public static readonly bool IsRads = Directory.Exists("RADS");
@@ -67,27 +67,19 @@ namespace LoLUpdater
             if (mode & File.Exists(DirPath(path, path1,
                        ver, file)))
             {
-                if (File.Exists(DirPath(path, path1,
-                       ver, file)))
-                {
                     File.Copy(
                       DirPath(path, path1,
                        ver, file)
                       , Path.Combine("Backup", file),
                       true);
-                }
             }
             if (!mode & File.Exists(Path.Combine("Backup", file)))
             {
-                if (File.Exists(DirPath(path, path1,
-                     ver, file)))
-                {
                     File.Copy(Path.Combine("Backup", file)
 
                         , DirPath(path, path1,
                         ver, file),
                         true);
-                }
             }
             FileFix(path, path1, ver, file);
         }
@@ -172,6 +164,7 @@ namespace LoLUpdater
             Console.WriteLine("2. Uninstall");
             Console.WriteLine("3. Exit");
             Console.WriteLine();
+// Todo: add code to restrict options to 1-3
             return Convert.ToInt32(Console.ReadLine());
         }
 
@@ -181,6 +174,7 @@ namespace LoLUpdater
             {
                 if (IsRads)
                 {
+                    FileFix(path, path1, ver, file);
                     if (!File.Exists(DirPath(path, path1, ver, file)))
                     {
                         webClient.DownloadFile(
@@ -189,7 +183,7 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        FileFix(path, path1, ver, file);
+
                         if (Sha512Equal(DirPath(path, path1, ver, file), Sha512))
                         {
                             webClient.DownloadFile(
@@ -201,6 +195,7 @@ namespace LoLUpdater
                 }
                 else
                 {
+                    FileFix(file, string.Empty, string.Empty, string.Empty);
                     if (!File.Exists(file))
                     {
                         webClient.DownloadFile(uri, file);
@@ -247,13 +242,9 @@ namespace LoLUpdater
 
         public static void FinishedPrompt(string message)
         {
-            Console.Clear();
-            string[] SHA512 = new string[4];
-            SHA512[0] = "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22";
-            SHA512[1] = "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2";
-            SHA512[2] = "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b";
-            SHA512[3] = TbbSha512;
-            string check = string.Join(string.Empty, SHA512);
+            Console.Clear
+            //Permanent checksums
+            string check = string.Join(string.Empty, new[] {"ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22", "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2", "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b", TbbSha512});
             if (IsRads)
             {
                 Sha512Check("projects", "lol_air_client", Air,
@@ -294,6 +285,7 @@ namespace LoLUpdater
                 {
                     Console.WriteLine("Doing prework...");
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), "air15_win.exe");
+                    FileFix("air15_win.exe", string.Empty, string.Empty, string.Empty);
                     Process Air = new Process
                     {
                         StartInfo =
