@@ -40,7 +40,7 @@ namespace LoLUpdater
         public static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
         public static readonly bool IsRads = Directory.Exists("RADS");
         public static readonly bool Isx64 = Environment.Is64BitProcess;
-        public static readonly string LoLProcc = string.Join(string.Empty, new string[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
+        public static readonly string LoLProcc = string.Join(string.Empty, new[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         public static readonly string Sln = Version("solutions", "lol_game_client_sln");
 
         public static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
