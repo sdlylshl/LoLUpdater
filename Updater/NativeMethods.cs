@@ -2,10 +2,10 @@
 
 namespace LoLUpdater_Updater
 {
-    public class NativeMethods
+    public internal NativeMethods
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern void DeleteFile(string file);
+        public static extern void DeleteFile(string file);
     }
 }
