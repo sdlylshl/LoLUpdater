@@ -9,7 +9,7 @@ namespace LoLUpdater
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern void DeleteFile(string file);
 
-        [DllImport(s_kernel, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        [DllImport(s_kernel, CharSet = CharSet.Ansi, BestFitMapping = false]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string proc);
 
         [DllImport(s_kernel, CharSet = CharSet.Unicode)]
