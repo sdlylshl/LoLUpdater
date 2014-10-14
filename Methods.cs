@@ -289,7 +289,7 @@ namespace LoLUpdater
             }
 
             Console.WriteLine("{0}", message);
-            if (File.Exists("lol.launcher.exe"))
+            if (Riot)
             {
                 Process.Start("lol.launcher.exe");
             }
