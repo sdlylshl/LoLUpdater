@@ -137,7 +137,7 @@ namespace LoLUpdater
         {
             using (WebClient wc = new WebClient())
             {
-                if (string.IsNullOrEmpty(AdobePath) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
+                if ((!string.IsNullOrEmpty(AdobePath) & new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297")) || string.IsNullOrEmpty(AdobePath))
                 {
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                         "air15_win.exe");
