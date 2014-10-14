@@ -89,7 +89,6 @@ namespace LoLUpdater
                         ver, file),
                     true);
             }
-            FileFix(path, path1, ver, file);
         }
 
         protected static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
@@ -109,8 +108,6 @@ namespace LoLUpdater
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
             }
-
-            FileFix(path, path1, ver, file);
         }
 
         protected static void Cfg(string file, string path, bool mode)
@@ -133,8 +130,6 @@ namespace LoLUpdater
                 }
                 File.WriteAllText(Path.Combine(path, file), text);
             }
-
-            FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty);
         }
 
         protected static void Check()
@@ -191,14 +186,12 @@ namespace LoLUpdater
         protected static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (!File.Exists(@from)) return;
-            FileFix(path, path1, Sln, file);
             File.Copy(@from, QuickPath(path, path1, ver, file), true);
             FileFix(path, path1, Sln, file);
         }
 
         protected static void Copy(string from, string file, string to, bool mode)
         {
-            FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
             if (mode & File.Exists(Path.Combine(@from, file)))
             {
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
@@ -226,7 +219,6 @@ namespace LoLUpdater
         {
             using (WebClient webClient = new WebClient())
             {
-                FileFix(path, path1, ver, file);
                 if (Riot)
                 {
                     if (!File.Exists(QuickPath(path, path1, ver, file)))
