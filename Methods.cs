@@ -26,11 +26,7 @@ namespace LoLUpdater
         // Todo: combine cfgfiles string with "tbb.dll"
         public static const string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
-        // FeatureID == 2
-        // Featuremask == 4
-        // Should look something like 
-        // XSTATE_MASK_AVX
-        public static readonly bool HasAvx = BarType(17, "IsProcessorFeaturePresent") & BarType("XSTATE_MASK_AVX", "GetEnabledXStateFeatures")
+        public static readonly bool HasAvx = BarType(17, "IsProcessorFeaturePresent") & BarType(2, "GetEnabledXStateFeatures")
         public static readonly bool HasSse = BarType(6, "IsProcessorFeaturePresent");
         public static readonly bool HasSse2 = BarType(10, "IsProcessorFeaturePresent");
 
