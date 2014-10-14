@@ -15,6 +15,8 @@ namespace LoLUpdater
 {
     internal class Methods : NativeMethods
     {
+        // Checksums are in SHA512
+
         protected static readonly string AdobePath =
             Path.Combine(
                 Environment.Is64BitProcess
@@ -22,10 +24,10 @@ namespace LoLUpdater
                     : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), "Adobe AIR",
                 "Versions", "1.0");
 
-        protected static readonly string Air = Version("projects", "lol_air_client");
+        protected static readonly string Air = Ver("projects", "lol_air_client");
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
-        protected static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().AsParallel().ToArray();
 
+        protected static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().AsParallel().ToArray();
         // Lazy futureproof Intel method, no info on AMD CPU names yet.
         protected static readonly bool Avx2 =
             CpuInfo.Any(
@@ -33,15 +35,15 @@ namespace LoLUpdater
                     item["Name"].ToString()
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
-        protected static readonly string[] Files = {"Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll"};
+        protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
-        protected static readonly bool IsRads = Directory.Exists("RADS");
-        protected static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
-        protected static readonly string Sln = Version("solutions", "lol_game_client_sln");
+        protected static readonly Mutex OnlyInstance = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
+        protected static readonly bool Riot = Directory.Exists("RADS");
+        protected static readonly string Sln = Ver("solutions", "lol_game_client_sln");
         protected static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
         protected static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
 
-        protected static readonly string TbbSha512 = Avx2
+        protected static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
                 ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
@@ -54,15 +56,15 @@ namespace LoLUpdater
         protected static string CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
-        private const string AirSha512 =
+        private const string AirSum =
             "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
 
         private const string CgInstaller = "Cg-3.1_April2012_Setup.exe";
 
-        private const string FlashSha512 =
+        private const string FlashSum =
             "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
 
-        private static readonly string[] LoLProcc = {"LoLClient", "LoLLauncher", "LoLPatcher",
+        private static readonly string[] LoLKiller = {"LoLClient", "LoLLauncher", "LoLPatcher",
             "League of Legends"};
 
         private static bool _notdone;
@@ -70,19 +72,20 @@ namespace LoLUpdater
         protected static void BakCopy(string file, string path, string path1, string ver, bool mode)
         {
             FileFix(path, path1, ver, file);
-            if (mode & File.Exists(DirPath(path, path1,
+            if (mode & File.Exists(QuickPath(path, path1,
                 ver, file)))
             {
                 File.Copy(
-                    DirPath(path, path1,
+                    QuickPath(path, path1,
                         ver, file)
                     , Path.Combine("Backup", file),
                     true);
             }
-            if (!mode & File.Exists(Path.Combine("Backup", file)))
+            else
             {
+                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
                 File.Copy(Path.Combine("Backup", file)
-                    , DirPath(path, path1,
+                    , QuickPath(path, path1,
                         ver, file),
                     true);
             }
@@ -99,12 +102,14 @@ namespace LoLUpdater
                     , Path.Combine("Backup", file),
                     true);
             }
-            if (!mode & File.Exists(Path.Combine("Backup", file)))
+            else
             {
+                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
                 File.Copy(Path.Combine("Backup", file)
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
             }
+
             FileFix(path, path1, ver, file);
         }
 
@@ -123,10 +128,8 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    if (text.Contains("DefaultParticleMultiThreading=1"))
-                    {
-                        text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
-                    }
+                    if (!text.Contains("DefaultParticleMultiThreading=1")) return;
+                    text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
                 }
                 File.WriteAllText(Path.Combine(path, file), text);
             }
@@ -138,7 +141,7 @@ namespace LoLUpdater
         {
             using (WebClient wc = new WebClient())
             {
-                if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
+                if (string.IsNullOrEmpty(AdobePath) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297"))
                 {
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                         "air15_win.exe");
@@ -158,7 +161,7 @@ namespace LoLUpdater
                     air.WaitForExit();
                     File.Delete("air15_win.exe");
                 }
-                if (string.IsNullOrEmpty(CgBinPath) ||
+                if (!string.IsNullOrEmpty(CgBinPath) &&
                      new Version(FileVersionInfo.GetVersionInfo(Path.Combine(CgBinPath, "cg.dll")).FileVersion) >=
                      new Version("3.1.0.13")) return;
                 wc.DownloadFile(
@@ -189,7 +192,7 @@ namespace LoLUpdater
         {
             if (!File.Exists(@from)) return;
             FileFix(path, path1, Sln, file);
-            File.Copy(@from, DirPath(path, path1, ver, file), true);
+            File.Copy(@from, QuickPath(path, path1, ver, file), true);
             FileFix(path, path1, Sln, file);
         }
 
@@ -200,10 +203,12 @@ namespace LoLUpdater
             {
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
             }
-            if (!mode & File.Exists(Path.Combine(to, file)))
+            else
             {
+                if (mode | !File.Exists(Path.Combine(to, file))) return;
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
             }
+
             FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
         }
 
@@ -221,69 +226,39 @@ namespace LoLUpdater
         {
             using (WebClient webClient = new WebClient())
             {
-                if (IsRads)
+                FileFix(path, path1, ver, file);
+                if (Riot)
                 {
-                    FileFix(path, path1, ver, file);
-                    if (!File.Exists(DirPath(path, path1, ver, file)))
+                    if (!File.Exists(QuickPath(path, path1, ver, file)))
                     {
                         webClient.DownloadFile(
                             uri,
-                            DirPath(path, path1, ver, file));
+                            QuickPath(path, path1, ver, file));
                     }
                     else
                     {
-                        if (Sha512Equal(DirPath(path, path1, ver, file), sha512))
-                        {
-                            webClient.DownloadFile(
-                                uri,
-                                DirPath(path, path1, ver, file));
-                        }
+                        if (!Sha512(QuickPath(path, path1, ver, file), sha512)) return;
+                        webClient.DownloadFile(
+                            uri,
+                            QuickPath(path, path1, ver, file));
                     }
-                    FileFix(path, path1, ver, file);
-                }
+             }
                 else
                 {
-                    FileFix(file, string.Empty, string.Empty, string.Empty);
                     if (!File.Exists(file))
                     {
                         webClient.DownloadFile(uri, file);
                     }
                     else
                     {
-                        FileFix(file, string.Empty, string.Empty, string.Empty);
-                        if (Sha512Equal(file, sha512))
-                        {
-                            webClient.DownloadFile(uri, file);
-                        }
+                        if (!Sha512(file, sha512)) return;
+                        webClient.DownloadFile(uri, file);
                     }
-                    FileFix(file, string.Empty, string.Empty, string.Empty);
                 }
-            }
-        }
 
-        protected static void FileFix(string path, string path1, string ver, string file)
-        {
-            if (IsRads & File.Exists(DirPath(path, path1,
-                ver, file)))
-            {
-                if (new FileInfo(DirPath(path, path1,
-                    ver, file)).Attributes
-                    .Equals(FileAttributes.ReadOnly))
-                {
-                    File.SetAttributes(DirPath(path, path1,
-                        ver, file),
-                        FileAttributes.Normal);
-                }
-                DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
+
             }
-            if (!(!IsRads & File.Exists(file))) return;
-            if (new FileInfo(file).Attributes
-                .Equals(FileAttributes.ReadOnly))
-            {
-                File.SetAttributes(file,
-                    FileAttributes.Normal);
-            }
-            DeleteFile(file + ":Zone.Identifier");
+            FileFix(path, path1, ver, file);   
         }
 
         protected static void FinishedPrompt(string message)
@@ -293,24 +268,24 @@ namespace LoLUpdater
                 "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
-                TbbSha512);
-            if (IsRads)
+                TbbSum);
+            if (Riot)
             {
-                Sha512Check("projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
-                Sha512Check("projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
+                Verify("projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSum);
+                Verify("projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSum);
                 Parallel.ForEach(Files, file =>
                 {
-                    Sha512Check("solutions", "lol_game_client_sln", Sln,
+                    Verify("solutions", "lol_game_client_sln", Sln,
                         file, permanentSha512);
                 });
             }
             else
             {
-                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
-                Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
-                Parallel.ForEach(Files, file => { Sha512Check(Path.Combine("Game", file), permanentSha512); });
+                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSum);
+                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSum);
+                Parallel.ForEach(Files, file => { Verify(Path.Combine("Game", file), permanentSha512); });
             }
 
             Console.WriteLine("{0}", message);
@@ -326,27 +301,24 @@ namespace LoLUpdater
         {
             do
             {
-	    Parallel.ForEach (LoLProcc, t =>
-	    {
-	        Parallel.ForEach(
-	            Process.GetProcesses()
-	                .Where(process => String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
-	                .AsParallel(), process =>
-	                {
-	                    process.Kill();
-	                    process.WaitForExit();
-	                });
-	    });
+                Parallel.ForEach(LoLKiller, t =>
+                {
+                    Parallel.ForEach(
+                        Process.GetProcesses()
+                            .Where(process => String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
+                            .AsParallel(), process =>
+                            {
+                                process.Kill();
+                                process.WaitForExit();
+                            });
+                });
             } while (_notdone);
         }
 
         protected static void Start()
         {
-            if (!Mutex.WaitOne(TimeSpan.Zero, true))
-            {
-                return;
-            }
-            GC.KeepAlive(Mutex);
+            if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
+            GC.KeepAlive(OnlyInstance);
             Kill();
         }
 
@@ -357,28 +329,58 @@ namespace LoLUpdater
             return result;
         }
 
-        private static string DirPath(string path, string path1, string ver, string file)
+        protected static void Updater()
         {
-            return Path.Combine("RADS", path, path1, "releases", ver, "deploy", file);
+            FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
         }
 
-        private static void Sha512Check(string path, string path1, string ver, string file, string sha512)
+        private static string QuickPath(string path, string path1, string ver, string file)
+        {
+            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : path;
+        }
+
+        private static void FileFix(string path, string path1, string ver, string file)
+        {
+            if (Riot & File.Exists(QuickPath(path, path1,
+                ver, file)))
+            {
+                DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
+                if (!new FileInfo(QuickPath(path, path1,
+                    ver, file)).Attributes
+                    .Equals(FileAttributes.ReadOnly)) return;
+                File.SetAttributes(QuickPath(path, path1,
+                    ver, file),
+                    FileAttributes.Normal);
+            }
+            else
+            {
+                if ((!(!Riot & File.Exists(file)))) return;
+                DeleteFile(file + ":Zone.Identifier");
+                if (!new FileInfo(file).Attributes
+                    .Equals(FileAttributes.ReadOnly)) return;
+                File.SetAttributes(file,
+                    FileAttributes.Normal);
+            }
+        }
+
+        // TODO: Maybe combine these two "Verify" methods?
+        private static void Verify(string path, string path1, string ver, string file, string sha512)
         {
             Console.WriteLine(
-                !Sha512Equal(DirPath(path, path1, ver, file), sha512)
+                !Sha512(QuickPath(path, path1, ver, file), sha512)
                     ? "{0} Is the old patched file or the original"
                     : "{0} Succesfully patched!",
                 Path.GetFileNameWithoutExtension(file));
         }
 
-        private static void Sha512Check(string file, string sha512)
+        private static void Verify(string file, string sha512)
         {
             Console.WriteLine(
-                !Sha512Equal(file, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
+                !Sha512(file, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
                 Path.GetFileNameWithoutExtension(file));
         }
 
-        private static bool Sha512Equal(string file, string sha512)
+        private static bool Sha512(string file, string sha512)
         {
             using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -395,7 +397,7 @@ namespace LoLUpdater
             }
         }
 
-        private static string Version(string path, string path1)
+        private static string Ver(string path, string path1)
         {
             if (!Directory.Exists(Path.Combine("RADS", path, path1, "releases"))) return string.Empty;
             string dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();

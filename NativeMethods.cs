@@ -10,6 +10,10 @@ namespace LoLUpdater
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool BarType(Byte arg, string function);
 
+        [DllImport(SKernel, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern void DeleteFile(string file);
+
         protected static bool Dll(byte arg, string function)
         {
             bool ok = false;
@@ -24,10 +28,6 @@ namespace LoLUpdater
             FreeLibrary(pDll);
             return ok;
         }
-
-        [DllImport(SKernel, CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern void DeleteFile(string file);
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]

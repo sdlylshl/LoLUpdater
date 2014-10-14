@@ -17,15 +17,11 @@ namespace LoLUpdater_Updater
 
         private static void FileFix()
         {
-            if (new FileInfo("LoLUpdater.exe").Attributes
-.Equals(FileAttributes.ReadOnly))
-            {
-                File.SetAttributes("LoLUpdater.exe",
-                    FileAttributes.Normal);
-            }
-
-
             DeleteFile("LoLUpdater.exe:Zone.Identifier");
+            if (!new FileInfo("LoLUpdater.exe").Attributes
+                .Equals(FileAttributes.ReadOnly)) return;
+            File.SetAttributes("LoLUpdater.exe",
+                FileAttributes.Normal);
         }
 
         private static void FinishPrompt(string message)
@@ -41,10 +37,7 @@ namespace LoLUpdater_Updater
 
         private static void Main()
         {
-            if (!Mutex.WaitOne(TimeSpan.Zero, true))
-            {
-                return;
-            }
+            if (!Mutex.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(Mutex);
             do
             {
@@ -68,10 +61,11 @@ namespace LoLUpdater_Updater
                     {
                         if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt")))
                         {
-                            webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
+                            webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
+                                "LoLUpdater.exe");
                             FinishPrompt("LoLUpdater updated!");
                         }
-                        FinishPrompt("No update found!");
+                        Console.WriteLine("No update found");
                     }
                 }
             }
