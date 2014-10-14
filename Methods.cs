@@ -18,8 +18,6 @@ namespace LoLUpdater
         public static bool _notdone;
         public static readonly string Air = Version("projects", "lol_air_client");
 
-        public static readonly bool AvxCheck = Isx64 & ((Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1) || IsLinuxorMono);
-
         public static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         public static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
@@ -28,12 +26,12 @@ namespace LoLUpdater
         // Todo: combine cfgfiles string with "tbb.dll"
         public static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
-        // Todo: test for "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
+        // Todo: test for the "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
         //       and higher) bit.
         // https://software.intel.com/en-us/articles/introduction-to-intel-advanced-vector-extensions
         // http://insufficientlycomplicated.wordpress.com/2011/11/07/detecting-intel-advanced-vector-extensions-avx-in-visual-studio/
         // For AVX support, call IsProcessorFeaturePresent(PF_XSAVE_ENABLED).  If that returns true, call GetProcAddress to find GetEnabledXStateFeatures, then call it if it exists.  If the XSTATE_MASK_AVX bit is set, and all those checks were true, the system has AVX in the CPU and the current Windows version supports it.
-        public static readonly bool HasAvx = AvxCheck & IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") =! null;
+        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") =! null;
 
         public static readonly bool HasSse = IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
