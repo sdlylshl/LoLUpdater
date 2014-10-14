@@ -20,7 +20,7 @@ namespace LoLUpdater
         private static int _userInput;
         private static readonly string[] Cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
-        private static readonly bool MultiCore = CpuInfo.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+        private static readonly bool MultiCore = CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         // Todo: Possibly recompile the Tbbs for better performance
         private static readonly Uri TbbUri =

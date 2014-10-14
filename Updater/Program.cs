@@ -12,7 +12,7 @@ namespace LoLUpdater_Updater
 {
     internal class Program : NativeMethods
     {
-        private static readonly Mutex Mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
+        private static readonly Mutex Mutex = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
         private static bool _notdone;
 
         private static void FileFix()
@@ -90,7 +90,7 @@ namespace LoLUpdater_Updater
                     sb.Append(b.ToString("x2"));
                 });
 
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).Any();
+                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel().Any();
             }
         }
     }

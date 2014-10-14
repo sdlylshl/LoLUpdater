@@ -27,12 +27,12 @@ namespace LoLUpdater
     new ManagementObjectSearcher("Select * from Win32_Processor").Get()
         .Cast<ManagementBaseObject>().ToArray();
 
-        // Todo: Proper AVX2 check, this works atm though.
+        // Does not work atm
         protected static readonly bool Avx2 =
-            CpuInfo.Any(
+            CpuInfo.AsParallel().Any(
                 item =>
                     item["Name"].ToString()
-                        .Contains(string.Join(string.Empty, "Haswell", "Broadwell", "Skylake", "Cannonlake")));
+                        .Contains(new[]{"Haswell", "Broadwell", "Skylake", "Cannonlake"}.ToString()));
 
 
 
@@ -40,7 +40,7 @@ namespace LoLUpdater
         protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         protected static readonly bool IsRads = Directory.Exists("RADS");
-        protected static readonly Mutex Mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
+        protected static readonly Mutex Mutex = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly string Sln = Version("solutions", "lol_game_client_sln");
         protected static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
         protected static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
@@ -66,8 +66,8 @@ namespace LoLUpdater
         private const string FlashSha512 =
             "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
 
-        private static readonly string LoLProcc = string.Join(string.Empty, "LoLClient", "LoLLauncher", "LoLPatcher",
-            "League of Legends");
+        private static readonly string[] LoLProcc = {"LoLClient", "LoLLauncher", "LoLPatcher",
+            "League of Legends"};
 
         private static bool _notdone;
 
@@ -332,11 +332,20 @@ namespace LoLUpdater
         {
             do
             {
-                Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
-                {
-                    proc.Kill();
-                    proc.WaitForExit();
-                });
+   //first we loop through the length of the string array
+	    //passed to the method
+	    Parallel.ForEach (LoLProcc, t =>
+	    {
+//then we grab all running processes on the current system
+	        Parallel.ForEach(
+	            Process.GetProcesses()
+	                .Where(process => String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
+	                .AsParallel(), process =>
+	                {
+	                    process.Kill();
+	                    process.WaitForExit();
+	                });
+	    });
             } while (_notdone);
         }
 
@@ -390,7 +399,7 @@ namespace LoLUpdater
 
                 return
                     Encoding.ASCII.GetBytes(sb.ToString())
-                        .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i])
+                        .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
                         .Any();
             }
         }
