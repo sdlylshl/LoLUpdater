@@ -28,10 +28,11 @@ namespace LoLUpdater
 
         // FeatureID == 2
         // Featuremask == 4
-        // Should look something like this
-        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & string.Join(string.Empty, new[] { GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures").ToString()}).Contains("XSTATE_MASK_AVX")
-        public static readonly bool HasSse = IsProcessorFeaturePresent(6);
-        public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
+        // Should look something like 
+        // XSTATE_MASK_AVX
+        public static readonly bool HasAvx = BarType(17, "IsProcessorFeaturePresent") & BarType("XSTATE_MASK_AVX", "GetEnabledXStateFeatures")
+        public static readonly bool HasSse = BarType(6, "IsProcessorFeaturePresent");
+        public static readonly bool HasSse2 = BarType(10, "IsProcessorFeaturePresent");
 
         // Todo: Proper AVX2 check, this works atm though.
         public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
@@ -221,7 +222,7 @@ namespace LoLUpdater
                         ver, file),
                         FileAttributes.Normal);
                 }
-                DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
+                BarType(DirPath(path, path1, ver, file) + ":Zone.Identifier", "DeleteFile")
             }
             if (!IsRads & File.Exists(file))
             {
@@ -231,7 +232,7 @@ namespace LoLUpdater
                     File.SetAttributes(file,
                       FileAttributes.Normal);
                 }
-                DeleteFile(file + ":Zone.Identifier");
+                BarType(file + ":Zone.Identifier", "DeleteFile")
             }
         }
 
