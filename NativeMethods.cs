@@ -20,9 +20,6 @@ namespace LoLUpdater
 static extern bool FreeLibrary(IntPtr hModule);
         
 
-// "IsProcessorFeaturePresent"
-// "Deletefile"
-
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     public delegate Bool BarType(Byte arg, string stuff); // return value indicates whether function call went well or not.
 
