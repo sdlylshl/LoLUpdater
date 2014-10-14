@@ -34,6 +34,7 @@ namespace LoLUpdater
         {
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
+
                 return;
             }
             GC.KeepAlive(Mutex);
@@ -132,8 +133,8 @@ namespace LoLUpdater
                         break;
                 }
             }
-
-            _userInput = DisplayMenu();
+                _userInput = DisplayMenu();
+           
             Console.Clear();
             Kill();
             if (Installing & !Directory.Exists("Backup"))

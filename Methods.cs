@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -25,14 +26,14 @@ namespace LoLUpdater
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
         protected static readonly ManagementBaseObject[] CpuInfo =
     new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-        .Cast<ManagementBaseObject>().ToArray();
+        .Cast<ManagementBaseObject>().AsParallel().ToArray();
 
-        // Does not work atm
+        // Lazy futureproof Intel method, no info on AMD CPU names yet.
         protected static readonly bool Avx2 =
             CpuInfo.AsParallel().Any(
                 item =>
                     item["Name"].ToString()
-                        .Contains(new[]{"Haswell", "Broadwell", "Skylake", "Cannonlake"}.ToString()));
+                        .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).ToString()));
 
 
 
@@ -40,7 +41,7 @@ namespace LoLUpdater
         protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
         protected static readonly bool IsRads = Directory.Exists("RADS");
-        protected static readonly Mutex Mutex = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
+        protected static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly string Sln = Version("solutions", "lol_game_client_sln");
         protected static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
         protected static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
@@ -117,7 +118,7 @@ namespace LoLUpdater
             FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty);
             if (File.Exists(Path.Combine(path, file)))
             {
-                var text = File.ReadAllText(Path.Combine(path, file));
+                string text = File.ReadAllText(Path.Combine(path, file));
                 text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
                 if (mode)
@@ -213,12 +214,11 @@ namespace LoLUpdater
 
         protected static int DisplayMenu()
         {
-            Console.WriteLine("Menu");
+            Console.WriteLine("Select method:\n");
             Console.WriteLine("1. Install");
             Console.WriteLine("2. Uninstall");
-            Console.WriteLine("3. Exit");
-            Console.WriteLine();
-            // Todo: add code to restrict options to 1-3
+            Console.WriteLine("3. Exit\n");
+            Console.Write("Number: ");
             return Convert.ToInt32(Console.ReadLine());
         }
 
@@ -295,7 +295,7 @@ namespace LoLUpdater
         {
             Console.Clear();
             //Permanent checksums
-            var check = string.Join(string.Empty,
+            string check = string.Join(string.Empty,
                 "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
@@ -332,11 +332,8 @@ namespace LoLUpdater
         {
             do
             {
-   //first we loop through the length of the string array
-	    //passed to the method
 	    Parallel.ForEach (LoLProcc, t =>
 	    {
-//then we grab all running processes on the current system
 	        Parallel.ForEach(
 	            Process.GetProcesses()
 	                .Where(process => String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
@@ -389,7 +386,7 @@ namespace LoLUpdater
 
         private static bool Sha512Equal(string file, string sha512)
         {
-            using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -407,7 +404,7 @@ namespace LoLUpdater
         private static string Version(string path, string path1)
         {
             if (!Directory.Exists(Path.Combine("RADS", path, path1, "releases"))) return string.Empty;
-            var dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();
+            string dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();
             return dir.Length == 1 ? dir : Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
         }
     }

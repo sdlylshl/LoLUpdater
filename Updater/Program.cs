@@ -12,7 +12,7 @@ namespace LoLUpdater_Updater
 {
     internal class Program : NativeMethods
     {
-        private static readonly Mutex Mutex = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
+        private static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
         private static bool _notdone;
 
         private static void FileFix()

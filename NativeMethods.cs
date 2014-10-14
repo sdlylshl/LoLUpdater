@@ -8,18 +8,18 @@ namespace LoLUpdater
         private const string SKernel = "kernel32.dll";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate bool BarType(Byte arg);
+        private delegate bool BarType(Byte arg, string function);
 
-        protected static bool Dll(byte arg, string stuff)
+        protected static bool Dll(byte arg, string function)
         {
             bool ok = false;
             IntPtr pDll = LoadLibrary(SKernel);
             if (pDll == IntPtr.Zero) return false;
-            IntPtr pFunc = GetProcAddress(pDll, stuff);
+            IntPtr pFunc = GetProcAddress(pDll, function);
             if (pFunc != IntPtr.Zero)
             {
                 BarType bar = (BarType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(BarType));
-                ok = bar(arg);
+                ok = bar(arg, function);
             }
             FreeLibrary(pDll);
             return ok;
