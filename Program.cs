@@ -165,9 +165,9 @@ namespace LoLUpdater
                     Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe AIR.dll", "Backup", Installing);
                     Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", Installing); });
                 }
+                Console.WriteLine("");
                 if (!Installing) return;
                 Check();
-                Console.WriteLine("");
             }
             switch (_userInput)
             {
