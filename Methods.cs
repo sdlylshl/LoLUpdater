@@ -15,7 +15,7 @@ namespace LoLUpdater
     internal class Methods : NativeMethods
     {
         public static readonly string AdobePath = Path.Combine(Isx64 ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Common Files", "Adobe AIR", "Versions", "1.0");
-
+        public static bool _notdone;
         public static readonly string Air = Version("projects", "lol_air_client");
 
         public static readonly bool AvxCheck = Isx64 & (IsLinuxorMono || (Environment.OSVersion.Version.Major >= 6 & Environment.OSVersion.Version.Minor >= 1));
@@ -378,13 +378,20 @@ namespace LoLUpdater
             if (!IsSingle)
             { return; }
             GC.KeepAlive(mutex);
+Kill();
+        }
+
+        public static void Kill()
+        {
+            do{
             Parallel.ForEach(Process.GetProcessesByName(LoLProcc), proc =>
             {
                 proc.Kill();
                 proc.WaitForExit();
             });
+} while (_notdone);
         }
-
+        
         public static int ToInt(string value)
         {
             int result;
