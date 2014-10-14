@@ -23,7 +23,9 @@ namespace LoLUpdater_Updater
                 File.SetAttributes("LoLUpdater.exe",
                     FileAttributes.Normal);
             }
-            Bar("LoLUpdater.exe:Zone.Identifier", "DeleteFile");
+
+
+            DeleteFile("LoLUpdater.exe:Zone.Identifier");
         }
 
         private static void FinishPrompt(string message)

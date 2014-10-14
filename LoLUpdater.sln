@@ -7,10 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater", "LoLUpdater.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{78A06910-1572-4580-AC79-EBD3606739DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DLL", "DLL\DLL.csproj", "{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{5062E77A-48B2-4DF5-A476-DCFA33FA3550}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,22 +31,6 @@ Global
 		{78A06910-1572-4580-AC79-EBD3606739DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{78A06910-1572-4580-AC79-EBD3606739DC}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
 		{78A06910-1572-4580-AC79-EBD3606739DC}.Release-MT|Any CPU.Build.0 = Release|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Debug-MT|Any CPU.ActiveCfg = Debug|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Debug-MT|Any CPU.Build.0 = Debug|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
-		{367BD24B-58AC-41B2-AA44-90E9CCEE8EB4}.Release-MT|Any CPU.Build.0 = Release|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Debug-MT|Any CPU.ActiveCfg = Debug|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Debug-MT|Any CPU.Build.0 = Debug|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
-		{5062E77A-48B2-4DF5-A476-DCFA33FA3550}.Release-MT|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

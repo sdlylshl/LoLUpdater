@@ -22,7 +22,11 @@ namespace LoLUpdater
                 "Versions", "1.0");
 
         protected static readonly string Air = Version("projects", "lol_air_client");
-        protected static readonly bool Avx = Bar(2, "GetEnabledXStateFeatures");
+        protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
+        private static readonly bool AdobeTest = new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) < new Version("15.0.0.297");
+        protected static readonly ManagementBaseObject[] CpuInfo =
+    new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+        .Cast<ManagementBaseObject>().ToArray();
 
         // Todo: Proper AVX2 check, this works atm though.
         protected static readonly bool Avx2 =
@@ -31,9 +35,7 @@ namespace LoLUpdater
                     item["Name"].ToString()
                         .Contains(string.Join(string.Empty, "Haswell", "Broadwell", "Skylake", "Cannonlake")));
 
-        protected static readonly ManagementBaseObject[] CpuInfo =
-            new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-                .Cast<ManagementBaseObject>().ToArray();
+
 
         // Todo: combine cfgfiles string with "tbb.dll"
         protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
@@ -41,8 +43,8 @@ namespace LoLUpdater
         protected static readonly bool IsRads = Directory.Exists("RADS");
         protected static readonly Mutex Mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly string Sln = Version("solutions", "lol_game_client_sln");
-        protected static readonly bool Sse = Bar(6, "IsProcessorFeaturePresent");
-        protected static readonly bool Sse2 = Bar(10, "IsProcessorFeaturePresent");
+        protected static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
+        protected static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
 
         protected static readonly string TbbSha512 = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
@@ -141,9 +143,7 @@ namespace LoLUpdater
         {
             using (WebClient wc = new WebClient())
             {
-                if (new Version(
-                    FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                    new Version("15.0.0.297"))
+                if (AdobeTest)
                 {
                     Console.WriteLine("Doing prework...");
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
@@ -164,42 +164,38 @@ namespace LoLUpdater
                     air.WaitForExit();
                     File.Delete("air15_win.exe");
                 }
-                if (new Version(FileVersionInfo.GetVersionInfo(Path.Combine(CgBinPath, "cg.dll")).FileVersion) <
-                    new Version("3.1.0.13"))
+                if (new Version(FileVersionInfo.GetVersionInfo(Path.Combine(CgBinPath, "cg.dll")).FileVersion) >=
+                    new Version("3.1.0.13")) return;
+                if (AdobeTest)
                 {
-                    if (new Version(
-                        FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                        new Version("15.0.0.297"))
-                    {
-                        Console.WriteLine("");
-                        Console.WriteLine("Doing more prework...");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Doing prework...");
-                    }
-                    wc.DownloadFile(
-                        new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
-                        CgInstaller);
-
-                    FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
-
-                    Process cg = new Process
-                    {
-                        StartInfo =
-                            new ProcessStartInfo
-                            {
-                                FileName =
-                                    CgInstaller,
-                                Arguments = "/silent /TYPE=compact"
-                            }
-                    };
-                    cg.Start();
-                    cg.WaitForExit();
-                    File.Delete(CgInstaller);
-                    CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                        EnvironmentVariableTarget.User);
+                    Console.WriteLine("");
+                    Console.WriteLine("Doing more prework...");
                 }
+                else
+                {
+                    Console.WriteLine("Doing prework...");
+                }
+                wc.DownloadFile(
+                    new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
+                    CgInstaller);
+
+                FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
+
+                Process cg = new Process
+                {
+                    StartInfo =
+                        new ProcessStartInfo
+                        {
+                            FileName =
+                                CgInstaller,
+                            Arguments = "/silent /TYPE=compact"
+                        }
+                };
+                cg.Start();
+                cg.WaitForExit();
+                File.Delete(CgInstaller);
+                CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                    EnvironmentVariableTarget.User);
             }
         }
 
@@ -293,7 +289,7 @@ namespace LoLUpdater
                         ver, file),
                         FileAttributes.Normal);
                 }
-                Bar(DirPath(path, path1, ver, file) + ":Zone.Identifier", "DeleteFile");
+                DeleteFile(DirPath(path, path1, ver, file) + ":Zone.Identifier");
             }
             if (!(!IsRads & File.Exists(file))) return;
             if (new FileInfo(file).Attributes
@@ -302,7 +298,7 @@ namespace LoLUpdater
                 File.SetAttributes(file,
                     FileAttributes.Normal);
             }
-            Bar(file + ":Zone.Identifier", "DeleteFile");
+            DeleteFile(file + ":Zone.Identifier");
         }
 
         protected static void FinishedPrompt(string message)
