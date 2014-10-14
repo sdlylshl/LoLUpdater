@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -43,9 +43,7 @@ namespace LoLUpdater
 
         public static const string FlashSha512 = "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
 
-        public static bool IsSingle;
-
-        public static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsSingle);
+        public static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
 
         public static readonly string TbbSha512 = Avx2
                    ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
@@ -359,9 +357,11 @@ namespace LoLUpdater
 
         public static void Start()
         {
-            if (!IsSingle)
-            { return; }
-            GC.KeepAlive(mutex);
+if(!mutex.WaitOne(TimeSpan.Zero, true))
+{
+return;
+}
+mutex.ReleaseMutex();
 Kill();
         }
 
