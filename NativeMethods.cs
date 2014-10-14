@@ -8,22 +8,22 @@ namespace LoLUpdater
         private const string SKernel = "kernel32.dll";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate bool BarType(Byte arg, string function);
+        private delegate bool DllType(byte arg);
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern void DeleteFile(string file);
 
-        protected static bool Dll(byte arg, string function)
+        protected static bool Dll(byte arg, string func)
         {
             bool ok = false;
             IntPtr pDll = LoadLibrary(SKernel);
             if (pDll == IntPtr.Zero) return false;
-            IntPtr pFunc = GetProcAddress(pDll, function);
+            IntPtr pFunc = GetProcAddress(pDll, func);
             if (pFunc != IntPtr.Zero)
             {
-                BarType bar = (BarType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(BarType));
-                ok = bar(arg, function);
+                DllType bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
+                ok = bar(arg);
             }
             FreeLibrary(pDll);
             return ok;
