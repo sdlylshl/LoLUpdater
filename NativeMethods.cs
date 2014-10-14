@@ -9,13 +9,14 @@ namespace LoLUpdater
         
         [DllImport(s_kernel, CharSet = CharSet.Ansi, BestFitMapping = false]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string proc);
-
+        
+        
         // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724482%28v=vs.85%29.aspx
 
         [DllImport(s_kernel, CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibrary(string file);
         
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        [DllImport(s_kernel, CharSet = CharSet.Unicode)]
 [return: MarshalAs(UnmanagedType.Bool)] /* unnecessary, isn't it? */
 static extern bool FreeLibrary(IntPtr hModule);
         
