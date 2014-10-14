@@ -18,20 +18,18 @@ namespace LoLUpdater
         public static bool _notdone;
         public static readonly string Air = Version("projects", "lol_air_client");
 
-        public static readonly string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+        public static const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         public static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
         .Cast<ManagementBaseObject>().ToArray();
 
         // Todo: combine cfgfiles string with "tbb.dll"
-        public static readonly string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
+        public static const string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
-        // Todo: test for the "XSTATE_MASK_GSSE" (on Windows 7 Sp0) and "XSTATE_MASK_AVX" (Windows 7 SP1
-        //       and higher) bit.
-        // https://software.intel.com/en-us/articles/introduction-to-intel-advanced-vector-extensions
-        // http://insufficientlycomplicated.wordpress.com/2011/11/07/detecting-intel-advanced-vector-extensions-avx-in-visual-studio/
-        // For AVX support, call IsProcessorFeaturePresent(PF_XSAVE_ENABLED).  If that returns true, call GetProcAddress to find GetEnabledXStateFeatures, then call it if it exists.  If the XSTATE_MASK_AVX bit is set, and all those checks were true, the system has AVX in the CPU and the current Windows version supports it.
-        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") =! null;
+        // FeatureID == 2
+        // Featuremask == 4
+        // Should look something like this
+        public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures") == 2;
 
         public static readonly bool HasSse = IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
@@ -48,15 +46,15 @@ namespace LoLUpdater
         public static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
     EnvironmentVariableTarget.User);
 
-        public static string AirSha512 = "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
+        public static const string AirSha512 = "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
 
-        public static string FlashSha512 = "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
+        public static const string FlashSha512 = "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
 
         public static bool IsSingle;
 
         public static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsSingle);
 
-        public static string TbbSha512 = IsAvx2
+        public static readonly string TbbSha512 = IsAvx2
                    ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
                    : (HasAvx
                        ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
