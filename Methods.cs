@@ -357,7 +357,7 @@ namespace LoLUpdater
 
         public static void Start()
         {
-if(!mutex.WaitOne(TimeSpan.Zero, false))
+if(!mutex.WaitOne(TimeSpan.Zero, true))
 {
 return;
 }
