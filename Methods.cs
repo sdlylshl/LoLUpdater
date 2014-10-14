@@ -26,12 +26,12 @@ namespace LoLUpdater
         // Todo: combine cfgfiles string with "tbb.dll"
         public static const string[] files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
 
-        public static readonly bool HasAvx = BarType(17, "IsProcessorFeaturePresent") & BarType(2, "GetEnabledXStateFeatures")
-        public static readonly bool HasSse = BarType(6, "IsProcessorFeaturePresent");
-        public static readonly bool HasSse2 = BarType(10, "IsProcessorFeaturePresent");
+        public static readonly bool Avx = BarType(2, "GetEnabledXStateFeatures")
+        public static readonly bool Sse = BarType(6, "IsProcessorFeaturePresent");
+        public static readonly bool Sse2 = BarType(10, "IsProcessorFeaturePresent");
 
         // Todo: Proper AVX2 check, this works atm though.
-        public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
+        public static readonly bool Avx2 = CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
         public static readonly bool IsRads = Directory.Exists("RADS");
         public static readonly string LoLProcc = string.Join(string.Empty, new[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         public static readonly string Sln = Version("solutions", "lol_game_client_sln");
@@ -47,11 +47,11 @@ namespace LoLUpdater
 
         public static Mutex mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b", out IsSingle);
 
-        public static readonly string TbbSha512 = IsAvx2
+        public static readonly string TbbSha512 = Avx2
                    ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
-                   : (HasAvx
+                   : (Avx
                        ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
-                       : (HasSse2 ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64" : HasSse ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec" : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
+                       : (Sse2 ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64" : Sse ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec" : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
 
         public static void BakCopy(string file, string path, string path1, string ver, bool mode)
         {
