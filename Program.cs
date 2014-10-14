@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,11 +19,10 @@ namespace LoLUpdater
             "GamePermanent_en_SG.cfg"
         };
         private static int _userInput;
-        private static readonly string[] Cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+        protected internal static readonly List<string> Cgfiles = new List<string>(new[]{ "Cg.dll", "CgGL.dll", "CgD3D9.dll" });
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
         private static readonly bool MultiCore = CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
-        // Todo: Possibly recompile the Tbbs for better performance
         private static readonly Uri TbbUri =
             new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
                 ? "Avx2.dll"
@@ -43,7 +43,8 @@ namespace LoLUpdater
                 switch (args[0])
                 {
                     case "--help":
-                        Console.WriteLine("Command Line Switches");
+                        Start();
+                        Console.WriteLine("Command-Line Arguments:\n");
                         Console.WriteLine("-install : Installs LoLUpdater");
                         Console.WriteLine("-uninst : Uninstalls LoLUpdater");
                         Console.WriteLine("--help /? -h : Shows this menu");

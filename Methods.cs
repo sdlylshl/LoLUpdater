@@ -35,10 +35,7 @@ namespace LoLUpdater
                     item["Name"].ToString()
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).ToString()));
 
-
-
-        // Todo: combine cfgfiles string with "tbb.dll"
-        protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
+        protected static readonly string[] Files = { Program.Cgfiles.ToString(), "tbb.dll" };
 
         protected static readonly bool IsRads = Directory.Exists("RADS");
         protected static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
@@ -294,8 +291,7 @@ namespace LoLUpdater
         protected static void FinishedPrompt(string message)
         {
             Console.Clear();
-            //Permanent checksums
-            string check = string.Join(string.Empty,
+            string permanentSha512 = string.Join(string.Empty,
                 "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
@@ -309,14 +305,14 @@ namespace LoLUpdater
                 Parallel.ForEach(Files, file =>
                 {
                     Sha512Check("solutions", "lol_game_client_sln", Sln,
-                        file, check);
+                        file, permanentSha512);
                 });
             }
             else
             {
                 Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSha512);
                 Sha512Check(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSha512);
-                Parallel.ForEach(Files, file => { Sha512Check(Path.Combine("Game", file), check); });
+                Parallel.ForEach(Files, file => { Sha512Check(Path.Combine("Game", file), permanentSha512); });
             }
 
             Console.WriteLine("{0}", message);
