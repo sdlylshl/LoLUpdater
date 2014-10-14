@@ -14,7 +14,7 @@ namespace LoLUpdater
 {
     internal class Methods : NativeMethods
     {
-        public static readonly string AdobePath = Path.Combine(Isx64 ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Common Files", "Adobe AIR", "Versions", "1.0");
+        public static readonly string AdobePath = Path.Combine(Environment.Is64BitProcess ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Common Files", "Adobe AIR", "Versions", "1.0");
         public static bool _notdone;
         public static readonly string Air = Version("projects", "lol_air_client");
 
@@ -30,16 +30,12 @@ namespace LoLUpdater
         // Featuremask == 4
         // Should look something like this
         public static readonly bool HasAvx = IsProcessorFeaturePresent(17) & string.Join(string.Empty, new[] { GetProcAddress(LoadLibrary(NativeMethods.s_kernel), "GetEnabledXStateFeatures").ToString()}).Contains("XSTATE_MASK_AVX")
-
         public static readonly bool HasSse = IsProcessorFeaturePresent(6);
         public static readonly bool HasSse2 = IsProcessorFeaturePresent(10);
 
         // Todo: Proper AVX2 check, this works atm though.
         public static readonly bool IsAvx2 = AvxCheck & CpuInfo.Any(item => item["Name"].ToString().Contains(string.Join(string.Empty, new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }));
-
-        public static readonly bool IsLinuxorMono = (int)Environment.OSVersion.Platform == 4 || (int)Environment.OSVersion.Platform == 128;
         public static readonly bool IsRads = Directory.Exists("RADS");
-        public static readonly bool Isx64 = Environment.Is64BitProcess;
         public static readonly string LoLProcc = string.Join(string.Empty, new[] { "LoLClient", "LoLLauncher", "LoLPatcher", "League of Legends" });
         public static readonly string Sln = Version("solutions", "lol_game_client_sln");
 
