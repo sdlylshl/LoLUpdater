@@ -25,7 +25,7 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
-if(!mutex.WaitOne(TimeSpan.Zero, true))
+if(!mutex.WaitOne(TimeSpan.Zero, false))
 {
 return;
 }
