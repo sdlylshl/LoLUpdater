@@ -29,7 +29,7 @@ if(!mutex.WaitOne(TimeSpan.Zero, true))
 {
 return;
 }
-mutex.ReleaseMutex();
+GC.KeepAlive(mutex);
             if (args.Length > 0)
             {
                 switch (args[0])
