@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
-public const string s_kernel = "kernel32.dll";
+
 namespace LoLUpdater
 {
     internal class NativeMethods
     {
+        public const string s_kernel = "kernel32.dll";
+        
         [DllImport(s_kernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern void DeleteFile(string file);
