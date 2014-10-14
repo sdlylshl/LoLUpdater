@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,10 +12,6 @@ namespace LoLUpdater_Updater
 {
     internal static class Program
     {
-        private static readonly bool IsMultiCore = new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-.Cast<ManagementBaseObject>()
-.Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
-
         private static bool _notdone;
 
         private static bool IsSingle;
