@@ -24,18 +24,16 @@ namespace LoLUpdater
 
         protected static readonly string Air = Version("projects", "lol_air_client");
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
-        protected static readonly ManagementBaseObject[] CpuInfo =
-    new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-        .Cast<ManagementBaseObject>().AsParallel().ToArray();
+        protected static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().AsParallel().ToArray();
 
         // Lazy futureproof Intel method, no info on AMD CPU names yet.
         protected static readonly bool Avx2 =
-            CpuInfo.AsParallel().Any(
+            CpuInfo.Any(
                 item =>
                     item["Name"].ToString()
-                        .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).ToString()));
+                        .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
-        protected static readonly string[] Files = { Program.Cgfiles.ToString(), "tbb.dll" };
+        protected static readonly string[] Files = {"Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll"};
 
         protected static readonly bool IsRads = Directory.Exists("RADS");
         protected static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +18,7 @@ namespace LoLUpdater
             "GamePermanent_en_SG.cfg"
         };
         private static int _userInput;
-        protected internal static readonly List<string> Cgfiles = new List<string>(new[]{ "Cg.dll", "CgGL.dll", "CgD3D9.dll" });
+        private static readonly string[] Cgfiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
         private static readonly bool MultiCore = CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
@@ -32,6 +31,9 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
+
+
+
             if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
 
