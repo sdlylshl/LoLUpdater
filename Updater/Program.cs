@@ -10,12 +10,10 @@ using System.Threading.Tasks;
 
 namespace LoLUpdater_Updater
 {
-    internal static class Program
+    internal class Program : NativeMethods
     {
+        private static readonly Mutex Mutex = new Mutex(true, "9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         private static bool _notdone;
-
-        private static bool IsSingle;
-        private static Mutex mutex = new Mutex(true, "1e0d206b-71ee-4954-9402-f4ed91d79a95", out IsSingle);
 
         private static void FileFix()
         {
@@ -25,7 +23,7 @@ namespace LoLUpdater_Updater
                 File.SetAttributes("LoLUpdater.exe",
                     FileAttributes.Normal);
             }
-            NativeMethods.DeleteFile("LoLUpdater.exe" + ":Zone.Identifier");
+            Bar("LoLUpdater.exe:Zone.Identifier", "DeleteFile");
         }
 
         private static void FinishPrompt(string message)
@@ -41,12 +39,11 @@ namespace LoLUpdater_Updater
 
         private static void Main()
         {
-            if (!IsSingle)
+            if (!Mutex.WaitOne(TimeSpan.Zero, true))
             {
                 return;
             }
-
-            GC.KeepAlive(mutex);
+            GC.KeepAlive(Mutex);
             do
             {
                 Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
@@ -67,7 +64,7 @@ namespace LoLUpdater_Updater
                 {
                     FileFix();
                     {
-                        if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt").ToString()))
+                        if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt")))
                         {
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
                             FinishPrompt("LoLUpdater updated!");
@@ -93,13 +90,6 @@ namespace LoLUpdater_Updater
 
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).Any();
             }
-        }
-
-        private static int ToInt(string value)
-        {
-            int result;
-            Int32.TryParse(value, out result);
-            return result;
         }
     }
 }
