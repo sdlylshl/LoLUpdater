@@ -361,7 +361,7 @@ if(!mutex.WaitOne(TimeSpan.Zero, true))
 {
 return;
 }
-mutex.ReleaseMutex();
+GC.KeepAlive(mutex);
 Kill();
         }
 
