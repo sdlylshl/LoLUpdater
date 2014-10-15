@@ -169,7 +169,7 @@ namespace LoLUpdater
                         Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
                     });
                 }
-                Console.WriteLine("");
+                Console.WriteLine(string.Empty);
                 if (!Installing) return;
                 Check();
             }
