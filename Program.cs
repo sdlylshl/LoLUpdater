@@ -516,22 +516,24 @@ namespace LoLUpdater
 
         private static byte DisplayMenu()
         {
-            byte num;
+            byte num = 0;
             Help();
             Console.WriteLine(
                 String.Join(Environment.NewLine,
-                    "",
+                    string.Empty,
                     "Select method:",
-                    "",
+                    string.Empty,
                     "1. Install",
                     "2. Uninstall",
                     "3. Exit")
             );
-            string result = Console.ReadLine().Trim();
-            while (!byte.TryParse(result, out num) && num < 0 && num > 3)
+            var readLine = Console.ReadLine();
+            if (readLine == null) return num;
+            string result = readLine.Trim();
+            while (!byte.TryParse(result, out num) && num < 1 && num > 3)
             {
-                Console.WriteLine(String.Format("{0} is not a valid input. Please try again.", result));
-                result = Console.ReadLine().Trim();
+                Console.WriteLine("{0} is not a valid input. Please try again.", result);
+                result = readLine.Trim();
             }
             return num;
         }
