@@ -91,12 +91,6 @@ namespace LoLUpdater
             "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e"
             );
 
-        private static readonly string[] LoLProcesses =
-        {
-            "LoLClient", "LoLLauncher", "LoLPatcher",
-            "League of Legends"
-        };
-
         private static readonly string Adobe = Riot
             ? Path.Combine("RADS", "projects", "lol_air_client", "releases", Air, "deploy", "Adobe AIR", "Versions",
                 "1.0")
@@ -153,7 +147,26 @@ namespace LoLUpdater
 
         private static void Patch()
         {
-            Kill();
+            do
+            {
+                Parallel.ForEach(new[]{
+            "LoLClient", "LoLLauncher", "LoLPatcher",
+            "League of Legends"
+        }
+                , t =>
+                {
+                    Parallel.ForEach(
+                        Process.GetProcesses()
+                            .Where(
+                                process =>
+                                    String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
+                            .AsParallel(), process =>
+                            {
+                                process.Kill();
+                                process.WaitForExit();
+                            });
+                });
+            } while (_notdone);
             if (Installing & !Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
@@ -531,26 +544,6 @@ namespace LoLUpdater
             _notdone = false;
             Console.ReadLine();
             Environment.Exit(0);
-        }
-
-        private static void Kill()
-        {
-            do
-            {
-                Parallel.ForEach(LoLProcesses, t =>
-                {
-                    Parallel.ForEach(
-                        Process.GetProcesses()
-                            .Where(
-                                process =>
-                                    String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
-                            .AsParallel(), process =>
-                            {
-                                process.Kill();
-                                process.WaitForExit();
-                            });
-                });
-            } while (_notdone);
         }
 
         private static long ToInt(string value)
