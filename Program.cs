@@ -117,7 +117,7 @@ namespace LoLUpdater
 
             using (WebClient)
             {
-                if (!Sha512("LoLUpdater.exe",
+                if (Sha512("LoLUpdater.exe",
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (
@@ -539,7 +539,7 @@ namespace LoLUpdater
                     else
                     {
                         Normalize(path, path1, ver, file, false);
-                        if (!Sha512(QuickPath(path, path1, ver, file), sha512)) return;
+                        if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
                         WebClient.DownloadFile(
                             uri,
                             QuickPath(path, path1, ver, file));
@@ -555,7 +555,7 @@ namespace LoLUpdater
                     else
                     {
                         Normalize(path, path1, ver, file, false);
-                        if (!Sha512(file, sha512)) return;
+                        if (Sha512(file, sha512)) return;
                         WebClient.DownloadFile(uri, file);
                     }
                     Unblock(path, path1, ver, file, false);
@@ -576,16 +576,23 @@ namespace LoLUpdater
             {
                 Verify("projects", "lol_air_client", Air,
                     Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
-                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), string.Empty, string.Empty,
-string.Empty, AirSum);
+                if(!Riot)
+                {
+                    Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), string.Empty, string.Empty,
+                        string.Empty, AirSum);
+                }
+                
             });
 
             Parallel.ForEach(GameFiles, file =>
             {
                 Verify("solutions", "lol_game_client_sln", Sln,
                     file, permanentSum);
-                Verify(Path.Combine("Game", file), string.Empty, string.Empty,
-string.Empty, permanentSum);
+ if(!Riot)
+ {
+     Verify(Path.Combine("Game", file), string.Empty, string.Empty,
+         string.Empty, permanentSum);
+ }
             });
 
 
@@ -672,7 +679,7 @@ string.Empty, permanentSum);
 
                 return
                     Encoding.ASCII.GetBytes(sb.ToString())
-                        .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
+                        .Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
                         .Any();
             }
         }
@@ -691,7 +698,7 @@ string.Empty, permanentSum);
             if (Riot)
             {
                 Console.WriteLine(
-                   !Sha512(QuickPath(path, path1, ver, file), sha512)
+                   Sha512(QuickPath(path, path1, ver, file), sha512)
                        ? "{0} Is the old patched file or the original"
                        : "{0} Succesfully patched!",
                    Path.GetFileNameWithoutExtension(file));
@@ -699,7 +706,7 @@ string.Empty, permanentSum);
             else
             {
                 Console.WriteLine(
-                    !Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
+                    Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
                     Path.GetFileNameWithoutExtension(path));
             }
 
