@@ -41,7 +41,7 @@ namespace LoLUpdater_Updater
             using (WebClient webClient = new WebClient())
             {
 
-                        if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt")))
+                        if (Sha512(webClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                         {
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
                                 "LoLUpdater.exe");
