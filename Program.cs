@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -120,7 +119,7 @@ namespace LoLUpdater
             using (WebClient)
             {
                 if (
-                    !Sha512(Assembly.GetExecutingAssembly().CodeBase,
+                    !Sha512("LoLUpdater.exe",
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (
