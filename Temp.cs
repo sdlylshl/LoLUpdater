@@ -51,24 +51,13 @@ namespace LoLUpdater_Updater
 
             using (WebClient webClient = new WebClient())
             {
-                if (!File.Exists("LoLUpdater.exe"))
-                {
-                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"), "LoLUpdater.exe");
-                    FinishPrompt("LoLUpdater downloaded!");
-                }
-                else
-                {
-                    FileFix();
-                    {
+
                         if (Sha512(webClient.DownloadString("http://www.svenskautogrupp.se/LoLUpdater.txt")))
                         {
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
                                 "LoLUpdater.exe");
-                            FinishPrompt("LoLUpdater updated!");
                         }
-                        Console.WriteLine("No update found");
-                    }
-                }
+                            FinishPrompt("You are using the Latest LoLUpdater!");
             }
         }
 
