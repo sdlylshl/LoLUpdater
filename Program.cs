@@ -104,14 +104,14 @@ namespace LoLUpdater
                 "1.0")
             : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
 
-        private static int _userInput;
+        private static byte _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
 
         private static bool _notdone;
 
         // Todo: Use byte-comparison here instead
         private static readonly bool MultiCore =
-            CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+            CpuInfo.AsParallel().Sum(item => ToByte(item["NumberOfCores"].ToString())) > 1;
 
         private static readonly Uri TbbUri =
             new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
@@ -227,11 +227,6 @@ namespace LoLUpdater
             else
             {
                 _userInput = DisplayMenu();
-                while (_userInput < 1 | _userInput > 3)
-                {
-                    Console.Clear();
-                    _userInput = DisplayMenu();
-                }
                         Console.Clear();
                         Kill();
                         if (Installing & !Directory.Exists(BakFolder))
@@ -520,22 +515,26 @@ namespace LoLUpdater
             }
         }
 
-        private static int DisplayMenu()
+        private static byte DisplayMenu()
         {
-            int num;
+            byte num;
             Help();
-            Console.WriteLine(string.Empty);
-            Console.WriteLine("Select method:\n");
-            Console.WriteLine("1. Install");
-            Console.WriteLine("2. Uninstall");
-            Console.WriteLine("3. Exit\n");
-            Console.Write("Number: ");
-            string result = Console.ReadLine();
-            if (result != null && int.TryParse(result.ToString(CultureInfo.InvariantCulture), out num))
+            Console.WriteLine(
+                String.Join(Environment.NewLine,
+                    Environment.NewLine,
+                    "Select method:",
+                    Environment.NewLine,
+                    "1. Install",
+                    "2. Uninstall",
+                    "3. Exit")
+            );
+            string result = Console.ReadLine().Trim();
+            while (!byte.TryParse(result, out num) && num < 0 && num > 3)
             {
-                return Convert.ToInt32(result);
+                Console.WriteLine(String.Format("{0} is not a valid input. Please try again.", result));
+                result = Console.ReadLine().Trim();
             }
-            return 0;
+            return num;
         }
 
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
@@ -641,10 +640,10 @@ namespace LoLUpdater
             Kill();
         }
 
-        private static int ToInt(string value)
+        private static byte ToByte(string value)
         {
-            int result;
-            Int32.TryParse(value, out result);
+            byte result;
+            byte.TryParse(value, out result);
             return result;
         }
 
