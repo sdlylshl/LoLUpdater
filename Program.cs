@@ -521,9 +521,9 @@ namespace LoLUpdater
             Help();
             Console.WriteLine(
                 String.Join(Environment.NewLine,
-                    Environment.NewLine,
+                    "",
                     "Select method:",
-                    Environment.NewLine,
+                    "",
                     "1. Install",
                     "2. Uninstall",
                     "3. Exit")
