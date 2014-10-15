@@ -102,13 +102,13 @@ namespace LoLUpdater
                 "1.0")
             : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
 
-        private static byte _userInput;
+        private static int _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
 
         private static bool _notdone;
 
         private static readonly bool MultiCore =
-            CpuInfo.AsParallel().Sum(item => ToByte(item["NumberOfCores"].ToString())) > 1;
+            CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
         private static readonly Uri TbbUri =
             new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
@@ -223,7 +223,7 @@ namespace LoLUpdater
             }
             else
             {
-                _userInput = DisplayMenu();
+                _userInput = DisplayMenu(); 
                         Console.Clear();
                         Kill();
                         if (Installing & !Directory.Exists("Backup"))
@@ -513,9 +513,10 @@ namespace LoLUpdater
             }
         }
 
-        private static byte DisplayMenu()
+        // if you have more menu items change byte ->
+        private static int DisplayMenu()
         {
-            byte num = 0;
+            int num = 0;
             Help();
             Console.WriteLine(
                 String.Join(Environment.NewLine,
@@ -529,7 +530,7 @@ namespace LoLUpdater
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
             string result = readLine.Trim();
-            while (!byte.TryParse(result, out num) && num < 1 && num > 3)
+            while (!int.TryParse(result, out num) && num < 1 && num > 3)
             {
                 Console.WriteLine("{0} is not a valid input. Please try again.", result);
                 result = readLine.Trim();
@@ -646,10 +647,10 @@ namespace LoLUpdater
             Kill();
         }
 
-        private static byte ToByte(string value)
+        private static long ToInt(string value)
         {
-            byte result;
-            byte.TryParse(value, out result);
+            int result;
+            int.TryParse(value, out result);
             return result;
         }
 
