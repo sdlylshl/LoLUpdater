@@ -18,7 +18,6 @@ namespace LoLUpdater
 {
     internal static class Program
     {
-        private const string Updater = "LoLUpater Updater.exe";
         private const string SKernel = "kernel32.dll";
         private static readonly string AdobePath =
             Path.Combine(Environment.Is64BitProcess
@@ -126,35 +125,35 @@ namespace LoLUpdater
                                 WebClient.DownloadData(
                                     new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
                     {
+                        memoryStream.Position = 0;
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
                             using (BinaryReader binaryReader = new BinaryReader(memoryStream))
                             {
-                                memoryStream.Position = 0;
                             CompilerParameters parameters = new CompilerParameters
                             {
                                 GenerateInMemory = false,
                                 GenerateExecutable = true,
                                 IncludeDebugInformation = false,
                                 CompilerOptions = "/optimize",
-                                OutputAssembly = Updater
+                                OutputAssembly = "LoLUpdater Updater.exe"
                             };
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
-                            cscp.CompileAssemblyFromSource(parameters,
+                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
                                 Encoding.Default.GetString(binaryReader.ReadBytes(Convert.ToInt32(memoryStream.Length))));
-                            Normalize(Updater, string.Empty, string.Empty, string.Empty, true);
-                            Unblock(Updater, string.Empty, string.Empty, string.Empty, true);
-                            Process.Start(Updater);
+                            Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                            Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                            Process.Start(result.PathToAssembly);
                             }
                         }
                     }
                 }
                 else
                 {
-                    if (File.Exists(Updater))
+                    if (File.Exists("LoLUpdater Updater.exe"))
                     {
-                        File.Delete(Updater);
+                        File.Delete("LoLUpdater Updater.exe");
                     }
                 }
 
