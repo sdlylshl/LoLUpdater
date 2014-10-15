@@ -28,9 +28,8 @@ namespace LoLUpdater
 
         // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
         protected static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
-
-        protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
-        // Todo: Combine string[] CgFiles with "tbb.dll" to string[] Files in a working way, without typing each string out.
+        protected static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+        protected static readonly string[] GameFiles = CgFiles.Concat(new[] {"tbb.dll"}).ToArray();
 
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
 
@@ -203,7 +202,7 @@ namespace LoLUpdater
 
         protected static void Clean()
         {
-            Parallel.ForEach(Files,
+            Parallel.ForEach(GameFiles,
                 file =>
                 {
                     if (!File.Exists(Path.Combine("Backup", file))) return;
@@ -316,7 +315,7 @@ namespace LoLUpdater
                                         Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
                 });
 
-                Parallel.ForEach(Files, file =>
+                Parallel.ForEach(GameFiles, file =>
                 {
                     Verify("solutions", "lol_game_client_sln", Sln,
                         file, permanentSum);
@@ -325,7 +324,7 @@ namespace LoLUpdater
             else
             {
                 Parallel.ForEach(AirFiles, file => { Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), AirSum); });
-                Parallel.ForEach(Files, file => { Verify(Path.Combine("Game", file), permanentSum); });
+                Parallel.ForEach(GameFiles, file => { Verify(Path.Combine("Game", file), permanentSum); });
             }
 
             Console.WriteLine("{0}", message);
