@@ -213,10 +213,6 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory("Backup");
             }
-            if (_userInput == 3)
-            {
-                Environment.Exit(0);
-            }
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
@@ -245,31 +241,16 @@ namespace LoLUpdater
                 if (!Installing) return;
                 using (WebClient)
                 {
-                    if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")) || new Version(
-                                FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                            new Version("15.0.0.297"))
+                    if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
                     {
-                        const string airInstaller = "air15_win.exe";
-                        WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                            airInstaller);
-                        if (File.Exists(airInstaller))
-                        {
-                            FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
-                        }
-                        Process airwin = new Process
-                        {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        airInstaller,
-                                    Arguments = "-silent"
-                                }
-                        };
-                        airwin.Start();
-                        airwin.WaitForExit();
-                        if (!File.Exists(airInstaller)) return;
-                        File.Delete(airInstaller);
+                        AirInstall();
+                    }
+                    else
+                    {
+                        if (new Version(
+                                   FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
+                               new Version("15.0.0.297"))
+                        { AirInstall(); }
                     }
 
                     if (!string.IsNullOrEmpty(_cgBinPath) &&
@@ -279,10 +260,9 @@ namespace LoLUpdater
                     WebClient.DownloadFile(
                         new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                         cgInstaller);
-                    if (File.Exists(cgInstaller))
-                    {
+                    if (!File.Exists(cgInstaller)) return;
                         FileFix(cgInstaller, string.Empty, string.Empty, string.Empty);
-                    }
+
                     Process cg = new Process
                     {
                         StartInfo =
@@ -298,8 +278,7 @@ namespace LoLUpdater
 
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
-                    if (!File.Exists(cgInstaller)) return;
-                        File.Delete(cgInstaller);
+                    File.Delete(cgInstaller);
                 }
             }
             switch (_userInput)
@@ -369,6 +348,28 @@ namespace LoLUpdater
                     Environment.Exit(0);
                     break;
             }
+        }
+
+        private static void AirInstall()
+        {
+            const string airInstaller = "air15_win.exe";
+            WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+                airInstaller);
+            if (!File.Exists(airInstaller)) return;
+            FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
+            Process airwin = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            airInstaller,
+                        Arguments = "-silent"
+                    }
+            };
+            airwin.Start();
+            airwin.WaitForExit();
+            File.Delete(airInstaller);
         }
 
         private static void Help()
