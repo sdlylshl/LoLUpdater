@@ -120,7 +120,7 @@ namespace LoLUpdater
             using (WebClient)
             {
                 if (
-                    !Sha512(Assembly.GetExecutingAssembly().Location,
+                    !Sha512(Assembly.GetExecutingAssembly().CodeBase,
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (
