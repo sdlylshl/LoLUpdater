@@ -16,15 +16,6 @@ namespace LoLUpdater_Updater
         private static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
         private static bool _notdone;
 
-        private static void FileFix()
-        {
-            DeleteFile("LoLUpdater.exe:Zone.Identifier");
-            if (!new FileInfo("LoLUpdater.exe").Attributes
-                .Equals(FileAttributes.ReadOnly)) return;
-            File.SetAttributes("LoLUpdater.exe",
-                FileAttributes.Normal);
-        }
-
         private static void Main()
         {
             if (!Mutex.WaitOne(TimeSpan.Zero, true)) return;
@@ -41,15 +32,20 @@ namespace LoLUpdater_Updater
             using (WebClient webClient = new WebClient())
             {
 
-                        if (Sha512(webClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
-                        {
-                            webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
-                                "LoLUpdater.exe");
-                        }
-            FileFix();
-            _notdone = false;
-            Process.Start("LoLUpdater.exe");
-            Environment.Exit(0);
+                if (Sha512(webClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
+                {
+                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
+                        "LoLUpdater.exe");
+                }
+                if (new FileInfo("LoLUpdater.exe").Attributes
+                    .Equals(FileAttributes.ReadOnly)
+                {File.SetAttributes("LoLUpdater.exe",
+                    FileAttributes.Normal);}
+                
+                DeleteFile("LoLUpdater.exe:Zone.Identifier");
+                _notdone = false;
+                Process.Start("LoLUpdater.exe");
+                Environment.Exit(0);
             }
         }
 
