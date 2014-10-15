@@ -213,6 +213,10 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory("Backup");
             }
+            if (_userInput == 3)
+            {
+                Environment.Exit(0);
+            }
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
