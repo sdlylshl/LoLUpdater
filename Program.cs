@@ -123,6 +123,10 @@ namespace LoLUpdater
                         Console.ReadLine();
                         break;
 
+                    case "-update":
+                        Process.Start("LoLUpdater Updater.exe");
+                        break;
+
                     case "-install":
                         _userInput = 1;
                         Patch();
@@ -200,20 +204,34 @@ namespace LoLUpdater
                 if (!Installing) return;
                 using (WebClient)
                 {
-                    if (string.IsNullOrEmpty(AdobePath))
+                    if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")) || new Version(
+                                FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
+                            new Version("15.0.0.297"))
                     {
-                        if (AirInstall(WebClient)) return;
+        const string airInstaller = "air15_win.exe";
+            WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+                airInstaller);
+            if (File.Exists(airInstaller))
+            {
+                FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
+            }
+            Process airwin = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            airInstaller,
+                        Arguments = "-silent"
                     }
-                    else
-                    {
-                        if (
-                            new Version(
-                                FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) >=
-                            new Version("15.0.0.297")) return;
-                        if (AirInstall(WebClient)) return;
+            };
+            airwin.Start();
+            airwin.WaitForExit();
+            if (!File.Exists(airInstaller)) return;
+            File.Delete(airInstaller);
+                    }
 
-                    }
-                    if (!string.IsNullOrEmpty(_cgBinPath) &&
+                    if (File.Exists(Path.Combine(_cgBinPath, "cg.dll")) &&
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
                         new Version("3.1.0.13")) return;
                        const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
@@ -314,39 +332,17 @@ namespace LoLUpdater
             }
         }
 
-        private static bool AirInstall(WebClient webClient)
-        {
-         
-        const string airInstaller = "air15_win.exe";
-            webClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                airInstaller);
-            if (File.Exists(airInstaller))
-            {
-                FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
-            }
-            Process airwin = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            airInstaller,
-                        Arguments = "-silent"
-                    }
-            };
-            airwin.Start();
-            airwin.WaitForExit();
-            if (!File.Exists(airInstaller)) return true;
-            File.Delete(airInstaller);
-            return false;
-        }
-
         private static void Help()
         {
-            Console.WriteLine("Command-Line Arguments:\n");
-            Console.WriteLine("-install : Installs LoLUpdater");
-            Console.WriteLine("-uninst : Uninstalls LoLUpdater");
-            Console.WriteLine("--help /? -h : Shows this menu");
+
+            Console.WriteLine(
+                String.Join(Environment.NewLine, "Command-Line Arguments:",
+                    string.Empty,
+                    "-install : Installs LoLUpdater",
+                    "-uninst : Uninstalls LoLUpdater",
+                    "--help /? -h : Shows this menu",
+                    "-update : Updates LoLUpdater if you have LoLUpdater Updater.exe in the same path")
+            );
         }
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
