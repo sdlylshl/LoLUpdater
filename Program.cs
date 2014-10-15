@@ -253,32 +253,17 @@ namespace LoLUpdater
                         AirInstall();
                     }
 
-                    if (!string.IsNullOrEmpty(_cgBinPath) &&
-                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
-                        new Version("3.1.0.13")) return;
-                    const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
-                    WebClient.DownloadFile(
-                        new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
-                        cgInstaller);
-                    if (!File.Exists(cgInstaller)) return;
-                        FileFix(cgInstaller, string.Empty, string.Empty, string.Empty);
+                    if (string.IsNullOrEmpty(_cgBinPath))
 
-                    Process cg = new Process
+                    { CgInstall(); }
+                    else
                     {
-                        StartInfo =
-                            new ProcessStartInfo
-                            {
-                                FileName =
-                                    cgInstaller,
-                                Arguments = "/silent /TYPE=compact"
-                            }
-                    };
-                    cg.Start();
-                    cg.WaitForExit();
+                        if (
+                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
+                            new Version("3.1.0.13")) return;
+                        CgInstall();
+                    }
 
-                    _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                        EnvironmentVariableTarget.User);
-                    File.Delete(cgInstaller);
                 }
             }
             switch (_userInput)
@@ -348,6 +333,33 @@ namespace LoLUpdater
                     Environment.Exit(0);
                     break;
             }
+        }
+
+        private static void CgInstall()
+        {
+            const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+            WebClient.DownloadFile(
+                new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
+                cgInstaller);
+            if (!File.Exists(cgInstaller)) return;
+            FileFix(cgInstaller, string.Empty, string.Empty, string.Empty);
+
+            Process cg = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            cgInstaller,
+                        Arguments = "/silent /TYPE=compact"
+                    }
+            };
+            cg.Start();
+            cg.WaitForExit();
+
+            _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                EnvironmentVariableTarget.User);
+            File.Delete(cgInstaller);
         }
 
         private static void AirInstall()
