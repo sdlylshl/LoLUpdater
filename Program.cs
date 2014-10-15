@@ -79,10 +79,13 @@ namespace LoLUpdater
                         {
                             Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", true); });
 
+                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
+"Backup", true);
+                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
+"Backup", true);
                             Parallel.ForEach(AirFiles, file =>
                             {
-                                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), file,
-                               "Backup", true);
+
                                 Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
     true);
                             });
@@ -120,11 +123,10 @@ namespace LoLUpdater
                         }
                         else
                         {
-                            Parallel.ForEach(AirFiles, file =>
-                            {
-                                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), file,
-                                                               "Backup", false);
-                            });
+                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
+"Backup", false);
+                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
+"Backup", false);
                             Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", false); });
                         }
                         Updater();
@@ -157,11 +159,10 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    Parallel.ForEach(AirFiles, file =>
-                    {
-                        Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), file,
-                                                       "Backup", Installing);
-                    });
+                        Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
+                                                       "Backup", true);
+                                        Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
+                                                       "Backup", true);
                     Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", Installing); });
                     Parallel.ForEach(CfgFiles, file =>
                     {
