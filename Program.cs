@@ -18,6 +18,7 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private const string Updater = "LoLUpater Updater.exe";
         private const string SKernel = "kernel32.dll";
         private static readonly string AdobePath =
             Path.Combine(
@@ -122,9 +123,10 @@ namespace LoLUpdater
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (
-                    MemoryStream memoryStream =
-                        new MemoryStream(
-                            WebClient.DownloadData(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+                        MemoryStream memoryStream =
+                            new MemoryStream(
+                                WebClient.DownloadData(
+                                    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
@@ -134,18 +136,25 @@ namespace LoLUpdater
                                 GenerateExecutable = true,
                                 IncludeDebugInformation = false,
                                 CompilerOptions = "/optimize",
-                                OutputAssembly = "LoLUpater Updater.exe"
+                                OutputAssembly = Updater
                             };
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
                             CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                            Encoding.UTF8.GetString(memoryStream.ToArray()));
+                                Encoding.UTF8.GetString(memoryStream.ToArray()));
                             FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty);
                             Process.Start(result.PathToAssembly);
                         }
-                    } 
+                    }
                 }
-               
+                else
+                {
+                    if (File.Exists(Updater))
+                    {
+                        File.Delete(Updater);
+                    }
+                }
+
             }
             if (args.Length > 0)
             {
