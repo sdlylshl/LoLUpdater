@@ -34,7 +34,6 @@ namespace LoLUpdater
                 .Cast<ManagementBaseObject>()
                 .AsParallel()
                 .ToArray();
-
         // Lazy semi-futureproof Intel method, no info on AMD CPU names yet.
         private static readonly bool Avx2 =
             CpuInfo.Any(
@@ -44,6 +43,7 @@ namespace LoLUpdater
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
 
+        private static readonly WebClient WebClient = new WebClient();
         private static readonly bool Riot = Directory.Exists("RADS");
         private const string CfgFile = "game.cfg";
         private static readonly string[] CfgFilez = Riot
@@ -81,9 +81,6 @@ namespace LoLUpdater
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
-
-        private const string CgInstaller = "Cg-3.1_April2012_Setup.exe";
-        private const string AirInstaller = "air15_win.exe";
 
         // SAME ORDER AS AirFiles (Flash, Air)
         private static readonly string AirSum = string.Join(string.Empty,
@@ -201,43 +198,31 @@ namespace LoLUpdater
                 }
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
-                using (WebClient wc = new WebClient())
+                using (WebClient)
                 {
-                    if ((!string.IsNullOrEmpty(AdobePath) &
-                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                         new Version("15.0.0.297")) || string.IsNullOrEmpty(AdobePath))
+                    if (string.IsNullOrEmpty(AdobePath))
                     {
-                        wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                            AirInstaller);
-                        if (File.Exists(AirInstaller))
-                        {
-                            FileFix(AirInstaller, string.Empty, string.Empty, string.Empty);
-                        }
-                        Process air = new Process
-                        {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        AirInstaller,
-                                    Arguments = "-silent"
-                                }
-                        };
+                        if (AirInstall(WebClient)) return;
+                    }
+                    else
+                    {
+                        if (
+                            new Version(
+                                FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) >=
+                            new Version("15.0.0.297")) return;
+                        if (AirInstall(WebClient)) return;
 
-                        air.Start();
-                        air.WaitForExit();
-                        if (!File.Exists(AirInstaller)) return;
-                        File.Delete(AirInstaller);
                     }
                     if (!string.IsNullOrEmpty(_cgBinPath) &&
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
                         new Version("3.1.0.13")) return;
-                    wc.DownloadFile(
+                       const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+                    WebClient.DownloadFile(
                         new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
-                        CgInstaller);
-                    if (File.Exists(CgInstaller))
+                        cgInstaller);
+                    if (File.Exists(cgInstaller))
                     {
-                        FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
+                        FileFix(cgInstaller, string.Empty, string.Empty, string.Empty);
                     }
                     Process cg = new Process
                     {
@@ -245,7 +230,7 @@ namespace LoLUpdater
                             new ProcessStartInfo
                             {
                                 FileName =
-                                    CgInstaller,
+                                    cgInstaller,
                                 Arguments = "/silent /TYPE=compact"
                             }
                     };
@@ -254,9 +239,9 @@ namespace LoLUpdater
 
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
-                    if (File.Exists(CgInstaller))
+                    if (File.Exists(cgInstaller))
                     {
-                        File.Delete(CgInstaller);
+                        File.Delete(cgInstaller);
                     }
                 }
             }
@@ -327,6 +312,33 @@ namespace LoLUpdater
                     Environment.Exit(0);
                     break;
             }
+        }
+
+        private static bool AirInstall(WebClient webClient)
+        {
+         
+        const string airInstaller = "air15_win.exe";
+            webClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+                airInstaller);
+            if (File.Exists(airInstaller))
+            {
+                FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
+            }
+            Process airwin = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            airInstaller,
+                        Arguments = "-silent"
+                    }
+            };
+            airwin.Start();
+            airwin.WaitForExit();
+            if (!File.Exists(airInstaller)) return true;
+            File.Delete(airInstaller);
+            return false;
         }
 
         private static void Help()
@@ -472,20 +484,20 @@ namespace LoLUpdater
 
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
-            using (WebClient webClient = new WebClient())
+            using (WebClient)
             {
                 if (Riot)
                 {
                     if (!File.Exists(QuickPath(path, path1, ver, file)))
                     {
-                        webClient.DownloadFile(
+                        WebClient.DownloadFile(
                             uri,
                             QuickPath(path, path1, ver, file));
                     }
                     else
                     {
                         if (!Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                        webClient.DownloadFile(
+                        WebClient.DownloadFile(
                             uri,
                             QuickPath(path, path1, ver, file));
                     }
@@ -494,12 +506,12 @@ namespace LoLUpdater
                 {
                     if (!File.Exists(file))
                     {
-                        webClient.DownloadFile(uri, file);
+                        WebClient.DownloadFile(uri, file);
                     }
                     else
                     {
                         if (!Sha512(file, sha512)) return;
-                        webClient.DownloadFile(uri, file);
+                        WebClient.DownloadFile(uri, file);
                     }
                 }
             }
