@@ -119,32 +119,35 @@ namespace LoLUpdater
                 if (Sha512("LoLUpdater.exe",
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
+                    if (File.Exists("LoLUpdater Updater.exe"))
+                    {
+                        File.Delete("LoLUpdater Updater.exe");
+                    }
                     using (
                         MemoryStream memoryStream =
-                            new MemoryStream(
-                                WebClient.DownloadData(
-                                    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+                            new MemoryStream())
                     {
-                        memoryStream.Position = 0;
+                        WebClient.DownloadData(
+                            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"));
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
                             using (BinaryReader binaryReader = new BinaryReader(memoryStream))
                             {
-                            CompilerParameters parameters = new CompilerParameters
-                            {
-                                GenerateInMemory = false,
-                                GenerateExecutable = true,
-                                IncludeDebugInformation = false,
-                                CompilerOptions = "/optimize",
-                                OutputAssembly = "LoLUpdater Updater.exe"
-                            };
-                            parameters.ReferencedAssemblies.Add("System.dll");
-                            parameters.ReferencedAssemblies.Add("System.Core.dll");
-                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                Encoding.Default.GetString(binaryReader.ReadBytes(Convert.ToInt32(memoryStream.Length))));
-                            Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                            Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                            Process.Start(result.PathToAssembly);
+                                CompilerParameters parameters = new CompilerParameters
+                                {
+                                    GenerateInMemory = false,
+                                    GenerateExecutable = true,
+                                    IncludeDebugInformation = false,
+                                    CompilerOptions = "/optimize",
+                                    OutputAssembly = "LoLUpdater Updater.exe"
+                                };
+                                parameters.ReferencedAssemblies.Add("System.dll");
+                                parameters.ReferencedAssemblies.Add("System.Core.dll");
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(memoryStream.ToArray(), 0))));
+                                Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                                Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                                Process.Start(result.PathToAssembly);
+                                Environment.Exit(0);
                             }
                         }
                     }
@@ -217,24 +220,24 @@ namespace LoLUpdater
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
-                    LoL(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
-                        Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                    LoL(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
-                        Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                    LoL(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
-                        Installing);
-                    Parallel.ForEach(GameFiles,
-                        file =>
-                        {
-                            LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
-                            LoL("Game", file, string.Empty, string.Empty, string.Empty, "Backup", Installing);
-                        });
-                    LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll", string.Empty, string.Empty, string.Empty,
-                        "Backup", true);
-                    LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll", string.Empty, string.Empty, string.Empty,
-                        "Backup", true);
-                    Parallel.ForEach(CfgFilez,
-                        file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
+                LoL(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
+                LoL(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
+                LoL(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
+                    Installing);
+                Parallel.ForEach(GameFiles,
+                    file =>
+                    {
+                        LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
+                        LoL("Game", file, string.Empty, string.Empty, string.Empty, "Backup", Installing);
+                    });
+                LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll", string.Empty, string.Empty, string.Empty,
+                    "Backup", true);
+                LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll", string.Empty, string.Empty, string.Empty,
+                    "Backup", true);
+                Parallel.ForEach(CfgFilez,
+                    file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
                 using (WebClient)
@@ -271,29 +274,29 @@ namespace LoLUpdater
                 case 1:
                     Console.Clear();
                     Console.WriteLine("Installing...");
-                        Parallel.ForEach(AirFiles, file =>
-                        {
-                            LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, true);
-                        });
-                        Cfg(CfgFilez.ToString(), "Config", MultiCore);
-                        Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-                        Parallel.ForEach(CgFiles, file =>
-                        {
-                            Normalize(Path.Combine(_cgBinPath,
-                                file), string.Empty, string.Empty, string.Empty, false);
-                            File.Copy(Path.Combine(_cgBinPath,
-                                file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
-                            Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
-                            LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true);
-                        });
-                    if(!Riot)
+                    Parallel.ForEach(AirFiles, file =>
+                    {
+                        LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, true);
+                    });
+                    Cfg(CfgFilez.ToString(), "Config", MultiCore);
+                    Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
+                    Parallel.ForEach(CgFiles, file =>
+                    {
+                        Normalize(Path.Combine(_cgBinPath,
+                            file), string.Empty, string.Empty, string.Empty, false);
+                        File.Copy(Path.Combine(_cgBinPath,
+                            file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
+                        Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
+                        LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true);
+                    });
+                    if (!Riot)
                     {
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                               string.Empty);
                     }
-                        
-                        Parallel.ForEach(CfgFilez,
-                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });   
+
+                    Parallel.ForEach(CfgFilez,
+                        file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
 
                     FinishedPrompt("Done Installing!");
                     break;
@@ -575,23 +578,23 @@ namespace LoLUpdater
             {
                 Verify("projects", "lol_air_client", Air,
                     Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
-                if(!Riot)
+                if (!Riot)
                 {
                     Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), string.Empty, string.Empty,
                         string.Empty, AirSum);
                 }
-                
+
             });
 
             Parallel.ForEach(GameFiles, file =>
             {
                 Verify("solutions", "lol_game_client_sln", Sln,
                     file, permanentSum);
- if(!Riot)
- {
-     Verify(Path.Combine("Game", file), string.Empty, string.Empty,
-         string.Empty, permanentSum);
- }
+                if (!Riot)
+                {
+                    Verify(Path.Combine("Game", file), string.Empty, string.Empty,
+                        string.Empty, permanentSum);
+                }
             });
 
 
