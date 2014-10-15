@@ -125,7 +125,7 @@ namespace LoLUpdater
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
             if (args.Length > 0 && args.Contains(new List<string>(new[] {"--help", "-h", "/?", "-install", "-uninst"}).AsParallel()
-                                .ToString())
+                                .ToString()))
             {
                 switch (args[0])
                 {
@@ -133,11 +133,7 @@ namespace LoLUpdater
                     case "-h":
                     case "--help":
                     // Todo: make this a method
-                        Console.WriteLine("Command-Line Arguments:\n");
-                        Console.WriteLine("-install : Installs LoLUpdater");
-                        Console.WriteLine("-uninst : Uninstalls LoLUpdater");
-                        Console.WriteLine("--help /? -h : Shows this menu");
-                        Console.ReadLine();
+                        Help();
                         break;
 
                     case "-install":
@@ -232,14 +228,14 @@ namespace LoLUpdater
             else
             { 
                 Help();
-                Console.ReadLine();
                 Environment.Exit(0);
             }
             _userInput = DisplayMenu();
     while(true)
     {
-            if(_userInput >= 1 && _userInput <= 3)
-               {Console.Clear();
+        if (_userInput >= 1 && _userInput <= 3)
+        {
+            Console.Clear();
             Kill();
             if (Installing & !Directory.Exists("Backup"))
             {
@@ -316,14 +312,24 @@ namespace LoLUpdater
                     Environment.Exit(0);
                     break;
             }
-                   
-               }
-            else
-               {Console.WriteLine("Please enter a number between 1 and 3")}
+
         }
+        else
+        {
+            Console.WriteLine("Please enter a number between 1 and 3");
+        }
+    }
 
     }
-            }
+
+        private static void Help()
+        {
+            Console.WriteLine("Command-Line Arguments:\n");
+            Console.WriteLine("-install : Installs LoLUpdater");
+            Console.WriteLine("-uninst : Uninstalls LoLUpdater");
+            Console.WriteLine("--help /? -h : Shows this menu");
+            Console.ReadLine();
+        }
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
