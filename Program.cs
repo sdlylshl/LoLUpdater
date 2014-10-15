@@ -133,176 +133,188 @@ namespace LoLUpdater
                         break;
 
                     case "-install":
-                        Console.WriteLine("Installing...");
-                        Start();
-                        Check();
-                        if (!Directory.Exists("Backup"))
-                        {
-                            Directory.CreateDirectory("Backup");
-                        }
-                        if (Riot)
-                        {
-                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air,
-                                Path.Combine("Adobe AIR", "Versions", "1.0"), true);
-                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
-                                Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), true);
-
-                            BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty,
-                                string.Empty,
-                                true);
-                            Cfg(CfgFilez.ToString(), "Config", MultiCore);
-
-                            Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
-
-                            Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-                            Parallel.ForEach(CgFiles, file =>
-                            {
-                                Copy(Path.Combine(_cgBinPath,
-                                    file), "solutions", "lol_game_client_sln", Sln, file);
-                            });
-                        }
-                        else
-                        {
-                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", true); });
-
-                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                "Backup", true);
-                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
-                                "Backup", true);
-                            Parallel.ForEach(AirFiles, file =>
-                            {
-                                Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
-                                    true);
-                            });
-
-                            Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
-                                string.Empty);
-                            Parallel.ForEach(CfgFilez, file =>
-                            {
-                                Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
-                                Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
-                            });
-                            Parallel.ForEach(CgFiles, file =>
-                            {
-                                Copy(_cgBinPath, file,
-                                    "Game", true);
-                            });
-                        }
-                        Updater();
-                        FinishedPrompt("Done Installing!");
+                        _userInput = 1;
+                        Patch();
                         break;
 
                     case "-uninst":
-                        Console.WriteLine("Uninstalling...");
-                        Start();
-                        if (Riot)
-                        {
-                            BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air,
-                                Path.Combine("Adobe AIR", "Versions", "1.0"), false);
-                            BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
-                                Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), false);
-                            BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty,
-                                string.Empty,
-                                false);
-                            Parallel.ForEach(GameFiles,
-                                file => { BakCopy(file, "solutions", "lol_game_client_sln", Sln, false); });
-                        }
-                        else
-                        {
-                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                "Backup", false);
-                            Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
-                                "Backup", false);
-                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", false); });
-                        }
-                        Updater();
-                        Clean();
-                        FinishedPrompt("Done Uninstalling");
+                        _userInput = 2;
+                        Patch();
                         break;
                 }
             }
             else
             {
-                _userInput = DisplayMenu(); 
-                        Console.Clear();
-                        Kill();
-                        if (Installing & !Directory.Exists("Backup"))
+                _userInput = DisplayMenu();
+                Console.Clear();
+                Patch();
+            }
+        }
+
+        private static void Patch()
+        {
+            Kill();
+            if (Installing & !Directory.Exists("Backup"))
+            {
+                Directory.CreateDirectory("Backup");
+            }
+            if (_userInput < 3)
+            {
+                if (File.Exists("LoLUpdater Updater.exe"))
+                {
+                    FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
+                }
+                Console.WriteLine("Configuring...");
+                if (Riot)
+                {
+                    BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air,
+                        Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
+                    BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
+                        Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
+                    BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty,
+                        Installing);
+                    Parallel.ForEach(GameFiles,
+                        file => { BakCopy(file, "solutions", "lol_game_client_sln", Sln, Installing); });
+                }
+                else
+                {
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
+                        "Backup", true);
+                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
+                        "Backup", true);
+                    Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", Installing); });
+                    Parallel.ForEach(CfgFilez,
+                        file => { Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", Installing); });
+                }
+                Console.WriteLine(string.Empty);
+                if (!Installing) return;
+                using (WebClient wc = new WebClient())
+                {
+                    if ((!string.IsNullOrEmpty(AdobePath) &
+                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
+                         new Version("15.0.0.297")) || string.IsNullOrEmpty(AdobePath))
+                    {
+                        wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+                            AirInstaller);
+                        if (File.Exists(AirInstaller))
                         {
-                            Directory.CreateDirectory("Backup");
+                            FileFix(AirInstaller, string.Empty, string.Empty, string.Empty);
                         }
-                        if (_userInput < 3)
+                        Process air = new Process
                         {
-                            Updater();
-                            Console.WriteLine("Configuring...");
-                            if (Riot)
-                            {
-                                BakCopy("Adobe AIR.dll", "projects", "lol_air_client", Air,
-                                    Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                                BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
-                                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                                BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty,
-                                    Installing);
-                                Parallel.ForEach(GameFiles,
-                                    file => { BakCopy(file, "solutions", "lol_game_client_sln", Sln, Installing); });
-                            }
-                            else
-                            {
-                                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                    "Backup", true);
-                                Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
-                                    "Backup", true);
-                                Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", Installing); });
-                                Parallel.ForEach(CfgFilez,
-                                    file => { Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", Installing); });
-                            }
-                            Console.WriteLine(string.Empty);
-                            if (!Installing) return;
-                            Check();
-                        }
-                        switch (_userInput)
-                        {
-                            case 1:
-                                Console.Clear();
-                                Console.WriteLine("Installing...");
-                                if (Riot)
+                            StartInfo =
+                                new ProcessStartInfo
                                 {
-                                    Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
-                                    Cfg(CfgFilez.ToString(), "Config", MultiCore);
-                                    Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-                                    Parallel.ForEach(CgFiles, file =>
-                                    {
-                                        Copy(Path.Combine(_cgBinPath,
-                                            file), "solutions", "lol_game_client_sln", Sln, file);
-                                    });
+                                    FileName =
+                                        AirInstaller,
+                                    Arguments = "-silent"
                                 }
-                                else
-                                {
-                                    Parallel.ForEach(AirFiles, file =>
-                                    {
-                                        Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
-                                            true);
-                                    });
+                        };
 
-                                    Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
-                                        string.Empty);
-                                    Parallel.ForEach(CfgFilez,
-                                        file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
-                                    Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, file, "Game", true); });
-                                }
-                                FinishedPrompt("Done Installing!");
-                                break;
+                        air.Start();
+                        air.WaitForExit();
+                        if (!File.Exists(AirInstaller)) return;
+                        File.Delete(AirInstaller);
+                    }
+                    if (!string.IsNullOrEmpty(_cgBinPath) &&
+                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
+                        new Version("3.1.0.13")) return;
+                    wc.DownloadFile(
+                        new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
+                        CgInstaller);
+                    if (File.Exists(CgInstaller))
+                    {
+                        FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
+                    }
+                    Process cg = new Process
+                    {
+                        StartInfo =
+                            new ProcessStartInfo
+                            {
+                                FileName =
+                                    CgInstaller,
+                                Arguments = "/silent /TYPE=compact"
+                            }
+                    };
+                    cg.Start();
+                    cg.WaitForExit();
 
-                            case 2:
-                                Clean();
-                                FinishedPrompt("Done Uninstalling!");
-                                break;
-
-                            case 3:
-                                Environment.Exit(0);
-                                break;
-                        }
+                    _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                        EnvironmentVariableTarget.User);
+                    if (File.Exists(CgInstaller))
+                    {
+                        File.Delete(CgInstaller);
+                    }
                 }
             }
+            switch (_userInput)
+            {
+                case 1:
+                    Console.Clear();
+                    Console.WriteLine("Installing...");
+                    if (Riot)
+                    {
+                        Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
+                        Cfg(CfgFilez.ToString(), "Config", MultiCore);
+                        Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
+                        Parallel.ForEach(CgFiles, file =>
+                        {
+                            Copy(Path.Combine(_cgBinPath,
+                                file), "solutions", "lol_game_client_sln", Sln, file);
+                        });
+                    }
+                    else
+                    {
+                        Parallel.ForEach(AirFiles, file =>
+                        {
+                            Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
+                                true);
+                        });
+
+                        Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
+                            string.Empty);
+                        Parallel.ForEach(CfgFilez,
+                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
+                        Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, file, "Game", true); });
+                    }
+                    FinishedPrompt("Done Installing!");
+                    break;
+
+                case 2:
+                    Parallel.ForEach(GameFiles,
+                                    file =>
+                                    {
+                                        if (!File.Exists(Path.Combine("Backup", file))) return;
+                                        File.Delete(Path.Combine("Backup", file));
+                                    });
+                    Parallel.ForEach(AirFiles,
+                        file =>
+                        {
+                            if (!File.Exists(Path.Combine("Backup", file))) return;
+                            File.Delete(Path.Combine("Backup", file));
+                        });
+                    if (Riot)
+                    {
+                        if (!File.Exists(Path.Combine("Backup", CfgFilez.ToString()))) return;
+                        File.Delete(Path.Combine("Backup", CfgFilez.ToString()));
+                    }
+                    else
+                    {
+                        Parallel.ForEach(CfgFilez,
+                            file =>
+                            {
+                                if (!File.Exists(Path.Combine("Backup", file))) return;
+                                File.Delete(Path.Combine("Backup", file));
+                            });
+                    }
+                    FinishedPrompt("Done Uninstalling!");
+                    break;
+
+                case 3:
+                    Environment.Exit(0);
+                    break;
+            }
+        }
 
         private static void Help()
         {
@@ -399,98 +411,6 @@ namespace LoLUpdater
             File.WriteAllText(Path.Combine(path, file), text);
         }
 
-        private static void Check()
-        {
-            using (WebClient wc = new WebClient())
-            {
-                if ((!string.IsNullOrEmpty(AdobePath) &
-                     new Version(FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                     new Version("15.0.0.297")) || string.IsNullOrEmpty(AdobePath))
-                {
-                    wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                        AirInstaller);
-                    if (File.Exists(AirInstaller))
-                    {
-                        FileFix(AirInstaller, string.Empty, string.Empty, string.Empty);
-                    }
-                    Process air = new Process
-                    {
-                        StartInfo =
-                            new ProcessStartInfo
-                            {
-                                FileName =
-                                    AirInstaller,
-                                Arguments = "-silent"
-                            }
-                    };
-
-                    air.Start();
-                    air.WaitForExit();
-                    if (!File.Exists(AirInstaller)) return;
-                    File.Delete(AirInstaller);
-                }
-                if (!string.IsNullOrEmpty(_cgBinPath) &&
-                    new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
-                    new Version("3.1.0.13")) return;
-                wc.DownloadFile(
-                    new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
-                    CgInstaller);
-                if (File.Exists(CgInstaller))
-                {
-                    FileFix(CgInstaller, string.Empty, string.Empty, string.Empty);
-                }
-                Process cg = new Process
-                {
-                    StartInfo =
-                        new ProcessStartInfo
-                        {
-                            FileName =
-                                CgInstaller,
-                            Arguments = "/silent /TYPE=compact"
-                        }
-                };
-                cg.Start();
-                cg.WaitForExit();
-
-                _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                    EnvironmentVariableTarget.User);
-                if (File.Exists(CgInstaller))
-                {
-                    File.Delete(CgInstaller);
-                }
-            }
-        }
-
-        private static void Clean()
-        {
-            Parallel.ForEach(GameFiles,
-                file =>
-                {
-                    if (!File.Exists(Path.Combine("Backup", file))) return;
-                    File.Delete(Path.Combine("Backup", file));
-                });
-            Parallel.ForEach(AirFiles,
-                file =>
-                {
-                    if (!File.Exists(Path.Combine("Backup", file))) return;
-                    File.Delete(Path.Combine("Backup", file));
-                });
-            if (Riot)
-            {
-                if (!File.Exists(Path.Combine("Backup", CfgFilez.ToString()))) return;
-                File.Delete(Path.Combine("Backup", CfgFilez.ToString()));
-            }
-            else
-            {
-                Parallel.ForEach(CfgFilez,
-                    file =>
-                    {
-                        if (!File.Exists(Path.Combine("Backup", file))) return;
-                        File.Delete(Path.Combine("Backup", file));
-                    });
-            }
-        }
-
         private static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (!File.Exists(@from)) return;
@@ -513,7 +433,6 @@ namespace LoLUpdater
             }
         }
 
-        // if you have more menu items change byte ->
         private static int DisplayMenu()
         {
             int num = 0;
@@ -634,30 +553,11 @@ namespace LoLUpdater
             } while (_notdone);
         }
 
-        private static void Start()
-        {
-            if (OnlyInstance.WaitOne(TimeSpan.Zero, true))
-            {
-                Console.WriteLine(
-                    "Another instance of LoLUpdater is already running, please close both instances and try again");
-                Console.WriteLine();
-                return;
-            }
-            GC.KeepAlive(OnlyInstance);
-            Kill();
-        }
-
         private static long ToInt(string value)
         {
             int result;
             int.TryParse(value, out result);
             return result;
-        }
-
-        private static void Updater()
-        {
-            if (!File.Exists("LoLUpdater Updater.exe")) return;
-            FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
         }
 
         private static void FileFix(string path, string path1, string ver, string file)
