@@ -181,23 +181,25 @@ namespace LoLUpdater
                         using (WebClient)
                         {
                             WebClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"), "Temp.cs");
+                            if(File.Exists("Temp.cs"))
+                            { 
+                            FileFix("Temp.cs", string.Empty, string.Empty, string.Empty);
                             using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                             {
                                 CompilerParameters parameters = new CompilerParameters()
                                 {
                                     GenerateInMemory = false,
                                     GenerateExecutable = true,
-                                    TempFiles = new TempFileCollection(".", false),
                                     IncludeDebugInformation = false,
                                     CompilerOptions = "/optimize",
-                                    OutputAssembly = "LoLUpdater Updater.exe"
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
-                                cscp.CompileAssemblyFromFile(parameters, "Temp.cs");
+                                CompilerResults result = cscp.CompileAssemblyFromFile(parameters, "Temp.cs");
                                 File.Delete("Temp.cs");
-                                FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
-                                Process.Start("LoLUpdater Updater.exe");
+                                FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty);
+                                Process.Start(result.PathToAssembly);
+                            }
                             }
                         }
                     }
