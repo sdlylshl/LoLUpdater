@@ -127,6 +127,8 @@ namespace LoLUpdater
             {
                 switch (args[0])
                 {
+                    case "/?":
+                    case "-h":
                     case "--help":
                         Start();
                         Console.WriteLine("Command-Line Arguments:\n");
@@ -135,12 +137,6 @@ namespace LoLUpdater
                         Console.WriteLine("--help /? -h : Shows this menu");
                         Console.ReadLine();
                         break;
-
-                    case "/?":
-                        goto case "--help";
-
-                    case "-h":
-                        goto case "--help";
 
                     case "-install":
                         Console.WriteLine("Installing...");
@@ -232,8 +228,13 @@ namespace LoLUpdater
                 }
             }
             _userInput = DisplayMenu();
-
-            Console.Clear();
+    while(true)
+    {
+        int menuChoice;
+        if(Int32.TryParse(_userInput, out menuChoice))
+        {
+            if(menuChoice >= 1 && menuChoice <= 3)
+               {Console.Clear();
             Kill();
             if (Installing & !Directory.Exists("Backup"))
             {
@@ -309,6 +310,16 @@ namespace LoLUpdater
                 case 3:
                     Environment.Exit(0);
                     break;
+            }
+                   
+               }
+            else
+               {Console.WriteLine("Enter a number between 1-3");}
+        }
+        else
+            {Console.WriteLine("A number between 1-3 is required!");}
+
+    }
             }
         }
 
