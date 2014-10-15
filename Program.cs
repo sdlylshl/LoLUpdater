@@ -98,7 +98,9 @@ namespace LoLUpdater
             "LoLClient", "LoLLauncher", "LoLPatcher",
             "League of Legends"
         };
-
+        
+        private static string[] validargs = {"--help", "-h", "/?", "-install", "-uninst"};
+        
         private static bool _notdone;
 
         private static readonly string Adobe = Riot
@@ -109,6 +111,7 @@ namespace LoLUpdater
         private static int _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
 
+// Todo: Use byte-comparison here instead
         private static readonly bool MultiCore =
             CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
@@ -123,13 +126,14 @@ namespace LoLUpdater
         {
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
-            if (args.Length > 0)
+            if (args.Length > 0 && args.Contains(string.Join(string.Empty, validargs);))
             {
                 switch (args[0])
                 {
                     case "/?":
                     case "-h":
                     case "--help":
+                    // Todo: make this a method
                         Console.WriteLine("Command-Line Arguments:\n");
                         Console.WriteLine("-install : Installs LoLUpdater");
                         Console.WriteLine("-uninst : Uninstalls LoLUpdater");
@@ -226,10 +230,16 @@ namespace LoLUpdater
                         break;
                 }
             }
+            else
+            { 
+                Help();
+                Console.ReadLine();
+                Environment.Exit(0);
+            }
             _userInput = DisplayMenu();
     while(true)
     {
-            if(_userInput >= 1 && menuChoice <= 3)
+            if(_userInput >= 1 && _userInput <= 3)
                {Console.Clear();
             Kill();
             if (Installing & !Directory.Exists("Backup"))
