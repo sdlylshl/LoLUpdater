@@ -216,8 +216,6 @@ namespace LoLUpdater
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
-                if (Riot)
-                {
                     LoL(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
                         Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
                     LoL(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
@@ -225,18 +223,17 @@ namespace LoLUpdater
                     LoL(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
                         Installing);
                     Parallel.ForEach(GameFiles,
-                        file => { LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing); });
-                }
-                else
-                {
+                        file =>
+                        {
+                            LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
+                            LoL("Game", file, string.Empty, string.Empty, string.Empty, "Backup", Installing);
+                        });
                     LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll", string.Empty, string.Empty, string.Empty,
                         "Backup", true);
                     LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll", string.Empty, string.Empty, string.Empty,
                         "Backup", true);
-                    Parallel.ForEach(GameFiles, file => { LoL("Game", file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                     Parallel.ForEach(CfgFilez,
                         file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
-                }
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
                 using (WebClient)
