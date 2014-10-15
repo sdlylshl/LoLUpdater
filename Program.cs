@@ -124,15 +124,11 @@ namespace LoLUpdater
                     { Normalize(Updater, string.Empty, string.Empty, string.Empty, true); }
                     using (
                         MemoryStream memoryStream =
-                            new MemoryStream())
+                            new MemoryStream(WebClient.DownloadData(
+                            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
                     {
-                        WebClient.DownloadData(
-                            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"));
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
-                            memoryStream.Position = 0;
-                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                            {
                                 CompilerParameters parameters = new CompilerParameters
                                 {
                                     GenerateInMemory = false,
@@ -143,12 +139,11 @@ namespace LoLUpdater
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(new byte[memoryStream.Length], 0))));
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(BitConverter.GetBytes(BitConverter.ToInt32(memoryStream.ToArray(), 0))));
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
                                 Environment.Exit(0);
-                            }
                         }
                     }
                 }
