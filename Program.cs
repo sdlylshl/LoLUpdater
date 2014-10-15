@@ -18,7 +18,6 @@ namespace LoLUpdater
     internal static class Program
     {
         private const string SKernel = "kernel32.dll";
-
         private static readonly string AdobePath =
             Path.Combine(
                 Environment.Is64BitProcess
@@ -30,7 +29,7 @@ namespace LoLUpdater
 
         // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
         private static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
-
+        private const string BakFolder = "Backup";
         private static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
 
         private static readonly ManagementBaseObject[] CpuInfo =
@@ -49,15 +48,15 @@ namespace LoLUpdater
                                 .ToString()));
 
         private static readonly bool Riot = Directory.Exists("RADS");
-
+        private const string CfgFile = "game.cfg";
         private static readonly string[] CfgFilez = Riot
             ? new[]
             {
-                "game.cfg"
+                CfgFile
             }
             : new[]
             {
-                "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+                CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 "GamePermanent_en_SG.cfg"
             };
 
@@ -68,10 +67,10 @@ namespace LoLUpdater
             @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
 
         // Note: Checksums are in SHA512
-
+        private const string Ipf = "IsProcessorFeaturePresent";
         private static readonly string Sln = Ver("solutions", "lol_game_client_sln");
-        private static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
-        private static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
+        private static readonly bool Sse = Dll(6, Ipf);
+        private static readonly bool Sse2 = Dll(10, Ipf);
 
         private static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
@@ -140,9 +139,9 @@ namespace LoLUpdater
                         Console.WriteLine("Installing...");
                         Start();
                         Check();
-                        if (!Directory.Exists("Backup"))
+                        if (!Directory.Exists(BakFolder))
                         {
-                            Directory.CreateDirectory("Backup");
+                            Directory.CreateDirectory(BakFolder);
                         }
                         if (Riot)
                         {
@@ -167,12 +166,12 @@ namespace LoLUpdater
                         }
                         else
                         {
-                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", true); });
+                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, BakFolder, true); });
 
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                "Backup", true);
+                                BakFolder, true);
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
-                                "Backup", true);
+                                BakFolder, true);
                             Parallel.ForEach(AirFiles, file =>
                             {
                                 Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
@@ -183,7 +182,7 @@ namespace LoLUpdater
                                 string.Empty);
                             Parallel.ForEach(CfgFilez, file =>
                             {
-                                Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
+                                Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, BakFolder, true);
                                 Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
                             });
                             Parallel.ForEach(CgFiles, file =>
@@ -214,10 +213,10 @@ namespace LoLUpdater
                         else
                         {
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                "Backup", false);
+                                BakFolder, false);
                             Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources"), "NPSWF32.dll",
-                                "Backup", false);
-                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", false); });
+                                BakFolder, false);
+                            Parallel.ForEach(GameFiles, file => { Copy("Game", file, BakFolder, false); });
                         }
                         Updater();
                         Clean();
@@ -235,9 +234,9 @@ namespace LoLUpdater
                 }
                         Console.Clear();
                         Kill();
-                        if (Installing & !Directory.Exists("Backup"))
+                        if (Installing & !Directory.Exists(BakFolder))
                         {
-                            Directory.CreateDirectory("Backup");
+                            Directory.CreateDirectory(BakFolder);
                         }
                         if (_userInput < 3)
                         {
@@ -257,12 +256,12 @@ namespace LoLUpdater
                             else
                             {
                                 Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
-                                    "Backup", true);
+                                    BakFolder, true);
                                 Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
-                                    "Backup", true);
-                                Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", Installing); });
+                                    BakFolder, true);
+                                Parallel.ForEach(GameFiles, file => { Copy("Game", file, BakFolder, Installing); });
                                 Parallel.ForEach(CfgFilez,
-                                    file => { Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", Installing); });
+                                    file => { Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, BakFolder, Installing); });
                             }
                             Console.WriteLine(string.Empty);
                             if (!Installing) return;
@@ -353,14 +352,14 @@ namespace LoLUpdater
                 File.Copy(
                     QuickPath(path, path1,
                         ver, file)
-                    , Path.Combine("Backup", file),
+                    , Path.Combine(BakFolder, file),
                     true);
             }
             else
             {
                 FileFix(path, path1, ver, file);
-                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
-                File.Copy(Path.Combine("Backup", file)
+                if (mode | !File.Exists(Path.Combine(BakFolder, file))) return;
+                File.Copy(Path.Combine(BakFolder, file)
                     , QuickPath(path, path1,
                         ver, file),
                     true);
@@ -374,13 +373,13 @@ namespace LoLUpdater
                 FileFix(path, path1, ver, file);
                 File.Copy(
                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
-                    , Path.Combine("Backup", file),
+                    , Path.Combine(BakFolder, file),
                     true);
             }
             else
             {
-                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
-                File.Copy(Path.Combine("Backup", file)
+                if (mode | !File.Exists(Path.Combine(BakFolder, file))) return;
+                File.Copy(Path.Combine(BakFolder, file)
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
                 FileFix(path, path1, ver, file);
@@ -474,27 +473,27 @@ namespace LoLUpdater
             Parallel.ForEach(GameFiles,
                 file =>
                 {
-                    if (!File.Exists(Path.Combine("Backup", file))) return;
-                    File.Delete(Path.Combine("Backup", file));
+                    if (!File.Exists(Path.Combine(BakFolder, file))) return;
+                    File.Delete(Path.Combine(BakFolder, file));
                 });
             Parallel.ForEach(AirFiles,
                 file =>
                 {
-                    if (!File.Exists(Path.Combine("Backup", file))) return;
-                    File.Delete(Path.Combine("Backup", file));
+                    if (!File.Exists(Path.Combine(BakFolder, file))) return;
+                    File.Delete(Path.Combine(BakFolder, file));
                 });
             if (Riot)
             {
-                if (!File.Exists(Path.Combine("Backup", CfgFilez.ToString()))) return;
-                File.Delete(Path.Combine("Backup", CfgFilez.ToString()));
+                if (!File.Exists(Path.Combine(BakFolder, CfgFilez.ToString()))) return;
+                File.Delete(Path.Combine(BakFolder, CfgFilez.ToString()));
             }
             else
             {
                 Parallel.ForEach(CfgFilez,
                     file =>
                     {
-                        if (!File.Exists(Path.Combine("Backup", file))) return;
-                        File.Delete(Path.Combine("Backup", file));
+                        if (!File.Exists(Path.Combine(BakFolder, file))) return;
+                        File.Delete(Path.Combine(BakFolder, file));
                     });
             }
         }
