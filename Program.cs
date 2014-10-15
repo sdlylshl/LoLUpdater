@@ -248,9 +248,10 @@ namespace LoLUpdater
                     else
                     {
                         if (new Version(
-                            FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) >=
-                            new Version("15.0.0.297")) return;
-                        AirInstall();
+                            FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
+                            new Version("15.0.0.297"))
+                        { AirInstall(); }
+                        
                     }
 
                     if (string.IsNullOrEmpty(_cgBinPath))
@@ -259,9 +260,10 @@ namespace LoLUpdater
                     else
                     {
                         if (
-                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
-                            new Version("3.1.0.13")) return;
-                        CgInstall();
+                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
+                            new Version("3.1.0.13"))
+                        {CgInstall(); }
+                        
                     }
 
                 }
