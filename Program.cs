@@ -99,8 +99,6 @@ namespace LoLUpdater
             "League of Legends"
         };
         
-        private static string[] validargs = {"--help", "-h", "/?", "-install", "-uninst"};
-        
         private static bool _notdone;
 
         private static readonly string Adobe = Riot
@@ -126,7 +124,8 @@ namespace LoLUpdater
         {
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
-            if (args.Length > 0 && args.Contains(string.Join(string.Empty, validargs);))
+            if (args.Length > 0 && args.Contains(new List<string>(new[] {"--help", "-h", "/?", "-install", "-uninst"}).AsParallel()
+                                .ToString())
             {
                 switch (args[0])
                 {
