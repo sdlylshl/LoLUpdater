@@ -298,10 +298,8 @@ namespace LoLUpdater
 
                     _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                         EnvironmentVariableTarget.User);
-                    if (File.Exists(cgInstaller))
-                    {
+                    if (!File.Exists(cgInstaller)) return;
                         File.Delete(cgInstaller);
-                    }
                 }
             }
             switch (_userInput)
