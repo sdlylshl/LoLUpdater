@@ -125,10 +125,6 @@ namespace LoLUpdater
                         Console.ReadLine();
                         break;
 
-                    case "-update":
-                        Process.Start("LoLUpdater Updater.exe");
-                        break;
-
                     case "-install":
                         _userInput = 1;
                         Patch();
@@ -192,6 +188,7 @@ namespace LoLUpdater
                                     GenerateExecutable = true,
                                     IncludeDebugInformation = false,
                                     CompilerOptions = "/optimize",
+                                    OutputAssembly = "LoLUpater Updater.exe"
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
@@ -256,7 +253,7 @@ namespace LoLUpdater
                         File.Delete(airInstaller);
                     }
 
-                    if (File.Exists(Path.Combine(_cgBinPath, "cg.dll")) &&
+                    if (!string.IsNullOrEmpty(_cgBinPath) &&
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
                         new Version("3.1.0.13")) return;
                     const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
@@ -365,8 +362,7 @@ namespace LoLUpdater
                     string.Empty,
                     "-install : Installs LoLUpdater",
                     "-uninst : Uninstalls LoLUpdater",
-                    "--help /? -h : Shows this menu",
-                    "-update : Updates LoLUpdater if you have LoLUpdater Updater.exe in the same path")
+                    "--help /? -h : Shows this menu")
             );
         }
 
