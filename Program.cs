@@ -130,7 +130,6 @@ namespace LoLUpdater
                     case "/?":
                     case "-h":
                     case "--help":
-                        Start();
                         Console.WriteLine("Command-Line Arguments:\n");
                         Console.WriteLine("-install : Installs LoLUpdater");
                         Console.WriteLine("-uninst : Uninstalls LoLUpdater");
@@ -230,10 +229,7 @@ namespace LoLUpdater
             _userInput = DisplayMenu();
     while(true)
     {
-        int menuChoice;
-        if(Int32.TryParse(_userInput, out menuChoice))
-        {
-            if(menuChoice >= 1 && menuChoice <= 3)
+            if(_userInput >= 1 && menuChoice <= 3)
                {Console.Clear();
             Kill();
             if (Installing & !Directory.Exists("Backup"))
@@ -314,14 +310,11 @@ namespace LoLUpdater
                    
                }
             else
-               {Console.WriteLine("Enter a number between 1-3");}
+               {Console.WriteLine("Please enter a number between 1 and 3")}
         }
-        else
-            {Console.WriteLine("A number between 1-3 is required!");}
 
     }
             }
-        }
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
