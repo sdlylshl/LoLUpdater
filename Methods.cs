@@ -36,7 +36,8 @@ namespace LoLUpdater
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
         protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
-
+        // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
+        protected static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
         protected static readonly Mutex OnlyInstance = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly bool Riot = Directory.Exists("RADS");
         protected static readonly string Sln = Ver("solutions", "lol_game_client_sln");
@@ -56,13 +57,16 @@ namespace LoLUpdater
         protected static string CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
-        private const string AirSum =
-            "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e";
+
 
         private const string CgInstaller = "Cg-3.1_April2012_Setup.exe";
 
-        private const string FlashSum =
-            "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930";
+        // SAME ORDER AS AirFiles (Flash, Air)
+        private static readonly string AirSum = string.Join(string.Empty,
+            "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930",
+            "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e"
+        );
+            
 
         private static readonly string[] LoLKiller = {"LoLClient", "LoLLauncher", "LoLPatcher",
             "League of Legends"};
@@ -272,10 +276,13 @@ namespace LoLUpdater
                 TbbSum);
             if (Riot)
             {
-                Verify("projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSum);
-                Verify("projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSum);
+
+                Parallel.ForEach(AirFiles, file =>
+                {
+                    Verify("projects", "lol_air_client", Air,
+                                        Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
+                });
+
                 Parallel.ForEach(Files, file =>
                 {
                     Verify("solutions", "lol_game_client_sln", Sln,
@@ -284,8 +291,7 @@ namespace LoLUpdater
             }
             else
             {
-                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), FlashSum);
-                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe AIR.dll"), AirSum);
+                Parallel.ForEach(AirFiles, file => { Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), AirSum); });
                 Parallel.ForEach(Files, file => { Verify(Path.Combine("Game", file), permanentSha512); });
             }
 
