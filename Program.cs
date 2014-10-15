@@ -217,24 +217,24 @@ namespace LoLUpdater
                 Console.WriteLine("Configuring...");
                 if (Riot)
                 {
-                    Backup2("Adobe AIR.dll", "projects", "lol_air_client", Air,
+                    LoL(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
                         Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                    Backup2("NPSWF32.dll", "projects", "lol_air_client", Air,
+                    LoL(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
                         Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                    Backup(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty,
+                    LoL(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
                         Installing);
                     Parallel.ForEach(GameFiles,
-                        file => { Backup(file, "solutions", "lol_game_client_sln", Sln, Installing); });
+                        file => { LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing); });
                 }
                 else
                 {
-                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll",
+                    LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "Adobe Air.dll", string.Empty, string.Empty, string.Empty,
                         "Backup", true);
-                    Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
+                    LoL(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll", string.Empty, string.Empty, string.Empty,
                         "Backup", true);
-                    Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", Installing); });
+                    Parallel.ForEach(GameFiles, file => { LoL("Game", file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                     Parallel.ForEach(CfgFilez,
-                        file => { Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", Installing); });
+                        file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                 }
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
@@ -274,7 +274,7 @@ namespace LoLUpdater
                     Console.WriteLine("Installing...");
                     if (Riot)
                     {
-                        Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
+                        Parallel.ForEach(AirFiles, file => { LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, true); });
                         Cfg(CfgFilez.ToString(), "Config", MultiCore);
                         Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
                         Parallel.ForEach(CgFiles, file =>
@@ -290,7 +290,7 @@ namespace LoLUpdater
                     {
                         Parallel.ForEach(AirFiles, file =>
                         {
-                            Copy(AdobePath, file, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
+                            LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
                                 true);
                         });
 
@@ -298,7 +298,7 @@ namespace LoLUpdater
                             string.Empty);
                         Parallel.ForEach(CfgFilez,
                             file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
-                        Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, file, "Game", true); });
+                        Parallel.ForEach(CgFiles, file => { LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true); });
                     }
                     FinishedPrompt("Done Installing!");
                     break;
@@ -422,8 +422,8 @@ namespace LoLUpdater
             return ok;
         }
 
-
-        private static void Backup(string file, string path, string path1, string ver, bool mode)
+        // Todo: refactor this mess
+        private static void LoL(string from, string file, string path, string path1, string ver, string to, bool mode)
         {
             if (mode & File.Exists(QuickPath(path, path1,
                 ver, file)))
@@ -446,10 +446,6 @@ namespace LoLUpdater
                     true);
                 FileFix(path, path1, ver, file, false);
             }
-        }
-
-        private static void Backup2(string file, string path, string path1, string ver, string to, bool mode)
-        {
             if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
                 FileFix(path, path1, ver, Path.Combine(to, file), false);
@@ -468,9 +464,22 @@ namespace LoLUpdater
                     true);
                 FileFix(path, path1, ver, Path.Combine(to, file), false);
             }
+            if (mode & File.Exists(Path.Combine(@from, file)))
+            {
+                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+            }
+            else
+            {
+
+                if (mode | !File.Exists(Path.Combine(to, file))) return;
+                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
+                FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
+            }
         }
 
-        // Todo: Make initializers out of the strings
         private static void Cfg(string file, string path, bool mode)
         {
             if (!File.Exists(Path.Combine(path, file))) return;
@@ -490,25 +499,6 @@ namespace LoLUpdater
             }
             File.WriteAllText(Path.Combine(path, file), text);
             FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
-        }
-
-
-        private static void Copy(string from, string file, string to, bool mode)
-        {
-            if (mode & File.Exists(Path.Combine(@from, file)))
-            {
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
-                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
-            }
-            else
-            {
-
-                if (mode | !File.Exists(Path.Combine(to, file))) return;
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
-                File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
-                FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
-            }
         }
 
         private static int DisplayMenu()
@@ -535,6 +525,7 @@ namespace LoLUpdater
             return num;
         }
 
+        // Use this only for tbb?
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
             using (WebClient)
@@ -582,26 +573,23 @@ namespace LoLUpdater
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
                 TbbSum);
-            if (Riot)
-            {
-                Parallel.ForEach(AirFiles, file =>
-                {
-                    Verify("projects", "lol_air_client", Air,
-                        Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
-                });
 
-                Parallel.ForEach(GameFiles, file =>
-                {
-                    Verify("solutions", "lol_game_client_sln", Sln,
-                        file, permanentSum);
-                });
-            }
-            else
+            Parallel.ForEach(AirFiles, file =>
             {
-                Parallel.ForEach(AirFiles,
-                    file => { Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), AirSum); });
-                Parallel.ForEach(GameFiles, file => { Verify(Path.Combine("Game", file), permanentSum); });
-            }
+                Verify("projects", "lol_air_client", Air,
+                    Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
+                Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), string.Empty, string.Empty,
+string.Empty, AirSum);
+            });
+
+            Parallel.ForEach(GameFiles, file =>
+            {
+                Verify("solutions", "lol_game_client_sln", Sln,
+                    file, permanentSum);
+                Verify(Path.Combine("Game", file), string.Empty, string.Empty,
+string.Empty, permanentSum);
+            });
+
 
             Console.WriteLine("{0}", message);
             if (Riot)
@@ -692,18 +680,21 @@ namespace LoLUpdater
 
         private static void Verify(string path, string path1, string ver, string file, string sha512)
         {
-            Console.WriteLine(
-                !Sha512(QuickPath(path, path1, ver, file), sha512)
-                    ? "{0} Is the old patched file or the original"
-                    : "{0} Succesfully patched!",
-                Path.GetFileNameWithoutExtension(file));
-        }
+            if (Riot)
+            {
+                Console.WriteLine(
+                   !Sha512(QuickPath(path, path1, ver, file), sha512)
+                       ? "{0} Is the old patched file or the original"
+                       : "{0} Succesfully patched!",
+                   Path.GetFileNameWithoutExtension(file));
+            }
+            else
+            {
+                Console.WriteLine(
+                    !Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
+                    Path.GetFileNameWithoutExtension(path));
+            }
 
-        private static void Verify(string file, string sha512)
-        {
-            Console.WriteLine(
-                !Sha512(file, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
-                Path.GetFileNameWithoutExtension(file));
         }
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
