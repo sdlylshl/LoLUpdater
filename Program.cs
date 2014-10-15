@@ -143,7 +143,7 @@ namespace LoLUpdater
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(memoryStream.ToArray(), 0))));
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(new byte[memoryStream.Length], 0))));
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
