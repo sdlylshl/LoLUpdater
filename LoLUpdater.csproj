@@ -46,8 +46,6 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
-    <Compile Include="Methods.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
