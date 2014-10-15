@@ -16,7 +16,7 @@ namespace LoLUpdater
     internal class Methods : NativeMethods
     {
         // Checksums are in SHA512
-
+        protected static readonly bool Riot = Directory.Exists("RADS");
         protected static readonly string AdobePath =
             Path.Combine(
                 Environment.Is64BitProcess
@@ -34,11 +34,16 @@ namespace LoLUpdater
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
 
 
-        protected static readonly string[] CfgFiles =
-        {
-            "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
-            "GamePermanent_en_SG.cfg"
-        };
+        protected static readonly string[] CfgFilez = Riot
+            ? new[]
+            {
+                "game.cfg"
+            }
+            : new[]
+            {
+                "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+                "GamePermanent_en_SG.cfg"
+            };
 
         protected static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().AsParallel().ToArray();
 
@@ -50,7 +55,6 @@ namespace LoLUpdater
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
         protected static readonly Mutex OnlyInstance = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
-        protected static readonly bool Riot = Directory.Exists("RADS");
         protected static readonly string Sln = Ver("solutions", "lol_game_client_sln");
         protected static readonly bool Sse = Dll(6, "IsProcessorFeaturePresent");
         protected static readonly bool Sse2 = Dll(10, "IsProcessorFeaturePresent");
@@ -216,12 +220,12 @@ namespace LoLUpdater
                 });
             if (Riot)
             {
-                if (!File.Exists(Path.Combine("Backup", "game.cfg"))) return;
-                File.Delete(Path.Combine("Backup", "game.cfg"));
+                if (!File.Exists(Path.Combine("Backup", CfgFilez.ToString()))) return;
+                File.Delete(Path.Combine("Backup", CfgFilez.ToString()));
             }
             else
             {
-                Parallel.ForEach(CfgFiles,
+                Parallel.ForEach(CfgFilez,
                     file =>
                     {
                         if (!File.Exists(Path.Combine("Backup", file))) return;

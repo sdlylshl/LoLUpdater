@@ -61,9 +61,9 @@ namespace LoLUpdater
                             BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
                                 Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), true);
 
-                            BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty,
+                            BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty,
                                 true);
-                            Cfg("game.cfg", "Config", MultiCore);
+                            Cfg(CfgFilez.ToString(), "Config", MultiCore);
 
                             Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
 
@@ -91,7 +91,7 @@ namespace LoLUpdater
 
                             Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                                 string.Empty);
-                            Parallel.ForEach(CfgFiles, file =>
+                            Parallel.ForEach(CfgFilez, file =>
                             {
                                 Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
                                 Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
@@ -115,7 +115,7 @@ namespace LoLUpdater
                                                             Path.Combine("Adobe AIR", "Versions", "1.0"), false);
                             BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
                                 Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), false);
-                            BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty,
+                            BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty,
                                 false);
                             Parallel.ForEach(GameFiles,
                                 file => { BakCopy(file, "solutions", "lol_game_client_sln", Sln, false); });
@@ -152,7 +152,7 @@ namespace LoLUpdater
                                                     Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
                     BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
                         Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                    BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty, Installing);
+                    BakCopy(Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, Installing);
                     Parallel.ForEach(GameFiles,
                         file => { BakCopy(file, "solutions", "lol_game_client_sln", Sln, Installing); });
                 }
@@ -163,7 +163,7 @@ namespace LoLUpdater
                                         Copy(Path.Combine("Air", "Adobe AIR", "Versions", "1.0"), "NPSWF32.dll",
                                                        "Backup", true);
                     Parallel.ForEach(GameFiles, file => { Copy("Game", file, "Backup", Installing); });
-                    Parallel.ForEach(CfgFiles, file =>
+                    Parallel.ForEach(CfgFilez, file =>
                     {
                         Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
                     });
@@ -180,7 +180,7 @@ namespace LoLUpdater
                     if (Riot)
                     {
                         Parallel.ForEach(AirFiles, file => { Copy(AdobePath, file, Adobe, true); });
-                        Cfg("game.cfg", "Config", MultiCore);
+                        Cfg(CfgFilez.ToString(), "Config", MultiCore);
                         Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
                         Parallel.ForEach(CgFiles, file =>
                         {
@@ -198,7 +198,7 @@ true);
 
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                             string.Empty);
-                        Parallel.ForEach(CfgFiles, file =>
+                        Parallel.ForEach(CfgFilez, file =>
                         {
                             Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
                         });
