@@ -142,7 +142,8 @@ namespace LoLUpdater
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
                             CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
                                 Encoding.UTF8.GetString(memoryStream.ToArray()));
-                            FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                            Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                            Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                             Process.Start(result.PathToAssembly);
                         }
                     }
@@ -279,11 +280,11 @@ namespace LoLUpdater
                         Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
                         Parallel.ForEach(CgFiles, file =>
                         {
-                            FileFix(Path.Combine(_cgBinPath,
+                            Normalize(Path.Combine(_cgBinPath,
                                 file), string.Empty, string.Empty, string.Empty, false);
                             File.Copy(Path.Combine(_cgBinPath,
                                 file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
-                            FileFix(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
+                            Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
                         });
                     }
                     else
@@ -346,7 +347,8 @@ namespace LoLUpdater
                 new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                 cgInstaller);
             if (!File.Exists(cgInstaller)) return;
-            FileFix(cgInstaller, string.Empty, string.Empty, string.Empty, true);
+            Normalize(cgInstaller, string.Empty, string.Empty, string.Empty, true);
+            Unblock(cgInstaller, string.Empty, string.Empty, string.Empty, true);
 
             Process cg = new Process
             {
@@ -372,7 +374,8 @@ namespace LoLUpdater
             WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                 airInstaller);
             if (!File.Exists(airInstaller)) return;
-            FileFix(airInstaller, string.Empty, string.Empty, string.Empty, true);
+            Normalize(airInstaller, string.Empty, string.Empty, string.Empty, true);
+            Unblock(airInstaller, string.Empty, string.Empty, string.Empty, true);
             Process airwin = new Process
             {
                 StartInfo =
@@ -428,62 +431,62 @@ namespace LoLUpdater
             if (mode & File.Exists(QuickPath(path, path1,
                 ver, file)))
             {
-                FileFix(path, path1, ver, file, false);
+                Normalize(path, path1, ver, file, false);
                 File.Copy(
                     QuickPath(path, path1,
                         ver, file)
                     , Path.Combine("Backup", file),
                     true);
-                FileFix(path, path1, ver, file, false);
+                Unblock(path, path1, ver, file, false);
             }
             else
             {
-                FileFix(path, path1, ver, file, false);
                 if (mode | !File.Exists(Path.Combine("Backup", file))) return;
+                Normalize(path, path1, ver, file, false);
                 File.Copy(Path.Combine("Backup", file)
                     , QuickPath(path, path1,
                         ver, file),
                     true);
-                FileFix(path, path1, ver, file, false);
+                Unblock(path, path1, ver, file, false);
             }
             if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
-                FileFix(path, path1, ver, Path.Combine(to, file), false);
+                Normalize(path, path1, ver, Path.Combine(to, file), false);
                 File.Copy(
                     Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
                     , Path.Combine("Backup", file),
                     true);
-                FileFix(path, path1, ver, Path.Combine(to, file), false);
+                Unblock(path, path1, ver, Path.Combine(to, file), false);
             }
             else
             {
                 if (mode | !File.Exists(Path.Combine("Backup", file))) return;
-                FileFix(path, path1, ver, Path.Combine(to, file), false);
+                Normalize(path, path1, ver, Path.Combine(to, file), false);
                 File.Copy(Path.Combine("Backup", file)
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
-                FileFix(path, path1, ver, Path.Combine(to, file), false);
+                Unblock(path, path1, ver, Path.Combine(to, file), false);
             }
             if (mode & File.Exists(Path.Combine(@from, file)))
             {
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                Normalize(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                Unblock(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
             }
             else
             {
 
                 if (mode | !File.Exists(Path.Combine(to, file))) return;
-                FileFix(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                Normalize(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
-                FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
+                Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
             }
         }
 
         private static void Cfg(string file, string path, bool mode)
         {
             if (!File.Exists(Path.Combine(path, file))) return;
-            FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
+            Normalize(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
             string text = File.ReadAllText(Path.Combine(path, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
@@ -498,7 +501,7 @@ namespace LoLUpdater
                 text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(Path.Combine(path, file), text);
-            FileFix(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
+            Unblock(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
         }
 
         private static int DisplayMenu()
@@ -540,13 +543,13 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        FileFix(path, path1, ver, file, false);
+                        Normalize(path, path1, ver, file, false);
                         if (!Sha512(QuickPath(path, path1, ver, file), sha512)) return;
                         WebClient.DownloadFile(
                             uri,
                             QuickPath(path, path1, ver, file));
                     }
-                    FileFix(path, path1, ver, file, false);
+                    Unblock(path, path1, ver, file, false);
                 }
                 else
                 {
@@ -556,11 +559,11 @@ namespace LoLUpdater
                     }
                     else
                     {
-                        FileFix(path, path1, ver, file, false);
+                        Normalize(path, path1, ver, file, false);
                         if (!Sha512(file, sha512)) return;
                         WebClient.DownloadFile(uri, file);
                     }
-                    FileFix(path, path1, ver, file, false);
+                    Unblock(path, path1, ver, file, false);
                 }
             }
         }
@@ -608,41 +611,51 @@ string.Empty, permanentSum);
             return result;
         }
 
-        private static void FileFix(string path, string path1, string ver, string file, bool exe)
+        private static void Normalize(string path, string path1, string ver, string file, bool exe)
         {
             if (!exe)
             {
                 if (Riot)
                 {
-                    if (new FileInfo(QuickPath(path, path1,
+                    if (!new FileInfo(QuickPath(path, path1,
                         ver, file)).Attributes
-                        .Equals(FileAttributes.ReadOnly))
-                    {
-                        File.SetAttributes(QuickPath(path, path1,
-                            ver, file),
-                            FileAttributes.Normal);
-                    }
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(QuickPath(path, path1,
+                        ver, file),
+                        FileAttributes.Normal);
+                }
+                else
+                {
+                    if (!new FileInfo(path).Attributes
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(path,
+                        FileAttributes.Normal);
+                }
+            }
+            else
+            {
+                if (!new FileInfo(path).Attributes
+                    .Equals(FileAttributes.ReadOnly)) return;
+                File.SetAttributes(path,
+                    FileAttributes.Normal);
+            }
+        }
+
+        private static void Unblock(string path, string path1, string ver, string file, bool exe)
+        {
+            if (!exe)
+            {
+                if (Riot)
+                {
                     DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
                 }
                 else
                 {
-                    if (new FileInfo(path).Attributes
-                        .Equals(FileAttributes.ReadOnly))
-                    {
-                        File.SetAttributes(path,
-                            FileAttributes.Normal);
-                    }
                     DeleteFile(path + ":Zone.Identifier");
                 }
             }
             else
             {
-                if (new FileInfo(path).Attributes
-                    .Equals(FileAttributes.ReadOnly))
-                {
-                    File.SetAttributes(path,
-                        FileAttributes.Normal);
-                }
                 DeleteFile(path + ":Zone.Identifier");
             }
         }
