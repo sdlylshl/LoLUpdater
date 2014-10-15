@@ -18,6 +18,7 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private const string Updater = "LoLUpdater Updater.exe";
         private const string SKernel = "kernel32.dll";
         private static readonly string AdobePath =
             Path.Combine(Environment.Is64BitProcess
@@ -119,10 +120,8 @@ namespace LoLUpdater
                 if (Sha512("LoLUpdater.exe",
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
-                    if (File.Exists("LoLUpdater Updater.exe"))
-                    {
-                        File.Delete("LoLUpdater Updater.exe");
-                    }
+                    if (File.Exists(Updater))
+                    { Normalize(Updater, string.Empty, string.Empty, string.Empty, true); }
                     using (
                         MemoryStream memoryStream =
                             new MemoryStream())
@@ -131,6 +130,7 @@ namespace LoLUpdater
                             new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"));
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
+                            memoryStream.Position = 0;
                             using (BinaryReader binaryReader = new BinaryReader(memoryStream))
                             {
                                 CompilerParameters parameters = new CompilerParameters
@@ -139,7 +139,7 @@ namespace LoLUpdater
                                     GenerateExecutable = true,
                                     IncludeDebugInformation = false,
                                     CompilerOptions = "/optimize",
-                                    OutputAssembly = "LoLUpdater Updater.exe"
+                                    OutputAssembly = Updater
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
@@ -154,9 +154,9 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    if (File.Exists("LoLUpdater Updater.exe"))
+                    if (File.Exists(Updater))
                     {
-                        File.Delete("LoLUpdater Updater.exe");
+                        File.Delete(Updater);
                     }
                 }
 
