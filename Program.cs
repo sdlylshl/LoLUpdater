@@ -213,7 +213,7 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory("Backup");
             }
-            if (_userInput < 4)
+            if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
                 if (Riot)
@@ -501,13 +501,12 @@ namespace LoLUpdater
                     string.Empty,
                     "1. Install",
                     "2. Uninstall",
-                    "3. Check for Updates",
                     "4. Exit")
             );
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
             string result = readLine.Trim();
-            while (!int.TryParse(result, out num) && num < 1 && num > 4)
+            while (!int.TryParse(result, out num) && num < 1 && num > 3)
             {
                 Console.WriteLine("{0} is not a valid input. Please try again.", result);
                 result = readLine.Trim();
