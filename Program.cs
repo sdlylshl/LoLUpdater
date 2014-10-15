@@ -248,9 +248,9 @@ namespace LoLUpdater
                     else
                     {
                         if (new Version(
-                                   FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                               new Version("15.0.0.297"))
-                        { AirInstall(); }
+                            FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) >=
+                            new Version("15.0.0.297")) return;
+                        AirInstall();
                     }
 
                     if (!string.IsNullOrEmpty(_cgBinPath) &&
