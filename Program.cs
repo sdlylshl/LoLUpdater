@@ -139,8 +139,7 @@ namespace LoLUpdater
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
                             CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                Encoding.UTF8.GetString(memoryStream.ToArray()));
-                            File.Delete("Temp.cs");
+                            Encoding.UTF8.GetString(memoryStream.ToArray()));
                             FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty);
                             Process.Start(result.PathToAssembly);
                         }
