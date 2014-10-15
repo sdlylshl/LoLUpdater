@@ -25,9 +25,21 @@ namespace LoLUpdater
                 "Versions", "1.0");
 
         protected static readonly string Air = Ver("projects", "lol_air_client");
+
+        // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
+        protected static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
+
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
 
+
+        protected static readonly string[] CfgFiles =
+        {
+            "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+            "GamePermanent_en_SG.cfg"
+        };
+
         protected static readonly ManagementBaseObject[] CpuInfo = new ManagementObjectSearcher("Select * from Win32_Processor").Get().Cast<ManagementBaseObject>().AsParallel().ToArray();
+
         // Lazy futureproof Intel method, no info on AMD CPU names yet.
         protected static readonly bool Avx2 =
             CpuInfo.Any(
@@ -36,8 +48,6 @@ namespace LoLUpdater
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
         protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
-        // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
-        protected static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
         protected static readonly Mutex OnlyInstance = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly bool Riot = Directory.Exists("RADS");
         protected static readonly string Sln = Ver("solutions", "lol_game_client_sln");
@@ -57,8 +67,6 @@ namespace LoLUpdater
         protected static string CgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
-
-
         private const string CgInstaller = "Cg-3.1_April2012_Setup.exe";
 
         // SAME ORDER AS AirFiles (Flash, Air)
@@ -66,7 +74,6 @@ namespace LoLUpdater
             "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930",
             "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e"
         );
-            
 
         private static readonly string[] LoLKiller = {"LoLClient", "LoLLauncher", "LoLPatcher",
             "League of Legends"};
@@ -98,7 +105,6 @@ namespace LoLUpdater
 
         protected static void BakCopy(string file, string path, string path1, string ver, string to, bool mode)
         {
-
             if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
                 FileFix(path, path1, ver, file);
@@ -145,7 +151,7 @@ namespace LoLUpdater
                 {
                     wc.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
                         "air15_win.exe");
-                    if(File.Exists("air15_win.exe"))
+                    if (File.Exists("air15_win.exe"))
                     { FileFix("air15_win.exe", string.Empty, string.Empty, string.Empty); }
                     Process air = new Process
                     {
@@ -169,7 +175,7 @@ namespace LoLUpdater
                 wc.DownloadFile(
                     new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                     CgInstaller);
-                if(File.Exists(CgInstaller))
+                if (File.Exists(CgInstaller))
                 { FileFix(CgInstaller, string.Empty, string.Empty, string.Empty); }
                 Process cg = new Process
                 {
@@ -193,6 +199,36 @@ namespace LoLUpdater
             }
         }
 
+        protected static void Clean()
+        {
+            Parallel.ForEach(Files,
+                file =>
+                {
+                    if (!File.Exists(Path.Combine("Backup", file))) return;
+                    File.Delete(Path.Combine("Backup", file));
+                });
+            Parallel.ForEach(AirFiles,
+                file =>
+                {
+                    if (!File.Exists(Path.Combine("Backup", file))) return;
+                    File.Delete(Path.Combine("Backup", file));
+                });
+            if (Riot)
+            {
+                if (!File.Exists(Path.Combine("Backup", "game.cfg"))) return;
+                File.Delete(Path.Combine("Backup", "game.cfg"));
+            }
+            else
+            {
+                Parallel.ForEach(CfgFiles,
+                    file =>
+                    {
+                        if (!File.Exists(Path.Combine("Backup", file))) return;
+                        File.Delete(Path.Combine("Backup", file));
+                    });
+            }
+        }
+
         protected static void Copy(string from, string path, string path1, string ver, string file)
         {
             if (!File.Exists(@from)) return;
@@ -213,8 +249,6 @@ namespace LoLUpdater
                 FileFix(Path.Combine(to, file), string.Empty, string.Empty, string.Empty);
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
             }
-
-
         }
 
         protected static int DisplayMenu()
@@ -246,7 +280,7 @@ namespace LoLUpdater
                             uri,
                             QuickPath(path, path1, ver, file));
                     }
-             }
+                }
                 else
                 {
                     if (!File.Exists(file))
@@ -259,11 +293,9 @@ namespace LoLUpdater
                         webClient.DownloadFile(uri, file);
                     }
                 }
-
-
             }
             if (!File.Exists(QuickPath(path, path1, ver, file))) return;
-            FileFix(path, path1, ver, file);   
+            FileFix(path, path1, ver, file);
         }
 
         protected static void FinishedPrompt(string message)
@@ -276,7 +308,6 @@ namespace LoLUpdater
                 TbbSum);
             if (Riot)
             {
-
                 Parallel.ForEach(AirFiles, file =>
                 {
                     Verify("projects", "lol_air_client", Air,
@@ -342,11 +373,6 @@ namespace LoLUpdater
             FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
         }
 
-        private static string QuickPath(string path, string path1, string ver, string file)
-        {
-            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : path;
-        }
-
         private static void FileFix(string path, string path1, string ver, string file)
         {
             if (Riot)
@@ -369,21 +395,9 @@ namespace LoLUpdater
             }
         }
 
-        // TODO: Maybe combine these two "Verify" methods?
-        private static void Verify(string path, string path1, string ver, string file, string sha512)
+        private static string QuickPath(string path, string path1, string ver, string file)
         {
-            Console.WriteLine(
-                !Sha512(QuickPath(path, path1, ver, file), sha512)
-                    ? "{0} Is the old patched file or the original"
-                    : "{0} Succesfully patched!",
-                Path.GetFileNameWithoutExtension(file));
-        }
-
-        private static void Verify(string file, string sha512)
-        {
-            Console.WriteLine(
-                !Sha512(file, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
-                Path.GetFileNameWithoutExtension(file));
+            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : path;
         }
 
         private static bool Sha512(string file, string sha512)
@@ -408,6 +422,23 @@ namespace LoLUpdater
             if (!Directory.Exists(Path.Combine("RADS", path, path1, "releases"))) return string.Empty;
             string dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();
             return dir.Length == 1 ? dir : Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
+        }
+
+        // TODO: Maybe combine these two "Verify" methods?
+        private static void Verify(string path, string path1, string ver, string file, string sha512)
+        {
+            Console.WriteLine(
+                !Sha512(QuickPath(path, path1, ver, file), sha512)
+                    ? "{0} Is the old patched file or the original"
+                    : "{0} Succesfully patched!",
+                Path.GetFileNameWithoutExtension(file));
+        }
+
+        private static void Verify(string file, string sha512)
+        {
+            Console.WriteLine(
+                !Sha512(file, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
+                Path.GetFileNameWithoutExtension(file));
         }
     }
 }

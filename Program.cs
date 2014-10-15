@@ -12,13 +12,8 @@ namespace LoLUpdater
                 "1.0")
             : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
 
-        private static readonly string[] Cfgfiles =
-        {
-            "game.cfg", "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
-            "GamePermanent_en_SG.cfg"
-        };
-        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static int _userInput;
+        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
         private static readonly bool MultiCore = CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
@@ -66,12 +61,6 @@ namespace LoLUpdater
                                 Path.Combine("Adobe AIR", "Versions", "1.0"), true);
                             BakCopy("NPSWF32.dll", "projects", "lol_air_client", Air,
                                 Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), true);
-                            Parallel.ForEach(AirFiles,
-    file =>
-    {
-        BakCopy(file, "projects", "lol_air_client", Air,
-                          Path.Combine("Adobe AIR", "Versions", "1.0"), true);
-    });
 
                             BakCopy(Path.Combine("Config", "game.cfg"), string.Empty, string.Empty, string.Empty,
                                 true);
@@ -98,10 +87,9 @@ namespace LoLUpdater
     true);
                             });
 
-
                             Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                                 string.Empty);
-                            Parallel.ForEach(Cfgfiles, file =>
+                            Parallel.ForEach(CfgFiles, file =>
                             {
                                 Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
                                 Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
@@ -140,7 +128,8 @@ namespace LoLUpdater
                             Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", false); });
                         }
                         Updater();
-                        FinishedPrompt("Done Uninstalling!");
+                        Clean();
+                        FinishedPrompt("Done Uninstalling");
                         break;
                 }
             }
@@ -174,12 +163,10 @@ namespace LoLUpdater
                                                        "Backup", Installing);
                     });
                     Parallel.ForEach(Files, file => { Copy("Game", file, "Backup", Installing); });
-                    Parallel.ForEach(Cfgfiles, file =>
+                    Parallel.ForEach(CfgFiles, file =>
                     {
                         Copy(Path.Combine("Game", "DATA", "CFG", "defaults"), file, "Backup", true);
                     });
-
-
                 }
                 Console.WriteLine("");
                 if (!Installing) return;
@@ -211,7 +198,7 @@ true);
 
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                             string.Empty);
-                        Parallel.ForEach(Cfgfiles, file =>
+                        Parallel.ForEach(CfgFiles, file =>
                         {
                             Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore);
                         });
@@ -221,6 +208,7 @@ true);
                     break;
 
                 case 2:
+                    Clean();
                     FinishedPrompt("Done Uninstalling!");
                     break;
 
