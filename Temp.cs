@@ -25,17 +25,6 @@ namespace LoLUpdater_Updater
                 FileAttributes.Normal);
         }
 
-        private static void FinishPrompt(string message)
-        {
-            if (!File.Exists("LoLUpdater.exe")) return;
-            FileFix();
-            Process.Start("LoLUpdater.exe");
-            _notdone = false;
-            Console.WriteLine("{0}", message);
-            Console.ReadLine();
-            Environment.Exit(0);
-        }
-
         private static void Main()
         {
             if (!Mutex.WaitOne(TimeSpan.Zero, true)) return;
@@ -57,7 +46,10 @@ namespace LoLUpdater_Updater
                             webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
                                 "LoLUpdater.exe");
                         }
-                            FinishPrompt("You are using the Latest LoLUpdater!");
+            FileFix();
+            _notdone = false;
+            Process.Start("LoLUpdater.exe");
+            Environment.Exit(0);
             }
         }
 

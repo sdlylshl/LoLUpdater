@@ -114,6 +114,40 @@ namespace LoLUpdater
         {
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
+
+            using (WebClient)
+            {
+                if (
+                    !Sha512("LoLUpdater.exe",
+                        WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
+                {
+                    using (
+                    MemoryStream memoryStream =
+                        new MemoryStream(
+                            WebClient.DownloadData(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+                    {
+                        using (CSharpCodeProvider cscp = new CSharpCodeProvider())
+                        {
+                            CompilerParameters parameters = new CompilerParameters()
+                            {
+                                GenerateInMemory = false,
+                                GenerateExecutable = true,
+                                IncludeDebugInformation = false,
+                                CompilerOptions = "/optimize",
+                                OutputAssembly = "LoLUpater Updater.exe"
+                            };
+                            parameters.ReferencedAssemblies.Add("System.dll");
+                            parameters.ReferencedAssemblies.Add("System.Core.dll");
+                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
+                                Encoding.UTF8.GetString(memoryStream.ToArray()));
+                            File.Delete("Temp.cs");
+                            FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty);
+                            Process.Start(result.PathToAssembly);
+                        }
+                    } 
+                }
+               
+            }
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -172,34 +206,6 @@ namespace LoLUpdater
             }
             if (_userInput < 4)
             {
-                    if(_userInput == 3)
-                    {
-                        using (WebClient)
-                        {
-                            WebClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"), "Temp.cs");
-                            if(File.Exists("Temp.cs"))
-                            { 
-                            FileFix("Temp.cs", string.Empty, string.Empty, string.Empty);
-                            using (CSharpCodeProvider cscp = new CSharpCodeProvider())
-                            {
-                                CompilerParameters parameters = new CompilerParameters()
-                                {
-                                    GenerateInMemory = false,
-                                    GenerateExecutable = true,
-                                    IncludeDebugInformation = false,
-                                    CompilerOptions = "/optimize",
-                                    OutputAssembly = "LoLUpater Updater.exe"
-                                };
-                                parameters.ReferencedAssemblies.Add("System.dll");
-                                parameters.ReferencedAssemblies.Add("System.Core.dll");
-                                CompilerResults result = cscp.CompileAssemblyFromFile(parameters, "Temp.cs");
-                                File.Delete("Temp.cs");
-                                FileFix(result.PathToAssembly, string.Empty, string.Empty, string.Empty);
-                                Process.Start(result.PathToAssembly);
-                            }
-                            }
-                        }
-                    }
                 Console.WriteLine("Configuring...");
                 if (Riot)
                 {
