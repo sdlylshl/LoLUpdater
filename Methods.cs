@@ -29,6 +29,9 @@ namespace LoLUpdater
         // DO NOT CHANGE ORDER OF STRINGS IN AIRFILES
         protected static readonly string[] AirFiles = { Path.Combine("Resources", "NPSWF32.dll"), "Adobe AIR.dll" };
 
+        protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
+        // Todo: Combine string[] CgFiles with "tbb.dll" to string[] Files in a working way, without typing each string out.
+
         protected static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
 
 
@@ -47,7 +50,6 @@ namespace LoLUpdater
                     item["Name"].ToString()
                         .Contains(new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel().ToString()));
 
-        protected static readonly string[] Files = { "Cg.dll", "CgGL.dll", "CgD3D9.dll", "tbb.dll" };
         protected static readonly Mutex OnlyInstance = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
         protected static readonly bool Riot = Directory.Exists("RADS");
         protected static readonly string Sln = Ver("solutions", "lol_game_client_sln");
@@ -424,7 +426,6 @@ namespace LoLUpdater
             return dir.Length == 1 ? dir : Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
         }
 
-        // TODO: Maybe combine these two "Verify" methods?
         private static void Verify(string path, string path1, string ver, string file, string sha512)
         {
             Console.WriteLine(
