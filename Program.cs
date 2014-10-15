@@ -112,7 +112,7 @@ namespace LoLUpdater
         {
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
-            if (args.Length == 1)
+            if (args.Length > 0)
             {
                 switch (args[0])
                 {
