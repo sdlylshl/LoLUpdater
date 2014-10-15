@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CSharp;
 
 namespace LoLUpdater
 {
@@ -172,12 +174,33 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory("Backup");
             }
-            if (_userInput < 3)
+            if (_userInput < 4)
             {
-                if (File.Exists("LoLUpdater Updater.exe"))
-                {
-                    FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
-                }
+                    if(_userInput == 3)
+                    {
+                        using (WebClient)
+                        {
+                            WebClient.DownloadFile(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"), "Temp.cs");
+                            using (CSharpCodeProvider cscp = new CSharpCodeProvider())
+                            {
+                                CompilerParameters parameters = new CompilerParameters()
+                                {
+                                    GenerateInMemory = false,
+                                    GenerateExecutable = true,
+                                    TempFiles = new TempFileCollection(".", false),
+                                    IncludeDebugInformation = false,
+                                    CompilerOptions = "/optimize",
+                                    OutputAssembly = "LoLUpdater Updater.exe"
+                                };
+                                parameters.ReferencedAssemblies.Add("System.dll");
+                                parameters.ReferencedAssemblies.Add("System.Core.dll");
+                                cscp.CompileAssemblyFromFile(parameters, "Temp.cs");
+                                File.Delete("Temp.cs");
+                                FileFix("LoLUpdater Updater.exe", string.Empty, string.Empty, string.Empty);
+                                Process.Start("LoLUpdater Updater.exe");
+                            }
+                        }
+                    }
                 Console.WriteLine("Configuring...");
                 if (Riot)
                 {
@@ -208,33 +231,33 @@ namespace LoLUpdater
                                 FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
                             new Version("15.0.0.297"))
                     {
-        const string airInstaller = "air15_win.exe";
-            WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                airInstaller);
-            if (File.Exists(airInstaller))
-            {
-                FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
-            }
-            Process airwin = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            airInstaller,
-                        Arguments = "-silent"
-                    }
-            };
-            airwin.Start();
-            airwin.WaitForExit();
-            if (!File.Exists(airInstaller)) return;
-            File.Delete(airInstaller);
+                        const string airInstaller = "air15_win.exe";
+                        WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+                            airInstaller);
+                        if (File.Exists(airInstaller))
+                        {
+                            FileFix(airInstaller, string.Empty, string.Empty, string.Empty);
+                        }
+                        Process airwin = new Process
+                        {
+                            StartInfo =
+                                new ProcessStartInfo
+                                {
+                                    FileName =
+                                        airInstaller,
+                                    Arguments = "-silent"
+                                }
+                        };
+                        airwin.Start();
+                        airwin.WaitForExit();
+                        if (!File.Exists(airInstaller)) return;
+                        File.Delete(airInstaller);
                     }
 
                     if (File.Exists(Path.Combine(_cgBinPath, "cg.dll")) &&
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) >=
                         new Version("3.1.0.13")) return;
-                       const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+                    const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
                     WebClient.DownloadFile(
                         new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
                         cgInstaller);
@@ -465,12 +488,13 @@ namespace LoLUpdater
                     string.Empty,
                     "1. Install",
                     "2. Uninstall",
-                    "3. Exit")
+                    "3. Check for Updates",
+                    "4. Exit")
             );
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
             string result = readLine.Trim();
-            while (!int.TryParse(result, out num) && num < 1 && num > 3)
+            while (!int.TryParse(result, out num) && num < 1 && num > 4)
             {
                 Console.WriteLine("{0} is not a valid input. Please try again.", result);
                 result = readLine.Trim();
