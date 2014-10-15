@@ -273,9 +273,10 @@ namespace LoLUpdater
                 case 1:
                     Console.Clear();
                     Console.WriteLine("Installing...");
-                    if (Riot)
-                    {
-                        Parallel.ForEach(AirFiles, file => { LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, true); });
+                        Parallel.ForEach(AirFiles, file =>
+                        {
+                            LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, true);
+                        });
                         Cfg(CfgFilez.ToString(), "Config", MultiCore);
                         Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
                         Parallel.ForEach(CgFiles, file =>
@@ -285,22 +286,13 @@ namespace LoLUpdater
                             File.Copy(Path.Combine(_cgBinPath,
                                 file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
                             Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
+                            LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true);
                         });
-                    }
-                    else
-                    {
-                        Parallel.ForEach(AirFiles, file =>
-                        {
-                            LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0"),
-                                true);
-                        });
-
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                             string.Empty);
                         Parallel.ForEach(CfgFilez,
-                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
-                        Parallel.ForEach(CgFiles, file => { LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true); });
-                    }
+                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });   
+
                     FinishedPrompt("Done Installing!");
                     break;
 
