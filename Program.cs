@@ -21,8 +21,7 @@ namespace LoLUpdater
         private const string Updater = "LoLUpater Updater.exe";
         private const string SKernel = "kernel32.dll";
         private static readonly string AdobePath =
-            Path.Combine(
-                Environment.Is64BitProcess
+            Path.Combine(Environment.Is64BitProcess
                     ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
                     : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), "Adobe AIR",
                 "Versions", "1.0");
@@ -118,8 +117,7 @@ namespace LoLUpdater
 
             using (WebClient)
             {
-                if (
-                    !Sha512("LoLUpdater.exe",
+                if (!Sha512("LoLUpdater.exe",
                         WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (
@@ -130,7 +128,10 @@ namespace LoLUpdater
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
-                            CompilerParameters parameters = new CompilerParameters()
+                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                            {
+                                memoryStream.Position = 0;
+                            CompilerParameters parameters = new CompilerParameters
                             {
                                 GenerateInMemory = false,
                                 GenerateExecutable = true,
@@ -140,11 +141,12 @@ namespace LoLUpdater
                             };
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
-                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                Encoding.UTF8.GetString(memoryStream.ToArray()));
-                            Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                            Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                            Process.Start(result.PathToAssembly);
+                            cscp.CompileAssemblyFromSource(parameters,
+                                Encoding.Default.GetString(binaryReader.ReadBytes(Convert.ToInt32(memoryStream.Length))));
+                            Normalize(Updater, string.Empty, string.Empty, string.Empty, true);
+                            Unblock(Updater, string.Empty, string.Empty, string.Empty, true);
+                            Process.Start(Updater);
+                            }
                         }
                     }
                 }
@@ -285,8 +287,12 @@ namespace LoLUpdater
                             Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
                             LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", true);
                         });
+                    if(!Riot)
+                    {
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
-                            string.Empty);
+                              string.Empty);
+                    }
+                        
                         Parallel.ForEach(CfgFilez,
                             file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });   
 
