@@ -96,6 +96,10 @@ namespace LoLUpdater
                 "1.0")
             : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
 
+        private static readonly string Game = Riot
+            ? Path.Combine("RADS", "solutions", "lol_game_client_sln", "releases", Sln, "deploy")
+            : "Game";
+
         private static int _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
 
@@ -160,8 +164,8 @@ namespace LoLUpdater
                                         list.Add(line);
                                     }
                                     CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
-                                    Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                                    Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                                    Normalize(string.Empty, result.PathToAssembly, true);
+                                    Unblock(string.Empty, result.PathToAssembly, true);
                                     Process.Start(result.PathToAssembly);
                                 }
                             }
@@ -175,7 +179,7 @@ namespace LoLUpdater
                         }
                     }
                 }
-            
+
             }
 
             if (args.Length > 0)
@@ -239,48 +243,38 @@ namespace LoLUpdater
             if (Installing & !Directory.Exists("Backup"))
             {
                 Directory.CreateDirectory("Backup");
+                Directory.CreateDirectory(Path.Combine("Backup", "Resources"));
             }
+            if(Installing & !Directory.Exists(Path.Combine("Backup", "Resources")))
+            { Directory.CreateDirectory(Path.Combine("Backup", "Resources")); }
 
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
-                if (Riot)
-                {
-                    Copy(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
-                        Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                    Copy(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
-                        Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                    Copy(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty,
-                        string.Empty, string.Empty,
-                        Installing);
 
-                    Parallel.ForEach(GameFiles,
-                        file =>
-                        {
-                            Copy(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
-                        });
-                }
-                else
-                {
-                    Parallel.ForEach(GameFiles,
-                        file =>
-                        {
-                            Copy(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup",
-                                Installing);
-                        });
-                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"),
-                        "Adobe Air.dll", string.Empty, string.Empty,
-                        "Backup", true);
-                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"),
-                        "NPSWF32.dll", string.Empty, string.Empty,
-                        "Backup", true);
-                    Parallel.ForEach(CfgFilez,
-                        file =>
-                        {
-                            Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty,
-                                string.Empty, "Backup", Installing);
-                        });
-                }
+                Parallel.ForEach(GameFiles,
+    file =>
+    {
+        Copy(string.Empty, Game, file, string.Empty, Installing);
+    });
+                Parallel.ForEach(AirFiles,
+file =>
+{
+
+    Copy(string.Empty, Adobe, file, string.Empty, Installing);
+
+
+});
+
+
+                Copy(string.Empty, "Config",  CfgFilez.ToString(), string.Empty, Installing);
+
+
+                Parallel.ForEach(CfgFilez,
+                    file =>
+                    {
+                        Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, Installing);
+                    });
 
 
                 Console.WriteLine(string.Empty);
@@ -315,31 +309,16 @@ namespace LoLUpdater
                 case 1:
                     Console.WriteLine("Installing...");
                     Parallel.ForEach(AirFiles,
-                            file => { Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null); });
-                    if (Riot)
+                            file => { Copy(AdobePath, Adobe, file, string.Empty, null); });
+                    Parallel.ForEach(CgFiles, file =>
                     {
-                        Cfg(CfgFilez.ToString(), "Config", MultiCore);
-                        Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-                        Parallel.ForEach(CgFiles, file =>
-                        {
-                            Normalize(Path.Combine(_cgBinPath,
-                                file), string.Empty, string.Empty, string.Empty, false);
-                            File.Copy(Path.Combine(_cgBinPath,
-                                file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
-                            Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty,
-                                string.Empty, false);
-                        });
-                    }
-                    else
-                    {
-                        Download(string.Empty, TbbSum, TbbUri, Path.Combine("Game", "tbb.dll"), string.Empty,
-                            string.Empty);
-                        Parallel.ForEach(CfgFilez,
-                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
+                        Copy(_cgBinPath, Game, file, string.Empty, null);
 
-                        Parallel.ForEach(CgFiles,
-                            file => { Copy(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null); });
-                    }
+                    });
+                    Download("tbb.dll", TbbSum, TbbUri, Game);
+                    Cfg(CfgFilez.ToString(), "Config", MultiCore);
+                    Parallel.ForEach(CfgFilez,
+                        file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
 
 
                     FinishedPrompt("Done Installing!");
@@ -396,8 +375,8 @@ namespace LoLUpdater
             }
 
             if (!File.Exists(CgInstaller)) return;
-            Normalize(CgInstaller, string.Empty, string.Empty, string.Empty, true);
-            Unblock(CgInstaller, string.Empty, string.Empty, string.Empty, true);
+            Normalize(string.Empty, CgInstaller, true);
+            Unblock(string.Empty, CgInstaller, true);
 
             Process cg = new Process
             {
@@ -428,8 +407,8 @@ namespace LoLUpdater
                 ByteDl(stream, AirInstaller);
             }
             if (!File.Exists(AirInstaller)) return;
-            Normalize(AirInstaller, string.Empty, string.Empty, string.Empty, true);
-            Unblock(AirInstaller, string.Empty, string.Empty, string.Empty, true);
+            Normalize(string.Empty, AirInstaller, true);
+            Unblock(string.Empty, AirInstaller, true);
             Process airwin = new Process
             {
                 StartInfo =
@@ -483,105 +462,128 @@ namespace LoLUpdater
             return ok;
         }
 
-        private static void Copy(string from, string file, string path, string path1, string ver, string to, bool? mode)
+
+
+        private static void Copy(string from, string path, string file,string to, bool? mode)
         {
-            if (mode.HasValue)
+            try
             {
-                if (mode.Value)
+                if (mode.HasValue)
                 {
-                    if (File.Exists(QuickPath(path, path1,
-                       ver, file)) & string.IsNullOrEmpty(to))
+                    string temp;
+                    if (mode.Value)
                     {
-                        Normalize(path, path1, ver, file, false);
-                        File.Copy(
-                            QuickPath(path, path1,
-                                ver, file)
-                            , Path.Combine("Backup", file),
-                            true);
-                        Unblock(path, path1, ver, file, false);
+                        if (path.Equals(Game))
+                        {
+                            temp = Game;
+                            if (!string.IsNullOrEmpty(to) &&
+                                File.Exists(Path.Combine(temp, to, file)))
+                            {
+                                Normalize(temp, Path.Combine(to, file), false);
+                                File.Copy(
+                                    Path.Combine(temp, to, file)
+                                    , Path.Combine("Backup", file),
+                                    true);
+                                Unblock(temp, Path.Combine(to, file), false);
+                            }
+                            if (!File.Exists(Path.Combine(temp, file))) return;
+                            Normalize(temp, file, false);
+                            File.Copy(Path.Combine(
+                                temp, file)
+                                , Path.Combine("Backup", file),
+                                true);
+                            Unblock(temp, file, false);
+                        }
+                        else
+                        {
+                            temp = Adobe;
+                            if (!string.IsNullOrEmpty(to) &&
+                               File.Exists(Path.Combine(temp, to, file)))
+                            {
+                                Normalize(temp, Path.Combine(to, file), false);
+                                File.Copy(
+                                    Path.Combine(temp, to, file)
+                                    , Path.Combine("Backup", file),
+                                    true);
+                                Unblock(temp, Path.Combine(to, file), false);
+                            }
+                            if (!File.Exists(Path.Combine("Backup", file))) return;
+                            Normalize(temp, file, false);
+                            File.Copy(
+                               Path.Combine("Backup", file), Path.Combine(
+                                temp, file),
+                                true);
+                            Unblock(temp, file, false);
+                        }
+                        // To backup if mode = true
+                        
+
+
+
                     }
                     else
                     {
-                        Console.WriteLine("Could not find file {0}", QuickPath(path, path1,
-                            ver, file));
+                        // from backup if mode = false
+                        if (path.Equals(Air))
+                        {
+                            temp = Air;
+                            if (!string.IsNullOrEmpty(to) &&
+                                File.Exists(Path.Combine(temp, to, file)))
+                            {
+                                Normalize(temp, Path.Combine(to, file), false);
+                                File.Copy(
+                                    
+                                   Path.Combine("Backup", file),Path.Combine(temp, to, file),
+                                    true);
+                                Unblock(temp, Path.Combine(to, file), false);
+                            }
+                            if (!File.Exists(Path.Combine(temp, file))) return;
+                            Normalize(temp, file, false);
+                            File.Copy(
+                                Path.Combine("Backup", file), Path.Combine(
+                                temp, file),
+                                true);
+                            Unblock(temp, file, false);
+                        }
+                        else
+                        {
+                            temp = Adobe;
+                            if (!string.IsNullOrEmpty(to) &&
+                               File.Exists(Path.Combine(temp, to, file)))
+                            {
+                                Normalize(temp, Path.Combine(to, file), false);
+                                File.Copy(
+                                     Path.Combine("Backup", file), Path.Combine(temp, to, file)
+                                    ,
+                                    true);
+                                Unblock(temp, Path.Combine(to, file), false);
+                            }
+                            if (!File.Exists(Path.Combine("Backup", file))) return;
+                            Normalize(temp, file, false);
+                            File.Copy(
+                               Path.Combine(
+                                temp, file), Path.Combine("Backup", file),
+                                true);
+                            Unblock(temp, file, false);
+                        }
+
                     }
 
-                    // Flash copy
-                    if (File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)) &
-                        !string.IsNullOrEmpty(to))
-                    {
-                        Normalize(path, path1, ver, Path.Combine(to, file), false);
-                        File.Copy(
-                            Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
-                            , Path.Combine("Backup", file),
-                            true);
-                        Unblock(path, path1, ver, Path.Combine(to, file), false);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not find file {0}",
-                            Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file));
-                    }
+
                 }
+
                 else
                 {
-                    if (File.Exists(Path.Combine("Backup", file)) & string.IsNullOrEmpty(to))
-                    {
-                        Normalize(path, path1, ver, file, false);
-                        File.Copy(Path.Combine("Backup", file),
-                            QuickPath(path, path1,
-                                ver, file)
-                            ,
-                            true);
-                        Unblock(path, path1, ver, file, false);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not find file {0}", Path.Combine("Backup", file));
-                    }
-
-                    // Flash copy
-                    if (File.Exists(Path.Combine("Backup", file)) & !string.IsNullOrEmpty(to))
-                    {
-                        Normalize(path, path1, ver, Path.Combine(to, file), false);
-                        File.Copy(Path.Combine("Backup", file),
-                            Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
-                            ,
-                            true);
-                        Unblock(path, path1, ver, Path.Combine(to, file), false);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not find file {0}",
-                            Path.Combine("Backup", file));
-                    }
+                    if (string.IsNullOrEmpty(to) || !(File.Exists(Path.Combine(@from, file)) & Directory.Exists(to)))
+                        return;
+                    Normalize(string.Empty, Path.Combine(@from, file), false);
+                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                    Unblock(string.Empty, Path.Combine(@from, file), false);
                 }
-
-
             }
-
-            else
+            catch (Exception ex)
             {
-                if (to != null & Directory.Exists(@from) & Directory.Exists(to))
-                {
-                    if (File.Exists(Path.Combine(@from, file)))
-                    {
-                        Normalize(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
-                        File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                        Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
-                        Normalize(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not find file {0}", Path.Combine(@from, file));
-                    }
-
-                }
-                else
-                {
-                    Console.WriteLine("Could not find path {0}", @from);
-
-                }
+                Console.WriteLine(ex.Message);
             }
 
         }
@@ -589,7 +591,7 @@ namespace LoLUpdater
         private static void Cfg(string file, string path, bool mode)
         {
             if (!File.Exists(Path.Combine(path, file))) return;
-            Normalize(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
+            Normalize(string.Empty, Path.Combine(path, file), false);
             string text = File.ReadAllText(Path.Combine(path, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
@@ -604,7 +606,7 @@ namespace LoLUpdater
                 text = text.Replace("DefaultParticleMultiThreading=1", "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(Path.Combine(path, file), text);
-            Unblock(Path.Combine(path, file), string.Empty, string.Empty, string.Empty, false);
+            Unblock(string.Empty, Path.Combine(path, file), false);
         }
 
         private static int DisplayMenu()
@@ -630,28 +632,28 @@ namespace LoLUpdater
             return num;
         }
 
-        private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
+        private static void Download(string file, string sha512, Uri uri, string path)
         {
-            if (!File.Exists(QuickPath(path, path1, ver, file)))
+            if (!File.Exists(QuickPath(path, file)))
             {
-                DlExt(file, uri, path, path1, ver);
+                DlExt(file, uri, path);
             }
             else
             {
-                Normalize(path, path1, ver, file, false);
-                if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                DlExt(file, uri, path, path1, ver);
+                Normalize(path, file, false);
+                if (Sha512(QuickPath(path, file), sha512)) return;
+                DlExt(file, uri, path);
             }
-            Unblock(path, path1, ver, file, false);
+            Unblock(path, file, false);
         }
 
-        private static void DlExt(string file, Uri uri, string path, string path1, string ver)
+        private static void DlExt(string file, Uri uri, string path)
         {
             using (Stream stream = WebRequest.Create(uri)
                     .GetResponse()
                     .GetResponseStream())
             {
-                ByteDl(stream, QuickPath(path, path1, ver, file));
+                ByteDl(stream, QuickPath(path, file));
             }
         }
 
@@ -665,25 +667,14 @@ namespace LoLUpdater
 
             Parallel.ForEach(AirFiles, file =>
             {
-                Verify("projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", file), AirSum);
-                if (!Riot)
-                {
-                    Verify(Path.Combine("Air", "Adobe AIR", "Versions", "1.0", file), string.Empty, string.Empty,
-                        string.Empty, AirSum);
-                }
+                Verify(Game, file, AirSum);
 
             });
 
             Parallel.ForEach(GameFiles, file =>
             {
-                Verify("solutions", "lol_game_client_sln", Sln,
+                Verify(Game,
                     file, permanentSum);
-                if (!Riot)
-                {
-                    Verify(Path.Combine("Game", file), string.Empty, string.Empty,
-                        string.Empty, permanentSum);
-                }
             });
 
 
@@ -704,41 +695,72 @@ namespace LoLUpdater
             return result;
         }
 
-        private static void Normalize(string path, string path1, string ver, string file, bool exe)
+        private static void Normalize(string path, string file, bool exe)
         {
-            if (!exe)
+            string temp;
+            if (path.Equals(Game))
             {
-                if (!new FileInfo(QuickPath(path, path1,
-                    ver, file)).Attributes
-                    .Equals(FileAttributes.ReadOnly)) return;
-                File.SetAttributes(QuickPath(path, path1,
-                    ver, file),
-                    FileAttributes.Normal);
+                temp = Game;
+                if (!exe)
+                {
+                    if (!new FileInfo(Path.Combine(temp, file)).Attributes
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(Path.Combine(temp, file),
+                        FileAttributes.Normal);
+                }
+                else
+                {
+                    if (!new FileInfo(path).Attributes
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(temp,
+                        FileAttributes.Normal);
+                }
             }
             else
             {
-                if (!new FileInfo(path).Attributes
-                    .Equals(FileAttributes.ReadOnly)) return;
-                File.SetAttributes(path,
-                    FileAttributes.Normal);
+                temp = Adobe;
+                if (!exe)
+                {
+                    if (!new FileInfo(Path.Combine(temp, file)).Attributes
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(Path.Combine(temp, file),
+                        FileAttributes.Normal);
+                }
+                else
+                {
+                    if (!new FileInfo(path).Attributes
+                        .Equals(FileAttributes.ReadOnly)) return;
+                    File.SetAttributes(temp,
+                        FileAttributes.Normal);
+                }
+                
+
             }
+            
         }
 
-        private static void Unblock(string path, string path1, string ver, string file, bool exe)
+        private static void Unblock(string path, string file, bool exe)
         {
-            if (!exe)
+            string temp;
+            if (path.Equals(Game))
             {
-                DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
+                temp = Game;
+                DeleteFile(QuickPath(temp, file) + ":Zone.Identifier");
             }
             else
             {
-                DeleteFile(path + ":Zone.Identifier");
+                temp = Adobe;
+                DeleteFile(QuickPath(temp, file) + ":Zone.Identifier");
+            }
+            if (!exe)
+            {
+                DeleteFile(path + ":Zone.Identifier");   
             }
         }
 
-        private static string QuickPath(string path, string path1, string ver, string file)
+        private static string QuickPath(string path, string file)
         {
-            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : Path.Combine(path, file);
+            return Path.Combine(path, file);
         }
 
         private static bool Sha512(string file, string sha512)
@@ -767,10 +789,10 @@ namespace LoLUpdater
                 : Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
         }
 
-        private static void Verify(string path, string path1, string ver, string file, string sha512)
+        private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               !Sha512(QuickPath(path, path1, ver, file), sha512)
+               !Sha512(QuickPath(path, file), sha512)
                    ? "{0} Is the old patched file or the original"
                    : "{0} Succesfully patched!",
                Path.GetFileNameWithoutExtension(file));
