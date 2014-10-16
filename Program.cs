@@ -125,7 +125,7 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (Sha512("LoLUpdater.exe",
+                    if (!Sha512("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
@@ -159,8 +159,7 @@ namespace LoLUpdater
                                     {
                                         list.Add(line);
                                     }
-                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                        string.Join(Environment.NewLine, list.ToArray()));
+                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
                                     Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                     Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                     Process.Start(result.PathToAssembly);
@@ -314,7 +313,6 @@ namespace LoLUpdater
             switch (_userInput)
             {
                 case 1:
-                    Console.Clear();
                     Console.WriteLine("Installing...");
                     Parallel.ForEach(AirFiles,
                             file => { Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null); });
@@ -564,13 +562,14 @@ namespace LoLUpdater
 
             else
             {
-                if (to != null && (Directory.Exists(@from) & Directory.Exists(to)))
+                if (to != null & Directory.Exists(@from) & Directory.Exists(to))
                 {
                     if (File.Exists(Path.Combine(@from, file)))
                     {
                         Normalize(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
                         File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                        Unblock(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
+                        Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
+                        Normalize(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
                     }
                     else
                     {
@@ -658,7 +657,6 @@ namespace LoLUpdater
 
         private static void FinishedPrompt(string message)
         {
-            Console.Clear();
             string permanentSum = string.Join(string.Empty,
                 "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
