@@ -125,7 +125,7 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (!Sha512("LoLUpdater.exe",
+                    if (Sha512("lol.updater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
@@ -167,8 +167,6 @@ namespace LoLUpdater
                                 }
                             }
                         }
-
-
                     }
                     else
                     {
@@ -177,8 +175,8 @@ namespace LoLUpdater
                             File.Delete(Updater);
                         }
                     }
-
                 }
+            
             }
 
             if (args.Length > 0)
@@ -318,14 +316,12 @@ namespace LoLUpdater
                 case 1:
                     Console.Clear();
                     Console.WriteLine("Installing...");
+                    Parallel.ForEach(AirFiles,
+                            file => { Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null); });
                     if (Riot)
                     {
                         Cfg(CfgFilez.ToString(), "Config", MultiCore);
                         Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-
-
-                        Parallel.ForEach(AirFiles,
-                            file => { Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null); });
                         Parallel.ForEach(CgFiles, file =>
                         {
                             Normalize(Path.Combine(_cgBinPath,
