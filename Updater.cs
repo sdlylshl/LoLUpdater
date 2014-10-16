@@ -30,13 +30,13 @@ namespace LoLUpdater_Updater
             } while (_notdone);
 
 
-            Stream stream =
 
-                               WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
-                                   .GetResponse()
-                                   .GetResponseStream();
-            if (stream != null)
+
+            using (Stream stream = WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
+        .GetResponse()
+        .GetResponseStream())
             {
+
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
 
@@ -46,19 +46,30 @@ namespace LoLUpdater_Updater
                     {
 
 
-                        Stream stream2 =
 
-                            WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
-                                .GetResponse()
-                                .GetResponseStream();
-                        if (stream2 != null)
-                        {
-                            using (StreamReader streamReader2 = new StreamReader(stream2))
+                using (Stream stream = WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
+                        .GetResponse()
+                        .GetResponseStream())
+                {
+using (StreamReader streamReader2 = new StreamReader(stream2))
                             {
-                                using (StreamWriter streamWriter = new StreamWriter("LoLUpdater.exe"))
-                                {
-                                    streamWriter.Write(streamReader2.ReadToEnd());
-                                }
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                byte[] buffer = new byte[4096];
+                int count;
+                do
+                {
+                    count = stream.Read(buffer, 0, buffer.Length);
+                    memoryStream.Write(buffer, 0, count);
+                } while (count != 0);
+
+                var result = memoryStream.ToArray();
+                File.WriteAllBytes(path, result);
+            }
+                }
+
+                   
+                            
                             }
                         }
                     }
