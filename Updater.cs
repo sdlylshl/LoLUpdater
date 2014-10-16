@@ -59,12 +59,11 @@ using (StreamReader streamReader2 = new StreamReader(stream2))
                 int count;
                 do
                 {
-                    count = stream.Read(buffer, 0, buffer.Length);
+                    count = stream2.Read(buffer, 0, buffer.Length);
                     memoryStream.Write(buffer, 0, count);
                 } while (count != 0);
 
-                var result = memoryStream.ToArray();
-                File.WriteAllBytes(path, result);
+                File.WriteAllBytes(path, memoryStream.ToArray());
             }
                 }
 

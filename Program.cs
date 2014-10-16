@@ -451,8 +451,7 @@ namespace LoLUpdater
                     memoryStream.Write(buffer, 0, count);
                 } while (count != 0);
 
-                var result = memoryStream.ToArray();
-                File.WriteAllBytes(path, result);
+                File.WriteAllBytes(path, memoryStream.ToArray());
             }
         }
 
