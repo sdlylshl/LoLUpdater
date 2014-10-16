@@ -29,19 +29,47 @@ namespace LoLUpdater_Updater
                 });
             } while (_notdone);
 
-            using (WebClient webClient = new WebClient())
-            {
 
-                if (Sha512(webClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
+            Stream stream =
+
+                               WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
+                                   .GetResponse()
+                                   .GetResponseStream();
+            if (stream != null)
+            {
+                using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
-                        "LoLUpdater.exe");
+
+                    if (
+                        Sha512(
+                            streamReader.ReadToEnd()))
+                    {
+
+
+                        Stream stream2 =
+
+                            WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
+                                .GetResponse()
+                                .GetResponseStream();
+                        if (stream2 != null)
+                        {
+                            using (StreamReader streamReader2 = new StreamReader(stream2))
+                            {
+                                using (StreamWriter streamWriter = new StreamWriter("LoLUpdater.exe"))
+                                {
+                                    streamWriter.Write(streamReader2.ReadToEnd());
+                                }
+                            }
+                        }
+                    }
                 }
                 if (new FileInfo("LoLUpdater.exe").Attributes
-                    .Equals(FileAttributes.ReadOnly))
-                {File.SetAttributes("LoLUpdater.exe",
-                    FileAttributes.Normal);}
-                
+            .Equals(FileAttributes.ReadOnly))
+                {
+                    File.SetAttributes("LoLUpdater.exe",
+                       FileAttributes.Normal);
+                }
+
                 DeleteFile("LoLUpdater.exe:Zone.Identifier");
                 _notdone = false;
                 Process.Start("LoLUpdater.exe");
