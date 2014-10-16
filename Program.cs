@@ -18,6 +18,8 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private const string AirInstaller = "air15_win.exe";
+        private const string CgInstaller = "Cg-3.1_April2012_Setup.exe";
         private const string Updater = "LoLUpdater Updater.exe";
         private const string SKernel = "kernel32.dll";
         private static readonly string AdobePath =
@@ -218,7 +220,7 @@ namespace LoLUpdater
                         Process.GetProcesses()
                             .Where(
                                 process =>
-                                    String.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
+                                    string.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
                             .AsParallel(), process =>
                             {
                                 process.Kill();
@@ -348,25 +350,25 @@ namespace LoLUpdater
 
         private static void CgInstall()
         {
-            const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+            
             Stream stream =
-                                WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"), cgInstaller))
+                                WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"), CgInstaller))
                                     .GetResponse()
                                     .GetResponseStream();
             if (stream != null)
             {
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    using (StreamWriter streamWriter = new StreamWriter(cgInstaller))
+                    using (StreamWriter streamWriter = new StreamWriter(CgInstaller))
                     {
                         streamWriter.Write(streamReader.ReadToEnd());
                     }
                 }
             }
                 
-                if (!File.Exists(cgInstaller)) return;
-            Normalize(cgInstaller, string.Empty, string.Empty, string.Empty, true);
-            Unblock(cgInstaller, string.Empty, string.Empty, string.Empty, true);
+                if (!File.Exists(CgInstaller)) return;
+            Normalize(CgInstaller, string.Empty, string.Empty, string.Empty, true);
+            Unblock(CgInstaller, string.Empty, string.Empty, string.Empty, true);
 
             Process cg = new Process
             {
@@ -374,7 +376,7 @@ namespace LoLUpdater
                     new ProcessStartInfo
                     {
                         FileName =
-                            cgInstaller,
+                            CgInstaller,
                         Arguments = "/silent /TYPE=compact"
                     }
             };
@@ -383,43 +385,43 @@ namespace LoLUpdater
 
             _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                 EnvironmentVariableTarget.User);
-            File.Delete(cgInstaller);
+            File.Delete(CgInstaller);
         }
 
         private static void AirInstall()
         {
-            const string airInstaller = "air15_win.exe";
+
             Stream stream =
                 
-                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), airInstaller))
+                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), AirInstaller))
                                     .GetResponse()
                                     .GetResponseStream();
             if (stream != null)
             {
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    using (StreamWriter streamWriter = new StreamWriter(airInstaller))
+                    using (StreamWriter streamWriter = new StreamWriter(AirInstaller))
                     {
                         streamWriter.Write(streamReader.ReadToEnd());
                     }
                 }
             }
-            if (!File.Exists(airInstaller)) return;
-            Normalize(airInstaller, string.Empty, string.Empty, string.Empty, true);
-            Unblock(airInstaller, string.Empty, string.Empty, string.Empty, true);
+            if (!File.Exists(AirInstaller)) return;
+            Normalize(AirInstaller, string.Empty, string.Empty, string.Empty, true);
+            Unblock(AirInstaller, string.Empty, string.Empty, string.Empty, true);
             Process airwin = new Process
             {
                 StartInfo =
                     new ProcessStartInfo
                     {
                         FileName =
-                            airInstaller,
+                            AirInstaller,
                         Arguments = "-silent"
                     }
             };
             airwin.Start();
             airwin.WaitForExit();
-            File.Delete(airInstaller);
+            File.Delete(AirInstaller);
         }
 
         private static void Help()
