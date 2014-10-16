@@ -125,7 +125,7 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (Sha512("LoLUpdater.exe",
+                    if (!Sha512("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
@@ -149,8 +149,9 @@ namespace LoLUpdater
                                         .GetResponseStream())
                             {
 
-                                var list = new List<string>();
+                                
                                 if (stream2 == null) return;
+                                var list = new List<string>();
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
                                     string line;
@@ -187,7 +188,13 @@ namespace LoLUpdater
                     case "/?":
                     case "-h":
                     case "--help":
-                        Help();
+                        Console.WriteLine(
+                                       string.Join(Environment.NewLine, "Command-Line Arguments:",
+                                           string.Empty,
+                                           "-install : Installs LoLUpdater",
+                                           "-uninst : Uninstalls LoLUpdater",
+                                           "--help /? -h : Shows this menu")
+                                   );
                         Console.ReadLine();
                         break;
 
@@ -455,18 +462,6 @@ namespace LoLUpdater
             }
         }
 
-        private static void Help()
-        {
-
-            Console.WriteLine(
-                string.Join(Environment.NewLine, "Command-Line Arguments:",
-                    string.Empty,
-                    "-install : Installs LoLUpdater",
-                    "-uninst : Uninstalls LoLUpdater",
-                    "--help /? -h : Shows this menu")
-            );
-        }
-
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
 
@@ -616,14 +611,7 @@ namespace LoLUpdater
         {
             int num = 0;
             Help();
-            Console.WriteLine(
-                String.Join(Environment.NewLine,
-                    string.Empty,
-                    "Select method:",
-                    string.Empty,
-                    "1. Install",
-                    "2. Uninstall",
-                    "4. Exit")
+            Console.WriteLine("For a list of Command-Line Arguments start lolupdater with --help")
             );
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
