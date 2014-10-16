@@ -240,17 +240,17 @@ namespace LoLUpdater
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
-                LoL(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
+                Copy(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
                     Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                LoL(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
+                Copy(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
                     Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                LoL(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
+                Copy(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
                     Installing);
 
                 Parallel.ForEach(GameFiles,
                     file =>
                     {
-                        LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
+                        Copy(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
 
                     });
 
@@ -259,14 +259,14 @@ namespace LoLUpdater
                     Parallel.ForEach(GameFiles,
                     file =>
                     {
-                        LoL(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup", Installing);
+                        Copy(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup", Installing);
                     });
-                    LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"), "Adobe Air.dll", string.Empty, string.Empty,
+                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"), "Adobe Air.dll", string.Empty, string.Empty,
                     "Backup", true);
-                    LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), "NPSWF32.dll", string.Empty, string.Empty,
+                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), "NPSWF32.dll", string.Empty, string.Empty,
                         "Backup", true);
                     Parallel.ForEach(CfgFilez,
-                        file => { LoL(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
+                        file => { Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
                 
                 }
                 Console.WriteLine(string.Empty);
@@ -313,7 +313,7 @@ namespace LoLUpdater
 
                         Parallel.ForEach(CgFiles, file =>
                         {
-                            LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
+                            Copy(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
                         });
 
                         
@@ -321,7 +321,7 @@ namespace LoLUpdater
                     
                     Parallel.ForEach(AirFiles, file =>
                     {
-                        LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null);
+                        Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null);
                     });
                     Parallel.ForEach(CgFiles, file =>
                     {
@@ -491,8 +491,7 @@ namespace LoLUpdater
             return ok;
         }
 
-        // Todo: refactor this mess
-        private static void LoL(string from, string file, string path, string path1, string ver, string to, bool? mode)
+        private static void Copy(string from, string file, string path, string path1, string ver, string to, bool? mode)
         {
             if (mode == true)
             {
@@ -739,22 +738,12 @@ namespace LoLUpdater
         {
             if (!exe)
             {
-                if (Riot)
-                {
-                    if (!new FileInfo(QuickPath(path, path1,
-                        ver, file)).Attributes
-                        .Equals(FileAttributes.ReadOnly)) return;
-                    File.SetAttributes(QuickPath(path, path1,
-                        ver, file),
-                        FileAttributes.Normal);
-                }
-                else
-                {
-                    if (!new FileInfo(path).Attributes
-                        .Equals(FileAttributes.ReadOnly)) return;
-                    File.SetAttributes(path,
-                        FileAttributes.Normal);
-                }
+                if (!new FileInfo(QuickPath(path, path1,
+                    ver, file)).Attributes
+                    .Equals(FileAttributes.ReadOnly)) return;
+                File.SetAttributes(QuickPath(path, path1,
+                    ver, file),
+                    FileAttributes.Normal);
             }
             else
             {
