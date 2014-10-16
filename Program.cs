@@ -45,7 +45,6 @@ namespace LoLUpdater
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
 
-        private static readonly WebClient WebClient = new WebClient();
         private static readonly bool Riot = Directory.Exists("RADS");
         private const string CfgFile = "game.cfg";
         private static readonly string[] CfgFilez = Riot
@@ -115,60 +114,66 @@ namespace LoLUpdater
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
 
-            using (WebClient)
-            {
-
-                if (!Sha512("LoLUpdater.exe", WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
-                {
-                    using (CSharpCodeProvider cscp = new CSharpCodeProvider())
-                    {
-                        CompilerParameters parameters = new CompilerParameters
-                        {
-                            GenerateInMemory = false,
-                            GenerateExecutable = true,
-                            IncludeDebugInformation = false,
-                            CompilerOptions = "/optimize",
-                            OutputAssembly = Updater
-                        };
-                        parameters.ReferencedAssemblies.Add("System.dll");
-                        parameters.ReferencedAssemblies.Add("System.Core.dll");
-
-
-                        Stream stream =
-                            WebRequest.Create("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs")
+            Stream stream =
+                            WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
                                 .GetResponse()
                                 .GetResponseStream();
-
-                        var list = new List<string>();
-                        if (stream != null)
+            if (stream != null)
+            {
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    if (Sha512("LoLUpdater.exe",
+                        streamReader.ReadToEnd()))
+                    {
+                        using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
-                            using (StreamReader streamReader = new StreamReader(stream))
+                            CompilerParameters parameters = new CompilerParameters
+                            {
+                                GenerateInMemory = false,
+                                GenerateExecutable = true,
+                                IncludeDebugInformation = false,
+                                CompilerOptions = "/optimize",
+                                OutputAssembly = Updater
+                            };
+                            parameters.ReferencedAssemblies.Add("System.dll");
+                            parameters.ReferencedAssemblies.Add("System.Core.dll");
+
+
+                            Stream stream2 =
+                                WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs"))
+                                    .GetResponse()
+                                    .GetResponseStream();
+
+                            var list = new List<string>();
+                            if (stream2 == null) return;
+                            using (StreamReader streamReader2 = new StreamReader(stream2))
                             {
                                 string line;
-                                while ((line = streamReader.ReadLine()) != null)
+                                while ((line = streamReader2.ReadLine()) != null)
                                 {
                                     list.Add(line);
                                 }
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
+                                    string.Join(Environment.NewLine, list.ToArray()));
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
                             }
                         }
+
+
                     }
-
-
-                }
-                else
-                {
-                    if (File.Exists(Updater))
+                    else
                     {
-                        File.Delete(Updater);
+                        if (File.Exists(Updater))
+                        {
+                            File.Delete(Updater);
+                        }
                     }
+
                 }
             }
-
-
+            
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -248,8 +253,6 @@ namespace LoLUpdater
                     file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
-                using (WebClient)
-                {
                     if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
                     {
                         AirInstall();
@@ -274,8 +277,6 @@ namespace LoLUpdater
                         { CgInstall(); }
 
                     }
-
-                }
             }
             switch (_userInput)
             {
@@ -348,10 +349,22 @@ namespace LoLUpdater
         private static void CgInstall()
         {
             const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
-            WebClient.DownloadFile(
-                new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
-                cgInstaller);
-            if (!File.Exists(cgInstaller)) return;
+            Stream stream =
+                                WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"), cgInstaller))
+                                    .GetResponse()
+                                    .GetResponseStream();
+            if (stream != null)
+            {
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(cgInstaller))
+                    {
+                        streamWriter.Write(streamReader.ReadToEnd());
+                    }
+                }
+            }
+                
+                if (!File.Exists(cgInstaller)) return;
             Normalize(cgInstaller, string.Empty, string.Empty, string.Empty, true);
             Unblock(cgInstaller, string.Empty, string.Empty, string.Empty, true);
 
@@ -376,8 +389,21 @@ namespace LoLUpdater
         private static void AirInstall()
         {
             const string airInstaller = "air15_win.exe";
-            WebClient.DownloadFile(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
-                airInstaller);
+            Stream stream =
+                
+                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), airInstaller))
+                                    .GetResponse()
+                                    .GetResponseStream();
+            if (stream != null)
+            {
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(airInstaller))
+                    {
+                        streamWriter.Write(streamReader.ReadToEnd());
+                    }
+                }
+            }
             if (!File.Exists(airInstaller)) return;
             Normalize(airInstaller, string.Empty, string.Empty, string.Empty, true);
             Unblock(airInstaller, string.Empty, string.Empty, string.Empty, true);
@@ -536,23 +562,17 @@ namespace LoLUpdater
         // Use this only for tbb?
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
-            using (WebClient)
-            {
                 if (Riot)
                 {
                     if (!File.Exists(QuickPath(path, path1, ver, file)))
                     {
-                        WebClient.DownloadFile(
-                            uri,
-                            QuickPath(path, path1, ver, file));
+                        DlExt(file, uri, path, path1, ver);
                     }
                     else
                     {
                         Normalize(path, path1, ver, file, false);
                         if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                        WebClient.DownloadFile(
-                            uri,
-                            QuickPath(path, path1, ver, file));
+                         DlExt(file, uri, path, path1, ver);
                     }
                     Unblock(path, path1, ver, file, false);
                 }
@@ -560,15 +580,48 @@ namespace LoLUpdater
                 {
                     if (!File.Exists(file))
                     {
-                        WebClient.DownloadFile(uri, file);
+                        DlExt(file, uri, string.Empty, string.Empty, string.Empty);
                     }
                     else
                     {
                         Normalize(path, path1, ver, file, false);
                         if (Sha512(file, sha512)) return;
-                        WebClient.DownloadFile(uri, file);
+                        DlExt(file, uri, string.Empty, string.Empty, string.Empty);
                     }
                     Unblock(path, path1, ver, file, false);
+                }
+        }
+
+        private static void DlExt(string file, Uri uri, string path, string path1, string ver)
+        {
+            if (Riot)
+            {
+                Stream stream =
+                    WebRequest.Create(uri)
+                        .GetResponse()
+                        .GetResponseStream();
+                if (stream == null) return;
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(QuickPath(path, path1, ver, file)))
+                    {
+                        streamWriter.Write(streamReader.ReadToEnd());
+                    }
+                }
+            }
+            else
+            {
+                Stream stream =
+                       WebRequest.Create(uri)
+                           .GetResponse()
+                           .GetResponseStream();
+                if (stream == null) return;
+                using (StreamReader streamReader = new StreamReader(stream))
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(file))
+                    {
+                        streamWriter.Write(streamReader.ReadToEnd());
+                    }
                 }
             }
         }
@@ -689,7 +742,7 @@ namespace LoLUpdater
 
                 return
                     Encoding.ASCII.GetBytes(sb.ToString())
-                        .Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
+                        .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
                         .Any();
             }
         }
