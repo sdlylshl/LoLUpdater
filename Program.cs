@@ -485,7 +485,8 @@ namespace LoLUpdater
             }
             else
             {
-                if (mode & Riot)
+                if (mode & !File.Exists(QuickPath(path, path1,
+                ver, file)))
                 {
                     Console.WriteLine("Could not find {0}", QuickPath(path, path1,
                         ver, file));
@@ -503,7 +504,7 @@ namespace LoLUpdater
             }
             else
             {
-                if (mode & Riot)
+                if (mode & !File.Exists(Path.Combine("Backup", file)))
                 {
                     Console.WriteLine("Could not find {0}", Path.Combine("Backup", file));
                 }
@@ -519,7 +520,7 @@ namespace LoLUpdater
             }
             else
             {
-                if (mode & Riot)
+                if (mode & !File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
                 {
                     Console.WriteLine("Could not find {0}", Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file));
                 }
@@ -534,7 +535,7 @@ namespace LoLUpdater
             }
             else
             {
-                if (!mode & Riot)
+                if (!mode & !File.Exists(Path.Combine("Backup", file)))
                 {
                     Console.WriteLine("Could not find {0}", Path.Combine("Backup", file));
                 }
@@ -549,10 +550,9 @@ namespace LoLUpdater
             {
                 if (mode & !File.Exists(Path.Combine(@from, file)))
                 {
-                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                    Normalize(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
-                    Unblock(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                    Console.WriteLine("Could not find {0}", Path.Combine(@from, file));
                 }
+
             }
             if (!mode & File.Exists(Path.Combine(to, file)))
             {
@@ -562,10 +562,8 @@ namespace LoLUpdater
             }
             else
             {
-                if (!(!mode & !File.Exists(Path.Combine(to, file)))) return;
-                File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
-                Normalize(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
-                Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
+                if (mode | File.Exists(Path.Combine(to, file))) return;
+                Console.WriteLine("Could not find {0}", Path.Combine(to, file));
             }
         }
 
