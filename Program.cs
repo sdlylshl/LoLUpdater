@@ -352,7 +352,7 @@ namespace LoLUpdater
         {
             
             Stream stream =
-                                WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"), CgInstaller))
+                                WebRequest.Create(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"))
                                     .GetResponse()
                                     .GetResponseStream();
             if (stream != null)
@@ -393,7 +393,7 @@ namespace LoLUpdater
 
             Stream stream =
                 
-                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), AirInstaller))
+                                WebRequest.Create(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"))
                                     .GetResponse()
                                     .GetResponseStream();
             if (stream != null)
