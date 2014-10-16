@@ -149,7 +149,7 @@ namespace LoLUpdater
                                         .GetResponseStream())
                             {
 
-                                
+
                                 if (stream2 == null) return;
                                 var list = new List<string>();
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
@@ -243,38 +243,49 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory("Backup");
             }
+
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
-                Copy(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
-                Copy(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
-                    Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
-                Copy(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty, string.Empty, string.Empty,
-                    Installing);
+                if (Riot)
+                {
+                    Copy(string.Empty, "Adobe AIR.dll", "projects", "lol_air_client", Air,
+                        Path.Combine("Adobe AIR", "Versions", "1.0"), Installing);
+                    Copy(string.Empty, "NPSWF32.dll", "projects", "lol_air_client", Air,
+                        Path.Combine("Adobe AIR", "Versions", "1.0", "Resources"), Installing);
+                    Copy(string.Empty, Path.Combine("Config", CfgFilez.ToString()), string.Empty, string.Empty,
+                        string.Empty, string.Empty,
+                        Installing);
 
-                Parallel.ForEach(GameFiles,
-                    file =>
-                    {
-                        Copy(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
-
-                    });
-
-                if (!Riot)
+                    Parallel.ForEach(GameFiles,
+                        file =>
+                        {
+                            Copy(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
+                        });
+                }
+                else
                 {
                     Parallel.ForEach(GameFiles,
-                    file =>
-                    {
-                        Copy(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup", Installing);
-                    });
-                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"), "Adobe Air.dll", string.Empty, string.Empty,
-                    "Backup", true);
-                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), "NPSWF32.dll", string.Empty, string.Empty,
+                        file =>
+                        {
+                            Copy(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup",
+                                Installing);
+                        });
+                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"),
+                        "Adobe Air.dll", string.Empty, string.Empty,
+                        "Backup", true);
+                    Copy(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"),
+                        "NPSWF32.dll", string.Empty, string.Empty,
                         "Backup", true);
                     Parallel.ForEach(CfgFilez,
-                        file => { Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
-
+                        file =>
+                        {
+                            Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty,
+                                string.Empty, "Backup", Installing);
+                        });
                 }
+
+
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
                 if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
@@ -551,8 +562,8 @@ namespace LoLUpdater
                             Path.Combine("Backup", file));
                     }
                 }
-                
-                
+
+
             }
 
             else
@@ -577,7 +588,7 @@ namespace LoLUpdater
 
                 }
             }
-            
+
         }
 
         private static void Cfg(string file, string path, bool mode)
@@ -606,7 +617,7 @@ namespace LoLUpdater
             int num = 0;
             Console.WriteLine(
                 String.Join(Environment.NewLine,
-                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, 
+                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                     "Select method:",
                     string.Empty,
                     "1. Install",
@@ -626,27 +637,27 @@ namespace LoLUpdater
 
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
-                if (!File.Exists(QuickPath(path, path1, ver, file)))
-                {
-                    DlExt(file, uri, path, path1, ver);
-                }
-                else
-                {
-                    Normalize(path, path1, ver, file, false);
-                    if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                    DlExt(file, uri, path, path1, ver);
-                }
-                Unblock(path, path1, ver, file, false);
+            if (!File.Exists(QuickPath(path, path1, ver, file)))
+            {
+                DlExt(file, uri, path, path1, ver);
+            }
+            else
+            {
+                Normalize(path, path1, ver, file, false);
+                if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
+                DlExt(file, uri, path, path1, ver);
+            }
+            Unblock(path, path1, ver, file, false);
         }
 
         private static void DlExt(string file, Uri uri, string path, string path1, string ver)
         {
-                using (Stream stream = WebRequest.Create(uri)
-                        .GetResponse()
-                        .GetResponseStream())
-                {
-                    ByteDl(stream, QuickPath(path, path1, ver, file));
-                }
+            using (Stream stream = WebRequest.Create(uri)
+                    .GetResponse()
+                    .GetResponseStream())
+            {
+                ByteDl(stream, QuickPath(path, path1, ver, file));
+            }
         }
 
         private static void FinishedPrompt(string message)
