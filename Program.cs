@@ -350,13 +350,15 @@ namespace LoLUpdater
 
         private static void CgInstall()
         {
-            
-            Stream stream =
-                                WebRequest.Create(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"))
-                                    .GetResponse()
-                                    .GetResponseStream();
-            if (stream != null)
+
+
+
+            using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+                       CgInstaller))
+               .GetResponse()
+               .GetResponseStream())
             {
+
                 ByteDl(stream, CgInstaller);
             }
                 
@@ -385,14 +387,12 @@ namespace LoLUpdater
         private static void AirInstall()
         {
 
-            Stream stream =
-                
-                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), AirInstaller))
-                                    .GetResponse()
-                                    .GetResponseStream();
-            if (stream != null)
+            using (Stream stream = WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                        AirInstaller))
+                .GetResponse()
+                .GetResponseStream())
             {
-                ByteDl(stream, AirInstaller);
+                    ByteDl(stream, AirInstaller);
             }
             if (!File.Exists(AirInstaller)) return;
             Normalize(AirInstaller, string.Empty, string.Empty, string.Empty, true);
@@ -414,6 +414,7 @@ namespace LoLUpdater
 
         private static void ByteDl(Stream stream, string path)
         {
+
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 byte[] buffer = new byte[4096];
@@ -603,21 +604,23 @@ namespace LoLUpdater
         {
             if (Riot)
             {
-                Stream stream =
-                    WebRequest.Create(uri)
+                using (Stream stream = WebRequest.Create(uri)
                         .GetResponse()
-                        .GetResponseStream();
-                if (stream == null) return;
-                ByteDl(stream, QuickPath(path, path1, ver, file));
+                        .GetResponseStream())
+                {
+                    ByteDl(stream, QuickPath(path, path1, ver, file));
+                }
+
+
             }
             else
             {
-                Stream stream =
-                       WebRequest.Create(uri)
-                           .GetResponse()
-                           .GetResponseStream();
-                if (stream == null) return;
-                ByteDl(stream, file);
+                using (Stream stream = WebRequest.Create(uri)
+                    .GetResponse()
+                    .GetResponseStream())
+                {
+                    ByteDl(stream, file);
+                }
             }
         }
 
