@@ -307,39 +307,34 @@ namespace LoLUpdater
                 case 1:
                     Console.Clear();
                     Console.WriteLine("Installing...");
-
-                    Cfg(CfgFilez.ToString(), "Config", MultiCore);
-                    Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
-                    if (!Riot)
+                    if (Riot)
                     {
-                        Download(string.Empty, TbbSum, TbbUri, Path.Combine("Game", "tbb.dll"), string.Empty,
-                              string.Empty);
-                        Parallel.ForEach(CfgFilez,
-                        file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
+                        Cfg(CfgFilez.ToString(), "Config", MultiCore);
+                        Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
 
+
+                        Parallel.ForEach(AirFiles,
+                            file => { Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null); });
                         Parallel.ForEach(CgFiles, file =>
                         {
-                            Copy(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
+                            Normalize(Path.Combine(_cgBinPath,
+                                file), string.Empty, string.Empty, string.Empty, false);
+                            File.Copy(Path.Combine(_cgBinPath,
+                                file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
+                            Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty,
+                                string.Empty, false);
                         });
-
-
                     }
-
-                    Parallel.ForEach(AirFiles, file =>
+                    else
                     {
-                        Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null);
-                    });
-                    Parallel.ForEach(CgFiles, file =>
-                    {
-                        Normalize(Path.Combine(_cgBinPath,
-                            file), string.Empty, string.Empty, string.Empty, false);
-                        File.Copy(Path.Combine(_cgBinPath,
-                            file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
-                        Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
+                        Download(string.Empty, TbbSum, TbbUri, Path.Combine("Game", "tbb.dll"), string.Empty,
+                            string.Empty);
+                        Parallel.ForEach(CfgFilez,
+                            file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
 
-                    });
-
-
+                        Parallel.ForEach(CgFiles,
+                            file => { Copy(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null); });
+                    }
 
 
                     FinishedPrompt("Done Installing!");
@@ -629,7 +624,6 @@ namespace LoLUpdater
             return num;
         }
 
-        // Use this only for tbb?
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
                 if (!File.Exists(QuickPath(path, path1, ver, file)))
@@ -739,7 +733,7 @@ namespace LoLUpdater
 
         private static string QuickPath(string path, string path1, string ver, string file)
         {
-            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : path;
+            return Riot ? Path.Combine("RADS", path, path1, "releases", ver, "deploy", file) : Path.Combine(path, file);
         }
 
         private static bool Sha512(string file, string sha512)
