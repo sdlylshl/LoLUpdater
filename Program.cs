@@ -189,12 +189,12 @@ namespace LoLUpdater
                     case "-h":
                     case "--help":
                         Console.WriteLine(
-                                       string.Join(Environment.NewLine, "Command-Line Arguments:",
-                                           string.Empty,
-                                           "-install : Installs LoLUpdater",
-                                           "-uninst : Uninstalls LoLUpdater",
-                                           "--help /? -h : Shows this menu")
-                                   );
+                            string.Join("Command-Line Arguments:",
+                                string.Empty,
+                                "-install : Installs LoLUpdater",
+                                "-uninst : Uninstalls LoLUpdater",
+                                "--help /? -h : Shows this menu")
+                        );
                         Console.ReadLine();
                         break;
 
@@ -610,7 +610,15 @@ namespace LoLUpdater
         private static int DisplayMenu()
         {
             int num = 0;
-            Console.WriteLine("For a list of Command-Line Arguments start lolupdater with --help");
+            Console.WriteLine(
+                String.Join(Environment.NewLine,
+                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, 
+                    "Select method:",
+                    string.Empty,
+                    "1. Install",
+                    "2. Uninstall",
+                    "4. Exit")
+            );
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
             string result = readLine.Trim();
