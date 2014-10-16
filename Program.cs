@@ -124,7 +124,7 @@ namespace LoLUpdater
             {
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (Sha512("LoLUpdater.exe",
+                    if (!Sha512("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
