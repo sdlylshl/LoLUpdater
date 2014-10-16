@@ -121,18 +121,15 @@ namespace LoLUpdater
                 if (Sha512("LoLUpdater.exe",
                             WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
                 {
-                    if (File.Exists(Updater))
-                    { Normalize(Updater, string.Empty, string.Empty, string.Empty, true); }
                     using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                     {
-                        CompilerParameters parameters = new CompilerParameters()
+                        CompilerParameters parameters = new CompilerParameters
                         {
                             GenerateInMemory = false,
                             GenerateExecutable = true,
                             IncludeDebugInformation = false,
                             CompilerOptions = "/optimize",
-                            OutputAssembly = Updater,
-                            TempFiles = new TempFileCollection(".", true)
+                            OutputAssembly = Updater
                         };
                         parameters.ReferencedAssemblies.Add("System.dll");
                         parameters.ReferencedAssemblies.Add("System.Core.dll");
@@ -153,8 +150,17 @@ namespace LoLUpdater
                                 {
                                     list.Add(line);
                                 }
-                                // Todo: David can you make it so that for each line a "+" is added, with regex or something in list.ToArray()
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, list.ToArray());
+                                WebClient.DownloadFile("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs", "Temp.cs");
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
+                                if (result.Errors.Count > 0)
+                                {
+                                    foreach (CompilerError ce in result.Errors)
+                                    {
+                                        Console.WriteLine("  {0}", ce);
+                                        Console.WriteLine();
+                                    }
+                                }
+                           
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
