@@ -118,7 +118,7 @@ namespace LoLUpdater
             using (WebClient)
             {
 
-                if (Sha512("LoLUpdater.exe", WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
+                if (!Sha512("LoLUpdater.exe", WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
                 {
                     using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                     {
@@ -708,7 +708,7 @@ namespace LoLUpdater
             if (Riot)
             {
                 Console.WriteLine(
-                   Sha512(QuickPath(path, path1, ver, file), sha512)
+                   !Sha512(QuickPath(path, path1, ver, file), sha512)
                        ? "{0} Is the old patched file or the original"
                        : "{0} Succesfully patched!",
                    Path.GetFileNameWithoutExtension(file));
@@ -716,7 +716,7 @@ namespace LoLUpdater
             else
             {
                 Console.WriteLine(
-                    Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
+                    !Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
                     Path.GetFileNameWithoutExtension(path));
             }
 
