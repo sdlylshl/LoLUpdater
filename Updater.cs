@@ -38,7 +38,7 @@ namespace LoLUpdater_Updater
                         "LoLUpdater.exe");
                 }
                 if (new FileInfo("LoLUpdater.exe").Attributes
-                    .Equals(FileAttributes.ReadOnly)
+                    .Equals(FileAttributes.ReadOnly))
                 {File.SetAttributes("LoLUpdater.exe",
                     FileAttributes.Normal);}
                 

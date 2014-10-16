@@ -136,7 +136,7 @@ namespace LoLUpdater
 
 
                         Stream stream =
-                            WebRequest.Create("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs")
+                            WebRequest.Create("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs")
                                 .GetResponse()
                                 .GetResponseStream();
 
@@ -150,17 +150,7 @@ namespace LoLUpdater
                                 {
                                     list.Add(line);
                                 }
-                                WebClient.DownloadFile("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs", "Temp.cs");
                                 CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
-                                if (result.Errors.Count > 0)
-                                {
-                                    foreach (CompilerError ce in result.Errors)
-                                    {
-                                        Console.WriteLine("  {0}", ce);
-                                        Console.WriteLine();
-                                    }
-                                }
-                           
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
