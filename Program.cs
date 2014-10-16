@@ -118,33 +118,40 @@ namespace LoLUpdater
             using (WebClient)
             {
                 if (Sha512("LoLUpdater.exe",
-                        WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
+                        WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
                 {
                     if (File.Exists(Updater))
                     { Normalize(Updater, string.Empty, string.Empty, string.Empty, true); }
-                    using (
-                        MemoryStream memoryStream =
-                            new MemoryStream(WebClient.DownloadData(
-                            new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+                    using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                     {
-                        using (CSharpCodeProvider cscp = new CSharpCodeProvider())
+                        CompilerParameters parameters = new CompilerParameters()
                         {
-                                CompilerParameters parameters = new CompilerParameters
-                                {
-                                    GenerateInMemory = false,
-                                    GenerateExecutable = true,
-                                    IncludeDebugInformation = false,
-                                    CompilerOptions = "/optimize",
-                                    OutputAssembly = Updater
-                                };
-                                parameters.ReferencedAssemblies.Add("System.dll");
-                                parameters.ReferencedAssemblies.Add("System.Core.dll");
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(BitConverter.GetBytes(BitConverter.ToInt32(memoryStream.ToArray(), 0))));
+                            GenerateInMemory = false,
+                            GenerateExecutable = true,
+                            IncludeDebugInformation = false,
+                            CompilerOptions = "/optimize",
+                            OutputAssembly = "LoLUpdater Updater.exe",
+                            TempFiles = new TempFileCollection(".", true)
+                        };
+                        parameters.ReferencedAssemblies.Add("System.dll");
+                        parameters.ReferencedAssemblies.Add("System.Core.dll");
+
+                        using (MemoryStream memoryStream = new MemoryStream(WebClient.DownloadData(
+                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+                        {
+                            memoryStream.Position = 0;
+                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                            {
+                                // This kinda works except that the string does not look like the original text.
+                                // Todo: fix
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(BitConverter.GetBytes(memoryStream.Length), 0))));
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
                                 Environment.Exit(0);
+                            }
                         }
+
                     }
                 }
                 else
