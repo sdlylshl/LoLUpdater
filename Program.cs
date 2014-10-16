@@ -610,9 +610,7 @@ namespace LoLUpdater
         private static int DisplayMenu()
         {
             int num = 0;
-            Help();
-            Console.WriteLine("For a list of Command-Line Arguments start lolupdater with --help")
-            );
+            Console.WriteLine("For a list of Command-Line Arguments start lolupdater with --help");
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
             string result = readLine.Trim();
