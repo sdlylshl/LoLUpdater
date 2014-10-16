@@ -357,13 +357,7 @@ namespace LoLUpdater
                                     .GetResponseStream();
             if (stream != null)
             {
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-                    using (StreamWriter streamWriter = new StreamWriter(CgInstaller))
-                    {
-                        streamWriter.Write(streamReader.ReadToEnd());
-                    }
-                }
+                ByteDl(stream, CgInstaller);
             }
                 
                 if (!File.Exists(CgInstaller)) return;
@@ -393,18 +387,12 @@ namespace LoLUpdater
 
             Stream stream =
                 
-                                WebRequest.Create(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"))
+                                WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"), AirInstaller))
                                     .GetResponse()
                                     .GetResponseStream();
             if (stream != null)
             {
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-                    using (StreamWriter streamWriter = new StreamWriter(AirInstaller))
-                    {
-                        streamWriter.Write(streamReader.ReadToEnd());
-                    }
-                }
+                ByteDl(stream, AirInstaller);
             }
             if (!File.Exists(AirInstaller)) return;
             Normalize(AirInstaller, string.Empty, string.Empty, string.Empty, true);
@@ -422,6 +410,23 @@ namespace LoLUpdater
             airwin.Start();
             airwin.WaitForExit();
             File.Delete(AirInstaller);
+        }
+
+        private static void ByteDl(Stream stream, string path)
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                byte[] buffer = new byte[4096];
+                int count;
+                do
+                {
+                    count = stream.Read(buffer, 0, buffer.Length);
+                    memoryStream.Write(buffer, 0, count);
+                } while (count != 0);
+
+                var result = memoryStream.ToArray();
+                File.WriteAllBytes(path, result);
+            }
         }
 
         private static void Help()
@@ -603,13 +608,7 @@ namespace LoLUpdater
                         .GetResponse()
                         .GetResponseStream();
                 if (stream == null) return;
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-                    using (StreamWriter streamWriter = new StreamWriter(QuickPath(path, path1, ver, file)))
-                    {
-                        streamWriter.Write(streamReader.ReadToEnd());
-                    }
-                }
+                ByteDl(stream, QuickPath(path, path1, ver, file));
             }
             else
             {
@@ -618,13 +617,7 @@ namespace LoLUpdater
                            .GetResponse()
                            .GetResponseStream();
                 if (stream == null) return;
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-                    using (StreamWriter streamWriter = new StreamWriter(file))
-                    {
-                        streamWriter.Write(streamReader.ReadToEnd());
-                    }
-                }
+                ByteDl(stream, file);
             }
         }
 
