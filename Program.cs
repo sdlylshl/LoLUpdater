@@ -640,7 +640,7 @@ namespace LoLUpdater
                 {
                     Normalize(path, path1, ver, file, false);
                     if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                    DlExt(file, uri, string.Empty, path1, ver);
+                    DlExt(file, uri, path, path1, ver);
                 }
                 Unblock(path, path1, ver, file, false);
         }
