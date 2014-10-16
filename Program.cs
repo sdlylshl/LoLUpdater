@@ -457,7 +457,6 @@ namespace LoLUpdater
                     count = stream.Read(buffer, 0, buffer.Length);
                     memoryStream.Write(buffer, 0, count);
                 } while (count != 0);
-
                 File.WriteAllBytes(path, memoryStream.ToArray());
             }
         }
@@ -633,8 +632,6 @@ namespace LoLUpdater
         // Use this only for tbb?
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
-            if (Riot)
-            {
                 if (!File.Exists(QuickPath(path, path1, ver, file)))
                 {
                     DlExt(file, uri, path, path1, ver);
@@ -643,24 +640,9 @@ namespace LoLUpdater
                 {
                     Normalize(path, path1, ver, file, false);
                     if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                    DlExt(file, uri, path, path1, ver);
+                    DlExt(file, uri, string.Empty, path1, ver);
                 }
                 Unblock(path, path1, ver, file, false);
-            }
-            else
-            {
-                if (!File.Exists(file))
-                {
-                    DlExt(file, uri, string.Empty, string.Empty, string.Empty);
-                }
-                else
-                {
-                    Normalize(path, path1, ver, file, false);
-                    if (Sha512(file, sha512)) return;
-                    DlExt(file, uri, string.Empty, string.Empty, string.Empty);
-                }
-                Unblock(path, path1, ver, file, false);
-            }
         }
 
         private static void DlExt(string file, Uri uri, string path, string path1, string ver)
