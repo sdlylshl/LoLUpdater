@@ -251,14 +251,24 @@ namespace LoLUpdater
                     file =>
                     {
                         LoL(string.Empty, file, "solutions", "lol_game_client_sln", Sln, string.Empty, Installing);
+
+                    });
+
+                if (!Riot)
+                {
+                    Parallel.ForEach(GameFiles,
+                    file =>
+                    {
                         LoL(string.Empty, Path.Combine("Game", file), file, string.Empty, string.Empty, "Backup", Installing);
                     });
-                LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"), "Adobe Air.dll", string.Empty, string.Empty,
+                    LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Adobe Air.dll"), "Adobe Air.dll", string.Empty, string.Empty,
                     "Backup", true);
-                LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), "NPSWF32.dll", string.Empty, string.Empty,
-                    "Backup", true);
-                Parallel.ForEach(CfgFilez,
-                    file => { LoL(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
+                    LoL(string.Empty, Path.Combine("Air", "Adobe AIR", "Versions", "1.0", "Resources", "NPSWF32.dll"), "NPSWF32.dll", string.Empty, string.Empty,
+                        "Backup", true);
+                    Parallel.ForEach(CfgFilez,
+                        file => { LoL(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
+                
+                }
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
                 if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
@@ -298,9 +308,17 @@ namespace LoLUpdater
                     {
                         Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
                               string.Empty);
-                    }
-                    Parallel.ForEach(CfgFilez,
+                        Parallel.ForEach(CfgFilez,
                         file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
+
+                        Parallel.ForEach(CgFiles, file =>
+                        {
+                            LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
+                        });
+
+                        
+                    }
+                    
                     Parallel.ForEach(AirFiles, file =>
                     {
                         LoL(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null);
@@ -312,7 +330,7 @@ namespace LoLUpdater
                         File.Copy(Path.Combine(_cgBinPath,
                             file), QuickPath("solutions", "lol_game_client_sln", Sln, file), true);
                         Unblock(QuickPath("solutions", "lol_game_client_sln", Sln, file), string.Empty, string.Empty, string.Empty, false);
-                        LoL(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
+
                     });
 
 
