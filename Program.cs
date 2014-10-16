@@ -119,7 +119,7 @@ namespace LoLUpdater
             {
 
                 if (Sha512("LoLUpdater.exe",
-                            WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
+                            WebClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
                 {
                     using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                     {
