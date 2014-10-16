@@ -117,8 +117,9 @@ namespace LoLUpdater
 
             using (WebClient)
             {
+
                 if (Sha512("LoLUpdater.exe",
-                        WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
+                            WebClient.DownloadString(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))))
                 {
                     if (File.Exists(Updater))
                     { Normalize(Updater, string.Empty, string.Empty, string.Empty, true); }
@@ -130,29 +131,39 @@ namespace LoLUpdater
                             GenerateExecutable = true,
                             IncludeDebugInformation = false,
                             CompilerOptions = "/optimize",
-                            OutputAssembly = "LoLUpdater Updater.exe",
+                            OutputAssembly = Updater,
                             TempFiles = new TempFileCollection(".", true)
                         };
                         parameters.ReferencedAssemblies.Add("System.dll");
                         parameters.ReferencedAssemblies.Add("System.Core.dll");
 
-                        using (MemoryStream memoryStream = new MemoryStream(WebClient.DownloadData(
-                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs"))))
+
+                        Stream stream =
+                            WebRequest.Create("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.cs")
+                                .GetResponse()
+                                .GetResponseStream();
+
+                        var list = new List<string>();
+                        if (stream != null)
                         {
-                            memoryStream.Position = 0;
-                            using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                            using (StreamReader streamReader = new StreamReader(stream))
                             {
-                                // This kinda works except that the string does not look like the original text.
-                                // Todo: fix
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, Encoding.Default.GetString(binaryReader.ReadBytes(BitConverter.ToInt32(BitConverter.GetBytes(memoryStream.Length), 0))));
+                                string line;
+                                while ((line = streamReader.ReadLine()) != null)
+                                {
+                                    list.Add(line);
+                                }
+                                // Todo: David can you make it so that for each line a "+" is added, with regex or something in list.ToArray()
+                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters, list.ToArray());
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
                                 Environment.Exit(0);
                             }
                         }
-
                     }
+
+
                 }
                 else
                 {
@@ -161,8 +172,9 @@ namespace LoLUpdater
                         File.Delete(Updater);
                     }
                 }
-
             }
+
+
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -394,7 +406,7 @@ namespace LoLUpdater
         {
 
             Console.WriteLine(
-                String.Join(Environment.NewLine, "Command-Line Arguments:",
+                string.Join(Environment.NewLine, "Command-Line Arguments:",
                     string.Empty,
                     "-install : Installs LoLUpdater",
                     "-uninst : Uninstalls LoLUpdater",
