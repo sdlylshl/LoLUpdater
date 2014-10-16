@@ -154,7 +154,6 @@ namespace LoLUpdater
                                 Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
                                 Process.Start(result.PathToAssembly);
-                                Environment.Exit(0);
                             }
                         }
                     }
