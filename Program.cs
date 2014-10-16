@@ -1,6 +1,5 @@
 using System;
 using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -267,7 +266,7 @@ namespace LoLUpdater
                         "Backup", true);
                     Parallel.ForEach(CfgFilez,
                         file => { Copy(string.Empty, Path.Combine("Game", "DATA", "CFG", "defaults", file), file, string.Empty, string.Empty, "Backup", Installing); });
-                
+
                 }
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
@@ -316,9 +315,9 @@ namespace LoLUpdater
                             Copy(_cgBinPath, file, string.Empty, string.Empty, string.Empty, "Game", null);
                         });
 
-                        
+
                     }
-                    
+
                     Parallel.ForEach(AirFiles, file =>
                     {
                         Copy(AdobePath, file, string.Empty, string.Empty, string.Empty, Adobe, null);
@@ -334,7 +333,7 @@ namespace LoLUpdater
                     });
 
 
-                    
+
 
                     FinishedPrompt("Done Installing!");
                     break;
@@ -493,93 +492,104 @@ namespace LoLUpdater
 
         private static void Copy(string from, string file, string path, string path1, string ver, string to, bool? mode)
         {
-            if (mode == true)
+            if (mode.HasValue)
             {
-                if (File.Exists(QuickPath(path, path1,
-                    ver, file)) & string.IsNullOrEmpty(to))
+                if (mode.Value)
                 {
-                    Normalize(path, path1, ver, file, false);
-                    File.Copy(
-                        QuickPath(path, path1,
-                            ver, file)
-                        , Path.Combine("Backup", file),
-                        true);
-                    Unblock(path, path1, ver, file, false);
-                }
-                else
-                {
-                    Console.WriteLine("Could not find file {0}", QuickPath(path, path1,
-                        ver, file));
-                }
+                    if (File.Exists(QuickPath(path, path1,
+                       ver, file)) & string.IsNullOrEmpty(to))
+                    {
+                        Normalize(path, path1, ver, file, false);
+                        File.Copy(
+                            QuickPath(path, path1,
+                                ver, file)
+                            , Path.Combine("Backup", file),
+                            true);
+                        Unblock(path, path1, ver, file, false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not find file {0}", QuickPath(path, path1,
+                            ver, file));
+                    }
 
-                // Flash copy
-                if (File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)) & !string.IsNullOrEmpty(to))
-                {
+                    // Flash copy
+                    if (File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)) &
+                        !string.IsNullOrEmpty(to))
+                    {
                         Normalize(path, path1, ver, Path.Combine(to, file), false);
                         File.Copy(
                             Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
                             , Path.Combine("Backup", file),
                             true);
                         Unblock(path, path1, ver, Path.Combine(to, file), false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not find file {0}",
+                            Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file));
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Could not find file {0}",
-                        Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file));
-                }
-            }
-            if (!mode == false)
-            {
-                if (File.Exists(Path.Combine("Backup", file)) & string.IsNullOrEmpty(to))
-                {
-                    Normalize(path, path1, ver, file, false);
-                    File.Copy(Path.Combine("Backup", file), 
-                        QuickPath(path, path1,
-                            ver, file)
-                        ,
-                        true);
-                    Unblock(path, path1, ver, file, false);
-                }
-                else
-                {
-                    Console.WriteLine("Could not find file {0}", Path.Combine("Backup", file));
-                }
+                    if (File.Exists(Path.Combine("Backup", file)) & string.IsNullOrEmpty(to))
+                    {
+                        Normalize(path, path1, ver, file, false);
+                        File.Copy(Path.Combine("Backup", file),
+                            QuickPath(path, path1,
+                                ver, file)
+                            ,
+                            true);
+                        Unblock(path, path1, ver, file, false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not find file {0}", Path.Combine("Backup", file));
+                    }
 
-                // Flash copy
-                if (File.Exists(Path.Combine("Backup", file)) & !string.IsNullOrEmpty(to))
-                {
-                    Normalize(path, path1, ver, Path.Combine(to, file), false);
-                    File.Copy(Path.Combine("Backup", file), 
-                        Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
-                        ,
-                        true);
-                    Unblock(path, path1, ver, Path.Combine(to, file), false);
+                    // Flash copy
+                    if (File.Exists(Path.Combine("Backup", file)) & !string.IsNullOrEmpty(to))
+                    {
+                        Normalize(path, path1, ver, Path.Combine(to, file), false);
+                        File.Copy(Path.Combine("Backup", file),
+                            Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)
+                            ,
+                            true);
+                        Unblock(path, path1, ver, Path.Combine(to, file), false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not find file {0}",
+                            Path.Combine("Backup", file));
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Could not find file {0}",
-                        Path.Combine("Backup", file));
-                }
+                
+                
             }
-            if (to != null && (Directory.Exists(@from) & Directory.Exists(to)))
-            {
-                if (File.Exists(Path.Combine(@from, file)))
-                {
-                    Normalize(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
-                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                    Unblock(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
-                }
-                else
-                {
-                    Console.WriteLine("Could not find file {0}", Path.Combine(@from, file));
-                }
 
-            }
             else
             {
-                Console.WriteLine("Could not find path {0}", @from);
+                if (to != null && (Directory.Exists(@from) & Directory.Exists(to)))
+                {
+                    if (File.Exists(Path.Combine(@from, file)))
+                    {
+                        Normalize(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
+                        File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                        Unblock(Path.Combine(@from, file), string.Empty, string.Empty, string.Empty, false);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not find file {0}", Path.Combine(@from, file));
+                    }
 
+                }
+                else
+                {
+                    Console.WriteLine("Could not find path {0}", @from);
+
+                }
             }
+            
         }
 
         private static void Cfg(string file, string path, bool mode)
@@ -758,7 +768,7 @@ namespace LoLUpdater
         {
             if (!exe)
             {
-                    DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
+                DeleteFile(QuickPath(path, path1, ver, file) + ":Zone.Identifier");
             }
             else
             {
