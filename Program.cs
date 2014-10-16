@@ -312,7 +312,7 @@ namespace LoLUpdater
                     Download("tbb.dll", TbbSum, TbbUri, "solutions", "lol_game_client_sln", Sln);
                     if (!Riot)
                     {
-                        Download(Path.Combine("Game", "tbb.dll"), TbbSum, TbbUri, string.Empty, string.Empty,
+                        Download(string.Empty, TbbSum, TbbUri, Path.Combine("Game", "tbb.dll"), string.Empty,
                               string.Empty);
                         Parallel.ForEach(CfgFilez,
                         file => { Cfg(file, Path.Combine("Game", "DATA", "CFG", "defaults"), MultiCore); });
