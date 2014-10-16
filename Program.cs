@@ -770,20 +770,11 @@ namespace LoLUpdater
 
         private static void Verify(string path, string path1, string ver, string file, string sha512)
         {
-            if (Riot)
-            {
-                Console.WriteLine(
-                   !Sha512(QuickPath(path, path1, ver, file), sha512)
-                       ? "{0} Is the old patched file or the original"
-                       : "{0} Succesfully patched!",
-                   Path.GetFileNameWithoutExtension(file));
-            }
-            else
-            {
-                Console.WriteLine(
-                    !Sha512(path, sha512) ? "{0} Is the old patched file or the original" : "{0} Succesfully patched!",
-                    Path.GetFileNameWithoutExtension(path));
-            }
+            Console.WriteLine(
+               !Sha512(QuickPath(path, path1, ver, file), sha512)
+                   ? "{0} Is the old patched file or the original"
+                   : "{0} Succesfully patched!",
+               Path.GetFileNameWithoutExtension(file));
 
         }
 
