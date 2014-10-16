@@ -148,7 +148,7 @@ namespace LoLUpdater
                                         .GetResponse()
                                         .GetResponseStream())
                             {
-                             
+
                                 var list = new List<string>();
                                 if (stream2 == null) return;
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
@@ -179,7 +179,7 @@ namespace LoLUpdater
 
                 }
             }
-            
+
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -259,30 +259,30 @@ namespace LoLUpdater
                     file => { LoL(Path.Combine("Game", "DATA", "CFG", "defaults"), file, string.Empty, string.Empty, string.Empty, "Backup", Installing); });
                 Console.WriteLine(string.Empty);
                 if (!Installing) return;
-                    if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
-                    {
-                        AirInstall();
-                    }
-                    else
-                    {
-                        if (new Version(
-                            FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
-                            new Version("15.0.0.297"))
-                        { AirInstall(); }
+                if (!File.Exists(Path.Combine(AdobePath, "Adobe AIR.dll")))
+                {
+                    AirInstall();
+                }
+                else
+                {
+                    if (new Version(
+                        FileVersionInfo.GetVersionInfo(Path.Combine(AdobePath, "Adobe AIR.dll")).FileVersion) <
+                        new Version("15.0.0.297"))
+                    { AirInstall(); }
 
-                    }
+                }
 
-                    if (string.IsNullOrEmpty(_cgBinPath))
+                if (string.IsNullOrEmpty(_cgBinPath))
 
+                { CgInstall(); }
+                else
+                {
+                    if (
+                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
+                        new Version("3.1.0.13"))
                     { CgInstall(); }
-                    else
-                    {
-                        if (
-                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
-                            new Version("3.1.0.13"))
-                        { CgInstall(); }
 
-                    }
+                }
             }
             switch (_userInput)
             {
@@ -365,8 +365,8 @@ namespace LoLUpdater
 
                 ByteDl(stream, CgInstaller);
             }
-                
-                if (!File.Exists(CgInstaller)) return;
+
+            if (!File.Exists(CgInstaller)) return;
             Normalize(CgInstaller, string.Empty, string.Empty, string.Empty, true);
             Unblock(CgInstaller, string.Empty, string.Empty, string.Empty, true);
 
@@ -396,7 +396,7 @@ namespace LoLUpdater
                 .GetResponse()
                 .GetResponseStream())
             {
-                    ByteDl(stream, AirInstaller);
+                ByteDl(stream, AirInstaller);
             }
             if (!File.Exists(AirInstaller)) return;
             Normalize(AirInstaller, string.Empty, string.Empty, string.Empty, true);
@@ -471,6 +471,7 @@ namespace LoLUpdater
         // Todo: refactor this mess
         private static void LoL(string from, string file, string path, string path1, string ver, string to, bool mode)
         {
+
             if (mode & File.Exists(QuickPath(path, path1,
                 ver, file)))
             {
@@ -484,13 +485,28 @@ namespace LoLUpdater
             }
             else
             {
-                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
+                if (mode & Riot)
+                {
+                    Console.WriteLine("Could not find {0}", QuickPath(path, path1,
+                        ver, file));
+                }
+            }
+
+            if (!mode & File.Exists(Path.Combine("Backup", file)))
+            {
                 Normalize(path, path1, ver, file, false);
                 File.Copy(Path.Combine("Backup", file)
                     , QuickPath(path, path1,
                         ver, file),
                     true);
                 Unblock(path, path1, ver, file, false);
+            }
+            else
+            {
+                if (mode & Riot)
+                {
+                    Console.WriteLine("Could not find {0}", Path.Combine("Backup", file));
+                }
             }
             if (mode & File.Exists(Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file)))
             {
@@ -503,12 +519,25 @@ namespace LoLUpdater
             }
             else
             {
-                if (mode | !File.Exists(Path.Combine("Backup", file))) return;
+                if (mode & Riot)
+                {
+                    Console.WriteLine("Could not find {0}", Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file));
+                }
+            }
+            if (!mode & File.Exists(Path.Combine("Backup", file)))
+            {
                 Normalize(path, path1, ver, Path.Combine(to, file), false);
                 File.Copy(Path.Combine("Backup", file)
                     , Path.Combine("RADS", path, path1, "releases", ver, "deploy", to, file),
                     true);
                 Unblock(path, path1, ver, Path.Combine(to, file), false);
+            }
+            else
+            {
+                if (!mode & Riot)
+                {
+                    Console.WriteLine("Could not find {0}", Path.Combine("Backup", file));
+                }
             }
             if (mode & File.Exists(Path.Combine(@from, file)))
             {
@@ -518,10 +547,24 @@ namespace LoLUpdater
             }
             else
             {
-
-                if (mode | !File.Exists(Path.Combine(to, file))) return;
+                if (mode & !File.Exists(Path.Combine(@from, file)))
+                {
+                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                    Normalize(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                    Unblock(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
+                }
+            }
+            if (!mode & File.Exists(Path.Combine(to, file)))
+            {
                 Normalize(Path.Combine(from, file), string.Empty, string.Empty, string.Empty, false);
                 File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
+                Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
+            }
+            else
+            {
+                if (!(!mode & !File.Exists(Path.Combine(to, file)))) return;
+                File.Copy(Path.Combine(to, file), Path.Combine(@from, file), true);
+                Normalize(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
                 Unblock(Path.Combine(to, file), string.Empty, string.Empty, string.Empty, false);
             }
         }
@@ -574,34 +617,34 @@ namespace LoLUpdater
         // Use this only for tbb?
         private static void Download(string file, string sha512, Uri uri, string path, string path1, string ver)
         {
-                if (Riot)
+            if (Riot)
+            {
+                if (!File.Exists(QuickPath(path, path1, ver, file)))
                 {
-                    if (!File.Exists(QuickPath(path, path1, ver, file)))
-                    {
-                        DlExt(file, uri, path, path1, ver);
-                    }
-                    else
-                    {
-                        Normalize(path, path1, ver, file, false);
-                        if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
-                         DlExt(file, uri, path, path1, ver);
-                    }
-                    Unblock(path, path1, ver, file, false);
+                    DlExt(file, uri, path, path1, ver);
                 }
                 else
                 {
-                    if (!File.Exists(file))
-                    {
-                        DlExt(file, uri, string.Empty, string.Empty, string.Empty);
-                    }
-                    else
-                    {
-                        Normalize(path, path1, ver, file, false);
-                        if (Sha512(file, sha512)) return;
-                        DlExt(file, uri, string.Empty, string.Empty, string.Empty);
-                    }
-                    Unblock(path, path1, ver, file, false);
+                    Normalize(path, path1, ver, file, false);
+                    if (Sha512(QuickPath(path, path1, ver, file), sha512)) return;
+                    DlExt(file, uri, path, path1, ver);
                 }
+                Unblock(path, path1, ver, file, false);
+            }
+            else
+            {
+                if (!File.Exists(file))
+                {
+                    DlExt(file, uri, string.Empty, string.Empty, string.Empty);
+                }
+                else
+                {
+                    Normalize(path, path1, ver, file, false);
+                    if (Sha512(file, sha512)) return;
+                    DlExt(file, uri, string.Empty, string.Empty, string.Empty);
+                }
+                Unblock(path, path1, ver, file, false);
+            }
         }
 
         private static void DlExt(string file, Uri uri, string path, string path1, string ver)
