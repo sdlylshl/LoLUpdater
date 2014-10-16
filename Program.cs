@@ -116,12 +116,13 @@ namespace LoLUpdater
             if (!OnlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(OnlyInstance);
 
-            Stream stream =
-                            WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
-                                .GetResponse()
-                                .GetResponseStream();
-            if (stream != null)
+            using (
+                Stream stream =
+                    WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
+                        .GetResponse()
+                        .GetResponseStream())
             {
+                if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
                     if (!Sha512("LoLUpdater.exe",
@@ -140,26 +141,29 @@ namespace LoLUpdater
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
 
-
-                            Stream stream2 =
-                                WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs"))
-                                    .GetResponse()
-                                    .GetResponseStream();
-
-                            var list = new List<string>();
-                            if (stream2 == null) return;
-                            using (StreamReader streamReader2 = new StreamReader(stream2))
+                            using (
+                                Stream stream2 =
+                                    WebRequest.Create(
+                                        new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs"))
+                                        .GetResponse()
+                                        .GetResponseStream())
                             {
-                                string line;
-                                while ((line = streamReader2.ReadLine()) != null)
+                             
+                                var list = new List<string>();
+                                if (stream2 == null) return;
+                                using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
-                                    list.Add(line);
+                                    string line;
+                                    while ((line = streamReader2.ReadLine()) != null)
+                                    {
+                                        list.Add(line);
+                                    }
+                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
+                                        string.Join(Environment.NewLine, list.ToArray()));
+                                    Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                                    Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
+                                    Process.Start(result.PathToAssembly);
                                 }
-                                CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                    string.Join(Environment.NewLine, list.ToArray()));
-                                Normalize(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                                Unblock(result.PathToAssembly, string.Empty, string.Empty, string.Empty, true);
-                                Process.Start(result.PathToAssembly);
                             }
                         }
 
