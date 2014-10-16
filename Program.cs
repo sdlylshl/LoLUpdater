@@ -665,26 +665,12 @@ namespace LoLUpdater
 
         private static void DlExt(string file, Uri uri, string path, string path1, string ver)
         {
-            if (Riot)
-            {
                 using (Stream stream = WebRequest.Create(uri)
                         .GetResponse()
                         .GetResponseStream())
                 {
                     ByteDl(stream, QuickPath(path, path1, ver, file));
                 }
-
-
-            }
-            else
-            {
-                using (Stream stream = WebRequest.Create(uri)
-                    .GetResponse()
-                    .GetResponseStream())
-                {
-                    ByteDl(stream, file);
-                }
-            }
         }
 
         private static void FinishedPrompt(string message)
