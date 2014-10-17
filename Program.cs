@@ -212,10 +212,10 @@ namespace LoLUpdater
                     case "--help":
                         Console.WriteLine(
                             string.Join("Command-Line Arguments:",
-                                string.Empty,
-                                "-install : Installs LoLUpdater",
-                                "-uninst : Uninstalls LoLUpdater",
-                                "--help /? -h : Shows this menu")
+                                string.Empty.AsParallel(),
+                                "-install : Installs LoLUpdater".AsParallel(),
+                                "-uninst : Uninstalls LoLUpdater".AsParallel(),
+                                "--help /? -h : Shows this menu").AsParallel()
                         );
                         Console.ReadLine();
                         break;
@@ -280,7 +280,7 @@ Path.Combine(Environment.Is64BitProcess
 Ver2, One);
             if (_userInput < 3)
             {
-                Console.WriteLine("Configuring...");
+                Console.WriteLine("Configuring...".AsParallel());
 
                 Parallel.ForEach(GameFiles,
     file =>
@@ -371,7 +371,7 @@ file =>
             switch (_userInput)
             {
                 case 1:
-                    Console.WriteLine("Installing...");
+                    Console.WriteLine("Installing...".AsParallel());
                     Parallel.ForEach(CgFiles, file =>
                     {
                         Copy(_cgBinPath, string.Empty, file, Game, null);
@@ -609,12 +609,12 @@ file =>
             int num = 0;
             Console.WriteLine(
                 String.Join(Environment.NewLine,
-                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
-                    "Select method:",
-                    string.Empty,
-                    "1. Install",
-                    "2. Uninstall",
-                    "4. Exit")
+                    string.Empty.AsParallel(), "For a list of Command-Line Arguments, start lolupdater with --help".AsParallel(), string.Empty.AsParallel(),
+                    "Select method:".AsParallel(),
+                    string.Empty.AsParallel(),
+                    "1. Install".AsParallel(),
+                    "2. Uninstall".AsParallel(),
+                    "4. Exit".AsParallel())
             );
             var readLine = Console.ReadLine();
             if (readLine == null) return num;
@@ -667,14 +667,14 @@ file =>
         private static void FinishedPrompt(string message)
         {
             string permanentSum = string.Join(string.Empty,
-                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
-                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
-                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
-                TbbSum);
+                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22".AsParallel(),
+                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2".AsParallel(),
+                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b".AsParallel(),
+                TbbSum.AsParallel());
             // flash, air
             string airSum = string.Join(string.Empty,
-           "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930",
-           "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e"
+           "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930".AsParallel(),
+           "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e".AsParallel()
            );
             Parallel.ForEach(AdobeFiles, file =>
             {
