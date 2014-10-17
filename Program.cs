@@ -723,16 +723,11 @@ file =>
         {
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                StringBuilder stringBuilder = new StringBuilder();
-
                 fileStream.Seek(0, SeekOrigin.Begin);
-
-                Parallel.ForEach(SHA512.Create().ComputeHash(fileStream), b => { stringBuilder.Append(b.ToString("x2")); });
-
                 return
-                    Encoding.ASCII.GetBytes(stringBuilder.ToString())
-                        .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
-                        .Any();
+                    BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                        .Replace("-", string.Empty)
+                        .Equals(sha512);
             }
         }
 
