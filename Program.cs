@@ -32,6 +32,7 @@ namespace LoLUpdater
         private const string Tbb = "tbb.dll";
         private static readonly bool MultiCore =
             CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+
         // List of processors that support AVX2, might become very long in the fure (find fix)
         private static readonly bool Avx2 =
             CpuInfo.Any(
@@ -82,14 +83,14 @@ namespace LoLUpdater
         private const string AirC = "lol_air_client";
         private const string GameCSln = "lol_game_client_sln";
         private const string Rel = "releases";
-        private const string One = "1.0";
+        private const double One = 1.0;
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
-                One)
-            : Path.Combine("Air", AAir, Ver2, One);
+                One.ToString(CultureInfo.InvariantCulture))
+            : Path.Combine("Air", AAir, Ver2, One.ToString(CultureInfo.InvariantCulture));
 
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
@@ -120,7 +121,6 @@ namespace LoLUpdater
             const string updater = "LoLUpdater Updater.exe";
             if (!onlyInstance.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(onlyInstance);
-
             using (
                 Stream stream =
                     WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
@@ -134,7 +134,6 @@ namespace LoLUpdater
                     //  Remove exclamationmark to enable auto-updater
                     if (!Sha512("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
-
                     // end comment
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
@@ -248,7 +247,7 @@ namespace LoLUpdater
 Path.Combine(Environment.Is64BitProcess
     ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
     : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
-Ver2, One);
+Ver2, One.ToString(CultureInfo.InvariantCulture));
             do
             {
                 Parallel.ForEach(new[]{
@@ -347,8 +346,6 @@ file =>
             {
                 case 1:
                     Console.WriteLine("Installing...");
-
-                    Copy(Path.Combine(adobePath, Res), string.Empty, "NPSWF32.dll", Path.Combine(Adobe, Res), null);
                     Parallel.ForEach(CgFiles, file =>
                     {
                         Copy(_cgBinPath, string.Empty, file, Game, null);
@@ -368,8 +365,6 @@ file =>
 
                     Download(Tbb, TbbSum, TbbUri, Game);
                     Cfg(CfgFile);
-
-
                     FinishedPrompt("Done Installing!");
                     break;
 
