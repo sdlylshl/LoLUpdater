@@ -36,43 +36,36 @@ namespace LoLUpdater_Updater
         .GetResponse()
         .GetResponseStream())
             {
-
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-
-                    if (
-                        Sha512(
-                            streamReader.ReadToEnd()))
+                if (stream != null)
+                    using (StreamReader streamReader = new StreamReader(stream))
                     {
 
+                        if (Sha512(streamReader.ReadToEnd()))
+                        {
 
 
-                using (Stream stream = WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
-                        .GetResponse()
-                        .GetResponseStream())
-                {
-using (StreamReader streamReader2 = new StreamReader(stream2))
+
+                            using (Stream stream2 = WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
+                                .GetResponse()
+                                .GetResponseStream())
                             {
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                byte[] buffer = new byte[4096];
-                int count;
-                do
-                {
-                    count = stream2.Read(buffer, 0, buffer.Length);
-                    memoryStream.Write(buffer, 0, count);
-                } while (count != 0);
+                                using (MemoryStream memoryStream = new MemoryStream())
+                                {
+                                    byte[] buffer = new byte[4096];
+                                    int count = 0;
+                                    do
+                                    {
+                                        if (stream2 != null) count = stream2.Read(buffer, 0, buffer.Length);
+                                        memoryStream.Write(buffer, 0, count);
+                                    } while (count != 0);
 
-                File.WriteAllBytes(path, memoryStream.ToArray());
-            }
-                }
 
-                   
-                            
+
+
+                                }
                             }
                         }
                     }
-                }
                 if (new FileInfo("LoLUpdater.exe").Attributes
             .Equals(FileAttributes.ReadOnly))
                 {
@@ -103,6 +96,7 @@ using (StreamReader streamReader2 = new StreamReader(stream2))
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel().Any();
             }
         }
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string file);
