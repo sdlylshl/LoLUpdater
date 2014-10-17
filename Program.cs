@@ -500,87 +500,79 @@ file =>
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
-            try
+            if (mode.HasValue)
             {
-                if (mode.HasValue)
+                if (mode.Value)
                 {
-                    if (mode.Value)
+                    if (path.Equals(Game))
                     {
-                        if (path.Equals(Game))
+                        if (File.Exists(Path.Combine(Game, file)))
                         {
-                            if (File.Exists(Path.Combine(Game, file)))
-                            {
-                                Normalize(Game, file, false);
-                                File.Copy(Path.Combine(
-                                    Game, file)
-                                    , Path.Combine(Backup, file),
-                                    true);
-                                Unblock(Backup, file, false);
-                            }
-                        }
-                        if (path.Contains(Adobe))
-                        {
-                            if (!File.Exists(Path.Combine(Adobe, file))) return;
-                            Normalize(Adobe, file, false);
+                            Normalize(Game, file, false);
                             File.Copy(Path.Combine(
-                                Adobe, file),
-                                Path.Combine(Backup, file),
+                                Game, file)
+                                , Path.Combine(Backup, file),
                                 true);
                             Unblock(Backup, file, false);
                         }
-                        if (!path.Equals(Config)) return;
-                        if (!File.Exists(Path.Combine(Config, file))) return;
-                        Normalize(Config, file, false);
+                    }
+                    if (path.Contains(Adobe))
+                    {
+                        if (!File.Exists(Path.Combine(Adobe, file))) return;
+                        Normalize(Adobe, file, false);
                         File.Copy(Path.Combine(
-                            Config, file),
+                            Adobe, file),
                             Path.Combine(Backup, file),
                             true);
                         Unblock(Backup, file, false);
                     }
-                    else
+                    if (!path.Equals(Config)) return;
+                    if (!File.Exists(Path.Combine(Config, file))) return;
+                    Normalize(Config, file, false);
+                    File.Copy(Path.Combine(
+                        Config, file),
+                        Path.Combine(Backup, file),
+                        true);
+                    Unblock(Backup, file, false);
+                }
+                else
+                {
+                    if (!File.Exists(Path.Combine(Backup, file))) return;
+                    if (path.Equals(Game))
                     {
-                        if (!File.Exists(Path.Combine(Backup, file))) return;
-                        if (path.Equals(Game))
-                        {
-                            Normalize(Backup, file, false);
-                            File.Copy(
-                                Path.Combine(Backup, file), Path.Combine(
+                        Normalize(Backup, file, false);
+                        File.Copy(
+                            Path.Combine(Backup, file), Path.Combine(
                                 Game, file),
-                                true);
-                            Unblock(Game, file, false);
-                        }
-                        if (path.Contains(Adobe))
-                        {
-                            Normalize(Backup, file, false);
-                            File.Copy(Path.Combine(Backup, file),
-                                Path.Combine(
-                                    Adobe, file),
-                                true);
-                            Unblock(Adobe, file, false);
-                        }
-                        if (!path.Equals(Config)) return;
+                            true);
+                        Unblock(Game, file, false);
+                    }
+                    if (path.Contains(Adobe))
+                    {
                         Normalize(Backup, file, false);
                         File.Copy(Path.Combine(Backup, file),
                             Path.Combine(
-                                Config, file),
+                                Adobe, file),
                             true);
-                        Unblock(Config, file, false);
+                        Unblock(Adobe, file, false);
                     }
-                }
-
-                else
-                {
-                    if (!(File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))) return;
-                    Normalize(string.Empty, Path.Combine(@from, file), false);
-                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                    Unblock(string.Empty, Path.Combine(to, file), false);
+                    if (!path.Equals(Config)) return;
+                    Normalize(Backup, file, false);
+                    File.Copy(Path.Combine(Backup, file),
+                        Path.Combine(
+                            Config, file),
+                        true);
+                    Unblock(Config, file, false);
                 }
             }
-            catch (Exception ex)
+
+            else
             {
-                Console.WriteLine(ex.Message);
+                if (!(File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))) return;
+                Normalize(string.Empty, Path.Combine(@from, file), false);
+                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                Unblock(string.Empty, Path.Combine(to, file), false);
             }
-
         }
 
         private static void Cfg(string file)
