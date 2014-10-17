@@ -694,14 +694,14 @@ file =>
                 {
                     string text = File.ReadAllText(Path.Combine(Config, file));
 
-                    CfgVerify(text);
+                    CfgVerify(text, file);
                 });
             }
 
 
             string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
 
-            CfgVerify(text2);
+            CfgVerify(text2, CfgFile);
 
             Console.WriteLine("{0}", message);
             if (Riot)
@@ -713,15 +713,15 @@ file =>
             Environment.Exit(0);
         }
 
-        private static void CfgVerify(string text)
+        private static void CfgVerify(string text, string file)
         {
-            Console.WriteLine(text.Contains(Dpm1)
-                ? "DefaultParticleMultiThreading is Enabled"
-                : "EnableParticleOptimization is Disabled");
+            Console.WriteLine(text.Contains(Dpm1) 
+                ? string.Format("DefaultParticleMultiThreading is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
+                : string.Format("DefaultParticleMultiThreading is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
             Console.WriteLine(string.Empty);
             Console.WriteLine(text.Contains("EnableParticleOptimization=1")
-                ? "EnableParticleOptimization is Enabled"
-                : "EnableParticleOptimization is Disabled");
+                ? string.Format("EnableParticleOptimization is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
+                : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
         }
 
         private static long ToInt(string value)
