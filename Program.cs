@@ -131,11 +131,9 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
+                    if (HashEqual("LoLUpdater.exe",
+                        streamReader.ReadLine()))
 
-                    //  Remove exclamationmark to enable auto-updater
-                    if (!HashEqual("LoLUpdater.exe",
-                        streamReader.ReadToEnd()))
-                    // end comment
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
@@ -150,44 +148,30 @@ namespace LoLUpdater
                             parameters.ReferencedAssemblies.Add("System.dll");
                             parameters.ReferencedAssemblies.Add("System.Core.dll");
 
-                            using (
-                                Stream stream2 =
-                                    WebRequest.Create(
-                                        new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Updater.cs"))
-                                        .GetResponse()
-                                        .GetResponseStream())
-                            {
 
 
-                                if (stream2 == null) return;
+                                        using (
+                Stream stream2 =
+                    WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
+                        .GetResponse()
+                        .GetResponseStream())
+            {
+
                                 var list = new List<string>();
-
-
-                                using (MemoryStream memoryStream = new MemoryStream())
-                                {
-                                    byte[] buffer = new byte[4096];
-                                    int count;
-                                    do
-                                    {
-                                        count = stream2.Read(buffer, 0, buffer.Length);
-                                        memoryStream.Write(buffer, 0, count);
-                                    } while (count != 0);
-                                    memoryStream.Position = 0;
-
-                                    using (StreamReader streamReader2 = new StreamReader(memoryStream))
-                                    {
-                                        string line;
-                                        while ((line = streamReader2.ReadLine()) != null)
+                                if (stream2 == null) return;
+                                        using (StreamReader streamReader2 = new StreamReader(stream2))
                                         {
-                                            list.Add(line);
-                                        }
-                                        CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
-                                        Normalize(string.Empty, result.PathToAssembly, true);
-                                        Unblock(string.Empty, result.PathToAssembly, true);
-                                        Process.Start(result.PathToAssembly);
+                                            Console.WriteLine(streamReader2.ReadToEnd());
+                                            string line;
+                                            while ((line = streamReader2.ReadLine()) != null)
+                                            {
+                                                list.Add(line);
+                                            }
+                                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
+                                            Normalize(string.Empty, result.PathToAssembly, true);
+                                            Unblock(string.Empty, result.PathToAssembly, true);
+                                            Process.Start(result.PathToAssembly);
                                     }
-                                }
-
 
 
 
