@@ -268,8 +268,6 @@ file =>
                         file => { Copy(string.Empty, Config, file, string.Empty, Installing); });
                 }
 
-                Console.WriteLine(string.Empty);
-
                 if (Installing)
                 {
                     if (File.Exists(Path.Combine(AdobePath, Air)))
