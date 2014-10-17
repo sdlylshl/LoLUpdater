@@ -380,7 +380,7 @@ file =>
                     });
                     Parallel.ForEach(AdobeFiles, file =>
                     {
-                        Copy(adobePath, string.Empty, Air, Adobe, null);
+                        Copy(adobePath, string.Empty, file, Adobe, null);
 
                     });
 
@@ -671,9 +671,7 @@ file =>
             Parallel.ForEach(AdobeFiles, file =>
             {
                 Verify(Adobe, file, airSum);
-
-
-            });
+           });
             Parallel.ForEach(GameFiles, file =>
             {
                 Verify(Game, file, permanentSum);
