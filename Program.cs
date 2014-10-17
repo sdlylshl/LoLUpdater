@@ -19,7 +19,7 @@ namespace LoLUpdater
     internal static class Program
     {
         private const string Ipf = "IsProcessorFeaturePresent";
-        internal const string SKernel = "kernel32.dll";
+        private const string SKernel = "kernel32.dll";
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private const string Backup = "Backup";
         private static readonly ManagementBaseObject[] CpuInfo =
@@ -463,19 +463,22 @@ file =>
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
 
+        [DllImport(SKernel, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern void DeleteFile(string file);
 
         private static bool Dll(byte arg, string func)
         {
             bool ok = false;
-            IntPtr pDll = NativeMethods.LoadLibrary(SKernel);
+            IntPtr pDll = LoadLibrary(SKernel);
             if (pDll == IntPtr.Zero) return false;
-            IntPtr pFunc = NativeMethods.GetProcAddress(pDll, func);
+            IntPtr pFunc = GetProcAddress(pDll, func);
             if (pFunc != IntPtr.Zero)
             {
                 DllType bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
                 ok = bar(arg);
             }
-            NativeMethods.FreeLibrary(pDll);
+            FreeLibrary(pDll);
             return ok;
         }
 
@@ -741,12 +744,12 @@ file =>
 
         private static void Unblock(string path, string file, bool exe)
         {
-            NativeMethods.DeleteFile(path.Contains(Adobe)
+            DeleteFile(path.Contains(Adobe)
                 ? string.Format("{0}{1}", Path.Combine(Adobe, file), RmBlock)
                 : string.Format("{0}{1}", Path.Combine(Game, file), RmBlock));
             if (exe)
             {
-                NativeMethods.DeleteFile(string.Format("{0}{1}", path, RmBlock));
+                DeleteFile(string.Format("{0}{1}", path, RmBlock));
             }
         }
 
@@ -785,5 +788,15 @@ file =>
                Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
 
         }
+
+        [DllImport(SKernel, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool FreeLibrary(IntPtr hModule);
+
+        [DllImport(SKernel, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string proc);
+
+        [DllImport(SKernel, CharSet = CharSet.Unicode)]
+        private static extern IntPtr LoadLibrary(String dllName);
     }
 }
