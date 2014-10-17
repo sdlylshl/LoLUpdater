@@ -1,3 +1,4 @@
+using Microsoft.CSharp;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CSharp;
 
 namespace LoLUpdater
 {
@@ -20,22 +20,38 @@ namespace LoLUpdater
     {
         private const string Ipf = "IsProcessorFeaturePresent";
         private const string SKernel = "kernel32.dll";
-        private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private const string Backup = "Backup";
+        private const string Tbb = "tbb.dll";
+        private const string RmBlock = ":Zone.Identifier";
+        private const string CfgFile = "game.cfg";
+        private const string Dpm1 = "DefaultParticleMultiThreading=1";
+        private const string Air = "Adobe AIR.dll";
+        private const string Res = "Resources";
+        private const string Rads = "RADS";
+        private const string Ver2 = "Versions";
+        private const string Dep = "deploy";
+        private const string Proj = "projects";
+        private const string Sol = "solutions";
+        private const string AirC = "lol_air_client";
+        private const string GameCSln = "lol_game_client_sln";
+        private const string Rel = "releases";
+        private const string One = "1.0";
+        private const string AAir = "Adobe AIR";
+        private const string Gme = "Game";
+        private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
                 .AsParallel()
                 .ToArray();
-
-        private const string Tbb = "tbb.dll";
         private static readonly bool X64 = Environment.Is64BitProcess;
         private static readonly string Pmb = Path.Combine(X64
     ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
     : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
     "Pando Networks", "Media Booster", "uninst.exe");
 
-        // List of processors that support AVX2, might become very long in the fure (find fix), some on the list are not even out yet.
+        // List of processors that support AVX2, might become very long in the fure (find fix), some
+        // on the list are not even out yet.
         private static readonly bool Avx2 =
             CpuInfo.Any(
                 item =>
@@ -43,13 +59,7 @@ namespace LoLUpdater
                         .Contains(
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
-
-        private const string RmBlock = ":Zone.Identifier";
         private static readonly bool Riot = Directory.Exists(Rads);
-        private const string CfgFile = "game.cfg";
-        private const string Dpm1 = "DefaultParticleMultiThreading=1";
-        private const string Air = "Adobe AIR.dll";
-        private const string Res = "Resources";
         private static readonly string[] AdobeFiles = { Path.Combine(Res, "NPSWF32.dll"), Air };
 
         private static readonly string[] GarenaCfgFiles =
@@ -74,47 +84,29 @@ namespace LoLUpdater
                         ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
                         : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
 
-        private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-            EnvironmentVariableTarget.User);
-        private const string Rads = "RADS";
-        private const string Ver2 = "Versions";
-        private const string Dep = "deploy";
-        private const string Proj = "projects";
-        private const string Sol = "solutions";
-        private const string AirC = "lol_air_client";
-        private const string GameCSln = "lol_game_client_sln";
-        private const string Rel = "releases";
-        private const string One = "1.0";
-        private const string AAir = "Adobe AIR";
-        private const string Gme = "Game";
-
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
                 One)
             : Path.Combine("Air", AAir, Ver2, One);
-
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
             : Gme;
-
         private static readonly string Config = Riot
     ? "Config"
     : Path.Combine(Gme, "DATA", "CFG", "defaults");
-
         private static int _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
-
-        private static bool _notdone;
-
-
-
         private static readonly Uri TbbUri =
             new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
                 ? "Avx2.dll"
                 : (Avx
                     ? "Avx.dll"
                     : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll")));
-
+        private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+            EnvironmentVariableTarget.User);
+        private static bool _notdone;
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate bool DllType(byte arg);
         private static void Main(string[] args)
         {
             Mutex onlyInstance = new Mutex(true,
@@ -158,19 +150,10 @@ WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tem
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
                                     CompilerResults result = cscp.CompileAssemblyFromSource(parameters, streamReader2.ReadToEnd());
-                                    foreach (CompilerError ce in result.Errors)
-                                    {
-                                        Console.WriteLine("  {0}", ce);
-                                        Console.WriteLine();
-                                    }
-
                                     Normalize(string.Empty, result.PathToAssembly, true);
                                     Unblock(string.Empty, result.PathToAssembly, true);
                                     Process.Start(result.PathToAssembly);
                                 }
-
-
-
                             }
                         }
                     }
@@ -295,7 +278,6 @@ file =>
                 if (Installing)
                 {
 
-
                     if (File.Exists(Path.Combine(adobePath, Air)))
                     {
                         Process airUpdater = new Process
@@ -361,7 +343,6 @@ file =>
                     Parallel.ForEach(CgFiles, file =>
                     {
                         Copy(_cgBinPath, string.Empty, file, Game, null);
-
 
                     });
                     Parallel.ForEach(AdobeFiles, file =>
@@ -459,10 +440,6 @@ file =>
                 File.WriteAllBytes(path, memoryStream.ToArray());
             }
         }
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        private delegate bool DllType(byte arg);
-
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string file);
@@ -481,8 +458,6 @@ file =>
             FreeLibrary(pDll);
             return ok;
         }
-
-
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
@@ -664,7 +639,6 @@ file =>
             {
                 Verify(Game, file, permanentSum);
 
-
             });
             if (!Riot)
             {
@@ -683,7 +657,6 @@ file =>
 
                 CfgVerify(text2, CfgFile);
             }
-
 
             Console.WriteLine("{0}", message);
             if (Riot)

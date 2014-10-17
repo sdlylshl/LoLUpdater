@@ -31,9 +31,6 @@ namespace LoLUpdater_Updater
                 });
             } while (_notdone);
 
-
-
-
             using (Stream stream = WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
         .GetResponse()
         .GetResponseStream())
@@ -44,8 +41,6 @@ namespace LoLUpdater_Updater
 
                         if (Sha512(streamReader.ReadToEnd()))
                         {
-
-
 
                             using (Stream stream2 = WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
                                 .GetResponse()
@@ -60,9 +55,6 @@ namespace LoLUpdater_Updater
                                         if (stream2 != null) count = stream2.Read(buffer, 0, buffer.Length);
                                         memoryStream.Write(buffer, 0, count);
                                     } while (count != 0);
-
-
-
 
                                 }
                             }
