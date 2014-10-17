@@ -19,7 +19,6 @@ namespace LoLUpdater
     internal static class Program
     {
         private const string SKernel = "kernel32.dll";
-
         private static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
         private const string Backup = "Backup";
         private static readonly ManagementBaseObject[] CpuInfo =
@@ -29,10 +28,9 @@ namespace LoLUpdater
                 .ToArray();
 
         private const string Tbb = "tbb.dll";
-        private static readonly bool MultiCore =
-            CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
 
-        // List of processors that support AVX2, might become very long in the fure (find fix)
+
+        // List of processors that support AVX2, might become very long in the fure (find fix), some on the list are not even out yet.
         private static readonly bool Avx2 =
             CpuInfo.Any(
                 item =>
@@ -577,12 +575,14 @@ file =>
 
         private static void Cfg(string file)
         {
+            bool multiCore =
+            CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
             Normalize(string.Empty, Path.Combine(Config, file), false);
             string text = File.ReadAllText(Path.Combine(Config, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-            if (MultiCore)
+            if (multiCore)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, Dpm1));
@@ -716,7 +716,7 @@ file =>
                 : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
         }
 
-        private static long ToInt(string value)
+        private static int ToInt(string value)
         {
             int result;
             int.TryParse(value, out result);
