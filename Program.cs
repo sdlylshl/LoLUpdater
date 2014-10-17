@@ -108,11 +108,10 @@ namespace LoLUpdater
         private delegate bool DllType(byte arg);
         private static void Main(string[] args)
         {
-            Mutex onlyInstance = new Mutex(true,
-            @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
-            const string updater = "LoLUpdater Updater.exe";
-            if (!onlyInstance.WaitOne(TimeSpan.Zero, true)) return;
+            Mutex onlyInstance = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
             GC.KeepAlive(onlyInstance);
+            const string updater = "LoLUpdater Updater.exe";
+            if (!onlyInstance.WaitOne(TimeSpan.Zero, true))
             using (
                 Stream stream =
                     WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
@@ -122,14 +121,15 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (HashEqual("LoLUpdater.exe",
+                    if (!HashEqual("LoLUpdater.exe",
                         streamReader.ReadLine()))
                     {
                         using (
-Stream stream2 =
-WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
-.GetResponse()
-.GetResponseStream())
+                            Stream stream2 =
+                                WebRequest.Create(
+                                    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
+                                    .GetResponse()
+                                    .GetResponseStream())
                         {
                             if (stream2 == null) return;
                             using (CSharpCodeProvider cscp = new CSharpCodeProvider())
@@ -148,7 +148,8 @@ WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tem
 
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
-                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters, streamReader2.ReadToEnd());
+                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
+                                        streamReader2.ReadToEnd());
                                     Normalize(string.Empty, result.PathToAssembly, true);
                                     Unblock(string.Empty, result.PathToAssembly, true);
                                     Process.Start(result.PathToAssembly);
@@ -164,7 +165,6 @@ WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tem
                         }
                     }
                 }
-
             }
 
             if (args.Length > 0)
@@ -180,7 +180,7 @@ WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tem
                                 "-install : Installs LoLUpdater",
                                 "-uninst : Uninstalls LoLUpdater",
                                 "--help /? -h : Shows this menu")
-                        );
+                            );
                         Console.ReadLine();
                         break;
 
@@ -294,10 +294,10 @@ file =>
                     }
                     else
                     {
-                        const string airInstaller = "air15_win.exe";
+                        const string airInstaller = "AdobeAIRInstaller.exe";
                         Download(airInstaller,
                             "fd85bd4455b070e8d5d71ff2187a8252d48f85b3b3f8bae53bb25e81e966682fff16a254f1193da8a2d8d73126f40143126cbec54f2f2c7c446680379ee23d14"
-                            , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                            , new Uri(new Uri("http://airdownload.adobe.com/air/win/download/15.0/"),
                                 airInstaller), string.Empty);
 
                         Normalize(string.Empty, airInstaller, true);
