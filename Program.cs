@@ -467,69 +467,69 @@ file =>
                         if (File.Exists(Path.Combine(Game, file)))
                         {
                             Normalize(Game, file, false);
+                            Unblock(Game, file, false);
                             File.Copy(Path.Combine(
                                 Game, file)
                                 , Path.Combine(Backup, file),
                                 true);
-                            Unblock(Backup, file, false);
                         }
                     }
                     if (path.Contains(Adobe))
                     {
                         if (!File.Exists(Path.Combine(Adobe, file))) return;
                         Normalize(Adobe, file, false);
+                        Unblock(Adobe, file, false);
                         File.Copy(Path.Combine(
                             Adobe, file),
                             Path.Combine(Backup, file),
                             true);
-                        Unblock(Backup, file, false);
                     }
                     if (!path.Equals(Config)) return;
                     if (!File.Exists(Path.Combine(Config, file))) return;
                     Normalize(Config, file, false);
+                    Unblock(Config, file, false);
                     File.Copy(Path.Combine(
                         Config, file),
                         Path.Combine(Backup, file),
                         true);
-                    Unblock(Backup, file, false);
                 }
                 else
                 {
                     if (!File.Exists(Path.Combine(Backup, file))) return;
                     if (path.Equals(Game))
                     {
-                        Normalize(Backup, file, false);
+                        Normalize(Game, file, false);
+                        Unblock(Game, file, false);
                         File.Copy(
                             Path.Combine(Backup, file), Path.Combine(
                                 Game, file),
                             true);
-                        Unblock(Game, file, false);
                     }
                     if (path.Contains(Adobe))
                     {
-                        Normalize(Backup, file, false);
+                        Normalize(Adobe, file, false);
+                        Unblock(Adobe, file, false);
                         File.Copy(Path.Combine(Backup, file),
                             Path.Combine(
                                 Adobe, file),
                             true);
-                        Unblock(Adobe, file, false);
                     }
                     if (!path.Equals(Config)) return;
                     Normalize(Backup, file, false);
+                    Unblock(Config, file, false);
                     File.Copy(Path.Combine(Backup, file),
                         Path.Combine(
                             Config, file),
                         true);
-                    Unblock(Config, file, false);
                 }
             }
 
             else
             {
-                if (!(File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))) return;
-                Normalize(string.Empty, Path.Combine(@from, file), false);
+                if (!File.Exists(Path.Combine(@from, file)) | !Directory.Exists(to)) return;
+                Normalize(@from, file, false);
+                Unblock(@from, file, false);
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                Unblock(string.Empty, Path.Combine(to, file), false);
             }
         }
 
@@ -678,31 +678,14 @@ file =>
 
         private static void Normalize(string path, string file, bool exe)
         {
-            if (path.Contains(Adobe))
-            {
-                // Check+apply Or Bruteforce?
-                if (new FileInfo(Path.Combine(Adobe, file)).Attributes
-                    .Equals(FileAttributes.ReadOnly))
-                {
-                    File.SetAttributes(Path.Combine(Adobe, file),
-                        FileAttributes.Normal);
-                }
-            }
-            else
-            {
-                if (new FileInfo(Path.Combine(Game, file)).Attributes
-                    .Equals(FileAttributes.ReadOnly))
-                {
-                    File.SetAttributes(Path.Combine(Game, file),
-                        FileAttributes.Normal);
-                }
-            }
-
-            if (!exe) return;
-            if (!new FileInfo(file).Attributes
-                .Equals(FileAttributes.ReadOnly)) return;
-            File.SetAttributes(file,
+            File.SetAttributes(path.Contains(Adobe) ? Path.Combine(Adobe, file) : Path.Combine(Game, file),
                 FileAttributes.Normal);
+
+            if (exe)
+            {
+                File.SetAttributes(file,
+                    FileAttributes.Normal);
+            }
         }
 
         private static void Unblock(string path, string file, bool exe)
@@ -712,7 +695,7 @@ file =>
                 : string.Format("{0}{1}", Path.Combine(Game, file), RmBlock));
             if (exe)
             {
-                DeleteFile(string.Format("{0}{1}", path, RmBlock));
+                DeleteFile(string.Format("{0}{1}", Path.Combine(path, file), RmBlock));
             }
         }
 
