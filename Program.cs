@@ -37,6 +37,8 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
+        private static string _airSum;
+        private static string _flashSum;
         private static readonly bool X64 = Environment.Is64BitProcess;
         private static readonly string AdobePath =
 Path.Combine(X64
@@ -308,7 +310,18 @@ file =>
                         airwin.Start();
                         airwin.WaitForExit();
                     }
-
+                    using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        fileStream.Seek(0, SeekOrigin.Begin);
+                        _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                            .Replace("-", string.Empty);
+                    }
+                    using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        fileStream.Seek(0, SeekOrigin.Begin);
+                        _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                            .Replace("-", string.Empty);
+                    }
                     if (string.IsNullOrEmpty(_cgBinPath))
                     {
                         CgInstall();
@@ -472,54 +485,46 @@ file =>
                             Path.Combine(Backup, file),
                             true);
                     }
-                    if (path.Equals(Config) & File.Exists(Path.Combine(Config, file)))
-                    {
-                        Normalize(Path.Combine(Config, file));
-                        Unblock(Path.Combine(Config, file));
-                        File.Copy(Path.Combine(
-                            Config, file),
-                            Path.Combine(Backup, file),
-                            true);
-                    }
+                    if (!path.Equals(Config) | !File.Exists(Path.Combine(Config, file))) return;
+                    Normalize(Path.Combine(Config, file));
+                    Unblock(Path.Combine(Config, file));
+                    File.Copy(Path.Combine(
+                        Config, file),
+                        Path.Combine(Backup, file),
+                        true);
                 }
                 else
                 {
-                    if (File.Exists(Path.Combine(Backup, file)))
+                    if (!File.Exists(Path.Combine(Backup, file))) return;
+                    Normalize(Path.Combine(Backup, file));
+                    Unblock(Path.Combine(Backup, file));
+                    if (path.Equals(Game))
                     {
-                        Normalize(Path.Combine(Backup, file));
-                        Unblock(Path.Combine(Backup, file));
-                        if (path.Equals(Game))
-                        {
-                            File.Copy(
-                                Path.Combine(Backup, file), Path.Combine(
-                                    Game, file),
-                                true);
-                        }
-                        if (path.Contains(Adobe))
-                        {
-                            File.Copy(Path.Combine(Backup, file),
-                                Path.Combine(
-                                    Adobe, file),
-                                true);
-                        }
-                        if (path.Equals(Config))
-                        {
-                            File.Copy(Path.Combine(Backup, file),
-                                Path.Combine(
-                                    Config, file),
-                                true);
-                        }
+                        File.Copy(
+                            Path.Combine(Backup, file), Path.Combine(
+                                Game, file),
+                            true);
                     }
+                    if (path.Contains(Adobe))
+                    {
+                        File.Copy(Path.Combine(Backup, file),
+                            Path.Combine(
+                                Adobe, file),
+                            true);
+                    }
+                    if (!path.Equals(Config)) return;
+                    File.Copy(Path.Combine(Backup, file),
+                        Path.Combine(
+                            Config, file),
+                        true);
                 }
             }
             else
             {
-                if (File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))
-                {
-                    Normalize(Path.Combine(@from, file));
-                    Unblock(Path.Combine(@from, file));
-                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                }
+                if (!File.Exists(Path.Combine(@from, file)) | Directory.Exists(to)) return;
+                Normalize(Path.Combine(@from, file));
+                Unblock(Path.Combine(@from, file));
+                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
             }
         }
 
@@ -614,23 +619,9 @@ file =>
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
                 TbbSum);
 
-            string airSum;
-            string flashSum;
-            using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                fileStream.Seek(0, SeekOrigin.Begin);
-                airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty);
-            }
-            using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                fileStream.Seek(0, SeekOrigin.Begin);
-                flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty);
-            }
             Parallel.ForEach(AdobeFiles, file =>
             {
-                Verify(Adobe, file, string.Join(string.Empty, airSum, flashSum
+                Verify(Adobe, file, string.Join(string.Empty, _airSum, _flashSum
 
                 ));
             });
@@ -643,24 +634,18 @@ file =>
                 Parallel.ForEach(GarenaCfgFiles, file =>
                 {
                     if (!File.Exists(file)) return;
-                    string text = File.ReadAllText(Path.Combine(Config, file));
-
-                    CfgVerify(text, file);
+                    CfgVerify(File.ReadAllText(Path.Combine(Config, file)), file);
                 });
             }
-
-            if (File.Exists(Path.Combine(Config, CfgFile)))
+            else
             {
-                string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
-
-                CfgVerify(text2, CfgFile);
-            }
-
-            Console.WriteLine("{0}", message);
-            if (Riot)
-            {
+                if (File.Exists(Path.Combine(Config, CfgFile)))
+                {
+                    CfgVerify(File.ReadAllText(Path.Combine(Config, CfgFile)), CfgFile);
+                }
                 Process.Start("lol.launcher.exe");
             }
+            Console.WriteLine("{0}", message);
             _notdone = false;
             Console.ReadLine();
             Environment.Exit(0);
@@ -671,7 +656,6 @@ file =>
             Console.WriteLine(text.Contains(Dpm1)
                 ? string.Format("DefaultParticleMultiThreading is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
                 : string.Format("DefaultParticleMultiThreading is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
-            Console.WriteLine(string.Empty);
             Console.WriteLine(text.Contains("EnableParticleOptimization=1")
                 ? string.Format("EnableParticleOptimization is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
                 : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
