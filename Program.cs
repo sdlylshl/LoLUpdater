@@ -17,6 +17,7 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private const string Flash = "NPSWF32.dll";
         private const string Ipf = "IsProcessorFeaturePresent";
         private const string SKernel = "kernel32.dll";
         private const string Backup = "Backup";
@@ -36,13 +37,18 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
+        private static readonly bool X64 = Environment.Is64BitProcess;
+        private static readonly string AdobePath =
+Path.Combine(X64
+? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
+: Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
+Ver2, One);
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
+
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
-                .AsParallel()
-                .ToArray();
-        private static readonly bool X64 = Environment.Is64BitProcess;
+                .AsParallel().ToArray();
         private static readonly string Pmb = Path.Combine(X64
     ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
     : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -58,7 +64,7 @@ namespace LoLUpdater
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
         private static readonly bool Riot = Directory.Exists(Rads);
-        private static readonly string[] AdobeFiles = { Path.Combine(Res, "NPSWF32.dll"), Air };
+        private static readonly string[] AdobeFiles = { Path.Combine(Res, Flash), Air };
         private static readonly string[] GarenaCfgFiles = {
 CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 "GamePermanent_en_SG.cfg"
@@ -105,7 +111,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
         private delegate bool DllType(byte arg);
         private static void Main(string[] args)
         {
-// Readd mutex for single instance
+            // Readd mutex for single instance
             const string updater = "LoLUpdater Updater.exe";
             using (
                 Stream stream =
@@ -200,7 +206,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
         private static void Patch()
         {
-
             do
             {
                 Parallel.ForEach(new[]{
@@ -236,11 +241,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Directory.CreateDirectory(Path.Combine(Backup, Res));
                 }
             }
-            string adobePath =
-Path.Combine(X64
-? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
-: Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
-Ver2, One);
+
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
@@ -249,13 +250,11 @@ Ver2, One);
     file =>
     {
         Copy(string.Empty, Game, file, string.Empty, Installing);
-
     });
                 Parallel.ForEach(AdobeFiles,
 file =>
 {
     Copy(string.Empty, Adobe, file, string.Empty, Installing);
-
 });
                 if (Riot)
                 {
@@ -271,8 +270,7 @@ file =>
 
                 if (Installing)
                 {
-
-                    if (File.Exists(Path.Combine(adobePath, Air)))
+                    if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
                         Process airUpdater = new Process
                         {
@@ -280,7 +278,7 @@ file =>
                                 new ProcessStartInfo
                                 {
                                     FileName =
-                                        Path.Combine(adobePath, Res, "Adobe AIR Updater.exe"),
+                                        Path.Combine(AdobePath, Res, "Adobe AIR Updater.exe"),
                                     Arguments = "-silent"
                                 }
                         };
@@ -337,12 +335,10 @@ file =>
                     Parallel.ForEach(CgFiles, file =>
                     {
                         Copy(_cgBinPath, string.Empty, file, Game, null);
-
                     });
                     Parallel.ForEach(AdobeFiles, file =>
                     {
-                        Copy(adobePath, string.Empty, file, Adobe, null);
-
+                        Copy(AdobePath, string.Empty, file, Adobe, null);
                     });
 
                     if (!Riot)
@@ -421,7 +417,6 @@ file =>
 
         private static void ByteDl(Stream stream, string path)
         {
-
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 byte[] buffer = new byte[4096];
@@ -461,30 +456,30 @@ file =>
                 {
                     if (path.Equals(Game) & File.Exists(Path.Combine(Game, file)))
                     {
-                            Normalize(Path.Combine(Game,file));
-                            Unblock(Path.Combine(Game, file));
-                            File.Copy(Path.Combine(
-                                Game, file)
-                                , Path.Combine(Backup, file),
-                                true);
+                        Normalize(Path.Combine(Game, file));
+                        Unblock(Path.Combine(Game, file));
+                        File.Copy(Path.Combine(
+                            Game, file)
+                            , Path.Combine(Backup, file),
+                            true);
                     }
                     if (path.Contains(Adobe) & File.Exists(Path.Combine(Adobe, file)))
                     {
                         Normalize(Path.Combine(Adobe, file));
                         Unblock(Path.Combine(Adobe, file));
-                            File.Copy(Path.Combine(
-                                Adobe, file),
-                                Path.Combine(Backup, file),
-                                true);
+                        File.Copy(Path.Combine(
+                            Adobe, file),
+                            Path.Combine(Backup, file),
+                            true);
                     }
                     if (path.Equals(Config) & File.Exists(Path.Combine(Config, file)))
                     {
                         Normalize(Path.Combine(Config, file));
                         Unblock(Path.Combine(Config, file));
-                            File.Copy(Path.Combine(
-                                Config, file),
-                                Path.Combine(Backup, file),
-                                true);
+                        File.Copy(Path.Combine(
+                            Config, file),
+                            Path.Combine(Backup, file),
+                            true);
                     }
                 }
                 else
@@ -517,7 +512,6 @@ file =>
                     }
                 }
             }
-
             else
             {
                 if (File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))
@@ -607,7 +601,7 @@ file =>
                         if (HashEqual(Path.Combine(Game, Tbb), TbbSum)) return;
                         ByteDl(stream, Path.Combine(Game, Tbb));
                     }
-                    Unblock(Path.Combine(Game,Tbb));
+                    Unblock(Path.Combine(Game, Tbb));
                 }
             }
         }
@@ -619,19 +613,30 @@ file =>
                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
                 TbbSum);
-            // flash, air
-            string airSum = string.Join(string.Empty,
-           "e16c024424405ead77a89fabbb4a95a99e5552f33509d872bb7046cba4afb16f5a5bbf496a46b1b1ee9ef8b9e8ba6720bc8faccb654c5317e8142812e56b4930",
-           "33f376d3f3a76a2ba122687b18e0306d45a8c65c89d3a51cc956bf4fa6d9bf9677493afa9b7bb5227fa1b162117440a5976484df6413f77a88ff3759ded37e8e"
-           );
+
+            string airSum;
+            string flashSum;
+            using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
+            using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
             Parallel.ForEach(AdobeFiles, file =>
             {
-                Verify(Adobe, file, airSum);
+                Verify(Adobe, file, string.Join(string.Empty, airSum, flashSum
+
+                ));
             });
             Parallel.ForEach(GameFiles, file =>
             {
                 Verify(Game, file, permanentSum);
-
             });
             if (!Riot)
             {
@@ -684,7 +689,7 @@ file =>
 
         private static void Unblock(string file)
         {
-                DeleteFile(string.Format("{0}:Zone.Identifier", file));
+            DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
         private static bool HashEqual(string file, string sha512)
@@ -715,7 +720,6 @@ file =>
                    ? "{0} Is the old patched file or the original"
                    : "{0} Succesfully patched!",
                Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
-
         }
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
