@@ -538,7 +538,7 @@ file =>
             bool multiCore =
             CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
-            Normalize(string.Empty, Path.Combine(Config, file), false);
+            Normalize(Config, file, false);
             string text = File.ReadAllText(Path.Combine(Config, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
@@ -553,7 +553,7 @@ file =>
                 text = text.Replace(Dpm1, "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(Path.Combine(Config, file), text);
-            Unblock(string.Empty, Path.Combine(Config, file), false);
+            Unblock(Config, file, false);
         }
 
         private static int DisplayMenu()
