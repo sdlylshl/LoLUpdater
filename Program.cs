@@ -491,10 +491,10 @@ file =>
                 {
                     if (File.Exists(Path.Combine(Backup, file)))
                     {
+                        Normalize(Path.Combine(Backup, file));
+                        Unblock(Path.Combine(Backup, file));
                         if (path.Equals(Game))
                         {
-                            Normalize(Path.Combine(Game, file));
-                            Unblock(Path.Combine(Game, file));
                             File.Copy(
                                 Path.Combine(Backup, file), Path.Combine(
                                     Game, file),
@@ -502,8 +502,6 @@ file =>
                         }
                         if (path.Contains(Adobe))
                         {
-                            Normalize(Path.Combine(Adobe, file));
-                            Unblock(Path.Combine(Adobe, file));
                             File.Copy(Path.Combine(Backup, file),
                                 Path.Combine(
                                     Adobe, file),
@@ -511,8 +509,6 @@ file =>
                         }
                         if (path.Equals(Config))
                         {
-                            Normalize(Path.Combine(Config, file));
-                            Unblock(Path.Combine(Config, file));
                             File.Copy(Path.Combine(Backup, file),
                                 Path.Combine(
                                     Config, file),
