@@ -13,6 +13,8 @@ namespace LoLUpdater_Updater
 {
     internal static class Program
     {
+
+        // Save as Temp.txt and use this as the source for the autoupdater in LoLUdpater
         private static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
         private static bool _notdone;
 

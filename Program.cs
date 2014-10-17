@@ -155,19 +155,15 @@ WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tem
                                 parameters.ReferencedAssemblies.Add("System.dll");
                                 parameters.ReferencedAssemblies.Add("System.Core.dll");
 
-
-
-
-
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
                                     CompilerResults result = cscp.CompileAssemblyFromSource(parameters, streamReader2.ReadToEnd());
                                     foreach (CompilerError ce in result.Errors)
-                                        {
-                                            Console.WriteLine("  {0}", ce);
-                                            Console.WriteLine();
-                                        }
-                                    
+                                    {
+                                        Console.WriteLine("  {0}", ce);
+                                        Console.WriteLine();
+                                    }
+
                                     Normalize(string.Empty, result.PathToAssembly, true);
                                     Unblock(string.Empty, result.PathToAssembly, true);
                                     Process.Start(result.PathToAssembly);
