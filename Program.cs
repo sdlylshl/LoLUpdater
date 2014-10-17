@@ -682,16 +682,18 @@ file =>
             {
                 Parallel.ForEach(GarenaCfgFiles, file =>
                 {
+                    if (!File.Exists(file)) return;
                     string text = File.ReadAllText(Path.Combine(Config, file));
 
                     CfgVerify(text, file);
                 });
             }
 
+            if (File.Exists(Path.Combine(Config, CfgFile)))
+            {string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
 
-            string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
-
-            CfgVerify(text2, CfgFile);
+            CfgVerify(text2, CfgFile); }
+            
 
             Console.WriteLine("{0}", message);
             if (Riot)
