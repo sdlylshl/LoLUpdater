@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{78E87DBA-F93A-4259-99A2-7B1377537784}</ProjectGuid>
+    <ProjectGuid>{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GuiExt</RootNamespace>
-    <AssemblyName>GuiExt</AssemblyName>
+    <RootNamespace>LoLUpdater_Updater</RootNamespace>
+    <AssemblyName>LoLUpdater Updater</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

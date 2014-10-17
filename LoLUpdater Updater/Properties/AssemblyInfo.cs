@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GuiExt")]
+[assembly: AssemblyTitle("LoLUpdater Updater")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GuiExt")]
+[assembly: AssemblyProduct("LoLUpdater Updater")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5a22e472-eaa7-4f5e-a07e-b85d52ccbfd0")]
+[assembly: Guid("13b2f78b-9867-49e1-bf73-287b7b136d30")]
 
 // Version information for an assembly consists of the following four values:
 //

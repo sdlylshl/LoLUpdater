@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater", "LoLUpdater.csproj", "{3A989472-219D-4231-95DA-3718BA16CC66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoLUpdater Updater", "LoLUpdater Updater\LoLUpdater Updater.csproj", "{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
 		{3A989472-219D-4231-95DA-3718BA16CC66}.Release-MT|Any CPU.Build.0 = Release|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Debug-MT|Any CPU.ActiveCfg = Debug|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Debug-MT|Any CPU.Build.0 = Debug|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Release-MT|Any CPU.ActiveCfg = Release|Any CPU
+		{D69A5DF0-9B12-4131-AB46-F4EDFBD2905D}.Release-MT|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

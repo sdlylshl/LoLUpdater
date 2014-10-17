@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GuiExt
+namespace LoLUpdater_Updater
 {
     internal static class Program
     {
@@ -29,16 +29,45 @@ namespace GuiExt
                 });
             } while (_notdone);
 
-            using (WebClient webClient = new WebClient())
-            {
 
-                if (Sha512(webClient.DownloadString("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt")))
-                {
-                    webClient.DownloadFile(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"),
-                        "LoLUpdater.exe");
-                }
+
+
+            using (Stream stream = WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
+        .GetResponse()
+        .GetResponseStream())
+            {
+                if (stream != null)
+                    using (StreamReader streamReader = new StreamReader(stream))
+                    {
+
+                        if (Sha512(streamReader.ReadToEnd()))
+                        {
+
+
+
+                            using (Stream stream2 = WebRequest.Create(new Uri("http://www.svenskautogrupp.se/LoLUpdater.exe"))
+                                .GetResponse()
+                                .GetResponseStream())
+                            {
+                                using (MemoryStream memoryStream = new MemoryStream())
+                                {
+                                    byte[] buffer = new byte[4096];
+                                    int count = 0;
+                                    do
+                                    {
+                                        if (stream2 != null) count = stream2.Read(buffer, 0, buffer.Length);
+                                        memoryStream.Write(buffer, 0, count);
+                                    } while (count != 0);
+
+
+
+
+                                }
+                            }
+                        }
+                    }
                 if (new FileInfo("LoLUpdater.exe").Attributes
-                    .Equals(FileAttributes.ReadOnly))
+            .Equals(FileAttributes.ReadOnly))
                 {
                     File.SetAttributes("LoLUpdater.exe",
                        FileAttributes.Normal);
@@ -67,6 +96,7 @@ namespace GuiExt
                 return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel().Any();
             }
         }
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern void DeleteFile(string file);
