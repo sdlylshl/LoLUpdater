@@ -2,6 +2,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -28,6 +29,7 @@ namespace LoLUpdater
                 .AsParallel()
                 .ToArray();
 
+        // List of processors that support AVX2, might become very long in the fure (find fix)
         private static readonly bool Avx2 =
             CpuInfo.Any(
                 item =>
@@ -36,8 +38,8 @@ namespace LoLUpdater
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
 
-        private const string Block = ":Zone.Identifier";
-        private static readonly bool Riot = Directory.Exists("RADS");
+        private const string RmBlock = ":Zone.Identifier";
+        private static readonly bool Riot = Directory.Exists(Rads);
         private const string CfgFile = "game.cfg";
         private const string Dpm1 = "DefaultParticleMultiThreading=1";
         private const string Air = "Adobe AIR.dll";
@@ -70,18 +72,30 @@ namespace LoLUpdater
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
 
+        private const string Rads = "RADS";
+        private const string Ver2 = "Versions";
+        private const string Dep = "Deploy";
+        private const string Proj = "projets";
+        private const string Sol = "solutions";
+        private const string AirC = "lol_air_client";
+        private const string GameCSln = "lol_game_client_sln";
+        private const string Rel = "releases";
+        private const double One = 1;
+        private const string AAir = "Adobe AIR";
+        private const string Gme = "Game";
+
         private static readonly string Adobe = Riot
-            ? Path.Combine("RADS", "projects", "lol_air_client", "releases", Ver("projects", "lol_air_client"), "deploy", "Adobe AIR", "Versions",
-                "1.0")
-            : Path.Combine("Air", "Adobe AIR", "Versions", "1.0");
+            ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
+                One.ToString(CultureInfo.InvariantCulture))
+            : Path.Combine("Air", AAir, Ver2, One.ToString(CultureInfo.InvariantCulture));
 
         private static readonly string Game = Riot
-            ? Path.Combine("RADS", "solutions", "lol_game_client_sln", "releases", Ver("solutions", "lol_game_client_sln"), "deploy")
-            : "Game";
+            ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
+            : Gme;
 
         private static readonly string Config = Riot
     ? "Config"
-    : Path.Combine("Game", "DATA", "CFG", "defaults");
+    : Path.Combine(Gme, "DATA", "CFG", "defaults");
 
         private static int _userInput;
         private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
@@ -114,8 +128,12 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
+
+                    //  Remove exclamationmark to enable auto-updater
                     if (!Sha512("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
+
+                        // end comment
                     {
                         using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                         {
@@ -226,8 +244,8 @@ namespace LoLUpdater
             string adobePath =
             Path.Combine(Environment.Is64BitProcess
                     ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
-                    : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), "Adobe AIR",
-                "Versions", "1.0");
+                    : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
+                Ver2, One.ToString(CultureInfo.InvariantCulture));
 
             do
             {
@@ -729,11 +747,11 @@ file =>
         private static void Unblock(string path, string file, bool exe)
         {
             DeleteFile(path.Contains(Adobe)
-                ? string.Format("{0}{1}", Path.Combine(Adobe, file), Block)
-                : string.Format("{0}{1}", Path.Combine(Game, file), Block));
+                ? string.Format("{0}{1}", Path.Combine(Adobe, file), RmBlock)
+                : string.Format("{0}{1}", Path.Combine(Game, file), RmBlock));
             if (exe)
             {
-                DeleteFile(string.Format("{0}{1}", path, Block));
+                DeleteFile(string.Format("{0}{1}", path, RmBlock));
             }
         }
 
@@ -758,10 +776,10 @@ file =>
         {
             // Faster check then checking if full directory path exists, only worse for people who hack their installation dir, for the remaining 99% it is better.
             if (Riot) return string.Empty;
-            string dir = Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).ToString();
+            string dir = Directory.GetDirectories(Path.Combine(Rads, path, path1, Rel)).ToString();
             return dir.Length == 1
                 ? dir
-                : Path.GetFileName(Directory.GetDirectories(Path.Combine("RADS", path, path1, "releases")).Max());
+                : Path.GetFileName(Directory.GetDirectories(Path.Combine(Rads, path, path1, Rel)).Max());
         }
 
         private static void Verify(string path, string file, string sha512)
