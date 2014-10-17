@@ -2,7 +2,6 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -83,14 +82,14 @@ namespace LoLUpdater
         private const string AirC = "lol_air_client";
         private const string GameCSln = "lol_game_client_sln";
         private const string Rel = "releases";
-        private const double One = 1.0;
+        private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
-                One.ToString(CultureInfo.InvariantCulture))
-            : Path.Combine("Air", AAir, Ver2, One.ToString(CultureInfo.InvariantCulture));
+                One)
+            : Path.Combine("Air", AAir, Ver2, One);
 
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
@@ -132,7 +131,7 @@ namespace LoLUpdater
                 {
 
                     //  Remove exclamationmark to enable auto-updater
-                    if (!Sha512("LoLUpdater.exe",
+                    if (!HashEqual("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     // end comment
                     {
@@ -243,11 +242,6 @@ namespace LoLUpdater
         private static void Patch()
         {
 
-            string adobePath =
-Path.Combine(Environment.Is64BitProcess
-    ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
-    : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
-Ver2, One.ToString(CultureInfo.InvariantCulture));
             do
             {
                 Parallel.ForEach(new[]{
@@ -279,6 +273,11 @@ Ver2, One.ToString(CultureInfo.InvariantCulture));
                     Directory.CreateDirectory(Path.Combine(Backup, Res));
                 }
             }
+            string adobePath =
+Path.Combine(Environment.Is64BitProcess
+? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
+: Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
+Ver2, One);
             if (_userInput < 3)
             {
                 Console.WriteLine("Configuring...");
@@ -306,15 +305,13 @@ file =>
                 }
 
                 Console.WriteLine(string.Empty);
-                if (!Installing) return;
 
-                if (!File.Exists(Path.Combine(adobePath, Air)))
-                {
-                    AirInstall();
-                }
-                else
+                if (Installing)
                 {
 
+
+                    if (File.Exists(Path.Combine(adobePath, Air)))
+                    {
                         Process airUpdater = new Process
                         {
                             StartInfo =
@@ -325,21 +322,50 @@ file =>
                                     Arguments = "-silent"
                                 }
                         };
-                    airUpdater.Start();
-                    airUpdater.WaitForExit();
+                        airUpdater.Start();
+                        airUpdater.WaitForExit();
+                    }
+                    else
+                    {
+                        const string airInstaller = "air15_win.exe";
+                        Download(airInstaller,
+                            "fd85bd4455b070e8d5d71ff2187a8252d48f85b3b3f8bae53bb25e81e966682fff16a254f1193da8a2d8d73126f40143126cbec54f2f2c7c446680379ee23d14"
+                            , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                                airInstaller), string.Empty);
 
+                        Normalize(string.Empty, airInstaller, true);
+                        Unblock(string.Empty, airInstaller, true);
+                        Process airwin = new Process
+                        {
+                            StartInfo =
+                                new ProcessStartInfo
+                                {
+                                    FileName =
+                                        airInstaller,
+                                    Arguments = "-silent"
+                                }
+                        };
+                        airwin.Start();
+                        airwin.WaitForExit();
+                    }
+
+                    if (string.IsNullOrEmpty(_cgBinPath))
+                    {
+                        CgInstall();
+                    }
+                    else
+                    {
+                        if (
+                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
+                            new Version("3.1.0.13"))
+                        {
+                            CgInstall();
+                        }
+                    }
                 }
-
-                if (string.IsNullOrEmpty(_cgBinPath))
-
-                { CgInstall(); }
                 else
                 {
-                    if (
-                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
-                        new Version("3.1.0.13"))
-                    { CgInstall(); }
-
+                    return;
                 }
             }
             switch (_userInput)
@@ -430,32 +456,6 @@ file =>
             _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                 EnvironmentVariableTarget.User);
             File.Delete(cgInstaller);
-        }
-
-        private static void AirInstall()
-        {
-            // could be private property for easy changes
-            const string airInstaller = "air15_win.exe";
-            // end could
-            Download(airInstaller,
-                    "fd85bd4455b070e8d5d71ff2187a8252d48f85b3b3f8bae53bb25e81e966682fff16a254f1193da8a2d8d73126f40143126cbec54f2f2c7c446680379ee23d14"
-, new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                        airInstaller), string.Empty);
-
-            Normalize(string.Empty, airInstaller, true);
-            Unblock(string.Empty, airInstaller, true);
-            Process airwin = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            airInstaller,
-                        Arguments = "-silent"
-                    }
-            };
-            airwin.Start();
-            airwin.WaitForExit();
         }
 
         private static void ByteDl(Stream stream, string path)
@@ -633,22 +633,7 @@ file =>
     .GetResponse()
     .GetResponseStream())
             {
-                if (!string.IsNullOrEmpty(path))
-                {
-                    if (!File.Exists(Path.Combine(Game, Tbb)))
-
-                    {
-                        ByteDl(stream, Path.Combine(Game, Tbb));
-                    }
-                    else
-                    {
-                        Normalize(Game, Tbb, false);
-                        if (Sha512(Path.Combine(Game, Tbb), TbbSum)) return;
-                        ByteDl(stream, Path.Combine(Game, Tbb));
-                    }
-                    Unblock(Game, Tbb, false);
-                }
-                else
+                if (string.IsNullOrEmpty(path))
                 {
                     if (!File.Exists(file))
                     {
@@ -657,10 +642,24 @@ file =>
                     else
                     {
                         Normalize(string.Empty, file, false);
-                        if (Sha512(file, sha512)) return;
+                        if (HashEqual(file, sha512)) return;
                         ByteDl(stream, file);
                     }
                     Unblock(string.Empty, file, false);
+                }
+                else
+                {
+                    if (!File.Exists(Path.Combine(Game, Tbb)))
+                    {
+                        ByteDl(stream, Path.Combine(Game, Tbb));
+                    }
+                    else
+                    {
+                        Normalize(Game, Tbb, false);
+                        if (HashEqual(Path.Combine(Game, Tbb), TbbSum)) return;
+                        ByteDl(stream, Path.Combine(Game, Tbb));
+                    }
+                    Unblock(Game, Tbb, false);
                 }
             }
         }
@@ -693,12 +692,16 @@ file =>
             {
                 Parallel.ForEach(GarenaCfgFiles, file =>
                 {
-                    // Checkif contains tweaks
+                    string text = File.ReadAllText(Path.Combine(Config, file));
 
-
+                    CfgVerify(text);
                 });
             }
-            //check if contains riot tweak
+
+
+            string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
+
+            CfgVerify(text2);
 
             Console.WriteLine("{0}", message);
             if (Riot)
@@ -708,6 +711,17 @@ file =>
             _notdone = false;
             Console.ReadLine();
             Environment.Exit(0);
+        }
+
+        private static void CfgVerify(string text)
+        {
+            Console.WriteLine(text.Contains(Dpm1)
+                ? "DefaultParticleMultiThreading is Enabled"
+                : "EnableParticleOptimization is Disabled");
+            Console.WriteLine(string.Empty);
+            Console.WriteLine(text.Contains("EnableParticleOptimization=1")
+                ? "EnableParticleOptimization is Enabled"
+                : "EnableParticleOptimization is Disabled");
         }
 
         private static long ToInt(string value)
@@ -721,7 +735,7 @@ file =>
         {
             if (path.Contains(Adobe))
             {
-
+                // Check+apply Or Bruteforce?
                 if (new FileInfo(Path.Combine(Adobe, file)).Attributes
                     .Equals(FileAttributes.ReadOnly))
                 {
@@ -729,7 +743,7 @@ file =>
                         FileAttributes.Normal);
                 }
             }
-            if(!path.Contains(Adobe))
+            else
             {
                 if (new FileInfo(Path.Combine(Game, file)).Attributes
                     .Equals(FileAttributes.ReadOnly))
@@ -757,18 +771,18 @@ file =>
             }
         }
 
-        private static bool Sha512(string file, string sha512)
+        private static bool HashEqual(string file, string sha512)
         {
-            using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder stringBuilder = new StringBuilder();
 
-                fs.Seek(0, SeekOrigin.Begin);
+                fileStream.Seek(0, SeekOrigin.Begin);
 
-                Parallel.ForEach(SHA512.Create().ComputeHash(fs), b => { sb.Append(b.ToString("x2")); });
+                Parallel.ForEach(SHA512.Create().ComputeHash(fileStream), b => { stringBuilder.Append(b.ToString("x2")); });
 
                 return
-                    Encoding.ASCII.GetBytes(sb.ToString())
+                    Encoding.ASCII.GetBytes(stringBuilder.ToString())
                         .Where((t, i) => t == Encoding.ASCII.GetBytes(sha512)[i]).AsParallel()
                         .Any();
             }
@@ -786,7 +800,7 @@ file =>
         private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               !Sha512(Path.Combine(path, file), sha512)
+               !HashEqual(Path.Combine(path, file), sha512)
                    ? "{0} Is the old patched file or the original"
                    : "{0} Succesfully patched!",
                Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
