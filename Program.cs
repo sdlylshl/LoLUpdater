@@ -18,8 +18,9 @@ namespace LoLUpdater
 {
     internal static class Program
     {
+        private const string Ipf = "IsProcessorFeaturePresent";
         private const string SKernel = "kernel32.dll";
-        private static readonly bool Avx = Dll(2, "GetEnabledXStateFeatures");
+        private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private const string Backup = "Backup";
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
@@ -28,7 +29,11 @@ namespace LoLUpdater
                 .ToArray();
 
         private const string Tbb = "tbb.dll";
-
+        private static readonly bool X64 = Environment.Is64BitProcess;
+        private static readonly string Pmb = Path.Combine(X64
+    ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+    : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+    "Pando Networks", "Media Booster", "uninst.exe");
 
         // List of processors that support AVX2, might become very long in the fure (find fix), some on the list are not even out yet.
         private static readonly bool Avx2 =
@@ -56,7 +61,6 @@ namespace LoLUpdater
         private static readonly string[] GameFiles = CgFiles.Concat(new[] { Tbb }).ToArray();
 
         // Note: Checksums are in SHA512
-        private const string Ipf = "IsProcessorFeaturePresent";
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
 
@@ -262,6 +266,10 @@ namespace LoLUpdater
             } while (_notdone);
             if (Installing)
             {
+                if (File.Exists(Pmb))
+                {
+                    Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
+                }
                 if (!Directory.Exists(Backup))
                 {
                     Directory.CreateDirectory(Backup);
@@ -272,7 +280,7 @@ namespace LoLUpdater
                 }
             }
             string adobePath =
-Path.Combine(Environment.Is64BitProcess
+Path.Combine(X64
 ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
 Ver2, One);
@@ -601,7 +609,7 @@ file =>
             int num = 0;
             Console.WriteLine(
                 String.Join(Environment.NewLine,
-                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
+                    "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                     "Select method:",
                     string.Empty,
                     "1. Install",
