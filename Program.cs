@@ -10,7 +10,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Threading;
+// using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
@@ -108,10 +108,8 @@ namespace LoLUpdater
         private delegate bool DllType(byte arg);
         private static void Main(string[] args)
         {
-            Mutex onlyInstance = new Mutex(true, "TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b");
-            GC.KeepAlive(onlyInstance);
+// Readd mutex for single instance
             const string updater = "LoLUpdater Updater.exe";
-            if (!onlyInstance.WaitOne(TimeSpan.Zero, true))
             using (
                 Stream stream =
                     WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
@@ -294,10 +292,10 @@ file =>
                     }
                     else
                     {
-                        const string airInstaller = "AdobeAIRInstaller.exe";
+                        const string airInstaller = "air15_win.exe";
                         Download(airInstaller,
                             "fd85bd4455b070e8d5d71ff2187a8252d48f85b3b3f8bae53bb25e81e966682fff16a254f1193da8a2d8d73126f40143126cbec54f2f2c7c446680379ee23d14"
-                            , new Uri(new Uri("http://airdownload.adobe.com/air/win/download/15.0/"),
+                            , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
                                 airInstaller), string.Empty);
 
                         Normalize(string.Empty, airInstaller, true);
@@ -441,7 +439,7 @@ file =>
         }
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void DeleteFile(string file);
+        private static extern bool DeleteFile(string file);
 
         private static bool Dll(byte arg, string func)
         {
