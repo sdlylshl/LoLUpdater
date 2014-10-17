@@ -304,7 +304,7 @@ file =>
                         file => { Copy(string.Empty, Config, file, string.Empty, Installing); });
                 }
 
-                Console.WriteLine(string.Empty);
+                Console.WriteLine(string.Empty.AsParallel());
 
                 if (Installing)
                 {
@@ -500,8 +500,6 @@ file =>
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
-            try
-            {
                 if (mode.HasValue)
                 {
                     if (mode.Value)
@@ -575,11 +573,6 @@ file =>
                     File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
                     Unblock(string.Empty, Path.Combine(to, file), false);
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
 
         }
 
@@ -621,7 +614,7 @@ file =>
             string result = readLine.Trim();
             while (!int.TryParse(result, out num) && num < 1 && num > 3)
             {
-                Console.WriteLine("{0} is not a valid input. Please try again.", result);
+                Console.WriteLine("{0} is not a valid input. Please try again.", result.AsParallel());
                 result = readLine.Trim();
             }
             return num;
@@ -703,7 +696,7 @@ file =>
 
             CfgVerify(text2, CfgFile);
 
-            Console.WriteLine("{0}", message);
+            Console.WriteLine("{0}", message.AsParallel());
             if (Riot)
             {
                 Process.Start("lol.launcher.exe");
