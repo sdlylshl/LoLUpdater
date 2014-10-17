@@ -122,7 +122,7 @@ namespace LoLUpdater
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (!HashEqual("LoLUpdater.exe",
+                    if (HashEqual("LoLUpdater.exe",
                         streamReader.ReadLine()))
                     {
                         using (
