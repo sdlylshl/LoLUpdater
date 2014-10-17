@@ -539,7 +539,7 @@ file =>
         private static void Cfg(string file)
         {
             bool multiCore =
-            CpuInfo.AsParallel().Sum(item => ToInt(item["NumberOfCores"].ToString())) > 1;
+            CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
             Normalize(string.Empty, Path.Combine(Config, file), false);
             string text = File.ReadAllText(Path.Combine(Config, file));
@@ -677,13 +677,6 @@ file =>
             Console.WriteLine(text.Contains("EnableParticleOptimization=1")
                 ? string.Format("EnableParticleOptimization is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
                 : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
-        }
-
-        private static int ToInt(string value)
-        {
-            int result;
-            int.TryParse(value, out result);
-            return result;
         }
 
         private static void Normalize(string path, string file, bool exe)
