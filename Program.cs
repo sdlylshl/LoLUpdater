@@ -21,7 +21,6 @@ namespace LoLUpdater
         private const string SKernel = "kernel32.dll";
         private const string Backup = "Backup";
         private const string Tbb = "tbb.dll";
-        private const string RmBlock = ":Zone.Identifier";
         private const string CfgFile = "game.cfg";
         private const string Dpm1 = "DefaultParticleMultiThreading=1";
         private const string Air = "Adobe AIR.dll";
@@ -60,12 +59,10 @@ namespace LoLUpdater
                                 .ToString()));
         private static readonly bool Riot = Directory.Exists(Rads);
         private static readonly string[] AdobeFiles = { Path.Combine(Res, "NPSWF32.dll"), Air };
-
-        private static readonly string[] GarenaCfgFiles =
-        {
-            CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
-            "GamePermanent_en_SG.cfg"
-        };
+        private static readonly string[] GarenaCfgFiles = {
+CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+"GamePermanent_en_SG.cfg"
+};
         private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly string[] GameFiles = CgFiles.Concat(new[] { Tbb }).ToArray();
 
@@ -148,8 +145,8 @@ namespace LoLUpdater
                                 {
                                     CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
                                         streamReader2.ReadToEnd());
-                                    Normalize(string.Empty, result.PathToAssembly, true);
-                                    Unblock(string.Empty, result.PathToAssembly, true);
+                                    Normalize(result.PathToAssembly);
+                                    Unblock(result.PathToAssembly);
                                     Process.Start(result.PathToAssembly);
                                 }
                             }
@@ -298,8 +295,8 @@ file =>
                             , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
                                 airInstaller), string.Empty);
 
-                        Normalize(string.Empty, airInstaller, true);
-                        Unblock(string.Empty, airInstaller, true);
+                        Normalize(airInstaller);
+                        Unblock(airInstaller);
                         Process airwin = new Process
                         {
                             StartInfo =
@@ -401,8 +398,8 @@ file =>
                 new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
                     cgInstaller), string.Empty);
 
-            Normalize(string.Empty, cgInstaller, true);
-            Unblock(string.Empty, cgInstaller, true);
+            Normalize(cgInstaller);
+            Unblock(cgInstaller);
 
             Process cg = new Process
             {
@@ -462,74 +459,77 @@ file =>
             {
                 if (mode.Value)
                 {
-                    if (path.Equals(Game))
+                    if (path.Equals(Game) & File.Exists(Path.Combine(Game, file)))
                     {
-                        if (File.Exists(Path.Combine(Game, file)))
-                        {
-                            Normalize(Game, file, false);
-                            Unblock(Game, file, false);
+                            Normalize(Path.Combine(Game,file));
+                            Unblock(Path.Combine(Game, file));
                             File.Copy(Path.Combine(
                                 Game, file)
                                 , Path.Combine(Backup, file),
                                 true);
-                        }
                     }
-                    if (path.Contains(Adobe))
+                    if (path.Contains(Adobe) & File.Exists(Path.Combine(Adobe, file)))
                     {
-                        if (!File.Exists(Path.Combine(Adobe, file))) return;
-                        Normalize(Adobe, file, false);
-                        Unblock(Adobe, file, false);
-                        File.Copy(Path.Combine(
-                            Adobe, file),
-                            Path.Combine(Backup, file),
-                            true);
+                        Normalize(Path.Combine(Adobe, file));
+                        Unblock(Path.Combine(Adobe, file));
+                            File.Copy(Path.Combine(
+                                Adobe, file),
+                                Path.Combine(Backup, file),
+                                true);
                     }
-                    if (!path.Equals(Config)) return;
-                    if (!File.Exists(Path.Combine(Config, file))) return;
-                    Normalize(Config, CfgFile, false);
-                    Unblock(Config, CfgFile, false);
-                    File.Copy(Path.Combine(
-                        Config, file),
-                        Path.Combine(Backup, file),
-                        true);
+                    if (path.Equals(Config) & File.Exists(Path.Combine(Config, file)))
+                    {
+                        Normalize(Path.Combine(Config, file));
+                        Unblock(Path.Combine(Config, file));
+                            File.Copy(Path.Combine(
+                                Config, file),
+                                Path.Combine(Backup, file),
+                                true);
+                    }
                 }
                 else
                 {
-                    if (!File.Exists(Path.Combine(Backup, file))) return;
-                    if (path.Equals(Game))
+                    if (File.Exists(Path.Combine(Backup, file)))
                     {
-                        Normalize(Game, file, false);
-                        Unblock(Game, file, false);
-                        File.Copy(
-                            Path.Combine(Backup, file), Path.Combine(
-                                Game, file),
-                            true);
+                        if (path.Equals(Game))
+                        {
+                            Normalize(Path.Combine(Game, file));
+                            Unblock(Path.Combine(Game, file));
+                            File.Copy(
+                                Path.Combine(Backup, file), Path.Combine(
+                                    Game, file),
+                                true);
+                        }
+                        if (path.Contains(Adobe))
+                        {
+                            Normalize(Path.Combine(Adobe, file));
+                            Unblock(Path.Combine(Adobe, file));
+                            File.Copy(Path.Combine(Backup, file),
+                                Path.Combine(
+                                    Adobe, file),
+                                true);
+                        }
+                        if (path.Equals(Config))
+                        {
+                            Normalize(Path.Combine(Config, file));
+                            Unblock(Path.Combine(Config, file));
+                            File.Copy(Path.Combine(Backup, file),
+                                Path.Combine(
+                                    Config, file),
+                                true);
+                        }
                     }
-                    if (path.Contains(Adobe))
-                    {
-                        Normalize(Adobe, file, false);
-                        Unblock(Adobe, file, false);
-                        File.Copy(Path.Combine(Backup, file),
-                            Path.Combine(
-                                Adobe, file),
-                            true);
-                    }
-                    if (!path.Equals(Config)) return;
-                    Normalize(Backup, file, false);
-                    Unblock(Config, file, false);
-                    File.Copy(Path.Combine(Backup, file),
-                        Path.Combine(
-                            Config, file),
-                        true);
                 }
             }
 
             else
             {
-                if (!File.Exists(Path.Combine(@from, file)) | !Directory.Exists(to)) return;
-                Normalize(@from, file, false);
-                Unblock(@from, file, false);
-                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                if (File.Exists(Path.Combine(@from, file)) & Directory.Exists(to))
+                {
+                    Normalize(Path.Combine(@from, file));
+                    Unblock(Path.Combine(@from, file));
+                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                }
             }
         }
 
@@ -538,7 +538,7 @@ file =>
             bool multiCore =
             CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
-            Normalize(Config, file, false);
+            Normalize(Path.Combine(Config, file));
             string text = File.ReadAllText(Path.Combine(Config, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
@@ -553,7 +553,7 @@ file =>
                 text = text.Replace(Dpm1, "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(Path.Combine(Config, file), text);
-            Unblock(Config, file, false);
+            Unblock(Path.Combine(Config, file));
         }
 
         private static int DisplayMenu()
@@ -593,11 +593,11 @@ file =>
                     }
                     else
                     {
-                        Normalize(string.Empty, file, false);
+                        Normalize(file);
                         if (HashEqual(file, sha512)) return;
                         ByteDl(stream, file);
                     }
-                    Unblock(string.Empty, file, false);
+                    Unblock(file);
                 }
                 else
                 {
@@ -607,11 +607,11 @@ file =>
                     }
                     else
                     {
-                        Normalize(Game, Tbb, false);
+                        Normalize(Path.Combine(Game, Tbb));
                         if (HashEqual(Path.Combine(Game, Tbb), TbbSum)) return;
                         ByteDl(stream, Path.Combine(Game, Tbb));
                     }
-                    Unblock(Game, Tbb, false);
+                    Unblock(Path.Combine(Game,Tbb));
                 }
             }
         }
@@ -676,27 +676,19 @@ file =>
                 : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
         }
 
-        private static void Normalize(string path, string file, bool exe)
+        private static void Normalize(string file)
         {
-            File.SetAttributes(path.Contains(Adobe) ? Path.Combine(Adobe, file) : Path.Combine(Game, file),
-                FileAttributes.Normal);
-
-            if (exe)
+            if (new FileInfo(file).Attributes
+                .Equals(FileAttributes.ReadOnly))
             {
                 File.SetAttributes(file,
                     FileAttributes.Normal);
             }
         }
 
-        private static void Unblock(string path, string file, bool exe)
+        private static void Unblock(string file)
         {
-            DeleteFile(path.Contains(Adobe)
-                ? string.Format("{0}{1}", Path.Combine(Adobe, file), RmBlock)
-                : string.Format("{0}{1}", Path.Combine(Game, file), RmBlock));
-            if (exe)
-            {
-                DeleteFile(string.Format("{0}{1}", Path.Combine(path, file), RmBlock));
-            }
+                DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
         private static bool HashEqual(string file, string sha512)
