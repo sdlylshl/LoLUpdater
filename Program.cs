@@ -486,8 +486,8 @@ file =>
                     }
                     if (!path.Equals(Config)) return;
                     if (!File.Exists(Path.Combine(Config, file))) return;
-                    Normalize(Config, file, false);
-                    Unblock(Config, file, false);
+                    Normalize(Config, CfgFile, false);
+                    Unblock(Config, CfgFile, false);
                     File.Copy(Path.Combine(
                         Config, file),
                         Path.Combine(Backup, file),
