@@ -133,45 +133,45 @@ namespace LoLUpdater
                 {
                     if (HashEqual("LoLUpdater.exe",
                         streamReader.ReadLine()))
-
                     {
-                        using (CSharpCodeProvider cscp = new CSharpCodeProvider())
+                        using (
+Stream stream2 =
+WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
+.GetResponse()
+.GetResponseStream())
                         {
-                            CompilerParameters parameters = new CompilerParameters
+                            if (stream2 == null) return;
+                            using (CSharpCodeProvider cscp = new CSharpCodeProvider())
                             {
-                                GenerateInMemory = false,
-                                GenerateExecutable = true,
-                                IncludeDebugInformation = false,
-                                CompilerOptions = "/optimize",
-                                OutputAssembly = updater
-                            };
-                            parameters.ReferencedAssemblies.Add("System.dll");
-                            parameters.ReferencedAssemblies.Add("System.Core.dll");
+                                CompilerParameters parameters = new CompilerParameters
+                                {
+                                    GenerateInMemory = false,
+                                    GenerateExecutable = true,
+                                    IncludeDebugInformation = false,
+                                    CompilerOptions = "/optimize",
+                                    TempFiles = new TempFileCollection(".", false),
+                                    OutputAssembly = "LoLUpdater Updater.exe"
+                                };
+                                parameters.ReferencedAssemblies.Add("System.dll");
+                                parameters.ReferencedAssemblies.Add("System.Core.dll");
 
 
 
-                                        using (
-                Stream stream2 =
-                    WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
-                        .GetResponse()
-                        .GetResponseStream())
-            {
 
-                                var list = new List<string>();
-                                if (stream2 == null) return;
-                                        using (StreamReader streamReader2 = new StreamReader(stream2))
+
+                                using (StreamReader streamReader2 = new StreamReader(stream2))
+                                {
+                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters, streamReader2.ReadToEnd());
+                                    foreach (CompilerError ce in result.Errors)
                                         {
-                                            Console.WriteLine(streamReader2.ReadToEnd());
-                                            string line;
-                                            while ((line = streamReader2.ReadLine()) != null)
-                                            {
-                                                list.Add(line);
-                                            }
-                                            CompilerResults result = cscp.CompileAssemblyFromSource(parameters, string.Join(Environment.NewLine, list.ToArray()));
-                                            Normalize(string.Empty, result.PathToAssembly, true);
-                                            Unblock(string.Empty, result.PathToAssembly, true);
-                                            Process.Start(result.PathToAssembly);
-                                    }
+                                            Console.WriteLine("  {0}", ce);
+                                            Console.WriteLine();
+                                        }
+                                    
+                                    Normalize(string.Empty, result.PathToAssembly, true);
+                                    Unblock(string.Empty, result.PathToAssembly, true);
+                                    Process.Start(result.PathToAssembly);
+                                }
 
 
 
@@ -663,7 +663,7 @@ file =>
             Parallel.ForEach(AdobeFiles, file =>
             {
                 Verify(Adobe, file, airSum);
-           });
+            });
             Parallel.ForEach(GameFiles, file =>
             {
                 Verify(Game, file, permanentSum);
@@ -682,10 +682,12 @@ file =>
             }
 
             if (File.Exists(Path.Combine(Config, CfgFile)))
-            {string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
+            {
+                string text2 = File.ReadAllText(Path.Combine(Config, CfgFile));
 
-            CfgVerify(text2, CfgFile); }
-            
+                CfgVerify(text2, CfgFile);
+            }
+
 
             Console.WriteLine("{0}", message);
             if (Riot)
@@ -699,7 +701,7 @@ file =>
 
         private static void CfgVerify(string text, string file)
         {
-            Console.WriteLine(text.Contains(Dpm1) 
+            Console.WriteLine(text.Contains(Dpm1)
                 ? string.Format("DefaultParticleMultiThreading is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
                 : string.Format("DefaultParticleMultiThreading is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
             Console.WriteLine(string.Empty);
