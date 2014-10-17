@@ -742,7 +742,7 @@ file =>
         private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               !HashEqual(Path.Combine(path, file), sha512)
+               HashEqual(Path.Combine(path, file), sha512)
                    ? "{0} Is the old patched file or the original"
                    : "{0} Succesfully patched!",
                Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
