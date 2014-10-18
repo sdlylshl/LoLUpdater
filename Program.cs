@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -52,14 +53,12 @@ namespace LoLUpdater
             "Pando Networks", "Media Booster", "uninst.exe");
         // List of processors that support AVX2, might become very long in the fure (find fix), some
         // on the list are not even out yet.
+        private static readonly string[] Avx2Cpus = {"Haswell", "Broadwell", "Skylake", "Cannonlake"};
+
         private static readonly bool Avx2 =
-            CpuInfo.Any(
+            CpuInfo.AsParallel().Any(
                 item =>
-                   item["Name"].ToString()
-                      .Contains(
-        
-                      new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
-                          .ToString()));
+                    item["Name"].ToString().Any(x => Avx2Cpus.Contains(x.ToString(CultureInfo.InvariantCulture))));
         private static readonly bool Riot = Directory.Exists(Rads);
         private static readonly string[] GarenaCfgFiles =
         {
@@ -170,7 +169,7 @@ namespace LoLUpdater
                                 });
                     });
             } while (_notdone);
-            Console.WriteLine("Configuring...");
+            Console.WriteLine("Patching League of Legends..");
             if (!Directory.Exists(Backup) & installing)
             {
                 Directory.CreateDirectory(Backup);
@@ -197,7 +196,6 @@ namespace LoLUpdater
             switch (_userInput)
             {
                 case 1:
-                    Console.WriteLine("Installing...");
                     if (File.Exists(Pmb))
                     {
                         Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
@@ -273,13 +271,11 @@ namespace LoLUpdater
                             if (!Hash(Path.Combine(Game, Tbb), TbbSum))
                             {
                                 ByteDl(stream, Path.Combine(Game, Tbb));
-                                Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is already the latest lolupdater build");
                             }
                         }
                         else
                         {
                             ByteDl(stream, Path.Combine(Game, Tbb));
-                            Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
                         }
                     }
                     if (Riot)
@@ -398,173 +394,124 @@ namespace LoLUpdater
                 ,
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"
             };
-            string gameDir = Path.Combine(Game, file);
-            string adobeDir = Path.Combine(Adobe, file);
+
             if (mode.HasValue)
             {
+                string dir = Path.Combine(path, file);
                 string bakDir = Path.Combine(Backup, file);
-                string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
-                    if (file.Equals(CgFiles[0]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[0]))
+                    if ((file.Equals(CgFiles[0]) & File.Exists(dir)) && !Hash(dir, cgSum[0]))
                     {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
+                        FileFix(dir);
+                        File.Copy(dir
                             , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (file.Equals(CgFiles[1]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[1]))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (file.Equals(CgFiles[2]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[2]))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (file.Equals(Tbb) & File.Exists(gameDir) && !Hash(gameDir, TbbSum))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (file.Equals(Air) & File.Exists(adobeDir) && !Hash(adobeDir, _airSum))
-                    {
-                        FileFix(adobeDir);
-                        File.Copy(adobeDir
-                            , bakDir,
-                            true);
-                        FileFix(adobeDir);
-                    }
-                    if (file.Contains(Flash) & !File.Exists(adobeDir) && !Hash(adobeDir, _flashSum))
-                    {
-                        FileFix(adobeDir);
-                        File.Copy(adobeDir
-                            , Path.Combine(Backup, Path.GetFileName(file)),
-                            true);
-                        FileFix(adobeDir);
-                    }
-                    if (!path.Equals(Config) || !File.Exists(configDir)) return;
-                    FileFix(configDir);
-                    File.Copy(configDir,
-                        Path.Combine(
-                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(configDir), ".bak")),
-                        true);
-                    FileFix(configDir);
-                }
-                else
-                {
-                    if (!File.Exists(bakDir)) return;
-                    FileFix(bakDir);
-                    if (path.Equals(Game))
-                    {
-                        File.Copy(bakDir, gameDir
-                            ,
                             true);
                         FileFix(bakDir);
                     }
-                    if (file.Equals(Air))
+                    if ((file.Equals(CgFiles[1]) & File.Exists(dir)) && !Hash(dir, cgSum[1]))
                     {
-                        File.Copy(Backup, adobeDir
+                        FileFix(dir);
+                        File.Copy(dir
+                            , bakDir,
+                            true);
+                        FileFix(bakDir);
+                    }
+                    if ((file.Equals(CgFiles[2]) & File.Exists(dir)) && !Hash(dir, cgSum[2]))
+                    {
+                        FileFix(dir);
+                        File.Copy(dir
+                            , bakDir,
+                            true);
+                        FileFix(bakDir);
+                    }
+                    if ((file.Equals(Tbb) & File.Exists(dir)) && !Hash(dir, TbbSum))
+                    {
+                        FileFix(dir);
+                        File.Copy(dir
+                            , bakDir,
+                            true);
+                        FileFix(bakDir);
+                    }
+                    if ((file.Equals(Air) & File.Exists(dir)) && !Hash(dir, _airSum))
+                    {
+                        FileFix(dir);
+                        File.Copy(dir
+                            , bakDir,
+                            true);
+                        FileFix(bakDir);
+                    }
+                    if ((file.Contains(Flash) & !File.Exists(dir)) && !Hash(dir, _flashSum))
+                    {
+                        FileFix(dir);
+                        File.Copy(dir
+                            , Path.Combine(Backup, Path.GetFileName(file)),
+                            true);
+                        FileFix(bakDir);
+                    }
+                    if ((!path.Equals(Config) | !File.Exists(dir))) return;
+                    FileFix(dir);
+                    File.Copy(dir,
+                        Path.Combine(
+                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")),
+                        true);
+                    FileFix(dir);
+                }
+                else
+                {
+                    FileFix(bakDir);
+                    if (path.Equals(Game) & File.Exists(bakDir))
+                    {
+                        FileFix(bakDir);
+                        File.Copy(bakDir, dir
                             ,
                             true);
-                        FileFix(Backup);
+                        FileFix(dir);
                     }
-                    if (!file.Contains(Flash)) return;
+                    if (file.Equals(Air) & File.Exists(bakDir))
+                    {
+                        FileFix(bakDir);
+                        File.Copy(Backup, dir
+                            ,
+                            true);
+                        FileFix(dir);
+                    }
+                    if (!file.Contains(Flash) | !File.Exists(bakDir)) return;
                     string flashBackup = Path.Combine(Backup, Path.GetFileName(file));
-                    File.Copy(flashBackup, adobeDir
+                    FileFix(flashBackup);
+                    File.Copy(flashBackup, dir
                         ,
                         true);
-                    FileFix(flashBackup);
+                    FileFix(dir);
                 }
             }
             else
             {
-                if (from.Equals(_cgBinPath))
+                string dir = Path.Combine(from, file);
+                string toDir = Path.Combine(to, file);
+                if (file.Equals(CgFiles[0]) & File.Exists(dir) && !Hash(dir, cgSum[0]))
                 {
-                    if (file.Equals(CgFiles[0]) & File.Exists(CgFiles[0]))
-                    {
-                        if (Hash(Path.Combine(Game, CgFiles[0]), cgSum[0]))
-                        {
-                            CgPrompt(CgFiles[0]);
-                        }
-                        else
-                        {
-                            CgCheck(CgFiles[0], Game);
-                        }
-                    }
-                    if (file.Equals(CgFiles[1]) & File.Exists(CgFiles[1]))
-                    {
-                        if (Hash(Path.Combine(Game, CgFiles[1]), cgSum[1]))
-                        {
-                            CgPrompt(CgFiles[1]);
-                        }
-                        else
-                        {
-                            CgCheck(CgFiles[2], Game);
-                        }
-                    }
-                    if (file.Equals(CgFiles[2]) & File.Exists(CgFiles[2]))
-                    {
-                        if (Hash(Path.Combine(Game, CgFiles[2]), cgSum[2]))
-                        {
-                            CgPrompt(CgFiles[2]);
-                        }
-                        else
-                        {
-                            CgCheck(CgFiles[2], Game);
-                        }
-                    }
+                    CgCheck(dir, toDir);
                 }
-                if (file.Equals(Air))
+                if (file.Equals(CgFiles[1]) & File.Exists(dir) && !Hash(dir, cgSum[1]))
                 {
-                    string airPath = Path.Combine(@from, Air);
-                    if (Hash(airPath, _airSum))
-                    {
-                        Console.WriteLine("{0} Is already the latest BETA",
-                            Path.GetFileNameWithoutExtension(adobeDir));
-                    }
-                    else
-                    {
-                        FileFix(airPath);
-                        File.Copy(airPath, Path.Combine(to, Air), true);
-                        FileFix(airPath);
-                        Console.WriteLine("{0} Is the latest BETA",
-                            Path.GetFileNameWithoutExtension(adobeDir));
-                    }
+                    CgCheck(dir, toDir);
                 }
-                if (!file.Contains(Flash)) return;
-                string flashPath = Path.Combine(@from, Res, Flash);
-                if (Hash(flashPath, _flashSum))
+                if (file.Equals(CgFiles[2]) & File.Exists(dir) && !Hash(dir, cgSum[2]))
                 {
-                    Console.WriteLine("{0} Is already the latest BETA",
-                        Path.GetFileNameWithoutExtension(adobeDir));
+                    CgCheck(dir, toDir);
                 }
-                else
+                if (file.Equals(Air) & File.Exists(dir) && !Hash(toDir, _airSum))
                 {
-                    FileFix(flashPath);
-                    File.Copy(flashPath, Path.Combine(to, Air), true);
-                    FileFix(flashPath);
-                    Console.WriteLine("{0} Is the latest BETA",
-                        Path.GetFileNameWithoutExtension(adobeDir));
+                    FileFix(dir);
+                    File.Copy(dir, Path.Combine(to, file), true);
+                    FileFix(toDir);
                 }
+                if (!file.Contains(Flash) | !File.Exists(dir) || Hash(toDir, _flashSum)) return;
+                FileFix(dir);
+                File.Copy(dir, toDir, true);
+                FileFix(toDir);
             }
-        }
-
-        private static void CgPrompt(string file)
-        {
-            Console.WriteLine("The file {0} from Cg Toolkit is already the latest verison",
-                Path.GetFileNameWithoutExtension(Path.Combine(Game, file)));
         }
 
         private static void FileFix(string file)
@@ -578,22 +525,20 @@ namespace LoLUpdater
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
-        private static void CgCheck(string file, string to)
+        private static void CgCheck(string path, string path1)
         {
-            FileFix(Path.Combine(_cgBinPath, file));
-            File.Copy(Path.Combine(_cgBinPath, file), Path.Combine(to, file), true);
-            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                Path.GetFileNameWithoutExtension(Path.Combine(Game, file)));
+            FileFix(path);
+            File.Copy(path, path1, true);
+            FileFix(path1);
         }
         private static void Cfg(string file)
         {
-            bool multiCore = CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
             FileFix(Path.Combine(Config, file));
             string text = File.ReadAllText(Path.Combine(Config, file));
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-            if (multiCore)
+            if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, Dpm1));
