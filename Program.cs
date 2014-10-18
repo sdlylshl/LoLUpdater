@@ -450,15 +450,15 @@ namespace LoLUpdater
                 string toDir = Path.Combine(to, file);
                 if (file.Equals(CgFiles[0]) & File.Exists(dir) && !Hash(dir, cgSum[0]))
                 {
-                    CgCheck(dir, toDir);
+                    QuickCopy(dir, toDir);
                 }
                 if (file.Equals(CgFiles[1]) & File.Exists(dir) && !Hash(dir, cgSum[1]))
                 {
-                    CgCheck(dir, toDir);
+                    QuickCopy(dir, toDir);
                 }
                 if (file.Equals(CgFiles[2]) & File.Exists(dir) && !Hash(dir, cgSum[2]))
                 {
-                    CgCheck(dir, toDir);
+                    QuickCopy(dir, toDir);
                 }
                 if (file.Equals(Air) & File.Exists(dir) && !Hash(toDir, _airSum))
                 {
@@ -489,11 +489,6 @@ namespace LoLUpdater
                     FileAttributes.Normal);
             }
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
-        }
-
-        private static void CgCheck(string from, string to)
-        {
-            QuickCopy(from, to);
         }
         private static void Cfg(string file)
         {
