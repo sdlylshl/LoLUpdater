@@ -123,7 +123,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (Hash(Assembly.GetEntryAssembly().Location,
+                    if (!Hash(Assembly.GetEntryAssembly().Location,
                         streamReader.ReadToEnd()))
                     {
                         using (
@@ -143,9 +143,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                     IncludeDebugInformation = false,
                                     CompilerOptions = "/optimize",
                                     TempFiles = new TempFileCollection(".", false),
-                                    OutputAssembly = "LoLUpdater Updater.exe"
+                                    OutputAssembly = updater
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
+                                parameters.ReferencedAssemblies.Add("System.Core.dll");
 
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
