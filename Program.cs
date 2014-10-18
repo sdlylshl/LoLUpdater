@@ -658,12 +658,17 @@ file =>
 
         private static void CfgVerify(string text, string file)
         {
-            Console.WriteLine(text.Contains(Dpm1)
-                ? string.Format("DefaultParticleMultiThreading is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
-                : string.Format("DefaultParticleMultiThreading is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
-            Console.WriteLine(text.Contains("EnableParticleOptimization=1")
-                ? string.Format("EnableParticleOptimization is Enabled in {0}", Path.GetFileNameWithoutExtension(file))
-                : string.Format("EnableParticleOptimization is Disabled in {0}", Path.GetFileNameWithoutExtension(file)));
+
+                        Console.WriteLine(
+               text.Contains(Dpm1)
+                   ? "DefaultParticleMultiThreading is Enabled in {0}"
+                   : "DefaultParticleMultiThreading is Disabled in {0}"
+               , Path.GetFileNameWithoutExtension(file));
+             Console.WriteLine(
+               text.Contains(Dpm1)
+                   ? "EnableParticleOptimization is Enabled in {0}"
+                   : "EnableParticleOptimization is Disabled in {0}"
+               , Path.GetFileNameWithoutExtension(file));
         }
 
         private static void Normalize(string file)
@@ -704,10 +709,10 @@ file =>
         private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               Hash(Path.Combine(path, file), sha512)
-                   ? "{0} Is the old patched file or the original"
-                   : "{0} Succesfully patched!",
-               Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
+               !Hash(Path.Combine(path, file), sha512)
+                   ? "{0} Succesfully patched!"
+                   : "{0} Is the old patched file or the original"
+               , Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
         }
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
