@@ -180,22 +180,7 @@ namespace LoLUpdater
                 Copy(string.Empty, Game, file, string.Empty, installing);
             });
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
-            using (
-    FileStream fileStream = new FileStream(Path.Combine(Adobe, Air), FileMode.Open,
-        FileAccess.Read, FileShare.Read))
-            {
-                fileStream.Seek(0, SeekOrigin.Begin);
-                _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty);
-            }
-            using (
-                FileStream fileStream = new FileStream(Path.Combine(Adobe, Res, Flash), FileMode.Open,
-                    FileAccess.Read, FileShare.Read))
-            {
-                fileStream.Seek(0, SeekOrigin.Begin);
-                _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty);
-            }
+            AdobeSum(Adobe);
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
             if (Riot)
@@ -259,22 +244,7 @@ namespace LoLUpdater
                         airwin.Start();
                         airwin.WaitForExit();
                     }
-                    using (
-                        FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open,
-                            FileAccess.Read, FileShare.Read))
-                    {
-                        fileStream.Seek(0, SeekOrigin.Begin);
-                        _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                            .Replace("-", string.Empty);
-                    }
-                    using (
-                        FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open,
-                            FileAccess.Read, FileShare.Read))
-                    {
-                        fileStream.Seek(0, SeekOrigin.Begin);
-                        _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                            .Replace("-", string.Empty);
-                    }
+                    AdobeSum(AdobePath);
                     if (string.IsNullOrEmpty(_cgBinPath) ||
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
                         new Version("3.1.0.13"))
@@ -355,6 +325,27 @@ namespace LoLUpdater
                     break;
             }
         }
+
+        private static void AdobeSum(string path)
+        {
+            using (
+                FileStream fileStream = new FileStream(Path.Combine(path, Air), FileMode.Open,
+                    FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
+            using (
+                FileStream fileStream = new FileStream(Path.Combine(path, Res, Flash), FileMode.Open,
+                    FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
+        }
+
         private static void CgStart2(string cgInstaller)
         {
             using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
