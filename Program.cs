@@ -57,7 +57,7 @@ namespace LoLUpdater
                 item =>
                     item["Name"].ToString()
                         .Contains(
-                            new List<string>(new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}).AsParallel()
+                            new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
         private static readonly bool Riot = Directory.Exists(Rads);
         private static readonly string[] GarenaCfgFiles =
@@ -65,7 +65,7 @@ namespace LoLUpdater
             CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             "GamePermanent_en_SG.cfg"
         };
-        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
+        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
@@ -96,106 +96,114 @@ namespace LoLUpdater
         private static bool _notdone;
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
+
         private static void Main(string[] args)
         {
-            Mutex mutex = new Mutex(true,
-                @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
-            if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
-            GC.KeepAlive(mutex);
-            if (args.Length > 0)
+            while (true)
             {
-                switch (args[0])
+                Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
+                if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
+                GC.KeepAlive(mutex);
+                if (args.Length > 0)
                 {
-                    case "/?":
-                    case "-h":
-                    case "--help":
-                        Console.WriteLine(
-                            string.Join("Command-Line Arguments:",
-                                string.Empty,
-                                "-install : Installs LoLUpdater",
-                                "-uninst : Uninstalls LoLUpdater",
-                                "--help /? -h : Shows this menu")
-                            );
-                        Console.ReadLine();
-                        break;
-                    case "-install":
-                        _userInput = 1;
-                        Patch();
-                        break;
-                    case "-uninst":
-                        _userInput = 2;
-                        Patch();
-                        break;
-                }
-            }
-            else
-            {
-                while (true)
-                {
-                    Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
-                    int key = Convert.ToInt32(Console.ReadLine());
-                    if (key == 1 || key == 2 || key == 3)
+                    switch (args[0])
                     {
-                        _userInput = key;
+                        case "/?":
+                        case "-h":
+                        case "--help":
+                            Console.WriteLine(string.Join("Command-Line Arguments:", string.Empty, "-install : Installs LoLUpdater", "-uninst : Uninstalls LoLUpdater", "--help /? -h : Shows this menu"));
+                            Console.ReadLine();
+                            break;
+                        case "-install":
+                            _userInput = 1;
+                            Patch();
+                            break;
+                        case "-uninst":
+                            _userInput = 2;
+                            Patch();
+                            break;
                     }
+                }
+                else
+                {
                     Console.Clear();
-                    Console.WriteLine("Invalid input");
-                    Console.Clear();
-                    Patch();
-                }  
+                    Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
+                    string input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input))
+                    {
+                        int key = Convert.ToInt32(input);
+                        if (key == 1 || key == 2 || key == 3)
+                        {
+                            _userInput = key;
+                        }
+                        else
+                        {
+                            Main(args);
+                        }
+                        if (_userInput != key) return;
+                        Console.Clear();
+                        Patch();
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                break;
             }
         }
+
         private static void Patch()
         {
-                bool installing = _userInput == 1;
-                do
-                {
-                    Parallel.ForEach(new[]
+            bool installing = _userInput == 1;
+            do
+            {
+                Parallel.ForEach(new[]
                     {
                         "LoLClient", "LoLLauncher", "LoLPatcher",
                         "League of Legends"
                     }
-                        , t =>
-                        {
-                            Parallel.ForEach(
-                                Process.GetProcesses()
-                                    .Where(
-                                        process =>
-                                            string.Equals(process.ProcessName, t,
-                                                StringComparison.CurrentCultureIgnoreCase))
-                                    .AsParallel(), process =>
-                                    {
-                                        process.Kill();
-                                        process.WaitForExit();
-                                    });
-                        });
-                } while (_notdone);
-                Console.WriteLine("Configuring...");
-                if (!Directory.Exists(Backup) & installing)
-                {
-                    Directory.CreateDirectory(Backup);
-                }
-                Parallel.ForEach(CgFiles,
-                    file => { Copy(string.Empty, Game, file, string.Empty, installing); });
-                Copy(string.Empty, Game, Tbb, string.Empty, installing);
-                Copy(string.Empty, Adobe, Air, string.Empty, installing);
-                Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
-                if (Riot)
-                {
-                    Copy(string.Empty, Config, CfgFile, string.Empty, installing);
-                }
-                else
-                {
-                    Parallel.ForEach(GarenaCfgFiles,
-                       file => { Copy(string.Empty, Config, file, string.Empty, installing); });
-                }
+                    , t =>
+                    {
+                        Parallel.ForEach(
+                            Process.GetProcesses()
+                                .Where(
+                                    process =>
+                                        string.Equals(process.ProcessName, t,
+                                            StringComparison.CurrentCultureIgnoreCase))
+                                .AsParallel(), process =>
+                                {
+                                    process.Kill();
+                                    process.WaitForExit();
+                                });
+                    });
+            } while (_notdone);
+            Console.WriteLine("Configuring...");
+            if (!Directory.Exists(Backup) & installing)
+            {
+                Directory.CreateDirectory(Backup);
+            }
+            Parallel.ForEach(CgFiles,
+                file => { Copy(string.Empty, Game, file, string.Empty, installing); });
+            Copy(string.Empty, Game, Tbb, string.Empty, installing);
+            Copy(string.Empty, Adobe, Air, string.Empty, installing);
+            Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
+            if (Riot)
+            {
+                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
+            }
+            else
+            {
+                Parallel.ForEach(GarenaCfgFiles,
+                   file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+            }
             switch (_userInput)
             {
                 case 1:
                     Console.WriteLine("Installing...");
                     if (File.Exists(Pmb))
                     {
-                        Process.Start(new ProcessStartInfo {FileName = Pmb, Arguments = "/silent"});
+                        Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
                     }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
@@ -214,6 +222,7 @@ namespace LoLUpdater
                     }
                     else
                     {
+                        // Redownloads Adobe Air Installer regardless if it already exists in the exe directory (gets beta updates faster but requires more bandwidth)
                         const string airInstaller = "air15_win.exe";
                         using (
                             Stream stream =
@@ -388,7 +397,7 @@ namespace LoLUpdater
             IntPtr pFunc = GetProcAddress(pDll, func);
             if (pFunc != IntPtr.Zero)
             {
-                DllType bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
+                DllType bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -412,14 +421,14 @@ namespace LoLUpdater
                 string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
-                      if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
+                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
                     {
                         Normalize(gameDir);
                         Unblock(gameDir);
                         File.Copy(gameDir
                             , bakDir,
                             true);
-                    }  
+                    }
                     if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
                     {
                         Normalize(gameDir);
