@@ -691,6 +691,9 @@ file =>
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
+                Console.WriteLine(BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                        .Replace("-", string.Empty) != sha512);
+                Console.ReadLine();
                 return
                     BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
                         .Replace("-", string.Empty) != sha512;
