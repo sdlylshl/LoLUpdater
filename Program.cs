@@ -493,19 +493,12 @@ namespace LoLUpdater
                             true);
                         FileFix(Backup);
                     }
-                    if (file.Contains(Flash))
-                    {
-                        string flashBackup = Path.Combine(Backup, Path.GetFileName(file));
-                        File.Copy(flashBackup, adobeDir
-                            ,
-                            true);
-                        FileFix(flashBackup);
-                    }
-                    if (!path.Contains(Res)) return;
-                    File.Copy(bakDir, adobeDir
+                    if (!file.Contains(Flash)) return;
+                    string flashBackup = Path.Combine(Backup, Path.GetFileName(file));
+                    File.Copy(flashBackup, adobeDir
                         ,
                         true);
-                    FileFix(bakDir);
+                    FileFix(flashBackup);
                 }
             }
             else
