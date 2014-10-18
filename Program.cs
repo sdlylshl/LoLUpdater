@@ -122,7 +122,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (!Hash("LoLUpdater.exe",
+                    if (Hash("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (
@@ -691,9 +691,6 @@ file =>
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
-                Console.WriteLine(BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty) != sha512);
-                Console.ReadLine();
                 return
                     BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
                         .Replace("-", string.Empty) != sha512;
