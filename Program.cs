@@ -1,3 +1,4 @@
+// Todo: Verify downloaded files
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,6 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
 namespace LoLUpdater
 {
     internal static class Program
@@ -36,25 +36,20 @@ namespace LoLUpdater
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
         private static readonly bool X64 = Environment.Is64BitProcess;
-
         private static readonly string AdobePath =
             Path.Combine(X64
                 ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
                 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
                 Ver2, One);
-
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
-
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
                 .AsParallel().ToArray();
-
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
             "Pando Networks", "Media Booster", "uninst.exe");
-
         // List of processors that support AVX2, might become very long in the fure (find fix), some
         // on the list are not even out yet.
         private static readonly bool Avx2 =
@@ -64,33 +59,26 @@ namespace LoLUpdater
                         .Contains(
                             new List<string>(new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}).AsParallel()
                                 .ToString()));
-
         private static readonly bool Riot = Directory.Exists(Rads);
-
         private static readonly string[] GarenaCfgFiles =
         {
             CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             "GamePermanent_en_SG.cfg"
         };
-
         private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
-
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
                 One)
             : Path.Combine("Air", AAir, Ver2, One);
-
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
             : Gme;
-
         private static readonly string Config = Riot
             ? "Config"
             : Path.Combine(Gme, "DATA", "CFG", "defaults");
-
         private static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
@@ -100,19 +88,14 @@ namespace LoLUpdater
                     : Sse
                         ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
                         : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
-
         private static int _userInput;
         private static string _airSum;
         private static string _flashSum;
-
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
-
         private static bool _notdone;
-
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
-
         private static void Main(string[] args)
         {
             Mutex mutex = new Mutex(true,
@@ -152,7 +135,6 @@ namespace LoLUpdater
                 Patch();
             }
         }
-
         private static void Patch()
         {
             if (_userInput < 4 && _userInput > 0)
@@ -343,7 +325,6 @@ namespace LoLUpdater
                     break;
             }
         }
-
         private static void CgStart2(string cgInstaller)
         {
             using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
@@ -357,7 +338,6 @@ namespace LoLUpdater
             Unblock(cgInstaller);
             CgStart(cgInstaller);
         }
-
         private static void CgStart(string cgInstaller)
         {
             Process cg = new Process
@@ -376,7 +356,6 @@ namespace LoLUpdater
                 EnvironmentVariableTarget.User);
             File.Delete(cgInstaller);
         }
-
         private static void ByteDl(Stream stream, string path)
         {
             using (MemoryStream memoryStream = new MemoryStream())
@@ -391,11 +370,9 @@ namespace LoLUpdater
                 File.WriteAllBytes(path, memoryStream.ToArray());
             }
         }
-
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool DeleteFile(string file);
-
         private static bool Dll(byte arg, string func)
         {
             bool ok = false;
@@ -410,7 +387,6 @@ namespace LoLUpdater
             FreeLibrary(pDll);
             return ok;
         }
-
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
             string[] cgSum =
@@ -605,7 +581,6 @@ namespace LoLUpdater
                 }
             }
         }
-
         private static void CgCheck(string @from, string file, string to, string gameDir)
         {
             Normalize(Path.Combine(@from, file));
@@ -614,7 +589,6 @@ namespace LoLUpdater
             Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
                 Path.GetFileNameWithoutExtension(gameDir));
         }
-
         private static void Cfg(string file)
         {
             bool multiCore =
@@ -637,7 +611,6 @@ namespace LoLUpdater
             File.WriteAllText(Path.Combine(Config, file), text);
             Unblock(Path.Combine(Config, file));
         }
-
         private static int DisplayMenu()
         {
             Console.WriteLine(
@@ -656,7 +629,6 @@ namespace LoLUpdater
             }
             return 0;
         }
-
         private static void Normalize(string file)
         {
             if (new FileInfo(file).Attributes
@@ -666,12 +638,10 @@ namespace LoLUpdater
                     FileAttributes.Normal);
             }
         }
-
         private static void Unblock(string file)
         {
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
-
         private static bool Hash(string file, string sha512)
         {
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -681,7 +651,6 @@ namespace LoLUpdater
                     .Replace("-", string.Empty).ToLower().Equals(sha512);
             }
         }
-
         private static string Ver(string path, string path1)
         {
             if (!Directory.Exists(Path.Combine(Rads, path, path1, Rel))) return string.Empty;
@@ -690,14 +659,11 @@ namespace LoLUpdater
                 ? dir
                 : Path.GetFileName(Directory.GetDirectories(Path.Combine(Rads, path, path1, Rel)).Max());
         }
-
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool FreeLibrary(IntPtr hModule);
-
         [DllImport(SKernel, CharSet = CharSet.Ansi, BestFitMapping = false)]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string proc);
-
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         private static extern IntPtr LoadLibrary(String dllName);
     }
