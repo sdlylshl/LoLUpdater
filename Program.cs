@@ -130,9 +130,19 @@ namespace LoLUpdater
             }
             else
             {
-                _userInput = DisplayMenu();
-                Console.Clear();
-                Patch();
+                while (true)
+                {
+                    Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
+                    int key = Convert.ToInt32(Console.ReadLine());
+                    if (key == 1 || key == 2 || key == 3)
+                    {
+                        _userInput = key;
+                    }
+                    Console.Clear();
+                    Console.WriteLine("Invalid input");
+                    Console.Clear();
+                    Patch();
+                }  
             }
         }
         private static void Patch()
@@ -593,21 +603,6 @@ namespace LoLUpdater
             }
             File.WriteAllText(Path.Combine(Config, file), text);
             Unblock(Path.Combine(Config, file));
-        }
-
-        private static int DisplayMenu()
-        {
-            while (true)
-            {
-                Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
-                int key = Convert.ToInt32(Console.ReadLine());
-                if (key == 1 || key == 2 || key == 3)
-                {
-                    return key;
-                }
-                Console.Clear();
-                Console.WriteLine("Invalid input");
-            }
         }
 
         private static void Normalize(string file)
