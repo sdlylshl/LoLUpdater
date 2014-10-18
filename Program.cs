@@ -265,33 +265,26 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     if (string.IsNullOrEmpty(_cgBinPath) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
                             new Version("3.1.0.13"))
                     {
+
+                        
                         const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
-                        using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                            cgInstaller))
-                          .GetResponse()
-                          .GetResponseStream())
+                        if (File.Exists(cgInstaller))
                         {
-                            ByteDl(stream, cgInstaller);
+                            if (Hash(cgInstaller,
+                                "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114")
+                                )
+                            {
+                                CgStart(cgInstaller);
+
+                            }
+                            else
+                            { CgStart2(cgInstaller); }
                         }
-                        Normalize(cgInstaller);
-                        Unblock(cgInstaller);
-
-                        Process cg = new Process
+                        else
                         {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        cgInstaller,
-                                    Arguments = "/silent /TYPE=compact"
-                                }
-                        };
-                        cg.Start();
-                        cg.WaitForExit();
-
-                        _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                            EnvironmentVariableTarget.User);
-                        File.Delete(cgInstaller);
+                            CgStart2(cgInstaller);
+                        }
+                        
                     }
 
                     Parallel.ForEach(CgFiles, file =>
@@ -345,6 +338,41 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     _notdone = false;
                     break;
             }
+        }
+
+        private static void CgStart2(string cgInstaller)
+        {
+            using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+                cgInstaller))
+                .GetResponse()
+                .GetResponseStream())
+            {
+                ByteDl(stream, cgInstaller);
+            }
+            Normalize(cgInstaller);
+            Unblock(cgInstaller);
+
+            CgStart(cgInstaller);
+        }
+
+        private static void CgStart(string cgInstaller)
+        {
+            Process cg = new Process
+            {
+                StartInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            cgInstaller,
+                        Arguments = "/silent /TYPE=compact"
+                    }
+            };
+            cg.Start();
+            cg.WaitForExit();
+
+            _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                EnvironmentVariableTarget.User);
+            File.Delete(cgInstaller);
         }
 
         private static void ByteDl(Stream stream, string path)
