@@ -122,7 +122,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (!HashEqual("LoLUpdater.exe",
+                    if (Hash("LoLUpdater.exe",
                         streamReader.ReadToEnd()))
                     {
                         using (
@@ -594,7 +594,7 @@ file =>
                     else
                     {
                         Normalize(file);
-                        if (HashEqual(file, sha512)) return;
+                        if (Hash(file, sha512)) return;
                         ByteDl(stream, file);
                     }
                     Unblock(file);
@@ -608,7 +608,7 @@ file =>
                     else
                     {
                         Normalize(Path.Combine(Game, Tbb));
-                        if (HashEqual(Path.Combine(Game, Tbb), TbbSum)) return;
+                        if (Hash(Path.Combine(Game, Tbb), TbbSum)) return;
                         ByteDl(stream, Path.Combine(Game, Tbb));
                     }
                     Unblock(Path.Combine(Game, Tbb));
@@ -681,15 +681,14 @@ file =>
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
-        private static bool HashEqual(string file, string sha512)
+        private static bool Hash(string file, string sha512)
         {
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
                 return
                     BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty)
-                        .Equals(sha512);
+                        .Replace("-", string.Empty) != sha512;
             }
         }
 
@@ -705,7 +704,7 @@ file =>
         private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               HashEqual(Path.Combine(path, file), sha512)
+               Hash(Path.Combine(path, file), sha512)
                    ? "{0} Is the old patched file or the original"
                    : "{0} Succesfully patched!",
                Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
