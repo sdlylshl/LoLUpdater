@@ -218,10 +218,9 @@ namespace LoLUpdater
                                 {
                                     FileName =
                                         airInstaller,
-                                    Arguments = "-silent"
+                                    Arguments = "-silent",
                                 }
                         };
-                        Console.SetOut(TextWriter.Null);
                         airwin.Start();
                         airwin.WaitForExit();
                     AdobeSum(AdobePath);
@@ -288,7 +287,7 @@ namespace LoLUpdater
                     {
                         Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
-                    Console.Out.WriteLine("Done Installing/Updating!");
+                    Console.WriteLine("Done Installing/Updating!");
                     _notdone = false;
                     Console.ReadLine();
                     Environment.Exit(0);
