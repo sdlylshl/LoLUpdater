@@ -169,7 +169,7 @@ namespace LoLUpdater
                                 });
                     });
             } while (_notdone);
-            Console.WriteLine("Patching League of Legends..");
+            Console.WriteLine("Patching League of Legends...");
             if (!Directory.Exists(Backup) & installing)
             {
                 Directory.CreateDirectory(Backup);
@@ -462,9 +462,7 @@ namespace LoLUpdater
                 }
                 if (file.Equals(Air) & File.Exists(dir) && !Hash(toDir, _airSum))
                 {
-                    FileFix(dir);
-                    File.Copy(dir, Path.Combine(to, file), true);
-                    FileFix(toDir);
+                    QuickCopy(dir, toDir);
                 }
                 if (!file.Contains(Flash) | !File.Exists(dir) || Hash(toDir, _flashSum)) return;
                 QuickCopy(dir, toDir);
