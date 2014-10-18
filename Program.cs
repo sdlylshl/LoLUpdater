@@ -185,6 +185,7 @@ namespace LoLUpdater
                 Console.Clear();
                 Console.WriteLine("Invalid input");
                 _userInput = DisplayMenu();
+                Console.Clear();
                 Patch();
             }
             switch (_userInput)
