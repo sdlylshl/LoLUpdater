@@ -419,9 +419,9 @@ namespace LoLUpdater
                 string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
-                    if (CgFiles.Any(path.Equals))
+                    if (path.Equals(Game))
                     {
-                        if (path.Contains(CgFiles[0]) && !Hash(file, cgSum[0]))
+                        if (file.Equals(CgFiles[0]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[0]))
                         {
                             FileFix(gameDir);
                             File.Copy(gameDir
@@ -429,7 +429,7 @@ namespace LoLUpdater
                                 true);
                             FileFix(gameDir);
                         }
-                        if (path.Contains(CgFiles[1]) && !Hash(file, cgSum[1]))
+                        if (file.Equals(CgFiles[1]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[1]))
                         {
                             FileFix(gameDir);
                             File.Copy(gameDir
@@ -437,7 +437,7 @@ namespace LoLUpdater
                                 true);
                             FileFix(gameDir);
                         }
-                        if (path.Contains(CgFiles[2]) && !Hash(file, cgSum[2]))
+                        if (file.Equals(CgFiles[2]) & File.Exists(gameDir) && !Hash(gameDir, cgSum[2]))
                         {
                             FileFix(gameDir);
                             File.Copy(gameDir
@@ -445,7 +445,7 @@ namespace LoLUpdater
                                 true);
                             FileFix(gameDir);
                         }
-                        if (!path.Contains(Tbb) || Hash(file, TbbSum)) return;
+                        if (!file.Equals(Tbb) | File.Exists(gameDir) || Hash(gameDir, TbbSum))
                             FileFix(gameDir);
                             File.Copy(gameDir
                                 , bakDir,
@@ -454,7 +454,7 @@ namespace LoLUpdater
                     }
                     if (path.Equals(Adobe))
                     {
-                        if (path.Equals(Air) & File.Exists(adobeDir) && !Hash(file, _airSum))
+                        if (file.Equals(Air) & File.Exists(adobeDir) && !Hash(adobeDir, _airSum))
                         {
                             FileFix(adobeDir);
                             File.Copy(adobeDir
@@ -462,14 +462,14 @@ namespace LoLUpdater
                                 true);
                             FileFix(adobeDir);
                         }
-                        if (!path.Contains(Flash) | !File.Exists(adobeDir) || Hash(file, _flashSum)) return;
+                        if (!file.Contains(Flash) | !File.Exists(adobeDir) || Hash(adobeDir, _flashSum)) return;
                             FileFix(adobeDir);
                             File.Copy(adobeDir
-                                , Path.Combine(Backup, file),
+                                , Path.Combine(Backup, Path.GetFileName(file)),
                                 true);
                             FileFix(adobeDir);
                     }
-                    if (!path.Contains(Config) || !File.Exists(configDir)) return;
+                    if (!path.Equals(Config) || !File.Exists(configDir)) return;
                     FileFix(configDir);
                     File.Copy(configDir,
                         Path.Combine(
@@ -488,14 +488,14 @@ namespace LoLUpdater
                             true);
                         FileFix(bakDir);
                     }
-                    if (path.Equals(Air))
+                    if (path.Equals(Adobe))
                     {
                         File.Copy(bakDir, adobeDir
                             ,
                             true);
                         FileFix(bakDir);
                     }
-                    if (!file.Contains(Res)) return;
+                    if (!path.Contains(Res)) return;
                     File.Copy(bakDir, adobeDir
                         ,
                         true);
@@ -505,7 +505,7 @@ namespace LoLUpdater
             else
             {
                 if (!File.Exists(Path.Combine(@from, file))) return;
-                if (CgFiles.Any(file.Contains))
+                if (from.Equals(_cgBinPath))
                 {
                     if (file.Equals(CgFiles[0]))
                     {
