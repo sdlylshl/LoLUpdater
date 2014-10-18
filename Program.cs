@@ -271,6 +271,7 @@ namespace LoLUpdater
                                 "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114")
                                 )
                             {
+                                FileFix(cgInstaller);
                                 CgStart(cgInstaller);
                             }
                             else
@@ -354,7 +355,6 @@ namespace LoLUpdater
         }
         private static void CgStart(string cgInstaller)
         {
-            FileFix(cgInstaller);
             Process cg = new Process
             {
                 StartInfo =
