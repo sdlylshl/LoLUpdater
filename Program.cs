@@ -320,13 +320,13 @@ file =>
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                            .Replace("-", string.Empty);
+                        .Replace("-", string.Empty).ToLower();
                     }
                     using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                            .Replace("-", string.Empty);
+                        .Replace("-", string.Empty).ToLower();
                     }
                     if (string.IsNullOrEmpty(_cgBinPath))
                     {
@@ -595,7 +595,7 @@ file =>
                     else
                     {
                         Normalize(file);
-                        if (Hash(file, sha512)) return;
+                        if (!Hash(file, sha512)) return;
                         ByteDl(stream, file);
                     }
                     Unblock(file);
@@ -609,7 +609,7 @@ file =>
                     else
                     {
                         Normalize(Path.Combine(Game, Tbb));
-                        if (Hash(Path.Combine(Game, Tbb), TbbSum)) return;
+                        if (!Hash(Path.Combine(Game, Tbb), TbbSum)) return;
                         ByteDl(stream, Path.Combine(Game, Tbb));
                     }
                     Unblock(Path.Combine(Game, Tbb));
@@ -694,7 +694,7 @@ file =>
                 fileStream.Seek(0, SeekOrigin.Begin);
                 return
                     BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty) != sha512;
+                        .Replace("-", string.Empty).ToLower().Equals(sha512);
             }
         }
 
@@ -710,7 +710,7 @@ file =>
         private static void Verify(string path, string file, string sha512)
         {
             Console.WriteLine(
-               !Hash(Path.Combine(path, file), sha512)
+               Hash(Path.Combine(path, file), sha512)
                    ? "{0} Succesfully patched!"
                    : "{0} Is the old patched file or the original"
                , Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
