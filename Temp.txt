@@ -15,13 +15,13 @@ namespace LoLUpdater_Updater
     {
 
         // Save as Temp.txt and use this as the source for the autoupdater in LoLUdpater
-        private static readonly Mutex Mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: 1e0d206b-71ee-4954-9402-f4ed91d79a95");
         private static bool _notdone;
 
         private static void Main()
         {
-            if (!Mutex.WaitOne(TimeSpan.Zero, true)) return;
-            GC.KeepAlive(Mutex);
+            Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {13b2f78b-9867-49e1-bf73-287b7b136d30}");
+            if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
+            GC.KeepAlive(mutex);
             do
             {
                 Parallel.ForEach(Process.GetProcessesByName("LoLUpdater"), proc =>
@@ -93,6 +93,6 @@ namespace LoLUpdater_Updater
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern void DeleteFile(string file);
+        private static extern bool DeleteFile(string file);
     }
 }
