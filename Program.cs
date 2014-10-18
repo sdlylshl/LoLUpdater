@@ -180,6 +180,22 @@ namespace LoLUpdater
                 Copy(string.Empty, Game, file, string.Empty, installing);
             });
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
+            using (
+    FileStream fileStream = new FileStream(Path.Combine(Adobe, Air), FileMode.Open,
+        FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
+            using (
+                FileStream fileStream = new FileStream(Path.Combine(Adobe, Res, Flash), FileMode.Open,
+                    FileAccess.Read, FileShare.Read))
+            {
+                fileStream.Seek(0, SeekOrigin.Begin);
+                _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                    .Replace("-", string.Empty);
+            }
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
             if (Riot)
@@ -620,7 +636,7 @@ namespace LoLUpdater
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
                 return BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty).ToLower().Equals(sha512);
+                    .Replace("-", string.Empty).Equals(sha512);
             }
         }
         private static string Ver(string path, string path1)
