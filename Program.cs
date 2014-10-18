@@ -402,6 +402,14 @@ namespace LoLUpdater
                 string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
+                      if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
+                    {
+                        Normalize(gameDir);
+                        Unblock(gameDir);
+                        File.Copy(gameDir
+                            , bakDir,
+                            true);
+                    }  
                     if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
                     {
                         Normalize(gameDir);
