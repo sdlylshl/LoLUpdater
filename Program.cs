@@ -10,6 +10,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
 // using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,8 +38,6 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
-        private static string _airSum;
-        private static string _flashSum;
         private static readonly bool X64 = Environment.Is64BitProcess;
         private static readonly string AdobePath =
 Path.Combine(X64
@@ -46,7 +45,6 @@ Path.Combine(X64
 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
 Ver2, One);
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
-
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
@@ -55,7 +53,6 @@ Ver2, One);
     ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
     : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
     "Pando Networks", "Media Booster", "uninst.exe");
-
         // List of processors that support AVX2, might become very long in the fure (find fix), some
         // on the list are not even out yet.
         private static readonly bool Avx2 =
@@ -73,11 +70,9 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 };
         private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly string[] GameFiles = CgFiles.Concat(new[] { Tbb }).ToArray();
-
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
-
         private static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
@@ -87,7 +82,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     : Sse
                         ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
                         : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
-
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
                 One)
@@ -106,6 +100,8 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 : (Avx
                     ? "Avx.dll"
                     : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll")));
+        private static string _airSum;
+        private static string _flashSum;
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
         private static bool _notdone;
@@ -113,7 +109,9 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
         private delegate bool DllType(byte arg);
         private static void Main(string[] args)
         {
-            // Readd mutex for single instance
+            Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
+            if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
+            GC.KeepAlive(mutex);
             const string updater = "LoLUpdater Updater.exe";
             using (
                 Stream stream =
@@ -124,7 +122,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (HashEqual("LoLUpdater.exe",
+                    if (!HashEqual("LoLUpdater.exe",
                         streamReader.ReadLine()))
                     {
                         using (
@@ -153,6 +151,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 {
                                     CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
                                         streamReader2.ReadToEnd());
+                                    foreach (CompilerError ce in result.Errors)
+                                    {
+                                        Console.WriteLine(ce.ErrorNumber + ": " + ce.ErrorText);
+                                    }
                                     Normalize(result.PathToAssembly);
                                     Unblock(result.PathToAssembly);
                                     Process.Start(result.PathToAssembly);
@@ -288,11 +290,16 @@ file =>
                     else
                     {
                         const string airInstaller = "air15_win.exe";
-                        Download(airInstaller,
-                            "fd85bd4455b070e8d5d71ff2187a8252d48f85b3b3f8bae53bb25e81e966682fff16a254f1193da8a2d8d73126f40143126cbec54f2f2c7c446680379ee23d14"
+                        using (FileStream fileStream = new FileStream(airInstaller, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            string temp = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                                .Replace("-", string.Empty);
+                            fileStream.Seek(0, SeekOrigin.Begin);
+                            Download(airInstaller,
+                            string.IsNullOrEmpty(temp) ? string.Empty : temp
                             , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
                                 airInstaller), string.Empty);
-
+                        }
                         Normalize(airInstaller);
                         Unblock(airInstaller);
                         Process airwin = new Process
