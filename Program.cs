@@ -230,7 +230,6 @@ namespace LoLUpdater
                         {
                             ByteDl(stream, airInstaller);
                         }
-                        FileFix(airInstaller);
                         Process airwin = new Process
                         {
                             StartInfo =
@@ -314,7 +313,6 @@ namespace LoLUpdater
                             ByteDl(stream, Path.Combine(Game, Tbb));
                         }
                         Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
-                        FileFix(Path.Combine(Game, Tbb));
                     }
                     if (Riot)
                     {
@@ -350,7 +348,6 @@ namespace LoLUpdater
             {
                 ByteDl(stream, cgInstaller);
             }
-            FileFix(cgInstaller);
             CgStart(cgInstaller);
         }
         private static void CgStart(string cgInstaller)
@@ -374,7 +371,7 @@ namespace LoLUpdater
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[8192];
                 int count;
                 do
                 {
@@ -382,6 +379,7 @@ namespace LoLUpdater
                     memoryStream.Write(buffer, 0, count);
                 } while (count != 0);
                 File.WriteAllBytes(path, memoryStream.ToArray());
+                FileFix(path);
             }
         }
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
