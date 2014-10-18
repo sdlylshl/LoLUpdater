@@ -123,7 +123,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
                     if (!HashEqual("LoLUpdater.exe",
-                        streamReader.ReadLine()))
+                        streamReader.ReadToEnd()))
                     {
                         using (
                             Stream stream2 =
