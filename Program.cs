@@ -35,10 +35,9 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
-        private static readonly string CgSum = string.Join(string.Empty,
-                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
-                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
-                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b");
+        private static readonly string[] CgSum = {"ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22"
+                ,"db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2"
+                ,"cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"};
 
         private static readonly bool X64 = Environment.Is64BitProcess;
         private static readonly string AdobePath =
@@ -70,7 +69,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 "GamePermanent_en_SG.cfg"
 };
         private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
-        private static readonly string[] GameFiles = CgFiles.Concat(new[] { Tbb }).ToArray();
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
@@ -176,18 +174,28 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     });
                 } while (_notdone);
                 Console.WriteLine("Configuring...");
-
-                Parallel.ForEach(GameFiles,
+                if (!Directory.Exists(Backup) & installing)
+                {
+                    Directory.CreateDirectory(Backup);
+                }
+                Parallel.ForEach(CgFiles,
                     file =>
                     {
                         Copy(string.Empty, Game, file, string.Empty, installing);
                     });
+                Copy(string.Empty, Game, Tbb, string.Empty, installing);
                 Copy(string.Empty, Adobe, Air, string.Empty, installing);
                 Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
 
-                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
-                Parallel.ForEach(GarenaCfgFiles,
-                    file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+
+                if (Riot)
+                { Copy(string.Empty, Config, CfgFile, string.Empty, installing); }
+                else
+                {
+                    Parallel.ForEach(GarenaCfgFiles,
+                      file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+                }
+
 
 
             }
@@ -205,10 +213,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     if (File.Exists(Pmb))
                     {
                         Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
-                    }
-                    if (!Directory.Exists(Backup))
-                    {
-                        Directory.CreateDirectory(Backup);
                     }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
@@ -383,19 +387,57 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
+            string gameDir = Path.Combine(Game, file);
+            string adobeDir = Path.Combine(Adobe, file);
             if (mode.HasValue)
             {
                 string bakDir = Path.Combine(Backup, file);
-                string gameDir = Path.Combine(Game, file);
-                string adobeDir = Path.Combine(Adobe, file);
+                string configDir = Path.Combine(Config, file);
 
                 if (mode.Value)
                 {
-
-                    if (path.Contains(string.Join(string.Empty, CgFiles)) & File.Exists(gameDir))
+                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir))
                     {
-                        if (!Hash(file, CgSum))
+                        if (!Hash(file, CgSum[0]))
                         {
+                            Normalize(gameDir);
+                            Unblock(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                        }
+
+                    }
+                    if (path.Contains(CgFiles[1]) & File.Exists(gameDir))
+                    {
+                        if (!Hash(file, CgSum[1]))
+                        {
+                            Normalize(gameDir);
+                            Unblock(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                        }
+
+                    }
+                    if (path.Contains(CgFiles[2]) & File.Exists(gameDir))
+                    {
+                        if (!Hash(file, CgSum[2]))
+                        {
+                            Normalize(gameDir);
+                            Unblock(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                        }
+
+                    }
+                    if (path.Contains(Tbb) & File.Exists(gameDir))
+                    {
+                        Console.WriteLine("You are here 1");
+                        if (!Hash(file, TbbSum))
+                        {
+                            Console.WriteLine("You are here 2");
                             Normalize(gameDir);
                             Unblock(gameDir);
                             File.Copy(gameDir
@@ -407,20 +449,8 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
                     if (path.Contains(Air) & File.Exists(adobeDir))
                     {
+                        Console.WriteLine("You are here ");
                         if (!Hash(file, _airSum))
-                        {
-                            Normalize(adobeDir);
-                            Unblock(adobeDir);
-                            File.Copy(Path.Combine(
-                                Adobe, file)
-                                , bakDir,
-                                true);
-                        }
-
-                    }
-                    if (path.Contains(Flash) & File.Exists(adobeDir))
-                    {
-                        if (!Hash(file, _flashSum))
                         {
                             Normalize(adobeDir);
                             Unblock(adobeDir);
@@ -430,14 +460,25 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         }
 
                     }
-                    if (!path.Equals(Config) | !File.Exists(Path.Combine(Config, file))) return;
+                    if (path.Contains(Flash) & File.Exists(adobeDir))
+                    {
+                        Console.Write("Test");
+                        if (!Hash(file, _flashSum))
+                        {
+                            Normalize(adobeDir);
+                            Unblock(adobeDir);
+                            File.Copy(adobeDir
+                                , Path.Combine(Backup, file),
+                                true);
+                        }
 
-                    Normalize(Path.Combine(Config, file));
-                    Unblock(Path.Combine(Config, file));
-                    File.Copy(Path.Combine(
-                        Config, file),
+                    }
+                    if (!path.Equals(configDir) | !File.Exists(configDir)) return;
+                    Normalize(configDir);
+                    Unblock(configDir);
+                    File.Copy(configDir,
                         Path.Combine(
-                        Config, string.Format("{0}{1}{2}", Path.GetFileNameWithoutExtension(file), DateTime.Now, ".bak")),
+                            Config, Path.GetFileNameWithoutExtension(file) + DateTime.Now + ".bak"),
                         true);
                 }
                 else
@@ -472,40 +513,99 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             }
             else
             {
-                if (!File.Exists(Path.Combine(@from, file)) | !Directory.Exists(to)) return;
-                Normalize(Path.Combine(@from, file));
-                Unblock(Path.Combine(@from, file));
-                File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                if (from.Equals(_cgBinPath))
+                if (!File.Exists(Path.Combine(@from, file))) return;
+                if (CgFiles.Any(file.Contains))
                 {
-                    if (Hash(file, CgSum))
+                    if (file.Contains(CgFiles[0]))
                     {
-                        Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                            Path.GetFileNameWithoutExtension(file));
-                    }
+                        if (Hash(Path.Combine(@from, file), CgSum[0]))
+                        {
+                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
+                                Path.GetFileNameWithoutExtension(gameDir));
+                        }
+                        else
+                        {
+                            CgCheck(@from, file, to, gameDir);
+                        }
 
-                }
-                else
-                {
-                    if (path.Contains(Air))
+                    }
+                    if (file.Contains(CgFiles[1]))
                     {
-                        if (Hash(file, _airSum))
+                        if (Hash(Path.Combine(@from, file), CgSum[1]))
+                        {
+                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
+                                Path.GetFileNameWithoutExtension(gameDir));
+                        }
+                        else
+                        {
+                            CgCheck(@from, file, to, gameDir);
+                        }
+
+                    }
+                    if (file.Contains(CgFiles[2]))
+                    {
+                        if (Hash(Path.Combine(@from, file), CgSum[2]))
+                        {
+                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
+                                Path.GetFileNameWithoutExtension(gameDir));
+                        }
+                        else
+                        {
+                            CgCheck(@from, file, to, gameDir);
+                        }
+
+                    }
+                }
+                if (from.Equals(AdobePath))
+                {
+                    if (file.Contains(Air))
+                    {
+                        if (Hash(Path.Combine(@from, Air), _airSum))
                         {
                             Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(file));
+                                Path.GetFileNameWithoutExtension(adobeDir));
                         }
-                    }
-                    else
-                    {
-                        if (Hash(file, _flashSum))
+                        else
                         {
+                            Normalize(Path.Combine(@from, file));
+                            Unblock(Path.Combine(@from, file));
+                            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
                             Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(file));
+                                Path.GetFileNameWithoutExtension(adobeDir));
                         }
                     }
 
+                    if (file.Contains(Flash))
+                    {
+                        if (Hash(Path.Combine(@from, Air), _airSum))
+                        {
+                            Console.WriteLine("{0} Is the latest BETA version",
+                                Path.GetFileNameWithoutExtension(adobeDir));
+                        }
+                        else
+                        {
+                            Normalize(Path.Combine(@from, file));
+                            Unblock(Path.Combine(@from, file));
+                            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                            Console.WriteLine("{0} Is the latest BETA version",
+                                Path.GetFileNameWithoutExtension(adobeDir));
+                        }
+                    }
                 }
+
             }
+
+
+
+        }
+
+        private static void CgCheck(string @from, string file, string to, string gameDir)
+        {
+            Normalize(Path.Combine(@from, file));
+            Unblock(Path.Combine(@from, file));
+            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
+                Path.GetFileNameWithoutExtension(gameDir));
         }
 
         private static void Cfg(string file)
