@@ -1,4 +1,5 @@
 // Todo: Verify downloaded files
+// Note: All checksums are SHA512
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -66,7 +67,6 @@ namespace LoLUpdater
             "GamePermanent_en_SG.cfg"
         };
         private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
-        // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
         private static readonly string Adobe = Riot
@@ -419,89 +419,83 @@ namespace LoLUpdater
                 string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
-                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
+                    if (CgFiles.Any(path.Equals))
                     {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
+                        if (path.Contains(CgFiles[0]) && !Hash(file, cgSum[0]))
+                        {
+                            FileFix(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                            FileFix(gameDir);
+                        }
+                        if (path.Contains(CgFiles[1]) && !Hash(file, cgSum[1]))
+                        {
+                            FileFix(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                            FileFix(gameDir);
+                        }
+                        if (path.Contains(CgFiles[2]) && !Hash(file, cgSum[2]))
+                        {
+                            FileFix(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                            FileFix(gameDir);
+                        }
+                        if (!path.Contains(Tbb) || Hash(file, TbbSum)) return;
+                            FileFix(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                            FileFix(gameDir);
                     }
-                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
+                    if (path.Equals(Adobe))
                     {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
+                        if (path.Equals(Air) & File.Exists(adobeDir) && !Hash(file, _airSum))
+                        {
+                            FileFix(adobeDir);
+                            File.Copy(adobeDir
+                                , bakDir,
+                                true);
+                            FileFix(adobeDir);
+                        }
+                        if (!path.Contains(Flash) | !File.Exists(adobeDir) || Hash(file, _flashSum)) return;
+                            FileFix(adobeDir);
+                            File.Copy(adobeDir
+                                , Path.Combine(Backup, file),
+                                true);
+                            FileFix(adobeDir);
                     }
-                    if (path.Contains(CgFiles[1]) & File.Exists(gameDir) && !Hash(file, cgSum[1]))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (path.Contains(CgFiles[2]) & File.Exists(gameDir) && !Hash(file, cgSum[2]))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (path.Contains(Tbb) & File.Exists(gameDir) && !Hash(file, TbbSum))
-                    {
-                        FileFix(gameDir);
-                        File.Copy(gameDir
-                            , bakDir,
-                            true);
-                        FileFix(gameDir);
-                    }
-                    if (path.Contains(Air) & File.Exists(adobeDir) && !Hash(file, _airSum))
-                    {
-                        FileFix(adobeDir);
-                        File.Copy(adobeDir
-                            , bakDir,
-                            true);
-                        FileFix(adobeDir);
-                    }
-                    if (path.Contains(Flash) & File.Exists(adobeDir) && !Hash(file, _flashSum))
-                    {
-                        FileFix(adobeDir);
-                        File.Copy(adobeDir
-                            , Path.Combine(Backup, file),
-                            true);
-                        FileFix(adobeDir);
-                    }
-                    if (!path.Contains(Config) | !File.Exists(configDir)) return;
-                    FileFix(adobeDir);
+                    if (!path.Contains(Config) || !File.Exists(configDir)) return;
+                    FileFix(configDir);
                     File.Copy(configDir,
                         Path.Combine(
                             Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(configDir), ".bak")),
                         true);
-                    FileFix(adobeDir);
+                    FileFix(configDir);
                 }
                 else
                 {
                     if (!File.Exists(bakDir)) return;
                     FileFix(bakDir);
-                    if (path.Equals(gameDir))
+                    if (path.Equals(Game))
                     {
                         File.Copy(bakDir, gameDir
                             ,
                             true);
                         FileFix(bakDir);
                     }
-                    if (path.Equals(adobeDir))
+                    if (path.Equals(Air))
                     {
                         File.Copy(bakDir, adobeDir
                             ,
                             true);
                         FileFix(bakDir);
                     }
-                    if (!path.Equals(Path.Combine(Adobe, Res, Flash))) return;
+                    if (!file.Contains(Res)) return;
                     File.Copy(bakDir, adobeDir
                         ,
                         true);
@@ -513,7 +507,7 @@ namespace LoLUpdater
                 if (!File.Exists(Path.Combine(@from, file))) return;
                 if (CgFiles.Any(file.Contains))
                 {
-                    if (file.Contains(CgFiles[0]))
+                    if (file.Equals(CgFiles[0]))
                     {
                         if (Hash(Path.Combine(@from, file), cgSum[0]))
                         {
@@ -525,7 +519,7 @@ namespace LoLUpdater
                             CgCheck(@from, file, to, gameDir);
                         }
                     }
-                    if (file.Contains(CgFiles[1]))
+                    if (file.Equals(CgFiles[1]))
                     {
                         if (Hash(Path.Combine(@from, file), cgSum[1]))
                         {
@@ -537,7 +531,7 @@ namespace LoLUpdater
                             CgCheck(@from, file, to, gameDir);
                         }
                     }
-                    if (file.Contains(CgFiles[2]))
+                    if (file.Equals(CgFiles[2]))
                     {
                         if (Hash(Path.Combine(@from, file), cgSum[2]))
                         {
@@ -551,7 +545,7 @@ namespace LoLUpdater
                     }
                 }
                 if (!@from.Equals(AdobePath)) return;
-                if (file.Contains(Air))
+                if (file.Equals(Air))
                 {
                     if (Hash(Path.Combine(@from, Air), _airSum))
                     {
