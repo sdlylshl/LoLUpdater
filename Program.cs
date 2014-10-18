@@ -175,8 +175,10 @@ namespace LoLUpdater
             {
                 Directory.CreateDirectory(Backup);
             }
-            Parallel.ForEach(CgFiles,
-                file => { Copy(string.Empty, Game, file, string.Empty, installing); });
+            Parallel.ForEach(CgFiles, file =>
+            {
+                Copy(string.Empty, Game, file, string.Empty, installing);
+            });
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
@@ -186,8 +188,10 @@ namespace LoLUpdater
             }
             else
             {
-                Parallel.ForEach(GarenaCfgFiles,
-                   file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+                Parallel.ForEach(GarenaCfgFiles, file =>
+                {
+                    Copy(string.Empty, Config, file, string.Empty, installing);
+                });
             }
             switch (_userInput)
             {
@@ -280,7 +284,10 @@ namespace LoLUpdater
                             CgStart2(cgInstaller);
                         }
                     }
-                    Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
+                    Parallel.ForEach(CgFiles, file =>
+                    {
+                        Copy(_cgBinPath, string.Empty, file, Game, null);
+                    });
                     Copy(AdobePath, string.Empty, Air, Adobe, null);
                     Copy(AdobePath, string.Empty, Path.Combine(Res, Flash), Adobe, null);
                     using (
