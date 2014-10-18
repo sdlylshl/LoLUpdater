@@ -123,7 +123,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (!Hash(Assembly.GetEntryAssembly().Location,
+                    if (Hash(Assembly.GetEntryAssembly().Location,
                         streamReader.ReadToEnd()))
                     {
                         using (
