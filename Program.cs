@@ -35,25 +35,26 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
-        private static readonly string[] CgSum = {"ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22"
-                ,"db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2"
-                ,"cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"};
-
         private static readonly bool X64 = Environment.Is64BitProcess;
+
         private static readonly string AdobePath =
-Path.Combine(X64
-? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
-: Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
-Ver2, One);
+            Path.Combine(X64
+                ? Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)
+                : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
+                Ver2, One);
+
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
+
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
                 .AsParallel().ToArray();
+
         private static readonly string Pmb = Path.Combine(X64
-    ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-    : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-    "Pando Networks", "Media Booster", "uninst.exe");
+            ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+            : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            "Pando Networks", "Media Booster", "uninst.exe");
+
         // List of processors that support AVX2, might become very long in the fure (find fix), some
         // on the list are not even out yet.
         private static readonly bool Avx2 =
@@ -61,14 +62,18 @@ Ver2, One);
                 item =>
                     item["Name"].ToString()
                         .Contains(
-                            new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
+                            new List<string>(new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}).AsParallel()
                                 .ToString()));
+
         private static readonly bool Riot = Directory.Exists(Rads);
-        private static readonly string[] GarenaCfgFiles = {
-CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
-"GamePermanent_en_SG.cfg"
-};
-        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+
+        private static readonly string[] GarenaCfgFiles =
+        {
+            CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+            "GamePermanent_en_SG.cfg"
+        };
+
+        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
@@ -77,13 +82,15 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
                 One)
             : Path.Combine("Air", AAir, Ver2, One);
+
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
             : Gme;
+
         private static readonly string Config = Riot
-    ? "Config"
-    : Path.Combine(Gme, "DATA", "CFG", "defaults");
-        private static int _userInput;
+            ? "Config"
+            : Path.Combine(Gme, "DATA", "CFG", "defaults");
+
         private static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
@@ -93,19 +100,25 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     : Sse
                         ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
                         : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
+
+        private static int _userInput;
         private static string _airSum;
         private static string _flashSum;
+
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
+
         private static bool _notdone;
+
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
+
         private static void Main(string[] args)
         {
-            Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
+            Mutex mutex = new Mutex(true,
+                @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
             if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(mutex);
-
             if (args.Length > 0)
             {
                 switch (args[0])
@@ -122,12 +135,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                             );
                         Console.ReadLine();
                         break;
-
                     case "-install":
                         _userInput = 1;
                         Patch();
                         break;
-
                     case "-uninst":
                         _userInput = 2;
                         Patch();
@@ -144,10 +155,8 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
         private static void Patch()
         {
-            // Range of valid inputs
             if (_userInput < 4 && _userInput > 0)
             {
-                // Exit input
                 if (_userInput == 3)
                 {
                     return;
@@ -155,23 +164,25 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 bool installing = _userInput == 1;
                 do
                 {
-                    Parallel.ForEach(new[]{
-            "LoLClient", "LoLLauncher", "LoLPatcher",
-            "League of Legends"
-        }
-                    , t =>
+                    Parallel.ForEach(new[]
                     {
-                        Parallel.ForEach(
-                            Process.GetProcesses()
-                                .Where(
-                                    process =>
-                                        string.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
-                                .AsParallel(), process =>
-                                {
-                                    process.Kill();
-                                    process.WaitForExit();
-                                });
-                    });
+                        "LoLClient", "LoLLauncher", "LoLPatcher",
+                        "League of Legends"
+                    }
+                        , t =>
+                        {
+                            Parallel.ForEach(
+                                Process.GetProcesses()
+                                    .Where(
+                                        process =>
+                                            string.Equals(process.ProcessName, t,
+                                                StringComparison.CurrentCultureIgnoreCase))
+                                    .AsParallel(), process =>
+                                    {
+                                        process.Kill();
+                                        process.WaitForExit();
+                                    });
+                        });
                 } while (_notdone);
                 Console.WriteLine("Configuring...");
                 if (!Directory.Exists(Backup) & installing)
@@ -179,20 +190,13 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Directory.CreateDirectory(Backup);
                 }
                 Parallel.ForEach(CgFiles,
-                    file =>
-                    {
-                        Copy(string.Empty, Game, file, string.Empty, installing);
-                    });
+                    file => { Copy(string.Empty, Game, file, string.Empty, installing); });
                 Copy(string.Empty, Game, Tbb, string.Empty, installing);
                 Copy(string.Empty, Adobe, Air, string.Empty, installing);
                 Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
-
-
                 Copy(string.Empty, Config, CfgFile, string.Empty, installing);
-
                 Parallel.ForEach(GarenaCfgFiles,
-                  file => { Copy(string.Empty, Config, file, string.Empty, installing); });
-
+                    file => { Copy(string.Empty, Config, file, string.Empty, installing); });
             }
             else
             {
@@ -207,7 +211,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Console.WriteLine("Installing...");
                     if (File.Exists(Pmb))
                     {
-                        Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
+                        Process.Start(new ProcessStartInfo {FileName = Pmb, Arguments = "/silent"});
                     }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
@@ -227,14 +231,16 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     else
                     {
                         const string airInstaller = "air15_win.exe";
-                        using (Stream stream = WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                          airInstaller))
-                          .GetResponse()
-                          .GetResponseStream())
+                        using (
+                            Stream stream =
+                                WebRequest.Create(
+                                    new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                                        airInstaller))
+                                    .GetResponse()
+                                    .GetResponseStream())
                         {
                             ByteDl(stream, airInstaller);
                         }
-
                         Normalize(airInstaller);
                         Unblock(airInstaller);
                         Process airwin = new Process
@@ -250,23 +256,26 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         airwin.Start();
                         airwin.WaitForExit();
                     }
-                    using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (
+                        FileStream fileStream = new FileStream(Path.Combine(AdobePath, Air), FileMode.Open,
+                            FileAccess.Read, FileShare.Read))
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty);
+                            .Replace("-", string.Empty);
                     }
-                    using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (
+                        FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open,
+                            FileAccess.Read, FileShare.Read))
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty);
+                            .Replace("-", string.Empty);
                     }
-                    if (string.IsNullOrEmpty(_cgBinPath) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
-                            new Version("3.1.0.13"))
+                    if (string.IsNullOrEmpty(_cgBinPath) ||
+                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
+                        new Version("3.1.0.13"))
                     {
-
-                        
                         const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
                         if (File.Exists(cgInstaller))
                         {
@@ -275,36 +284,32 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 )
                             {
                                 CgStart(cgInstaller);
-
                             }
                             else
-                            { CgStart2(cgInstaller); }
+                            {
+                                CgStart2(cgInstaller);
+                            }
                         }
                         else
                         {
                             CgStart2(cgInstaller);
                         }
-                        
                     }
-
-                    Parallel.ForEach(CgFiles, file =>
-                    {
-                        Copy(_cgBinPath, string.Empty, file, Game, null);
-                    });
+                    Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
                     Copy(AdobePath, string.Empty, Air, Adobe, null);
                     Copy(AdobePath, string.Empty, Path.Combine(Res, Flash), Adobe, null);
-
                     Parallel.ForEach(GarenaCfgFiles, Cfg);
-                    using (Stream stream = WebRequest.Create(new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
-                ? "Avx2.dll"
-                : (Avx
-                    ? "Avx.dll"
-                    : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll"))))
-   .GetResponse()
-   .GetResponseStream())
+                    using (
+                        Stream stream =
+                            WebRequest.Create(new Uri(
+                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
+                                    ? "Avx2.dll"
+                                    : (Avx
+                                        ? "Avx.dll"
+                                        : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll"))))
+                                .GetResponse()
+                                .GetResponseStream())
                     {
-
-
                         if (File.Exists(Path.Combine(Game, Tbb)))
                         {
                             Normalize(Path.Combine(Game, Tbb));
@@ -330,7 +335,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Console.ReadLine();
                     Environment.Exit(0);
                     break;
-
                 case 2:
                     Directory.Delete(Backup);
                     Console.ReadLine();
@@ -351,7 +355,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             }
             Normalize(cgInstaller);
             Unblock(cgInstaller);
-
             CgStart(cgInstaller);
         }
 
@@ -369,7 +372,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             };
             cg.Start();
             cg.WaitForExit();
-
             _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                 EnvironmentVariableTarget.User);
             File.Delete(cgInstaller);
@@ -389,6 +391,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 File.WriteAllBytes(path, memoryStream.ToArray());
             }
         }
+
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool DeleteFile(string file);
@@ -401,7 +404,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             IntPtr pFunc = GetProcAddress(pDll, func);
             if (pFunc != IntPtr.Zero)
             {
-                DllType bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
+                DllType bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -410,18 +413,25 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
+            string[] cgSum =
+            {
+                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22"
+                ,
+                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2"
+                ,
+                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"
+            };
             string gameDir = Path.Combine(Game, file);
             string adobeDir = Path.Combine(Adobe, file);
             if (mode.HasValue)
             {
                 string bakDir = Path.Combine(Backup, file);
                 string configDir = Path.Combine(Config, file);
-
                 if (mode.Value)
                 {
                     if (path.Contains(CgFiles[0]) & File.Exists(gameDir))
                     {
-                        if (!Hash(file, CgSum[0]))
+                        if (!Hash(file, cgSum[0]))
                         {
                             Normalize(gameDir);
                             Unblock(gameDir);
@@ -429,11 +439,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , bakDir,
                                 true);
                         }
-
                     }
                     if (path.Contains(CgFiles[1]) & File.Exists(gameDir))
                     {
-                        if (!Hash(file, CgSum[1]))
+                        if (!Hash(file, cgSum[1]))
                         {
                             Normalize(gameDir);
                             Unblock(gameDir);
@@ -441,11 +450,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , bakDir,
                                 true);
                         }
-
                     }
                     if (path.Contains(CgFiles[2]) & File.Exists(gameDir))
                     {
-                        if (!Hash(file, CgSum[2]))
+                        if (!Hash(file, cgSum[2]))
                         {
                             Normalize(gameDir);
                             Unblock(gameDir);
@@ -453,7 +461,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , bakDir,
                                 true);
                         }
-
                     }
                     if (path.Contains(Tbb) & File.Exists(gameDir))
                     {
@@ -467,9 +474,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , bakDir,
                                 true);
                         }
-
                     }
-
                     if (path.Contains(Air) & File.Exists(adobeDir))
                     {
                         Console.WriteLine("You are here ");
@@ -481,7 +486,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , bakDir,
                                 true);
                         }
-
                     }
                     if (path.Contains(Flash) & File.Exists(adobeDir))
                     {
@@ -494,7 +498,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                 , Path.Combine(Backup, file),
                                 true);
                         }
-
                     }
                     if (!(path.Contains(Config) & File.Exists(configDir))) return;
                     Normalize(configDir);
@@ -515,14 +518,11 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                             ,
                             true);
                     }
-
                     if (path.Equals(adobeDir))
                     {
-
                         File.Copy(bakDir, adobeDir
                             ,
                             true);
-
                     }
                     if (!path.Equals(Path.Combine(Adobe, Res, Flash))) return;
                     File.Copy(bakDir, adobeDir
@@ -537,7 +537,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 {
                     if (file.Contains(CgFiles[0]))
                     {
-                        if (Hash(Path.Combine(@from, file), CgSum[0]))
+                        if (Hash(Path.Combine(@from, file), cgSum[0]))
                         {
                             Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
                                 Path.GetFileNameWithoutExtension(gameDir));
@@ -546,11 +546,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         {
                             CgCheck(@from, file, to, gameDir);
                         }
-
                     }
                     if (file.Contains(CgFiles[1]))
                     {
-                        if (Hash(Path.Combine(@from, file), CgSum[1]))
+                        if (Hash(Path.Combine(@from, file), cgSum[1]))
                         {
                             Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
                                 Path.GetFileNameWithoutExtension(gameDir));
@@ -559,11 +558,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         {
                             CgCheck(@from, file, to, gameDir);
                         }
-
                     }
                     if (file.Contains(CgFiles[2]))
                     {
-                        if (Hash(Path.Combine(@from, file), CgSum[2]))
+                        if (Hash(Path.Combine(@from, file), cgSum[2]))
                         {
                             Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
                                 Path.GetFileNameWithoutExtension(gameDir));
@@ -572,7 +570,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         {
                             CgCheck(@from, file, to, gameDir);
                         }
-
                     }
                 }
                 if (!@from.Equals(AdobePath)) return;
@@ -592,7 +589,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                             Path.GetFileNameWithoutExtension(adobeDir));
                     }
                 }
-
                 if (!file.Contains(Flash)) return;
                 if (Hash(Path.Combine(@from, Air), _airSum))
                 {
@@ -608,9 +604,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         Path.GetFileNameWithoutExtension(adobeDir));
                 }
             }
-
-
-
         }
 
         private static void CgCheck(string @from, string file, string to, string gameDir)
@@ -625,7 +618,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
         private static void Cfg(string file)
         {
             bool multiCore =
-            CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
+                CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
             Normalize(Path.Combine(Config, file));
             string text = File.ReadAllText(Path.Combine(Config, file));
@@ -655,14 +648,13 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     "1. Install/Update",
                     "2. Uninstall",
                     "3. Exit")
-            );
+                );
             int key = Convert.ToInt32(Console.ReadLine());
             if (key == 1 || key == 2 || key == 3)
             {
                 return key;
             }
             return 0;
-
         }
 
         private static void Normalize(string file)
@@ -686,7 +678,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
                 return BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).ToLower().Equals(sha512);
+                    .Replace("-", string.Empty).ToLower().Equals(sha512);
             }
         }
 
