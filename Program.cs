@@ -35,6 +35,11 @@ namespace LoLUpdater
         private const string One = "1.0";
         private const string AAir = "Adobe AIR";
         private const string Gme = "Game";
+        private static readonly string CgSum = string.Join(string.Empty,
+                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
+                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
+                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b");
+
         private static readonly bool X64 = Environment.Is64BitProcess;
         private static readonly string AdobePath =
 Path.Combine(X64
@@ -60,7 +65,6 @@ Ver2, One);
                             new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
                                 .ToString()));
         private static readonly bool Riot = Directory.Exists(Rads);
-        private static readonly string[] AdobeFiles = { Path.Combine(Res, Flash), Air };
         private static readonly string[] GarenaCfgFiles = {
 CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 "GamePermanent_en_SG.cfg"
@@ -82,13 +86,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
     ? "Config"
     : Path.Combine(Gme, "DATA", "CFG", "defaults");
         private static int _userInput;
-        private static readonly bool Installing = Convert.ToBoolean(_userInput = 1);
-        private static readonly Uri TbbUri =
-            new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
-                ? "Avx2.dll"
-                : (Avx
-                    ? "Avx.dll"
-                    : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll")));
         private static readonly string TbbSum = Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
@@ -149,68 +146,74 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
         private static void Patch()
         {
-            do
+            // Range of valid inputs
+            if (_userInput < 4 && _userInput > 0)
             {
-                Parallel.ForEach(new[]{
+                // Exit input
+                if (_userInput == 3)
+                {
+                    return;
+                }
+                bool installing = _userInput == 1;
+                do
+                {
+                    Parallel.ForEach(new[]{
             "LoLClient", "LoLLauncher", "LoLPatcher",
             "League of Legends"
         }
-                , t =>
-                {
-                    Parallel.ForEach(
-                        Process.GetProcesses()
-                            .Where(
-                                process =>
-                                    string.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
-                            .AsParallel(), process =>
-                            {
-                                process.Kill();
-                                process.WaitForExit();
-                            });
-                });
-            } while (_notdone);
-            if (Installing)
-            {
-                if (File.Exists(Pmb))
-                {
-                    Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
-                }
-                if (!Directory.Exists(Backup))
-                {
-                    Directory.CreateDirectory(Backup);
-                }
-                if (!Directory.Exists(Path.Combine(Backup, Res)))
-                {
-                    Directory.CreateDirectory(Path.Combine(Backup, Res));
-                }
-            }
-
-            if (_userInput < 3)
-            {
+                    , t =>
+                    {
+                        Parallel.ForEach(
+                            Process.GetProcesses()
+                                .Where(
+                                    process =>
+                                        string.Equals(process.ProcessName, t, StringComparison.CurrentCultureIgnoreCase))
+                                .AsParallel(), process =>
+                                {
+                                    process.Kill();
+                                    process.WaitForExit();
+                                });
+                    });
+                } while (_notdone);
                 Console.WriteLine("Configuring...");
 
                 Parallel.ForEach(GameFiles,
-    file =>
-    {
-        Copy(string.Empty, Game, file, string.Empty, Installing);
-    });
-                Parallel.ForEach(AdobeFiles,
-file =>
-{
-    Copy(string.Empty, Adobe, file, string.Empty, Installing);
-});
-                if (Riot)
-                {
-                    Copy(string.Empty, Config, CfgFile, string.Empty, Installing);
-                }
-                else
-                {
-                    Parallel.ForEach(GarenaCfgFiles,
-                        file => { Copy(string.Empty, Config, file, string.Empty, Installing); });
-                }
+                    file =>
+                    {
+                        Copy(string.Empty, Game, file, string.Empty, installing);
+                    });
+                Copy(string.Empty, Adobe, Air, string.Empty, installing);
+                Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
 
-                if (Installing)
-                {
+                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
+                Parallel.ForEach(GarenaCfgFiles,
+                    file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+
+
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Invalid input");
+                _userInput = DisplayMenu();
+                Patch();
+            }
+            switch (_userInput)
+            {
+                case 1:
+                    Console.WriteLine("Installing...");
+                    if (File.Exists(Pmb))
+                    {
+                        Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
+                    }
+                    if (!Directory.Exists(Backup))
+                    {
+                        Directory.CreateDirectory(Backup);
+                    }
+                    if (!Directory.Exists(Path.Combine(Backup, Res)))
+                    {
+                        Directory.CreateDirectory(Path.Combine(Backup, Res));
+                    }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
                         Process airUpdater = new Process
@@ -229,16 +232,14 @@ file =>
                     else
                     {
                         const string airInstaller = "air15_win.exe";
-                        using (FileStream fileStream = new FileStream(airInstaller, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using (Stream stream = WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                          airInstaller))
+                          .GetResponse()
+                          .GetResponseStream())
                         {
-                            string temp = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                                .Replace("-", string.Empty);
-                            fileStream.Seek(0, SeekOrigin.Begin);
-                            Download(airInstaller,
-                            string.IsNullOrEmpty(temp) ? string.Empty : temp
-                            , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                                airInstaller));
+                            ByteDl(stream, airInstaller);
                         }
+
                         Normalize(airInstaller);
                         Unblock(airInstaller);
                         Process airwin = new Process
@@ -266,110 +267,87 @@ file =>
                         _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
                         .Replace("-", string.Empty);
                     }
-                    if (string.IsNullOrEmpty(_cgBinPath))
-                    {
-                        CgInstall();
-                    }
-                    else
-                    {
-                        if (
-                            new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
+                    if (string.IsNullOrEmpty(_cgBinPath) || new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
                             new Version("3.1.0.13"))
+                    {
+                        const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
+                        using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+                            cgInstaller))
+                          .GetResponse()
+                          .GetResponseStream())
                         {
-                            CgInstall();
+                            ByteDl(stream, cgInstaller);
                         }
+                        Normalize(cgInstaller);
+                        Unblock(cgInstaller);
+
+                        Process cg = new Process
+                        {
+                            StartInfo =
+                                new ProcessStartInfo
+                                {
+                                    FileName =
+                                        cgInstaller,
+                                    Arguments = "/silent /TYPE=compact"
+                                }
+                        };
+                        cg.Start();
+                        cg.WaitForExit();
+
+                        _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
+                            EnvironmentVariableTarget.User);
+                        File.Delete(cgInstaller);
                     }
-                }
-                else
-                {
-                    return;
-                }
-            }
-            switch (_userInput)
-            {
-                case 1:
-                    Console.WriteLine("Installing...");
+
                     Parallel.ForEach(CgFiles, file =>
                     {
                         Copy(_cgBinPath, string.Empty, file, Game, null);
                     });
-                    Parallel.ForEach(AdobeFiles, file =>
-                    {
-                        Copy(AdobePath, string.Empty, file, Adobe, null);
-                    });
+                    Copy(AdobePath, string.Empty, Air, Adobe, null);
+                    Copy(AdobePath, string.Empty, Path.Combine(Res, Flash), Adobe, null);
 
-                    if (!Riot)
+                    Parallel.ForEach(GarenaCfgFiles, Cfg);
+                    using (Stream stream = WebRequest.Create(new Uri(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
+                ? "Avx2.dll"
+                : (Avx
+                    ? "Avx.dll"
+                    : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll"))))
+   .GetResponse()
+   .GetResponseStream())
                     {
-                        Parallel.ForEach(GarenaCfgFiles, Cfg);
+
+
+                        if (File.Exists(Path.Combine(Game, Tbb)))
+                        {
+                            Normalize(Path.Combine(Game, Tbb));
+                            if (!Hash(Path.Combine(Game, Tbb), TbbSum))
+                            {
+                                ByteDl(stream, Path.Combine(Game, Tbb));
+                            }
+                        }
+                        else
+                        {
+                            ByteDl(stream, Path.Combine(Game, Tbb));
+                        }
+                        Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
+                        Unblock(Path.Combine(Game, Tbb));
                     }
-
-                    Download(Path.Combine(Game, Tbb), string.Empty, TbbUri);
                     Cfg(CfgFile);
-                    FinishedPrompt("Done Installing!");
+                    if (Riot & File.Exists("lol.launcher.exe"))
+                    {
+                        Process.Start("lol.launcher.exe");
+                    }
+                    Console.WriteLine("Done Installing/Updating!");
+                    Console.ReadLine();
+                    Environment.Exit(0);
                     break;
 
                 case 2:
-                    Parallel.ForEach(GameFiles,
-                                    file =>
-                                    {
-                                        if (!File.Exists(Path.Combine(Backup, file))) return;
-                                        File.Delete(Path.Combine(Backup, file));
-                                    });
-                    Parallel.ForEach(AdobeFiles,
-                file =>
-                {
-                    if (!File.Exists(Path.Combine(Backup, file))) return;
-                    File.Delete(Path.Combine(Backup, file));
-                });
-                    if (!Riot)
-                    {
-                        Parallel.ForEach(GarenaCfgFiles,
-                            file =>
-                            {
-                                if (!File.Exists(Path.Combine(Backup, file))) return;
-                                File.Delete(Path.Combine(Backup, file));
-                            });
-                    }
-                    if (File.Exists(Path.Combine(Backup, CfgFile)))
-                    { File.Delete(Path.Combine(Backup, CfgFile)); }
-
-                    FinishedPrompt("Done Uninstalling!");
-                    break;
-
-                case 3:
-                    Environment.Exit(0);
+                    Directory.Delete(Backup);
+                    Console.ReadLine();
+                    Console.WriteLine("Done Uninstalling!");
                     break;
             }
-        }
-
-        private static void CgInstall()
-        {
-            const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
-
-            Download(cgInstaller,
-                "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114",
-                new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                    cgInstaller));
-
-            Normalize(cgInstaller);
-            Unblock(cgInstaller);
-
-            Process cg = new Process
-            {
-                StartInfo =
-                    new ProcessStartInfo
-                    {
-                        FileName =
-                            cgInstaller,
-                        Arguments = "/silent /TYPE=compact"
-                    }
-            };
-            cg.Start();
-            cg.WaitForExit();
-
-            _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
-                EnvironmentVariableTarget.User);
-            File.Delete(cgInstaller);
         }
 
         private static void ByteDl(Stream stream, string path)
@@ -409,62 +387,95 @@ file =>
         {
             if (mode.HasValue)
             {
+                string bakDir = Path.Combine(Backup, file);
+                string gameDir = Path.Combine(Game, file);
+                string adobeDir = Path.Combine(Adobe, file);
+
                 if (mode.Value)
                 {
-                    if (path.Equals(Game) & File.Exists(Path.Combine(Game, file)))
+
+                    if (path.Contains(string.Join(string.Empty, CgFiles)) & File.Exists(gameDir))
                     {
-                        Normalize(Path.Combine(Game, file));
-                        Unblock(Path.Combine(Game, file));
-                        File.Copy(Path.Combine(
-                            Game, file)
-                            , Path.Combine(Backup, file),
-                            true);
+                                if (!Hash(file, CgSum))
+                                {
+                                    Normalize(gameDir);
+                                    Unblock(gameDir);
+                                    File.Copy(gameDir
+                                        , bakDir,
+                                        true);
+                                }
+
                     }
-                    if (path.Contains(Adobe) & File.Exists(Path.Combine(Adobe, file)))
+
+                    if (path.Contains(Air) & File.Exists(adobeDir))
                     {
-                        Normalize(Path.Combine(Adobe, file));
-                        Unblock(Path.Combine(Adobe, file));
-                        File.Copy(Path.Combine(
-                            Adobe, file),
-                            Path.Combine(Backup, file),
-                            true);
+                        if (!Hash(file, _airSum))
+                        {
+                            Normalize(adobeDir);
+                            Unblock(adobeDir);
+                            File.Copy(Path.Combine(
+                                Adobe, file)
+                                , bakDir,
+                                true);
+                        }
+
+                    }
+                    if (path.Contains(Flash) & File.Exists(adobeDir))
+                    {
+                        if (!Hash(file, _flashSum))
+                        {
+                            Normalize(adobeDir);
+                            Unblock(adobeDir);
+                            File.Copy(adobeDir
+                                , bakDir,
+                                true);
+                        }
+
                     }
                     if (!path.Equals(Config) | !File.Exists(Path.Combine(Config, file))) return;
+
                     Normalize(Path.Combine(Config, file));
                     Unblock(Path.Combine(Config, file));
                     File.Copy(Path.Combine(
                         Config, file),
-                        Path.Combine(Backup, file),
+                        Path.Combine(
+                        Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".bak")),
                         true);
                 }
                 else
                 {
-                    if (!File.Exists(Path.Combine(Backup, file))) return;
-                    Normalize(Path.Combine(Backup, file));
-                    Unblock(Path.Combine(Backup, file));
-                    if (path.Equals(Game))
+                    if (!File.Exists(bakDir)) return;
+                    Normalize(bakDir);
+                    Unblock(bakDir);
+                    if (path.Equals(gameDir))
                     {
-                        File.Copy(
-                            Path.Combine(Backup, file), Path.Combine(
-                                Game, file),
-                            true);
+                            File.Copy(bakDir, gameDir
+                                ,
+                                true);
                     }
-                    if (path.Contains(Adobe))
+
+                    if (path.Equals(adobeDir))
                     {
-                        File.Copy(Path.Combine(Backup, file),
-                            Path.Combine(
-                                Adobe, file),
-                            true);
+
+                            File.Copy(bakDir, adobeDir
+                                ,
+                                true);
+
                     }
-                    if (!path.Equals(Config)) return;
-                    File.Copy(Path.Combine(Backup, file),
-                        Path.Combine(
-                            Config, file),
-                        true);
+                    if (path.Equals(Path.Combine(Adobe, Res, Flash)))
+                    {
+
+                        File.Copy(bakDir, adobeDir
+                            ,
+                            true);
+
+                    }
                 }
             }
             else
             {
+
+                // Todo: insert checks for Hash here!
                 if (!File.Exists(Path.Combine(@from, file)) | Directory.Exists(to)) return;
                 Normalize(Path.Combine(@from, file));
                 Unblock(Path.Combine(@from, file));
@@ -497,99 +508,22 @@ file =>
 
         private static int DisplayMenu()
         {
-            int num = 0;
             Console.WriteLine(
                 String.Join(Environment.NewLine,
                     "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                     "Select method:",
                     string.Empty,
-                    "1. Install",
+                    "1. Install/Update",
                     "2. Uninstall",
-                    "4. Exit")
+                    "3. Exit")
             );
-            var readLine = Console.ReadLine();
-            if (readLine == null) return num;
-            string result = readLine.Trim();
-            while (!int.TryParse(result, out num) && num < 1 && num > 3)
+            int key = Convert.ToInt32(Console.ReadLine());
+            if (key == 1 || key == 2 || key == 3)
             {
-                Console.WriteLine("{0} is not a valid input. Please try again.", result);
-                result = readLine.Trim();
+                return key;
             }
-            return num;
-        }
+            return 0;
 
-        private static void Download(string file, string sha512, Uri uri)
-        {
-            using (Stream stream = WebRequest.Create(uri)
-    .GetResponse()
-    .GetResponseStream())
-            {
-                    if (File.Exists(file))
-                    {
-                        Normalize(file);
-                        if (!Hash(file, sha512)) return;
-                        ByteDl(stream, file);
-                    }
-                    else
-                    {
-                        ByteDl(stream, file);
-                    }
-                    Unblock(file);
-            }
-        }
-
-        private static void FinishedPrompt(string message)
-        {
-            string permanentSum = string.Join(string.Empty,
-                "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22",
-                "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2",
-                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b",
-                TbbSum);
-
-            Parallel.ForEach(AdobeFiles, file =>
-            {
-                Verify(Adobe, file, string.Join(string.Empty, _airSum, _flashSum
-
-                ));
-            });
-            Parallel.ForEach(GameFiles, file =>
-            {
-                Verify(Game, file, permanentSum);
-            });
-            if (!Riot)
-            {
-                Parallel.ForEach(GarenaCfgFiles, file =>
-                {
-                    if (!File.Exists(file)) return;
-                    CfgVerify(File.ReadAllText(Path.Combine(Config, file)), file);
-                });
-            }
-            else
-            {
-                if (File.Exists(Path.Combine(Config, CfgFile)))
-                {
-                    CfgVerify(File.ReadAllText(Path.Combine(Config, CfgFile)), CfgFile);
-                }
-                Process.Start("lol.launcher.exe");
-            }
-            Console.WriteLine("{0}", message);
-            _notdone = false;
-            Console.ReadLine();
-            Environment.Exit(0);
-        }
-
-        private static void CfgVerify(string text, string file)
-        {
-            Console.WriteLine(
-   text.Contains(Dpm1)
-       ? "DefaultParticleMultiThreading is Enabled in {0}"
-       : "DefaultParticleMultiThreading is Disabled in {0}"
-   , Path.GetFileNameWithoutExtension(file));
-            Console.WriteLine(
-              text.Contains(Dpm1)
-                  ? "EnableParticleOptimization is Enabled in {0}"
-                  : "EnableParticleOptimization is Disabled in {0}"
-              , Path.GetFileNameWithoutExtension(file));
         }
 
         private static void Normalize(string file)
@@ -613,7 +547,7 @@ file =>
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
                 return BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).Equals(sha512);
+                        .Replace("-", string.Empty).ToLower().Equals(sha512);
             }
         }
 
@@ -624,15 +558,6 @@ file =>
             return dir.Length == 1
                 ? dir
                 : Path.GetFileName(Directory.GetDirectories(Path.Combine(Rads, path, path1, Rel)).Max());
-        }
-
-        private static void Verify(string path, string file, string sha512)
-        {
-            Console.WriteLine(
-               Hash(Path.Combine(path, file), sha512)
-                   ? "{0} Is the old patched file or the original"
-                   : "{0} Succesfully patched!"
-               , Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
         }
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
