@@ -43,10 +43,9 @@ namespace LoLUpdater
                 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
                 Ver2, One);
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
-        private static readonly ManagementBaseObject[] CpuInfo =
+        private static readonly IEnumerable<ManagementBaseObject> CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-                .Cast<ManagementBaseObject>()
-              .AsParallel().ToArray();
+                .Cast<ManagementBaseObject>().AsParallel();
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -203,10 +202,7 @@ namespace LoLUpdater
                     {
                         Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
                     }
-                    if (File.Exists(Path.Combine(AdobePath, Air)))
-                    {
-
-                        const string airInstaller = "air15_win.exe";
+                    const string airInstaller = "air15_win.exe";
                         using (
                             Stream stream =
                                 WebRequest.Create(
@@ -229,8 +225,6 @@ namespace LoLUpdater
                         };
                         airwin.Start();
                         airwin.WaitForExit();
-
-                    }
                     AdobeSum(AdobePath);
                     if (string.IsNullOrEmpty(_cgBinPath) ||
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
@@ -279,13 +273,14 @@ namespace LoLUpdater
                             if (!Hash(Path.Combine(Game, Tbb), TbbSum))
                             {
                                 ByteDl(stream, Path.Combine(Game, Tbb));
+                                Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is already the latest lolupdater build");
                             }
                         }
                         else
                         {
                             ByteDl(stream, Path.Combine(Game, Tbb));
+                            Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
                         }
-                        Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
                     }
                     if (Riot)
                     {
@@ -495,77 +490,81 @@ namespace LoLUpdater
             }
             else
             {
-                if (!File.Exists(Path.Combine(@from, file))) return;
                 if (from.Equals(_cgBinPath))
                 {
-                    if (file.Equals(CgFiles[0]))
+                    if (file.Equals(CgFiles[0]) & File.Exists(CgFiles[0]))
                     {
-                        if (Hash(Path.Combine(@from, file), cgSum[0]))
+                        if (Hash(Path.Combine(Game, CgFiles[0]), cgSum[0]))
                         {
-                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                                Path.GetFileNameWithoutExtension(gameDir));
+                            CgPrompt(CgFiles[0]);
                         }
                         else
                         {
-                            CgCheck(@from, file, to, gameDir);
+                            CgCheck(CgFiles[0], Game);
                         }
                     }
-                    if (file.Equals(CgFiles[1]))
+                    if (file.Equals(CgFiles[1]) & File.Exists(CgFiles[1]))
                     {
-                        if (Hash(Path.Combine(@from, file), cgSum[1]))
+                        if (Hash(Path.Combine(Game, CgFiles[1]), cgSum[1]))
                         {
-                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                                Path.GetFileNameWithoutExtension(gameDir));
+                            CgPrompt(CgFiles[1]);
                         }
                         else
                         {
-                            CgCheck(@from, file, to, gameDir);
+                            CgCheck(CgFiles[2], Game);
                         }
                     }
-                    if (file.Equals(CgFiles[2]))
+                    if (file.Equals(CgFiles[2]) & File.Exists(CgFiles[2]))
                     {
-                        if (Hash(Path.Combine(@from, file), cgSum[2]))
+                        if (Hash(Path.Combine(Game, CgFiles[2]), cgSum[2]))
                         {
-                            Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                                Path.GetFileNameWithoutExtension(gameDir));
+                            CgPrompt(CgFiles[2]);
                         }
                         else
                         {
-                            CgCheck(@from, file, to, gameDir);
+                            CgCheck(CgFiles[2], Game);
                         }
                     }
                 }
                 if (file.Equals(Air))
                 {
-                    if (Hash(Path.Combine(@from, Air), _airSum))
+                    string airPath = Path.Combine(@from, Air);
+                    if (Hash(airPath, _airSum))
                     {
-                        Console.WriteLine("{0} Is the latest BETA version",
+                        Console.WriteLine("{0} Is already the latest BETA",
                             Path.GetFileNameWithoutExtension(adobeDir));
                     }
                     else
                     {
-                        FileFix(Path.Combine(@from, file));
-                        File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                        FileFix(Path.Combine(@from, file));
-                        Console.WriteLine("{0} Is the latest BETA version",
+                        FileFix(airPath);
+                        File.Copy(airPath, Path.Combine(to, Air), true);
+                        FileFix(airPath);
+                        Console.WriteLine("{0} Is the latest BETA",
                             Path.GetFileNameWithoutExtension(adobeDir));
                     }
                 }
                 if (!file.Contains(Flash)) return;
-                if (Hash(Path.Combine(@from, Air), _airSum))
+                string flashPath = Path.Combine(@from, Res, Flash);
+                if (Hash(flashPath, _flashSum))
                 {
-                    Console.WriteLine("{0} Is the latest BETA version",
+                    Console.WriteLine("{0} Is already the latest BETA",
                         Path.GetFileNameWithoutExtension(adobeDir));
                 }
                 else
                 {
-                    FileFix(Path.Combine(@from, file));
-                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                    FileFix(Path.Combine(@from, file));
-                    Console.WriteLine("{0} Is the latest BETA version",
+                    FileFix(flashPath);
+                    File.Copy(flashPath, Path.Combine(to, Air), true);
+                    FileFix(flashPath);
+                    Console.WriteLine("{0} Is the latest BETA",
                         Path.GetFileNameWithoutExtension(adobeDir));
                 }
             }
+        }
+
+        private static void CgPrompt(string file)
+        {
+            Console.WriteLine("The file {0} from Cg Toolkit is already the latest verison",
+                Path.GetFileNameWithoutExtension(Path.Combine(Game, file)));
         }
 
         private static void FileFix(string file)
@@ -579,12 +578,12 @@ namespace LoLUpdater
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
-        private static void CgCheck(string @from, string file, string to, string gameDir)
+        private static void CgCheck(string file, string to)
         {
-            FileFix(Path.Combine(@from, file));
-            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+            FileFix(Path.Combine(_cgBinPath, file));
+            File.Copy(Path.Combine(_cgBinPath, file), Path.Combine(to, file), true);
             Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
-                Path.GetFileNameWithoutExtension(gameDir));
+                Path.GetFileNameWithoutExtension(Path.Combine(Game, file)));
         }
         private static void Cfg(string file)
         {
