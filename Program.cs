@@ -46,7 +46,7 @@ namespace LoLUpdater
         private static readonly ManagementBaseObject[] CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
                 .Cast<ManagementBaseObject>()
-                .AsParallel().ToArray();
+              .AsParallel().ToArray();
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -56,10 +56,11 @@ namespace LoLUpdater
         private static readonly bool Avx2 =
             CpuInfo.Any(
                 item =>
-                    item["Name"].ToString()
-                        .Contains(
-                            new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
-                                .ToString()));
+                   item["Name"].ToString()
+                      .Contains(
+        
+                      new List<string>(new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }).AsParallel()
+                          .ToString()));
         private static readonly bool Riot = Directory.Exists(Rads);
         private static readonly string[] GarenaCfgFiles =
         {
@@ -204,22 +205,7 @@ namespace LoLUpdater
                     }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
-                        Process airUpdater = new Process
-                        {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        Path.Combine(AdobePath, Res, "Adobe AIR Updater.exe"),
-                                    Arguments = "-silent"
-                                }
-                        };
-                        airUpdater.Start();
-                        airUpdater.WaitForExit();
-                    }
-                    else
-                    {
-                        // Redownloads Adobe Air Installer regardless if it already exists in the exe directory (gets beta updates faster but requires more bandwidth)
+
                         const string airInstaller = "air15_win.exe";
                         using (
                             Stream stream =
@@ -243,6 +229,7 @@ namespace LoLUpdater
                         };
                         airwin.Start();
                         airwin.WaitForExit();
+
                     }
                     AdobeSum(AdobePath);
                     if (string.IsNullOrEmpty(_cgBinPath) ||
@@ -346,18 +333,18 @@ namespace LoLUpdater
             }
         }
 
-        private static void CgStart2(string cgInstaller)
+        private static void CgStart2(string path)
         {
             using (Stream stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                cgInstaller))
+                path))
                 .GetResponse()
                 .GetResponseStream())
             {
-                ByteDl(stream, cgInstaller);
+                ByteDl(stream, path);
             }
-            CgStart(cgInstaller);
+            CgStart(path);
         }
-        private static void CgStart(string cgInstaller)
+        private static void CgStart(string path)
         {
             Process cg = new Process
             {
@@ -365,7 +352,7 @@ namespace LoLUpdater
                     new ProcessStartInfo
                     {
                         FileName =
-                            cgInstaller,
+                            path,
                         Arguments = "/silent /TYPE=compact"
                     }
             };
@@ -601,8 +588,7 @@ namespace LoLUpdater
         }
         private static void Cfg(string file)
         {
-            bool multiCore =
-                CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
+            bool multiCore = CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"].ToString())) > 1;
             if (!File.Exists(Path.Combine(Config, file))) return;
             FileFix(Path.Combine(Config, file));
             string text = File.ReadAllText(Path.Combine(Config, file));
