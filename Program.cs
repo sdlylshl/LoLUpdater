@@ -378,7 +378,7 @@ namespace LoLUpdater
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                byte[] buffer = new byte[8192];
+                byte[] buffer = new byte[4096];
                 int count;
                 do
                 {
