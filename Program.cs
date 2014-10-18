@@ -221,6 +221,7 @@ namespace LoLUpdater
                                     Arguments = "-silent"
                                 }
                         };
+                        Console.SetOut(TextWriter.Null);
                         airwin.Start();
                         airwin.WaitForExit();
                     AdobeSum(AdobePath);
@@ -287,7 +288,7 @@ namespace LoLUpdater
                     {
                         Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
-                    Console.WriteLine("Done Installing/Updating!");
+                    Console.Out.WriteLine("Done Installing/Updating!");
                     _notdone = false;
                     Console.ReadLine();
                     Environment.Exit(0);
@@ -295,7 +296,7 @@ namespace LoLUpdater
                 case 2:
                     Directory.Delete(Backup);
                     Console.ReadLine();
-                    Console.WriteLine("Done Uninstalling!");
+                    Console.Out.WriteLine("Done Uninstalling!");
                     _notdone = false;
                     break;
                 case 3:
