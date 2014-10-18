@@ -188,15 +188,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
 
 
-                if (Riot)
-                { Copy(string.Empty, Config, CfgFile, string.Empty, installing); }
-                else
-                {
-                    Parallel.ForEach(GarenaCfgFiles,
-                      file => { Copy(string.Empty, Config, file, string.Empty, installing); });
-                }
+                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
 
-
+                Parallel.ForEach(GarenaCfgFiles,
+                  file => { Copy(string.Empty, Config, file, string.Empty, installing); });
 
             }
             else
@@ -473,12 +468,12 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         }
 
                     }
-                    if (!path.Equals(configDir) | !File.Exists(configDir)) return;
+                    if (!(path.Contains(Config) & File.Exists(configDir))) return;
                     Normalize(configDir);
                     Unblock(configDir);
                     File.Copy(configDir,
                         Path.Combine(
-                            Config, Path.GetFileNameWithoutExtension(file) + DateTime.Now + ".bak"),
+                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(configDir), ".bak")),
                         true);
                 }
                 else
@@ -501,14 +496,10 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                             true);
 
                     }
-                    if (path.Equals(Path.Combine(Adobe, Res, Flash)))
-                    {
-
-                        File.Copy(bakDir, adobeDir
-                            ,
-                            true);
-
-                    }
+                    if (!path.Equals(Path.Combine(Adobe, Res, Flash))) return;
+                    File.Copy(bakDir, adobeDir
+                        ,
+                        true);
                 }
             }
             else
@@ -556,43 +547,38 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
                     }
                 }
-                if (from.Equals(AdobePath))
+                if (!@from.Equals(AdobePath)) return;
+                if (file.Contains(Air))
                 {
-                    if (file.Contains(Air))
+                    if (Hash(Path.Combine(@from, Air), _airSum))
                     {
-                        if (Hash(Path.Combine(@from, Air), _airSum))
-                        {
-                            Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(adobeDir));
-                        }
-                        else
-                        {
-                            Normalize(Path.Combine(@from, file));
-                            Unblock(Path.Combine(@from, file));
-                            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                            Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(adobeDir));
-                        }
+                        Console.WriteLine("{0} Is the latest BETA version",
+                            Path.GetFileNameWithoutExtension(adobeDir));
                     }
-
-                    if (file.Contains(Flash))
+                    else
                     {
-                        if (Hash(Path.Combine(@from, Air), _airSum))
-                        {
-                            Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(adobeDir));
-                        }
-                        else
-                        {
-                            Normalize(Path.Combine(@from, file));
-                            Unblock(Path.Combine(@from, file));
-                            File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
-                            Console.WriteLine("{0} Is the latest BETA version",
-                                Path.GetFileNameWithoutExtension(adobeDir));
-                        }
+                        Normalize(Path.Combine(@from, file));
+                        Unblock(Path.Combine(@from, file));
+                        File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                        Console.WriteLine("{0} Is the latest BETA version",
+                            Path.GetFileNameWithoutExtension(adobeDir));
                     }
                 }
 
+                if (!file.Contains(Flash)) return;
+                if (Hash(Path.Combine(@from, Air), _airSum))
+                {
+                    Console.WriteLine("{0} Is the latest BETA version",
+                        Path.GetFileNameWithoutExtension(adobeDir));
+                }
+                else
+                {
+                    Normalize(Path.Combine(@from, file));
+                    Unblock(Path.Combine(@from, file));
+                    File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                    Console.WriteLine("{0} Is the latest BETA version",
+                        Path.GetFileNameWithoutExtension(adobeDir));
+                }
             }
 
 
