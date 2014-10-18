@@ -403,86 +403,45 @@ namespace LoLUpdater
                 {
                     if ((file.Equals(CgFiles[0]) & File.Exists(dir)) && !Hash(dir, cgSum[0]))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , bakDir,
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, bakDir);
                     }
                     if ((file.Equals(CgFiles[1]) & File.Exists(dir)) && !Hash(dir, cgSum[1]))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , bakDir,
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, bakDir);
                     }
                     if ((file.Equals(CgFiles[2]) & File.Exists(dir)) && !Hash(dir, cgSum[2]))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , bakDir,
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, bakDir);
                     }
                     if ((file.Equals(Tbb) & File.Exists(dir)) && !Hash(dir, TbbSum))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , bakDir,
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, bakDir);
                     }
                     if ((file.Equals(Air) & File.Exists(dir)) && !Hash(dir, _airSum))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , bakDir,
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, bakDir);
                     }
                     if ((file.Contains(Flash) & !File.Exists(dir)) && !Hash(dir, _flashSum))
                     {
-                        FileFix(dir);
-                        File.Copy(dir
-                            , Path.Combine(Backup, Path.GetFileName(file)),
-                            true);
-                        FileFix(bakDir);
+                        QuickCopy(dir, Path.Combine(Backup, Path.GetFileName(file)));
                     }
                     if ((!path.Equals(Config) | !File.Exists(dir))) return;
-                    FileFix(dir);
-                    File.Copy(dir,
-                        Path.Combine(
-                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")),
-                        true);
-                    FileFix(dir);
+                    QuickCopy(dir, Path.Combine(
+                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")));
                 }
                 else
                 {
                     FileFix(bakDir);
                     if (path.Equals(Game) & File.Exists(bakDir))
                     {
-                        FileFix(bakDir);
-                        File.Copy(bakDir, dir
-                            ,
-                            true);
-                        FileFix(dir);
+                        QuickCopy(bakDir, dir);
                     }
                     if (file.Equals(Air) & File.Exists(bakDir))
                     {
-                        FileFix(bakDir);
-                        File.Copy(Backup, dir
-                            ,
-                            true);
-                        FileFix(dir);
+                        QuickCopy(bakDir, dir);
                     }
                     if (!file.Contains(Flash) | !File.Exists(bakDir)) return;
-                    string flashBackup = Path.Combine(Backup, Path.GetFileName(file));
-                    FileFix(flashBackup);
-                    File.Copy(flashBackup, dir
-                        ,
-                        true);
-                    FileFix(dir);
+                    QuickCopy(Path.Combine(Backup, Path.GetFileName(file)), dir);
                 }
             }
             else
@@ -508,10 +467,17 @@ namespace LoLUpdater
                     FileFix(toDir);
                 }
                 if (!file.Contains(Flash) | !File.Exists(dir) || Hash(toDir, _flashSum)) return;
-                FileFix(dir);
-                File.Copy(dir, toDir, true);
-                FileFix(toDir);
+                QuickCopy(dir, toDir);
             }
+        }
+
+        private static void QuickCopy(string from, string to)
+        {
+            FileFix(from);
+            File.Copy(from
+                , to,
+                true);
+            FileFix(to);
         }
 
         private static void FileFix(string file)
@@ -525,11 +491,9 @@ namespace LoLUpdater
             DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
-        private static void CgCheck(string path, string path1)
+        private static void CgCheck(string from, string to)
         {
-            FileFix(path);
-            File.Copy(path, path1, true);
-            FileFix(path1);
+            QuickCopy(from, to);
         }
         private static void Cfg(string file)
         {
