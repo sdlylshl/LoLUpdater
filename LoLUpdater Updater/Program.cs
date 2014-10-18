@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,18 +74,12 @@ namespace LoLUpdater_Updater
 
         private static bool Sha512(string sha512)
         {
-            using (FileStream fs = new FileStream("LoLUpdater.exe", FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fileStream = new FileStream("LoLUpdater.exe", FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                StringBuilder sb = new StringBuilder();
-
-                fs.Seek(0, SeekOrigin.Begin);
-
-                Parallel.ForEach(SHA512.Create().ComputeHash(fs), b =>
-                {
-                    sb.Append(b.ToString("x2"));
-                });
-
-                return Encoding.ASCII.GetBytes(sb.ToString()).Where((t, i) => t != Encoding.ASCII.GetBytes(sha512)[i]).AsParallel().Any();
+                fileStream.Seek(0, SeekOrigin.Begin);
+                return
+                    BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                        .Replace("-", string.Empty) != sha512;
             }
         }
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -122,7 +123,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 if (stream == null) return;
                 using (StreamReader streamReader = new StreamReader(stream))
                 {
-                    if (Hash("LoLUpdater.exe",
+                    if (Hash(Assembly.GetEntryAssembly().Location,
                         streamReader.ReadToEnd()))
                     {
                         using (
@@ -145,7 +146,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                                     OutputAssembly = "LoLUpdater Updater.exe"
                                 };
                                 parameters.ReferencedAssemblies.Add("System.dll");
-                                parameters.ReferencedAssemblies.Add("System.Core.dll");
 
                                 using (StreamReader streamReader2 = new StreamReader(stream2))
                                 {
