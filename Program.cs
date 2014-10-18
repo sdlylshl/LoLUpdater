@@ -1,18 +1,14 @@
-using Microsoft.CSharp;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
-// using System.Threading;
 using System.Threading.Tasks;
 
 namespace LoLUpdater
@@ -74,15 +70,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
         // Note: Checksums are in SHA512
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
-        private static readonly string TbbSum = Avx2
-            ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
-            : (Avx
-                ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
-                : (Sse2
-                    ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64"
-                    : Sse
-                        ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
-                        : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
+
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
                 One)
@@ -101,6 +89,15 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 : (Avx
                     ? "Avx.dll"
                     : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll")));
+        private static readonly string TbbSum = Avx2
+            ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
+            : (Avx
+                ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
+                : (Sse2
+                    ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64"
+                    : Sse
+                        ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
+                        : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
         private static string _airSum;
         private static string _flashSum;
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
@@ -113,65 +110,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
             if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(mutex);
-            const string updater = "LoLUpdater Updater.exe";
-            using (
-                Stream stream =
-                    WebRequest.Create(new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/SHA512.txt"))
-                        .GetResponse()
-                        .GetResponseStream())
-            {
-                if (stream == null) return;
-                using (StreamReader streamReader = new StreamReader(stream))
-                {
-                    if (Hash(Assembly.GetEntryAssembly().Location,
-                        streamReader.ReadToEnd()))
-                    {
-                        using (
-                            Stream stream2 =
-                                WebRequest.Create(
-                                    new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Temp.txt"))
-                                    .GetResponse()
-                                    .GetResponseStream())
-                        {
-                            if (stream2 == null) return;
-                            using (CSharpCodeProvider cscp = new CSharpCodeProvider())
-                            {
-                                CompilerParameters parameters = new CompilerParameters
-                                {
-                                    GenerateInMemory = false,
-                                    GenerateExecutable = true,
-                                    IncludeDebugInformation = false,
-                                    CompilerOptions = "/optimize",
-                                    TempFiles = new TempFileCollection(".", false),
-                                    OutputAssembly = updater
-                                };
-                                parameters.ReferencedAssemblies.Add("System.dll");
-                                parameters.ReferencedAssemblies.Add("System.Core.dll");
-
-                                using (StreamReader streamReader2 = new StreamReader(stream2))
-                                {
-                                    CompilerResults result = cscp.CompileAssemblyFromSource(parameters,
-                                        streamReader2.ReadToEnd());
-                                    foreach (CompilerError ce in result.Errors)
-                                    {
-                                        Console.WriteLine(ce.ErrorNumber + ": " + ce.ErrorText);
-                                    }
-                                    Normalize(result.PathToAssembly);
-                                    Unblock(result.PathToAssembly);
-                                    Process.Start(result.PathToAssembly);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (File.Exists(updater))
-                        {
-                            File.Delete(updater);
-                        }
-                    }
-                }
-            }
 
             if (args.Length > 0)
             {
@@ -299,7 +237,7 @@ file =>
                             Download(airInstaller,
                             string.IsNullOrEmpty(temp) ? string.Empty : temp
                             , new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                                airInstaller), string.Empty);
+                                airInstaller));
                         }
                         Normalize(airInstaller);
                         Unblock(airInstaller);
@@ -320,13 +258,13 @@ file =>
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).ToLower();
+                        .Replace("-", string.Empty);
                     }
                     using (FileStream fileStream = new FileStream(Path.Combine(AdobePath, Res, Flash), FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         fileStream.Seek(0, SeekOrigin.Begin);
                         _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).ToLower();
+                        .Replace("-", string.Empty);
                     }
                     if (string.IsNullOrEmpty(_cgBinPath))
                     {
@@ -365,7 +303,7 @@ file =>
                         Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
 
-                    Download(Tbb, TbbSum, TbbUri, Game);
+                    Download(Path.Combine(Game, Tbb), string.Empty, TbbUri);
                     Cfg(CfgFile);
                     FinishedPrompt("Done Installing!");
                     break;
@@ -411,7 +349,7 @@ file =>
             Download(cgInstaller,
                 "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114",
                 new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                    cgInstaller), string.Empty);
+                    cgInstaller));
 
             Normalize(cgInstaller);
             Unblock(cgInstaller);
@@ -580,40 +518,23 @@ file =>
             return num;
         }
 
-        private static void Download(string file, string sha512, Uri uri, string path)
+        private static void Download(string file, string sha512, Uri uri)
         {
             using (Stream stream = WebRequest.Create(uri)
     .GetResponse()
     .GetResponseStream())
             {
-                if (string.IsNullOrEmpty(path))
-                {
-                    if (!File.Exists(file))
-                    {
-                        ByteDl(stream, file);
-                    }
-                    else
+                    if (File.Exists(file))
                     {
                         Normalize(file);
                         if (!Hash(file, sha512)) return;
                         ByteDl(stream, file);
                     }
-                    Unblock(file);
-                }
-                else
-                {
-                    if (!File.Exists(Path.Combine(Game, Tbb)))
-                    {
-                        ByteDl(stream, Path.Combine(Game, Tbb));
-                    }
                     else
                     {
-                        Normalize(Path.Combine(Game, Tbb));
-                        if (!Hash(Path.Combine(Game, Tbb), TbbSum)) return;
-                        ByteDl(stream, Path.Combine(Game, Tbb));
+                        ByteDl(stream, file);
                     }
-                    Unblock(Path.Combine(Game, Tbb));
-                }
+                    Unblock(file);
             }
         }
 
@@ -659,17 +580,16 @@ file =>
 
         private static void CfgVerify(string text, string file)
         {
-
-                        Console.WriteLine(
-               text.Contains(Dpm1)
-                   ? "DefaultParticleMultiThreading is Enabled in {0}"
-                   : "DefaultParticleMultiThreading is Disabled in {0}"
-               , Path.GetFileNameWithoutExtension(file));
-             Console.WriteLine(
-               text.Contains(Dpm1)
-                   ? "EnableParticleOptimization is Enabled in {0}"
-                   : "EnableParticleOptimization is Disabled in {0}"
-               , Path.GetFileNameWithoutExtension(file));
+            Console.WriteLine(
+   text.Contains(Dpm1)
+       ? "DefaultParticleMultiThreading is Enabled in {0}"
+       : "DefaultParticleMultiThreading is Disabled in {0}"
+   , Path.GetFileNameWithoutExtension(file));
+            Console.WriteLine(
+              text.Contains(Dpm1)
+                  ? "EnableParticleOptimization is Enabled in {0}"
+                  : "EnableParticleOptimization is Disabled in {0}"
+              , Path.GetFileNameWithoutExtension(file));
         }
 
         private static void Normalize(string file)
@@ -692,12 +612,8 @@ file =>
             using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
-                Console.WriteLine(BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).ToLower());
-                Console.ReadLine();
-                return
-                    BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                        .Replace("-", string.Empty).ToLower().Equals(sha512);
+                return BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                        .Replace("-", string.Empty).Equals(sha512);
             }
         }
 
@@ -714,8 +630,8 @@ file =>
         {
             Console.WriteLine(
                Hash(Path.Combine(path, file), sha512)
-                   ? "{0} Succesfully patched!"
-                   : "{0} Is the old patched file or the original"
+                   ? "{0} Is the old patched file or the original"
+                   : "{0} Succesfully patched!"
                , Path.GetFileNameWithoutExtension(Path.Combine(path, file)));
         }
 
