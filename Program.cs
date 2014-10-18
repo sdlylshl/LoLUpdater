@@ -137,12 +137,6 @@ namespace LoLUpdater
         }
         private static void Patch()
         {
-            if (_userInput < 4 && _userInput > 0)
-            {
-                if (_userInput == 3)
-                {
-                    return;
-                }
                 bool installing = _userInput == 1;
                 do
                 {
@@ -176,18 +170,15 @@ namespace LoLUpdater
                 Copy(string.Empty, Game, Tbb, string.Empty, installing);
                 Copy(string.Empty, Adobe, Air, string.Empty, installing);
                 Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
-                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
-                Parallel.ForEach(GarenaCfgFiles,
-                    file => { Copy(string.Empty, Config, file, string.Empty, installing); });
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine("Invalid input");
-                _userInput = DisplayMenu();
-                Console.Clear();
-                Patch();
-            }
+                if (Riot)
+                {
+                    Copy(string.Empty, Config, CfgFile, string.Empty, installing);
+                }
+                else
+                {
+                    Parallel.ForEach(GarenaCfgFiles,
+                       file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+                }
             switch (_userInput)
             {
                 case 1:
@@ -281,7 +272,6 @@ namespace LoLUpdater
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
                     Copy(AdobePath, string.Empty, Air, Adobe, null);
                     Copy(AdobePath, string.Empty, Path.Combine(Res, Flash), Adobe, null);
-                    Parallel.ForEach(GarenaCfgFiles, Cfg);
                     using (
                         Stream stream =
                             WebRequest.Create(new Uri(
@@ -308,10 +298,14 @@ namespace LoLUpdater
                         Console.WriteLine("Intel Threading Building Blocks (tbb.dll) is the latest lolupdater build");
                         Unblock(Path.Combine(Game, Tbb));
                     }
-                    Cfg(CfgFile);
-                    if (Riot & File.Exists("lol.launcher.exe"))
+                    if (Riot)
                     {
+                        Cfg(CfgFile);
                         Process.Start("lol.launcher.exe");
+                    }
+                    else
+                    {
+                        Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
                     Console.WriteLine("Done Installing/Updating!");
                     _notdone = false;
@@ -323,6 +317,9 @@ namespace LoLUpdater
                     Console.ReadLine();
                     Console.WriteLine("Done Uninstalling!");
                     _notdone = false;
+                    break;
+                case 3:
+                    Environment.Exit(0);
                     break;
             }
         }
@@ -355,7 +352,6 @@ namespace LoLUpdater
             cg.WaitForExit();
             _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
                 EnvironmentVariableTarget.User);
-            File.Delete(cgInstaller);
         }
         private static void ByteDl(Stream stream, string path)
         {
@@ -406,77 +402,55 @@ namespace LoLUpdater
                 string configDir = Path.Combine(Config, file);
                 if (mode.Value)
                 {
-                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir))
+                    if (path.Contains(CgFiles[0]) & File.Exists(gameDir) && !Hash(file, cgSum[0]))
                     {
-                        if (!Hash(file, cgSum[0]))
-                        {
-                            Normalize(gameDir);
-                            Unblock(gameDir);
-                            File.Copy(gameDir
-                                , bakDir,
-                                true);
-                        }
+                        Normalize(gameDir);
+                        Unblock(gameDir);
+                        File.Copy(gameDir
+                            , bakDir,
+                            true);
                     }
-                    if (path.Contains(CgFiles[1]) & File.Exists(gameDir))
+                    if (path.Contains(CgFiles[1]) & File.Exists(gameDir) && !Hash(file, cgSum[1]))
                     {
-                        if (!Hash(file, cgSum[1]))
-                        {
-                            Normalize(gameDir);
-                            Unblock(gameDir);
-                            File.Copy(gameDir
-                                , bakDir,
-                                true);
-                        }
+                        Normalize(gameDir);
+                        Unblock(gameDir);
+                        File.Copy(gameDir
+                            , bakDir,
+                            true);
                     }
-                    if (path.Contains(CgFiles[2]) & File.Exists(gameDir))
+                    if (path.Contains(CgFiles[2]) & File.Exists(gameDir) && !Hash(file, cgSum[2]))
                     {
-                        if (!Hash(file, cgSum[2]))
-                        {
-                            Normalize(gameDir);
-                            Unblock(gameDir);
-                            File.Copy(gameDir
-                                , bakDir,
-                                true);
-                        }
+                        Normalize(gameDir);
+                        Unblock(gameDir);
+                        File.Copy(gameDir
+                            , bakDir,
+                            true);
                     }
-                    if (path.Contains(Tbb) & File.Exists(gameDir))
+                    if (path.Contains(Tbb) & File.Exists(gameDir) && !Hash(file, TbbSum))
                     {
-                        Console.WriteLine("You are here 1");
-                        if (!Hash(file, TbbSum))
-                        {
-                            Console.WriteLine("You are here 2");
-                            Normalize(gameDir);
-                            Unblock(gameDir);
-                            File.Copy(gameDir
-                                , bakDir,
-                                true);
-                        }
+                        Normalize(gameDir);
+                        Unblock(gameDir);
+                        File.Copy(gameDir
+                            , bakDir,
+                            true);
                     }
-                    if (path.Contains(Air) & File.Exists(adobeDir))
+                    if (path.Contains(Air) & File.Exists(adobeDir) && !Hash(file, _airSum))
                     {
-                        Console.WriteLine("You are here ");
-                        if (!Hash(file, _airSum))
-                        {
-                            Normalize(adobeDir);
-                            Unblock(adobeDir);
-                            File.Copy(adobeDir
-                                , bakDir,
-                                true);
-                        }
+                        Normalize(adobeDir);
+                        Unblock(adobeDir);
+                        File.Copy(adobeDir
+                            , bakDir,
+                            true);
                     }
-                    if (path.Contains(Flash) & File.Exists(adobeDir))
+                    if (path.Contains(Flash) & File.Exists(adobeDir) && !Hash(file, _flashSum))
                     {
-                        Console.Write("Test");
-                        if (!Hash(file, _flashSum))
-                        {
-                            Normalize(adobeDir);
-                            Unblock(adobeDir);
-                            File.Copy(adobeDir
-                                , Path.Combine(Backup, file),
-                                true);
-                        }
+                        Normalize(adobeDir);
+                        Unblock(adobeDir);
+                        File.Copy(adobeDir
+                            , Path.Combine(Backup, file),
+                            true);
                     }
-                    if (!(path.Contains(Config) & File.Exists(configDir))) return;
+                    if (!path.Contains(Config) | !File.Exists(configDir)) return;
                     Normalize(configDir);
                     Unblock(configDir);
                     File.Copy(configDir,
@@ -612,24 +586,22 @@ namespace LoLUpdater
             File.WriteAllText(Path.Combine(Config, file), text);
             Unblock(Path.Combine(Config, file));
         }
+
         private static int DisplayMenu()
         {
-            Console.WriteLine(
-                String.Join(Environment.NewLine,
-                    "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
-                    "Select method:",
-                    string.Empty,
-                    "1. Install/Update",
-                    "2. Uninstall",
-                    "3. Exit")
-                );
-            int key = Convert.ToInt32(Console.ReadLine());
-            if (key == 1 || key == 2 || key == 3)
+            while (true)
             {
-                return key;
+                Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
+                int key = Convert.ToInt32(Console.ReadLine());
+                if (key == 1 || key == 2 || key == 3)
+                {
+                    return key;
+                }
+                Console.Clear();
+                Console.WriteLine("Invalid input");
             }
-            return 0;
         }
+
         private static void Normalize(string file)
         {
             if (new FileInfo(file).Attributes
