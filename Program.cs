@@ -129,18 +129,10 @@ namespace LoLUpdater
                     Console.Clear();
                     Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
                     string input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input))
+                    if (input != null && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
                     {
                         int key = Convert.ToInt32(input);
-                        if (key == 1 || key == 2 || key == 3)
-                        {
-                            _userInput = key;
-                        }
-                        else
-                        {
-                            Main(args);
-                        }
-                        if (_userInput != key) return;
+                        _userInput = key;
                         Console.Clear();
                         Patch();
                     }
