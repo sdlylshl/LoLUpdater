@@ -210,10 +210,6 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     {
                         Directory.CreateDirectory(Backup);
                     }
-                    if (!Directory.Exists(Path.Combine(Backup, Res)))
-                    {
-                        Directory.CreateDirectory(Path.Combine(Backup, Res));
-                    }
                     if (File.Exists(Path.Combine(AdobePath, Air)))
                     {
                         Process airUpdater = new Process
@@ -338,6 +334,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                         Process.Start("lol.launcher.exe");
                     }
                     Console.WriteLine("Done Installing/Updating!");
+                    _notdone = false;
                     Console.ReadLine();
                     Environment.Exit(0);
                     break;
@@ -346,6 +343,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Directory.Delete(Backup);
                     Console.ReadLine();
                     Console.WriteLine("Done Uninstalling!");
+                    _notdone = false;
                     break;
             }
         }
@@ -396,14 +394,14 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
 
                     if (path.Contains(string.Join(string.Empty, CgFiles)) & File.Exists(gameDir))
                     {
-                                if (!Hash(file, CgSum))
-                                {
-                                    Normalize(gameDir);
-                                    Unblock(gameDir);
-                                    File.Copy(gameDir
-                                        , bakDir,
-                                        true);
-                                }
+                        if (!Hash(file, CgSum))
+                        {
+                            Normalize(gameDir);
+                            Unblock(gameDir);
+                            File.Copy(gameDir
+                                , bakDir,
+                                true);
+                        }
 
                     }
 
@@ -439,7 +437,7 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     File.Copy(Path.Combine(
                         Config, file),
                         Path.Combine(
-                        Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".bak")),
+                        Config, string.Format("{0}{1}{2}", Path.GetFileNameWithoutExtension(file), DateTime.Now, ".bak")),
                         true);
                 }
                 else
@@ -449,17 +447,17 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                     Unblock(bakDir);
                     if (path.Equals(gameDir))
                     {
-                            File.Copy(bakDir, gameDir
-                                ,
-                                true);
+                        File.Copy(bakDir, gameDir
+                            ,
+                            true);
                     }
 
                     if (path.Equals(adobeDir))
                     {
 
-                            File.Copy(bakDir, adobeDir
-                                ,
-                                true);
+                        File.Copy(bakDir, adobeDir
+                            ,
+                            true);
 
                     }
                     if (path.Equals(Path.Combine(Adobe, Res, Flash)))
@@ -474,12 +472,39 @@ CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
             }
             else
             {
-
-                // Todo: insert checks for Hash here!
-                if (!File.Exists(Path.Combine(@from, file)) | Directory.Exists(to)) return;
+                if (!File.Exists(Path.Combine(@from, file)) | !Directory.Exists(to)) return;
                 Normalize(Path.Combine(@from, file));
                 Unblock(Path.Combine(@from, file));
                 File.Copy(Path.Combine(@from, file), Path.Combine(to, file), true);
+                if (from.Equals(_cgBinPath))
+                {
+                    if (Hash(file, CgSum))
+                    {
+                        Console.WriteLine("The file {0} from Cg Toolkit is the latest verison",
+                            Path.GetFileNameWithoutExtension(file));
+                    }
+
+                }
+                else
+                {
+                    if (path.Contains(Air))
+                    {
+                        if (Hash(file, _airSum))
+                        {
+                            Console.WriteLine("{0} Is the latest BETA version",
+                                Path.GetFileNameWithoutExtension(file));
+                        }
+                    }
+                    else
+                    {
+                        if (Hash(file, _flashSum))
+                        {
+                            Console.WriteLine("{0} Is the latest BETA version",
+                                Path.GetFileNameWithoutExtension(file));
+                        }
+                    }
+
+                }
             }
         }
 
