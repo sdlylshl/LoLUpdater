@@ -497,23 +497,7 @@ namespace LoLUpdater
                 string bakDir = Path.Combine(Backup, file);
                 if (mode.Value)
                 {
-                    if ((file.Equals(CgFiles[0]) & File.Exists(dir)) && !Hash(dir, cgSum[0]))
-                    {
-                        QuickCopy(dir, bakDir);
-                    }
-                    if ((file.Equals(CgFiles[1]) & File.Exists(dir)) && !Hash(dir, cgSum[1]))
-                    {
-                        QuickCopy(dir, bakDir);
-                    }
-                    if ((file.Equals(CgFiles[2]) & File.Exists(dir)) && !Hash(dir, cgSum[2]))
-                    {
-                        QuickCopy(dir, bakDir);
-                    }
-                    if ((file.Equals(Tbb) & File.Exists(dir)) && !Hash(dir, TbbSum))
-                    {
-                        QuickCopy(dir, bakDir);
-                    }
-                    if ((file.Equals(Air) & File.Exists(dir)) && !Hash(dir, _airSum))
+                    if (((file.Equals(CgFiles[0]) & File.Exists(dir)) && !Hash(dir, cgSum[0])) || ((file.Equals(CgFiles[1]) & File.Exists(dir)) && !Hash(dir, cgSum[1])) || ((file.Equals(CgFiles[2]) & File.Exists(dir)) && !Hash(dir, cgSum[2])) || ((file.Equals(Tbb) & File.Exists(dir)) && !Hash(dir, TbbSum)) || ((file.Equals(Air) & File.Exists(dir)) && !Hash(dir, _airSum)))
                     {
                         QuickCopy(dir, bakDir);
                     }
@@ -524,11 +508,7 @@ namespace LoLUpdater
                 }
                 else
                 {
-                    if (path.Equals(Game) & File.Exists(bakDir))
-                    {
-                        QuickCopy(bakDir, dir);
-                    }
-                    if (file.Equals(Air) & File.Exists(bakDir))
+                    if ((path.Equals(Game) & File.Exists(bakDir)) || (file.Equals(Air) & File.Exists(bakDir)))
                     {
                         QuickCopy(bakDir, dir);
                     }
@@ -540,23 +520,7 @@ namespace LoLUpdater
             {
                 string dir = Path.Combine(from, file);
                 string toDir = Path.Combine(to, file);
-                if (file.Equals(CgFiles[0]) & File.Exists(dir) && !Hash(dir, cgSum[0]))
-                {
-                    QuickCopy(dir, toDir);
-                }
-                if (file.Equals(CgFiles[1]) & File.Exists(dir) && !Hash(dir, cgSum[1]))
-                {
-                    QuickCopy(dir, toDir);
-                }
-                if (file.Equals(CgFiles[2]) & File.Exists(dir) && !Hash(dir, cgSum[2]))
-                {
-                    QuickCopy(dir, toDir);
-                }
-                if (file.Equals(Air) & File.Exists(dir) && !Hash(toDir, _airSum))
-                {
-                    QuickCopy(dir, toDir);
-                }
-                if (file.Contains(Flash) & File.Exists(dir) && !Hash(toDir, _flashSum))
+                if ((file.Equals(CgFiles[0]) & File.Exists(dir) && !Hash(dir, cgSum[0])) || (file.Equals(CgFiles[1]) & File.Exists(dir) && !Hash(dir, cgSum[1])) || (file.Equals(CgFiles[2]) & File.Exists(dir) && !Hash(dir, cgSum[2])) || (file.Equals(Air) & File.Exists(dir) && !Hash(toDir, _airSum)) || (file.Contains(Flash) & File.Exists(dir) && !Hash(toDir, _flashSum)))
                 {
                     QuickCopy(dir, toDir);
                 }
