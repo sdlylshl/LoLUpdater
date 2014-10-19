@@ -245,8 +245,8 @@ namespace LoLUpdater
                                         new ProcessStartInfo
                                         {
                                             FileName =
-                                                Path.Combine(AdobePath, "Adobe AIR Application Installer.exe"),
-                                            Arguments = "-uninstall -silent"
+                                                "air15_win.exe",
+                                            Arguments = "-uninstall"
                                         }
                                 };
                                 airUninst.Start();
@@ -263,7 +263,27 @@ namespace LoLUpdater
                     {
                         AirPrompt();
                     }
-
+                    using (
+                        Stream stream =
+                            WebRequest.Create(new Uri("http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"))
+                                .GetResponse()
+                                .GetResponseStream())
+                    {
+                        const string dX = "dxwebsetup.exe";
+                            ByteDl(stream, dX);
+                            Process directX = new Process
+                            {
+                                StartInfo =
+                                    new ProcessStartInfo
+                                    {
+                                        FileName =
+                                            dX,
+                                        Arguments = "/Q"
+                                    }
+                            };
+                            directX.Start();
+                            directX.WaitForExit();
+                    }
                     if (string.IsNullOrEmpty(_cgBinPath) ||
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
                         new Version("3.1.0.13"))
@@ -359,8 +379,8 @@ namespace LoLUpdater
                         {
                             StartInfo = new ProcessStartInfo
                             {
-                                FileName = Path.Combine(AdobePath, "Adobe AIR Application Installer.exe"),
-                                Arguments = "-uninstall -silent"
+                                FileName = "air15_win.exe",
+                                Arguments = "-uninstall"
                             }
                         };
                         airUninst.Start();
