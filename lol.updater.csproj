@@ -41,8 +41,7 @@
     <ApplicationIcon>Properties\lol.updater.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>lol.updater.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
