@@ -51,9 +51,7 @@ namespace LoLUpdater
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
             "Pando Networks", "Media Booster", "uninst.exe");
-        // List of processors that support AVX2, might become very long in the fure (find fix), some
-        // on the list are not even out yet.
-        private static readonly string[] Avx2Cpus = {"Haswell", "Broadwell", "Skylake", "Cannonlake"};
+        private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         private static readonly bool Avx2 =
             CpuInfo.AsParallel().Any(
@@ -201,28 +199,28 @@ namespace LoLUpdater
                         Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
                     }
                     const string airInstaller = "air15_win.exe";
-                        using (
-                            Stream stream =
-                                WebRequest.Create(
-                                    new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                                        airInstaller))
-                                    .GetResponse()
-                                    .GetResponseStream())
-                        {
-                            ByteDl(stream, airInstaller);
-                        }
-                        Process airwin = new Process
-                        {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        airInstaller,
-                                    Arguments = "-silent",
-                                }
-                        };
-                        airwin.Start();
-                        airwin.WaitForExit();
+                    using (
+                        Stream stream =
+                            WebRequest.Create(
+                                new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                                    airInstaller))
+                                .GetResponse()
+                                .GetResponseStream())
+                    {
+                        ByteDl(stream, airInstaller);
+                    }
+                    Process airwin = new Process
+                    {
+                        StartInfo =
+                            new ProcessStartInfo
+                            {
+                                FileName =
+                                    airInstaller,
+                                Arguments = "-silent"
+                            }
+                    };
+                    airwin.Start();
+                    airwin.WaitForExit();
                     AdobeSum(AdobePath);
                     if (string.IsNullOrEmpty(_cgBinPath) ||
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
@@ -287,7 +285,7 @@ namespace LoLUpdater
                     {
                         Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
-                    Console.WriteLine("Done Installing/Updating!");
+                    Console.WriteLine("Finished Patching!");
                     _notdone = false;
                     Console.ReadLine();
                     Environment.Exit(0);
@@ -295,7 +293,7 @@ namespace LoLUpdater
                 case 2:
                     Directory.Delete(Backup);
                     Console.ReadLine();
-                    Console.Out.WriteLine("Done Uninstalling!");
+                    Console.Out.WriteLine("Finished Uninstall!");
                     _notdone = false;
                     break;
                 case 3:
