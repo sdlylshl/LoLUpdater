@@ -11,7 +11,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 namespace LoLUpdater
 {
@@ -46,7 +45,7 @@ namespace LoLUpdater
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private static readonly IEnumerable<ManagementBaseObject> CpuInfo =
             new ManagementObjectSearcher("Select * from Win32_Processor").Get()
-                .Cast<ManagementBaseObject>().AsParallel();
+                .Cast<ManagementBaseObject>();
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -54,7 +53,7 @@ namespace LoLUpdater
         private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         private static readonly bool Avx2 =
-            CpuInfo.AsParallel().Any(
+            CpuInfo.Any(
                 item =>
                     item["Name"].ToString().Any(x => Avx2Cpus.Contains(x.ToString(CultureInfo.InvariantCulture))));
         private static readonly bool Riot = Directory.Exists(Rads);
@@ -98,9 +97,6 @@ namespace LoLUpdater
         {
             while (true)
             {
-                Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
-                if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
-                GC.KeepAlive(mutex);
                 if (args.Length > 0)
                 {
                     switch (args[0])
@@ -161,7 +157,7 @@ namespace LoLUpdater
                                     process =>
                                         string.Equals(process.ProcessName, t,
                                             StringComparison.CurrentCultureIgnoreCase))
-                                .AsParallel(), process =>
+                                , process =>
                                 {
                                     process.Kill();
                                     process.WaitForExit();
@@ -233,6 +229,41 @@ namespace LoLUpdater
                     airwin.Start();
                     airwin.WaitForExit();
                     AdobeSum(AdobePath);
+                    Console.WriteLine(
+                                    "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (It will still patch League of Legends), otherwise press N");
+                    string input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input))
+                    {
+                        if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) ||
+                            input.Equals("N", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                Process airUninst = new Process
+                                {
+                                    StartInfo =
+                                        new ProcessStartInfo
+                                        {
+                                            FileName =
+                                                Path.Combine(AdobePath, "Adobe AIR Application Installer.exe"),
+                                            Arguments = "-uninstall -silent"
+                                        }
+                                };
+                                airUninst.Start();
+                                airUninst.WaitForExit();
+                            }
+                        }
+                        else
+                        {
+                            AirPrompt();
+                        }
+
+                    }
+                    else
+                    {
+                        AirPrompt();
+                    }
+
                     if (string.IsNullOrEmpty(_cgBinPath) ||
                         new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
                         new Version("3.1.0.13"))
@@ -310,6 +341,41 @@ namespace LoLUpdater
                 case 3:
                     Environment.Exit(0);
                     break;
+            }
+        }
+
+        private static void AirPrompt()
+        {
+            while (true)
+            {
+                Console.WriteLine("Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (It will still patch League of Legends), otherwise press N");
+                string input = Console.ReadLine();
+                if (!string.IsNullOrEmpty(input))
+                {
+                    if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) || input.Equals("N", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        if (!input.Equals("Y", StringComparison.CurrentCultureIgnoreCase)) return;
+                        Process airUninst = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                FileName = Path.Combine(AdobePath, "Adobe AIR Application Installer.exe"),
+                                Arguments = "-uninstall -silent"
+                            }
+                        };
+                        airUninst.Start();
+                        airUninst.WaitForExit();
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+                break;
             }
         }
 
@@ -506,7 +572,7 @@ namespace LoLUpdater
             string text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-            if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
+            if (CpuInfo.Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, Dpm1));
