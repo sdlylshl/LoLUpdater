@@ -261,7 +261,7 @@ namespace lol.updater
                     using (
                         var stream =
                             WebRequest.Create(new Uri(
-                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Avx2
+                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Xp ? "Xp.dll" : Avx2
                                     ? "Avx2.dll"
                                     : (Avx
                                         ? "Avx.dll"
@@ -615,8 +615,11 @@ namespace lol.updater
         private static readonly string Config = Riot
             ? "Config"
             : Path.Combine(Gme, "DATA", "CFG", "defaults");
-
-        private static readonly string TbbSum = Avx2
+        private static readonly OperatingSystem Os = Environment.OSVersion;
+        private static readonly bool Xp = (Os.Platform == PlatformID.Win32NT) && Os.Version.Major > 5;
+        private static readonly string TbbSum = Xp ? "1d02f2b34346d30ac0adc5334e293a547bed6f8d2a7cea2ee99175a56f3fbb4772f12341cb5839316e4b7d9aebfe9602f905ee2fc14563586e354ff34ad73c07" :
+            
+            Avx2
             ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
             : (Avx
                 ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
