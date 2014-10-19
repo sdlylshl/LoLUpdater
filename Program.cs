@@ -42,9 +42,6 @@ namespace LoLUpdater
                 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
                 Ver2, One);
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
-        private static readonly IEnumerable<ManagementBaseObject> CpuInfo =
-            new ManagementObjectSearcher("Select * from Win32_Processor").Get().AsParallel()
-                .Cast<ManagementBaseObject>();
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
@@ -52,7 +49,8 @@ namespace LoLUpdater
         private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         private static readonly bool Avx2 =
-            CpuInfo.AsParallel().Any(
+            new ManagementObjectSearcher("Select Name from Win32_Processor").Get().AsParallel()
+                .Cast<ManagementBaseObject>().AsParallel().Any(
                 item =>
                     item["Name"].ToString().Any(x => Avx2Cpus.Contains(x.ToString(CultureInfo.InvariantCulture))));
         private static readonly bool Riot = Directory.Exists(Rads);
@@ -593,7 +591,8 @@ namespace LoLUpdater
             string text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-            if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
+            if (new ManagementObjectSearcher("Select NumberOfCores from Win32_Processor").Get().AsParallel()
+                .Cast<ManagementBaseObject>().AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, Dpm1));
