@@ -224,7 +224,8 @@ namespace LoLUpdater
                                 new ProcessStartInfo
                                 {
                                     FileName =
-                                        dX
+                                        dX,
+                                        Arguments = string.Format("/c:{0}{1}", "dxwsetup.exe /windowsupdate", "/q /r:n")
                                 }
                         };
                         directX.Start();
