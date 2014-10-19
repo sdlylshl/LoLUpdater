@@ -277,8 +277,7 @@ namespace LoLUpdater
                                     new ProcessStartInfo
                                     {
                                         FileName =
-                                            dX,
-                                        Arguments = "/Q"
+                                            dX
                                     }
                             };
                             directX.Start();
