@@ -70,8 +70,7 @@ namespace lol.updater
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine(String.Join(Environment.NewLine,
-                        "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
+                    Console.WriteLine(String.Join("By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur", string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                         "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
                     var input = Console.ReadLine();
                     if (!string.IsNullOrEmpty(input) && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
@@ -116,16 +115,12 @@ namespace lol.updater
                             });
                     });
             } while (_notdone);
-            if (!Directory.Exists(Backup) & installing)
-            {
-                Directory.CreateDirectory(Backup);
-            }
             Parallel.ForEach(CgFiles, file => { Copy(string.Empty, Game, file, string.Empty, installing); });
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
-
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
-            if (Riot)
+            // Just some extra File.Exists check, just in case, can obviously be expanded to verify the legitimacy of a LoL-installation.
+            if (Riot & File.Exists("lol.launcher.exe"))
             {
                 Copy(string.Empty, Config, CfgFile, string.Empty, installing);
             }
@@ -175,7 +170,7 @@ namespace lol.updater
                     airwin.Start();
                     airwin.WaitForExit();
                     Console.WriteLine(
-                        "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (It will still patch League of Legends), otherwise press N");
+                        "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
                     var input = Console.ReadLine();
                     if (!string.IsNullOrEmpty(input))
                     {
@@ -224,6 +219,8 @@ namespace lol.updater
                                 {
                                     FileName =
                                         dX
+                                        // Not sure if below commented code actually silent-installs dxwebsetup.exe
+                                    // Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
                                 }
                         };
                         directX.Start();
@@ -250,6 +247,7 @@ namespace lol.updater
                         }
                         else
                         {
+                            // Overkill-approach: Search all drives for this file.
                             CgStart2(cgInstaller);
                         }
                     }
