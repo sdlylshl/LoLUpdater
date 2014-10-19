@@ -434,6 +434,7 @@ namespace lol.updater
 
         private static void Copy(string from, string path, string file, string to, bool? mode)
         {
+            // Holds true only if Nvidia Cg-Toolkit _never_ gets updated again, which they have promised it wont, else breaks (Update as needed)
             string[] cgSum =
             {
                 "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22"
@@ -442,7 +443,10 @@ namespace lol.updater
                 ,
                 "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"
             };
-
+            // replace Sum values with actual values of original files (will break if Riot updates their files), update as needed.
+            string tbbSum;
+            string airSum;
+            string flashSum;
             if (mode.HasValue)
             {
                 var dir = Path.Combine(path, file);
@@ -452,11 +456,10 @@ namespace lol.updater
                 {
                     if (!File.Exists(dir)) return;
                     if ((file.Equals(CgFiles[0]) && !Hash(dir, cgSum[0])) ||
-                        ((file.Equals(CgFiles[1]) && !Hash(dir, cgSum[1])) ||
-                        ((file.Equals(CgFiles[2]) && !Hash(dir, cgSum[2])) ||
-                        // Todo: Tbb, Flash and Air regardless of version will think that it is the original and be backed up, unless it is the absolute latest version, fix this?
-                        ((file.Equals(Tbb) && !Hash(dir, Sha512Sum(Path.Combine(Game, Tbb))))) ||
-                        ((file.Equals(Air) && !Hash(dir, Sha512Sum(Path.Combine(Adobe, Air)))) || (file.Contains(Flash) && !Hash(dir, Sha512Sum(Path.Combine(Adobe, Res, Flash)))) || path.Equals(Config)))))
+                        (file.Equals(CgFiles[1]) && !Hash(dir, cgSum[1])) ||
+                        (file.Equals(CgFiles[2]) && !Hash(dir, cgSum[2])) ||
+                        (file.Equals(Tbb) && Hash(dir, tbbSum)) ||
+                        (file.Equals(Air) && Hash(dir, airSum)) || (file.Contains(Flash) && Hash(dir, flashSum)) || path.Equals(Config))
                     {
                         QuickCopy(dir, bak);
                     }
