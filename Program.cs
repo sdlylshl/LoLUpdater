@@ -118,6 +118,11 @@ namespace lol.updater
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
+            string[] garenaCfgFiles =
+        {
+            CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+            "GamePermanent_en_SG.cfg"
+        };
             // Just some extra File.Exists check, just in case, can obviously be expanded to verify the legitimacy of a LoL-installation.
             if (Riot & File.Exists("lol.launcher.exe"))
             {
@@ -125,12 +130,16 @@ namespace lol.updater
             }
             else
             {
-                Parallel.ForEach(GarenaCfgFiles, file => { Copy(string.Empty, Config, file, string.Empty, installing); });
+                Parallel.ForEach(garenaCfgFiles, file => { Copy(string.Empty, Config, file, string.Empty, installing); });
             }
             switch (_userInput)
             {
                 case 1:
-                    if (File.Exists(Pmb))
+                    var pmb = Path.Combine(X64
+            ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+            : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            "Pando Networks", "Media Booster", "uninst.exe");
+                    if (File.Exists(pmb))
                     {
                         var pmbProcess = new Process
                         {
@@ -138,7 +147,7 @@ namespace lol.updater
                                 new ProcessStartInfo
                                 {
                                     FileName =
-                                        Pmb,
+                                        pmb,
                                     Arguments = "/silent"
                                 }
                         };
@@ -253,14 +262,18 @@ namespace lol.updater
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
                     Copy(AdobePath, string.Empty, Air, Adobe, null);
                     Copy(AdobePath, string.Empty, Path.Combine(Res, Flash), Adobe, null);
+
+                    var os = Environment.OSVersion;
                     using (
                         var stream =
                             WebRequest.Create(new Uri(
-                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), Xp ? "Xp.dll" : Avx2
+                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), (os.Platform == PlatformID.Win32NT) && os.Version.Major > 5 ? "Xp.dll" : CpuInfo.AsParallel().Any(
+                item =>
+                    item["Name"].ToString().Any(x => new[]{ "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains(x.ToString(CultureInfo.InvariantCulture))))
                                     ? "Avx2.dll"
-                                    : (Avx
+                                    : (Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures")
                                         ? "Avx.dll"
-                                        : (Sse2 ? "Sse2.dll" : Sse ? "Sse.dll" : "Default.dll"))))
+                                        : (Dll(10, Ipf) ? "Sse2.dll" : Dll(6, Ipf) ? "Sse.dll" : "Default.dll"))))
                                 .GetResponse()
                                 .GetResponseStream())
                     {
@@ -286,7 +299,7 @@ namespace lol.updater
                     }
                     else
                     {
-                        Parallel.ForEach(GarenaCfgFiles, Cfg);
+                        Parallel.ForEach(garenaCfgFiles, Cfg);
                     }
                     _notdone = false;
                     Console.WriteLine("Finished Patching!");
@@ -558,35 +571,13 @@ namespace lol.updater
                 : Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), AAir,
                 Ver2, One);
 
-        private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
-
         private static readonly IEnumerable<ManagementBaseObject> CpuInfo =
             new ManagementObjectSearcher("Select Name, NumberOfCores from Win32_Processor").Get().AsParallel()
                 .Cast<ManagementBaseObject>();
 
-        private static readonly string Pmb = Path.Combine(X64
-            ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
-            : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-            "Pando Networks", "Media Booster", "uninst.exe");
-
-        private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
-
-        private static readonly bool Avx2 =
-            CpuInfo.AsParallel().Any(
-                item =>
-                    item["Name"].ToString().Any(x => Avx2Cpus.Contains(x.ToString(CultureInfo.InvariantCulture))));
-
         private static readonly bool Riot = Directory.Exists(Rads);
 
-        private static readonly string[] GarenaCfgFiles =
-        {
-            CfgFile, "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
-            "GamePermanent_en_SG.cfg"
-        };
-
         private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
-        private static readonly bool Sse = Dll(6, Ipf);
-        private static readonly bool Sse2 = Dll(10, Ipf);
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Rads, Proj, AirC, Rel, Ver(Proj, AirC), Dep, AAir, Ver2,
@@ -599,8 +590,6 @@ namespace lol.updater
         private static readonly string Config = Riot
             ? "Config"
             : Path.Combine(Gme, "DATA", "CFG", "defaults");
-        private static readonly OperatingSystem Os = Environment.OSVersion;
-        private static readonly bool Xp = (Os.Platform == PlatformID.Win32NT) && Os.Version.Major > 5;
         private static int _userInput;
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
