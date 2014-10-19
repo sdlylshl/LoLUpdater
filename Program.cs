@@ -223,8 +223,7 @@ namespace lol.updater
                                 new ProcessStartInfo
                                 {
                                     FileName =
-                                        dX,
-                                    Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
+                                        dX
                                 }
                         };
                         directX.Start();
@@ -607,8 +606,6 @@ namespace lol.updater
         private static readonly OperatingSystem Os = Environment.OSVersion;
         private static readonly bool Xp = (Os.Platform == PlatformID.Win32NT) && Os.Version.Major > 5;
         private static int _userInput;
-        private static string _airSum;
-        private static string _flashSum;
 
         private static string _cgBinPath = Environment.GetEnvironmentVariable("CG_BIN_PATH",
             EnvironmentVariableTarget.User);
