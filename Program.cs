@@ -1,5 +1,3 @@
-// Todo: Verify downloaded files
-// Note: All checksums are SHA512
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,6 +9,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 namespace LoLUpdater
 {
@@ -44,7 +43,7 @@ namespace LoLUpdater
                 Ver2, One);
         private static readonly bool Avx = Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures");
         private static readonly IEnumerable<ManagementBaseObject> CpuInfo =
-            new ManagementObjectSearcher("Select * from Win32_Processor").Get()
+            new ManagementObjectSearcher("Select * from Win32_Processor").Get().AsParallel()
                 .Cast<ManagementBaseObject>();
         private static readonly string Pmb = Path.Combine(X64
             ? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
@@ -53,7 +52,7 @@ namespace LoLUpdater
         private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         private static readonly bool Avx2 =
-            CpuInfo.Any(
+            CpuInfo.AsParallel().Any(
                 item =>
                     item["Name"].ToString().Any(x => Avx2Cpus.Contains(x.ToString(CultureInfo.InvariantCulture))));
         private static readonly bool Riot = Directory.Exists(Rads);
@@ -95,6 +94,9 @@ namespace LoLUpdater
 
         private static void Main(string[] args)
         {
+            Mutex mutex = new Mutex(true, @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
+            if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
+            GC.KeepAlive(mutex);
             while (true)
             {
                 if (args.Length > 0)
@@ -156,7 +158,7 @@ namespace LoLUpdater
                                 .Where(
                                     process =>
                                         string.Equals(process.ProcessName, t,
-                                            StringComparison.CurrentCultureIgnoreCase))
+                                            StringComparison.CurrentCultureIgnoreCase)).AsParallel()
                                 , process =>
                                 {
                                     process.Kill();
@@ -591,7 +593,7 @@ namespace LoLUpdater
             string text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
-            if (CpuInfo.Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
+            if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
                     string.Format("{0}{1}", Environment.NewLine, Dpm1));
