@@ -41,7 +41,7 @@
     <ApplicationIcon>Properties\LoLUpdater.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>LoLUpdater.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
