@@ -225,7 +225,7 @@ namespace LoLUpdater
                                 {
                                     FileName =
                                         dX,
-                                        Arguments = string.Format("/c:{0}{1}", "dxwsetup.exe /windowsupdate", "/q /r:n")
+                                    Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
                                 }
                         };
                         directX.Start();
