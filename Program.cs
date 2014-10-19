@@ -126,7 +126,7 @@ namespace LoLUpdater
                     Console.Clear();
                     Console.WriteLine(String.Join(Environment.NewLine, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty, "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
                     string input = Console.ReadLine();
-                    if (input != null && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
+                    if (!string.IsNullOrEmpty(input) && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
                     {
                         int key = Convert.ToInt32(input);
                         _userInput = key;
@@ -144,6 +144,7 @@ namespace LoLUpdater
 
         private static void Patch()
         {
+            Console.WriteLine("Patching League of Legends...");
             bool installing = _userInput == 1;
             do
             {
@@ -167,7 +168,6 @@ namespace LoLUpdater
                                 });
                     });
             } while (_notdone);
-            Console.WriteLine("Patching League of Legends...");
             if (!Directory.Exists(Backup) & installing)
             {
                 Directory.CreateDirectory(Backup);
@@ -182,13 +182,13 @@ namespace LoLUpdater
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
             if (Riot)
             {
-                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
+                Copy(string.Empty, Config, CfgFile, string.Empty, null);
             }
             else
             {
                 Parallel.ForEach(GarenaCfgFiles, file =>
                 {
-                    Copy(string.Empty, Config, file, string.Empty, installing);
+                    Copy(string.Empty, Config, file, string.Empty, null);
                 });
             }
             switch (_userInput)
@@ -285,16 +285,16 @@ namespace LoLUpdater
                     {
                         Parallel.ForEach(GarenaCfgFiles, Cfg);
                     }
-                    Console.WriteLine("Finished Patching!");
                     _notdone = false;
+                    Console.WriteLine("Finished Patching!");
                     Console.ReadLine();
                     Environment.Exit(0);
                     break;
                 case 2:
                     Directory.Delete(Backup, true);
                     Console.ReadLine();
-                    Console.WriteLine("Finished Uninstall!");
                     _notdone = false;
+                    Console.WriteLine("Finished Uninstall!");
                     break;
                 case 3:
                     Environment.Exit(0);
@@ -423,13 +423,9 @@ namespace LoLUpdater
                     {
                         QuickCopy(dir, Path.Combine(Backup, Path.GetFileName(file)));
                     }
-                    if ((!path.Equals(Config) | !File.Exists(dir))) return;
-                    QuickCopy(dir, Path.Combine(
-                            Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")));
                 }
                 else
                 {
-                    FileFix(bakDir);
                     if (path.Equals(Game) & File.Exists(bakDir))
                     {
                         QuickCopy(bakDir, dir);
@@ -462,8 +458,13 @@ namespace LoLUpdater
                 {
                     QuickCopy(dir, toDir);
                 }
-                if (!file.Contains(Flash) | !File.Exists(dir) || Hash(toDir, _flashSum)) return;
-                QuickCopy(dir, toDir);
+                if (file.Contains(Flash) & File.Exists(dir) && !Hash(toDir, _flashSum))
+                {
+                    QuickCopy(dir, toDir);
+                }
+                if (!path.Equals(Config) | !File.Exists(dir)) return;
+                QuickCopy(dir, Path.Combine(
+                        Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")));
             }
         }
 
