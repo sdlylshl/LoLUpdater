@@ -19,7 +19,6 @@ namespace lol.updater
         private const string Flash = "NPSWF32.dll";
         private const string Ipf = "IsProcessorFeaturePresent";
         private const string SKernel = "kernel32.dll";
-        private const string Backup = "Backup";
         private const string Tbb = "tbb.dll";
         private const string CfgFile = "game.cfg";
         private const string Dpm1 = "DefaultParticleMultiThreading=1";
@@ -70,7 +69,7 @@ namespace lol.updater
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine(String.Join("By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur", string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
+                    Console.WriteLine(String.Join(Environment.NewLine, "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur", string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                         "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
                     var input = Console.ReadLine();
                     if (!string.IsNullOrEmpty(input) && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
@@ -295,10 +294,9 @@ namespace lol.updater
                     Environment.Exit(0);
                     break;
                 case 2:
-                    Directory.Delete(Backup, true);
-                    Console.ReadLine();
                     _notdone = false;
                     Console.WriteLine("Finished Uninstall!");
+                    Console.ReadLine();
                     break;
                 case 3:
                     Environment.Exit(0);
