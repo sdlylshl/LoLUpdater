@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
+// Not meant to be modified and redistributed, if you do please include a disclaimer.
 namespace lol.updater
 {
     internal static class Program
@@ -122,16 +122,16 @@ namespace lol.updater
             }
             Parallel.ForEach(CgFiles, file => { Copy(string.Empty, Game, file, string.Empty, installing); });
             Copy(string.Empty, Game, Tbb, string.Empty, installing);
-            AdobeSum(Adobe);
+
             Copy(string.Empty, Adobe, Air, string.Empty, installing);
             Copy(string.Empty, Adobe, Path.Combine(Res, Flash), string.Empty, installing);
             if (Riot)
             {
-                Copy(string.Empty, Config, CfgFile, string.Empty, null);
+                Copy(string.Empty, Config, CfgFile, string.Empty, installing);
             }
             else
             {
-                Parallel.ForEach(GarenaCfgFiles, file => { Copy(string.Empty, Config, file, string.Empty, null); });
+                Parallel.ForEach(GarenaCfgFiles, file => { Copy(string.Empty, Config, file, string.Empty, installing); });
             }
             switch (_userInput)
             {
@@ -174,7 +174,6 @@ namespace lol.updater
                     };
                     airwin.Start();
                     airwin.WaitForExit();
-                    AdobeSum(AdobePath);
                     Console.WriteLine(
                         "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (It will still patch League of Legends), otherwise press N");
                     var input = Console.ReadLine();
@@ -272,10 +271,12 @@ namespace lol.updater
                         if (File.Exists(Path.Combine(Game, Tbb)))
                         {
                             FileFix(Path.Combine(Game, Tbb));
-                            if (!Hash(Path.Combine(Game, Tbb), TbbSum))
+                            ByteDl(stream, Tbb);
+                            if (!Hash(Path.Combine(Game, Tbb), Sha512Sum(Tbb)))
                             {
                                 ByteDl(stream, Path.Combine(Game, Tbb));
                             }
+                            File.Delete(Tbb);
                         }
                         else
                         {
@@ -345,24 +346,17 @@ namespace lol.updater
             }
         }
 
-        private static void AdobeSum(string path)
+        private static string Sha512Sum(string path)
         {
             using (
-                var fileStream = new FileStream(Path.Combine(path, Air), FileMode.Open,
+                var fileStream = new FileStream(path, FileMode.Open,
                     FileAccess.Read, FileShare.Read))
             {
                 fileStream.Seek(0, SeekOrigin.Begin);
-                _airSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
+                return BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
                     .Replace("-", string.Empty);
             }
-            using (
-                var fileStream = new FileStream(Path.Combine(path, Res, Flash), FileMode.Open,
-                    FileAccess.Read, FileShare.Read))
-            {
-                fileStream.Seek(0, SeekOrigin.Begin);
-                _flashSum = BitConverter.ToString(SHA512.Create().ComputeHash(fileStream))
-                    .Replace("-", string.Empty);
-            }
+
         }
 
         private static void CgStart2(string path)
@@ -423,7 +417,7 @@ namespace lol.updater
             var pFunc = GetProcAddress(pDll, func);
             if (pFunc != IntPtr.Zero)
             {
-                var bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
+                var bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -444,32 +438,31 @@ namespace lol.updater
             if (mode.HasValue)
             {
                 var dir = Path.Combine(path, file);
-                var bakDir = Path.Combine(Backup, file);
+                                    var bak = Path.Combine(
+                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak"));
                 if (mode.Value)
                 {
                     if (!File.Exists(dir)) return;
-                    if (((file.Equals(CgFiles[0]) && !Hash(dir, cgSum[0])) ||
+                    if ((file.Equals(CgFiles[0]) && !Hash(dir, cgSum[0])) ||
                         ((file.Equals(CgFiles[1]) && !Hash(dir, cgSum[1])) ||
                         ((file.Equals(CgFiles[2]) && !Hash(dir, cgSum[2])) ||
-                        ((file.Equals(Tbb) && !Hash(dir, TbbSum)) ||
-                        ((file.Equals(Air) && !Hash(dir, _airSum))))))))
+                        // Todo: Tbb, Flash and Air regardless of version will think that it is the original and be backed up, unless it is the absolute latest version, fix this?
+                        ((file.Equals(Tbb) && !Hash(dir, Sha512Sum(Path.Combine(Game, Tbb))))) ||
+                        ((file.Equals(Air) && !Hash(dir, Sha512Sum(Path.Combine(Adobe, Air)))) || (file.Contains(Flash) && !Hash(dir, Sha512Sum(Path.Combine(Adobe, Res, Flash)))) || path.Equals(Config)))))
                     {
-                        QuickCopy(dir, bakDir);
-                    }
-                    if ((file.Contains(Flash) & !File.Exists(dir)) && !Hash(dir, _flashSum))
-                    {
-                        QuickCopy(dir, Path.Combine(Backup, Path.GetFileName(file)));
+                        QuickCopy(dir, bak);
                     }
                 }
                 else
                 {
-                    if (!File.Exists(bakDir)) return;
-                    if ((path.Equals(Game) || (file.Equals(Air))))
+                    var exe = Path.Combine(
+                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".exe"));
+                    if (!File.Exists(bak)) return;
+                    if (path.Equals(Game) || file.Equals(Air) || file.Contains(Flash) || path.Contains(Config))
                     {
-                        QuickCopy(bakDir, dir);
+                        QuickCopy(bak, exe);
                     }
-                    if (!file.Contains(Flash) | !File.Exists(bakDir)) return;
-                    QuickCopy(Path.Combine(Backup, Path.GetFileName(file)), dir);
+
                 }
             }
             else
@@ -480,14 +473,11 @@ namespace lol.updater
                 if ((file.Equals(CgFiles[0]) && !Hash(dir, cgSum[0])) ||
                     (file.Equals(CgFiles[1]) && !Hash(dir, cgSum[1])) ||
                     (file.Equals(CgFiles[2]) && !Hash(dir, cgSum[2])) ||
-                    (file.Equals(Air) && !Hash(toDir, _airSum)) ||
-                    (file.Contains(Flash) & File.Exists(dir) && !Hash(toDir, _flashSum)))
+                    (file.Equals(Air) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Air)))) ||
+                    (file.Contains(Flash) & File.Exists(dir) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Res, Flash)))))
                 {
                     QuickCopy(dir, toDir);
                 }
-                if (!path.Equals(Config)) return;
-                QuickCopy(dir, Path.Combine(
-                    Config, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak")));
             }
         }
 
@@ -584,7 +574,7 @@ namespace lol.updater
             : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
             "Pando Networks", "Media Booster", "uninst.exe");
 
-        private static readonly string[] Avx2Cpus = {"Haswell", "Broadwell", "Skylake", "Cannonlake"};
+        private static readonly string[] Avx2Cpus = { "Haswell", "Broadwell", "Skylake", "Cannonlake" };
 
         private static readonly bool Avx2 =
             CpuInfo.AsParallel().Any(
@@ -599,7 +589,7 @@ namespace lol.updater
             "GamePermanent_en_SG.cfg"
         };
 
-        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
+        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
         private static readonly bool Sse = Dll(6, Ipf);
         private static readonly bool Sse2 = Dll(10, Ipf);
 
@@ -611,24 +601,11 @@ namespace lol.updater
         private static readonly string Game = Riot
             ? Path.Combine(Rads, Sol, GameCSln, Rel, Ver(Sol, GameCSln), Dep)
             : Gme;
-
         private static readonly string Config = Riot
             ? "Config"
             : Path.Combine(Gme, "DATA", "CFG", "defaults");
         private static readonly OperatingSystem Os = Environment.OSVersion;
         private static readonly bool Xp = (Os.Platform == PlatformID.Win32NT) && Os.Version.Major > 5;
-        private static readonly string TbbSum = Xp ? "1d02f2b34346d30ac0adc5334e293a547bed6f8d2a7cea2ee99175a56f3fbb4772f12341cb5839316e4b7d9aebfe9602f905ee2fc14563586e354ff34ad73c07" :
-            
-            Avx2
-            ? "13d78f0fa6b61a13e5b7cf8e4fa4b071fc880ae1356bd518960175fce7c49cba48460d6c43a6e28556be7309327abec7ec83760cf29b043ef1178904e1e98a07"
-            : (Avx
-                ? "d81edd17a891a2ef464f3e69ff715595f78c229867d8d6e6cc1819b426316a0bf6df5fa09a7341995290e4efe4b884f8d144e0fe8e519c4779f5cf5679db784c"
-                : (Sse2
-                    ? "61fea5603739cb3ca7a0f13b3f96e7c0c6bcff418d1404272c9fcf7cb5ce6fef7e21a5ee2026fc6af4ebc596d1d912e8201b298f7d092004d8f5256e22b05b64"
-                    : Sse
-                        ? "fa1cc95eff4ca2638b88fcdb652a7ed19b4a086bab8ce4a7e7f29324e708b5c855574c5053fe3ea84917ca0293dc97bac8830d5be2770a86ca073791696fcbec"
-                        : "0c201b344e8bf0451717d6b15326d21fc91cc5981ce36717bf62013ff5624b35054e580a381efa286cc72b6fe0177499a252876d557295bc4e29a3ec92ebfa58"));
-
         private static int _userInput;
         private static string _airSum;
         private static string _flashSum;
