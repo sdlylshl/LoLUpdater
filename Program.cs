@@ -196,7 +196,18 @@ namespace LoLUpdater
                 case 1:
                     if (File.Exists(Pmb))
                     {
-                        Process.Start(new ProcessStartInfo { FileName = Pmb, Arguments = "/silent" });
+                        Process pmbProcess = new Process
+                        {
+                            StartInfo =
+                                new ProcessStartInfo
+                                {
+                                    FileName =
+                                        Pmb,
+                                    Arguments = "/silent"
+                                }
+                        };
+                        pmbProcess.Start();
+                        pmbProcess.WaitForExit();
                     }
                     const string airInstaller = "air15_win.exe";
                     using (
