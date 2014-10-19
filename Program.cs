@@ -291,9 +291,9 @@ namespace LoLUpdater
                     Environment.Exit(0);
                     break;
                 case 2:
-                    Directory.Delete(Backup);
+                    Directory.Delete(Backup, true);
                     Console.ReadLine();
-                    Console.Out.WriteLine("Finished Uninstall!");
+                    Console.WriteLine("Finished Uninstall!");
                     _notdone = false;
                     break;
                 case 3:
@@ -488,9 +488,10 @@ namespace LoLUpdater
         }
         private static void Cfg(string file)
         {
-            if (!File.Exists(Path.Combine(Config, file))) return;
-            FileFix(Path.Combine(Config, file));
-            string text = File.ReadAllText(Path.Combine(Config, file));
+            string dir = Path.Combine(Config, file);
+            if (!File.Exists(dir)) return;
+            FileFix(dir);
+            string text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
             if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
@@ -503,8 +504,8 @@ namespace LoLUpdater
                 if (!text.Contains(Dpm1)) return;
                 text = text.Replace(Dpm1, "DefaultParticleMultiThreading=0");
             }
-            File.WriteAllText(Path.Combine(Config, file), text);
-            FileFix(Path.Combine(Config, file));
+            File.WriteAllText(dir, text);
+            FileFix(dir);
         }
         private static bool Hash(string file, string sha512)
         {
