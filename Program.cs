@@ -12,8 +12,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-// Not meant to be modified and redistributed, if you do please include a disclaimer.
-
 namespace lol.updater
 {
     internal static class Program
@@ -32,12 +30,13 @@ namespace lol.updater
 
         private static void Main(string[] args)
         {
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
             var mutex = new Mutex(true,
                 @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
             if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(mutex);
-            while (true)
-            {
                 if (args.Length > 0)
                 {
                     switch (args[0])
@@ -62,27 +61,43 @@ namespace lol.updater
                 }
                 else
                 {
-                    Console.WriteLine(Dll(4, "SetXStateFeaturesMask"));
                     Console.Clear();
-                    Console.WriteLine(String.Join(Environment.NewLine,
+                    Console.WriteLine(string.Join(Environment.NewLine,
                         "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur",
                         string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
                         "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
-                    var input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && (input.Equals("1") || input.Equals("2") || input.Equals("3")))
+                        int key = 0;
+                    try
                     {
-                        var key = Convert.ToInt32(input);
-                        _userInput = key;
-                        Console.Clear();
-                        Patch();
+                        key = Convert.ToInt32(Console.ReadLine());
                     }
-                    else
+                    catch (FormatException)
                     {
-                        continue;
+                        Main(args);
                     }
+                    catch (OverflowException)
+                    {
+                        Main(args);
+                    }
+                    finally
+                    {
+                        if (key == 1 || key == 2 || key == 3)
+                        {
+                            if (key == 3)
+                            {
+                                Environment.Exit(0);
+                            }
+                            _userInput = key;
+                            Console.Clear();
+                            Patch();
+                        }
+                        else
+                        {
+                            Main(args);
+                        }
+                    }
+
                 }
-                break;
-            }
         }
 
         private static void Patch()
@@ -182,21 +197,19 @@ namespace lol.updater
                         if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) ||
                             input.Equals("N", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase))
-                            {
+                            if (!input.Equals("Y", StringComparison.CurrentCultureIgnoreCase)) return;
                                 var airUninst = new Process
                                 {
                                     StartInfo =
                                         new ProcessStartInfo
                                         {
                                             FileName =
-                                                "Constants[7]15_win.exe",
+                                                "air15_win.exe",
                                             Arguments = "-uninstall"
                                         }
                                 };
                                 airUninst.Start();
                                 airUninst.WaitForExit();
-                            }
                         }
                         else
                         {
@@ -232,8 +245,9 @@ namespace lol.updater
                         directX.WaitForExit();
                     }
                     if (string.IsNullOrEmpty(_cgBinPath) ||
-                        new Version(FileVersionInfo.GetVersionInfo(Path.Combine(_cgBinPath, "cg.dll")).FileVersion) <
-                        new Version("3.1.0.13"))
+                        !Hash(CgFiles[0], "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22")
+                        || !Hash(CgFiles[1], "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2")
+                        || !Hash(CgFiles[2], "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"))
                     {
                         const string cgInstaller = "Cg-3.1_April2012_Setup.exe";
                         if (File.Exists(cgInstaller))
@@ -252,7 +266,6 @@ namespace lol.updater
                         }
                         else
                         {
-                            // Overkill-approach: Search all drives for this file.
                             CgStart2(cgInstaller);
                         }
                     }
@@ -294,6 +307,12 @@ namespace lol.updater
                                     "{0} If you lost internet connection please rerun lolupdater later with an internet connection, else report bug to the lolupdater-team",
                                     ex.Message);
                             }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(
+                                   "{0} Please report that you got here to the lolupdater team on the website",
+                                   ex.Message);
+                            }
                             if (!Hash(Path.Combine(Game, Constants[4]), Sha512Sum(Constants[4])))
                             {
                                 ByteDl(stream, Path.Combine(Game, Constants[4]));
@@ -323,9 +342,6 @@ namespace lol.updater
                     _notdone = false;
                     Console.WriteLine("Finished Uninstall!");
                     Console.ReadLine();
-                    break;
-                case 3:
-                    Environment.Exit(0);
                     break;
             }
         }
@@ -448,6 +464,7 @@ namespace lol.updater
         {
             if (mode.HasValue)
             {
+                string TbbSum = "random";
                 var dir = Path.Combine(path, file);
                 var bak = Path.Combine(
                     path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak"));
@@ -455,14 +472,14 @@ namespace lol.updater
                 {
                     if (!File.Exists(dir)) return;
                     if ((file.Equals(CgFiles[0]) &&
-                         !Hash(dir,
-                             "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22")) ||
+                         Hash(dir,
+                             "9e1af39c5ba05b5c76ff186c6dffff36f547cdbc116c3eb3ac67c9100ecfffac352ff9180e832a83f68dd18791a38c15338da430f7cdf849ff46c861b179e412")) ||
                         (file.Equals(CgFiles[1]) &&
-                         !Hash(dir,
-                             "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2")) ||
+                         Hash(dir,
+                             "090da4f0cb70313674bfd8efaad93d06c532941bde6cb31461106087ded89887ad0ab1c2d1e5670cc5fc564704ccc99214f3b7aff02fc7f1482af8307856c0f6")) ||
                         (file.Equals(CgFiles[2]) &&
-                         !Hash(dir,
-                             "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b")) ||
+                         Hash(dir,
+                             "3b0388e24097e108a8a21361f1319da1951d1714a0303aa0ef7c9c79e40943c80c5e7b05d8997a40b140acbaef97ced3ebdb9831c0d16475c01208e6ca09c50e")) ||
                         (file.Equals(Constants[4]) && Hash(dir, TbbSum)) ||
                         (file.Equals(Constants[7]) &&
                          Hash(dir,
@@ -572,12 +589,12 @@ namespace lol.updater
         private static extern IntPtr GetProcAddress(IntPtr hModule, string proc);
 
         [DllImport(SKernel, CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadLibrary(String dllName);
+        private static extern IntPtr LoadLibrary(string dllName);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DllType(byte arg);
 
-        private static readonly bool X64 = Environment.Is64BitProcess;
+        private static readonly bool X64 = Environment.Is64BitOperatingSystem;
 
         private static readonly string AdobePath =
             Path.Combine(X64
@@ -595,7 +612,7 @@ namespace lol.updater
         private static readonly string Adobe = Riot
             ? Path.Combine(Constants[8], Constants[11], Constants[14], Constants[15], Ver(Constants[11], Constants[14]), Constants[10], Constants[18], Constants[9],
                 Constants[16])
-            : Path.Combine("Constants[7]", Constants[18], Constants[9], Constants[16]);
+            : Path.Combine(Constants[7], Constants[18], Constants[9], Constants[16]);
 
         private static readonly string Game = Riot
             ? Path.Combine(Constants[8], Constants[12], Constants[15], Constants[15], Ver(Constants[12], Constants[15]), Constants[10])
