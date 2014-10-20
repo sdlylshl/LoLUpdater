@@ -43,6 +43,9 @@ namespace lol.updater
                         _userInput = 1;
                         Patch();
                         break;
+                    case "-DirectX":
+                        DirectX();
+                        break;
                     case "-uninst":
                         _userInput = 2;
                         Patch();
@@ -53,9 +56,8 @@ namespace lol.updater
             {
                 Console.Clear();
                 Console.WriteLine(string.Join(Environment.NewLine,
-                    "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur",
-                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
-                    "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
+                    "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur", string.Empty,
+                    "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Install DirectX", "4. Exit"));
                 var key = 0;
                 try
                 {
@@ -73,7 +75,7 @@ namespace lol.updater
                 {
                     if (key == 1 || key == 2 || key == 3)
                     {
-                        if (key == 3)
+                        if (key == 4)
                         {
                             Environment.Exit(0);
                         }
@@ -154,28 +156,6 @@ namespace lol.updater
                         };
                         pmbProcess.Start();
                         pmbProcess.WaitForExit();
-                    }
-                    using (
-                        var stream =
-                            ((HttpWebRequest)WebRequest.Create(new Uri(
-                        "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"))).GetResponse()
-                                .GetResponseStream())
-                    {
-                        const string dX = "dxwebsetup.exe";
-                        ByteDl(stream, dX);
-                        var directX = new Process
-                        {
-                            StartInfo =
-                                new ProcessStartInfo
-                                {
-                                    FileName =
-                                        dX
-                                    // Not sure if below commented code actually silent-installs dxwebsetup.exe
-                                    // Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
-                                }
-                        };
-                        directX.Start();
-                        directX.WaitForExit();
                     }
                     if (string.IsNullOrEmpty(_cgBinPath) || (Hash(Path.Combine(_cgBinPath, CgFiles[0]),
                             "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22")
@@ -340,6 +320,37 @@ namespace lol.updater
                     Console.WriteLine("Finished Uninstall!");
                     Console.ReadLine();
                     break;
+                case 3:
+                    DirectX();
+                    Environment.Exit(0);
+                    break;
+            }
+        }
+
+        private static void DirectX()
+        {
+            using (
+                var stream =
+                    ((HttpWebRequest) WebRequest.Create(new Uri(
+                        "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe")))
+                        .GetResponse()
+                        .GetResponseStream())
+            {
+                const string dX = "dxwebsetup.exe";
+                ByteDl(stream, dX);
+                var directX = new Process
+                {
+                    StartInfo =
+                        new ProcessStartInfo
+                        {
+                            FileName =
+                                dX
+                            // Not sure if below commented code actually silent-installs dxwebsetup.exe
+                            // Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
+                        }
+                };
+                directX.Start();
+                directX.WaitForExit();
             }
         }
 
