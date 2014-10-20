@@ -227,7 +227,7 @@ namespace lol.updater
                                 {
                                     FileName =
                                         dX
-                                        // Not sure if below commented code actually silent-installs dxwebsetup.exe
+                                    // Not sure if below commented code actually silent-installs dxwebsetup.exe
                                     // Arguments = string.Format("/c:{0}{1}", @"""dxwsetup.exe /windowsupdate""", "/q /r:n")
                                 }
                         };
@@ -269,7 +269,7 @@ namespace lol.updater
                             WebRequest.Create(new Uri(
                                 new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), (os.Platform == PlatformID.Win32NT) && os.Version.Major > 5 ? "Xp.dll" : CpuInfo.AsParallel().Any(
                 item =>
-                    item["Name"].ToString().Any(x => new[]{ "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains(x.ToString(CultureInfo.InvariantCulture))))
+                    item["Name"].ToString().Any(x => new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains(x.ToString(CultureInfo.InvariantCulture))))
                                     ? "Avx2.dll"
                                     : (Dll(17, Ipf) & Dll(2, "GetEnabledXStateFeatures")
                                         ? "Avx.dll"
@@ -280,7 +280,14 @@ namespace lol.updater
                         if (File.Exists(Path.Combine(Game, Tbb)))
                         {
                             FileFix(Path.Combine(Game, Tbb));
-                            ByteDl(stream, Tbb);
+                            try
+                            {
+                                ByteDl(stream, Tbb);
+                            }
+                            catch (WebException ex)
+                            {
+                                Console.WriteLine("{0} If you lost internet connection please rerun lolupdater later with an internet connection, else report bug to the lolupdater-team", ex.Message);
+                            }
                             if (!Hash(Path.Combine(Game, Tbb), Sha512Sum(Tbb)))
                             {
                                 ByteDl(stream, Path.Combine(Game, Tbb));
@@ -450,14 +457,15 @@ namespace lol.updater
             if (mode.HasValue)
             {
                 var dir = Path.Combine(path, file);
-                                    var bak = Path.Combine(
-                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak"));
+                var bak = Path.Combine(
+    path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak"));
                 if (mode.Value)
                 {
                     if (!File.Exists(dir)) return;
                     if ((file.Equals(CgFiles[0]) && !Hash(dir, cgSum[0])) ||
                         (file.Equals(CgFiles[1]) && !Hash(dir, cgSum[1])) ||
                         (file.Equals(CgFiles[2]) && !Hash(dir, cgSum[2])) ||
+                        // Insert hash of original DLL files beofere compiling (does not work atm, reinstalling League so i can get these hashes)
                         (file.Equals(Tbb) && Hash(dir, tbbSum)) ||
                         (file.Equals(Air) && Hash(dir, airSum)) || (file.Contains(Flash) && Hash(dir, flashSum)) || path.Equals(Config))
                     {
