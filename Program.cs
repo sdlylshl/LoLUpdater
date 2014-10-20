@@ -258,7 +258,7 @@ namespace lol.updater
                         var stream =
                            ((HttpWebRequest)WebRequest.Create(new Uri(
                         new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
-                        os.Platform == PlatformID.Win32NT && os.Version.Major > 5
+                        ((os.Platform == PlatformID.Win32NT) && os.Version.Major > 5)
                             ? "Xp.dll"
                             : CpuInfo.AsParallel().Any(
                                 item =>
@@ -497,7 +497,7 @@ namespace lol.updater
 
         private static void UnblockFile(string file)
         {
-            DeleteFile(string.Format("{0}:ZConstants[16].Identifier", file));
+            DeleteFile(string.Format("{0}:Zone.Identifier", file));
         }
 
         private static void Cfg(string file)
