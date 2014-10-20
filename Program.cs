@@ -180,26 +180,35 @@ namespace lol.updater
                         directX.Start();
                         directX.WaitForExit();
                     }
-                    if (string.IsNullOrEmpty(_cgBinPath))
-                    {
-                        CgCheck();
-                    }
-                    else
-                    {
-                        if (Hash(Path.Combine(_cgBinPath, CgFiles[0]),
+                    if (string.IsNullOrEmpty(_cgBinPath) || (Hash(Path.Combine(_cgBinPath, CgFiles[0]),
                             "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22")
                             ||
                             Hash(Path.Combine(_cgBinPath, CgFiles[1]),
                                 "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2")
                             ||
                             Hash(Path.Combine(_cgBinPath, CgFiles[2]),
-                                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"))
+                                "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b")))
+                    {
+                        if (File.Exists(Constants[20]))
                         {
-
-                            CgCheck();
-
+                            if (Hash(Constants[20],
+                                "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114")
+                                )
+                            {
+                                FileFix(Constants[20]);
+                                CgStart();
+                            }
+                            else
+                            {
+                                DownloadCg();
+                            }
+                        }
+                        else
+                        {
+                            DownloadCg();
                         }
                     }
+
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
                     using (
                         var stream =
@@ -229,10 +238,10 @@ namespace lol.updater
                     Console.WriteLine(
                         "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
                     var input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && Options.Contains(input, StringComparer.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(input) &&
+                        Options.Contains(input, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        if (input.Equals(Options[0], StringComparison.CurrentCultureIgnoreCase))
-                        {
+                        if (!input.Equals(Options[0], StringComparison.CurrentCultureIgnoreCase)) return;
                             var airUninst = new Process
                             {
                                 StartInfo = new ProcessStartInfo
@@ -243,7 +252,6 @@ namespace lol.updater
                             };
                             airUninst.Start();
                             airUninst.WaitForExit();
-                        }
                     }
                     else
                     {
@@ -262,7 +270,7 @@ namespace lol.updater
                                             item["Name"].ToString()
                                                 .Any(
                                                     x =>
-                                                        new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains
+                                                        new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}.Contains
                                                             (x.ToString(CultureInfo.InvariantCulture))))
                                         ? "Avx2.dll"
                                         : (Dll(17, Constants[1]) & Dll(2, "GetEnabledXStateFeatures")
@@ -332,33 +340,11 @@ namespace lol.updater
             }
         }
 
-        private static void CgCheck()
-        {
-            if (File.Exists(Constants[20]))
-            {
-                if (Hash(Constants[20],
-                    "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114")
-                    )
-                {
-                    FileFix(Constants[20]);
-                    CgStart();
-                }
-                else
-                {
-                    DownloadCg();
-                }
-            }
-            else
-            {
-                DownloadCg();
-            }
-        }
-
         private static void AirPrompt()
         {
-                Console.WriteLine(
-                    "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
-                var input = Console.ReadLine();
+            Console.WriteLine(
+                "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
+            var input = Console.ReadLine();
 
             if (string.IsNullOrEmpty(input) || !Options.Contains(input, StringComparer.InvariantCultureIgnoreCase))
                 return;
@@ -445,7 +431,7 @@ namespace lol.updater
             if (pDll == IntPtr.Zero) return false;
             if (pFunc != IntPtr.Zero)
             {
-                var bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
+                var bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -461,56 +447,41 @@ namespace lol.updater
                     path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".bak"));
                 if (mode.Value)
                 {
-                    if (!File.Exists(dir)) return;
-                    if ((file.Equals(CgFiles[0]) &&
-                         Hash(dir,
-                             "9e1af39c5ba05b5c76ff186c6dffff36f547cdbc116c3eb3ac67c9100ecfffac352ff9180e832a83f68dd18791a38c15338da430f7cdf849ff46c861b179e412")) ||
-                        (file.Equals(CgFiles[1]) &&
-                         Hash(dir,
-                             "090da4f0cb70313674bfd8efaad93d06c532941bde6cb31461106087ded89887ad0ab1c2d1e5670cc5fc564704ccc99214f3b7aff02fc7f1482af8307856c0f6")) ||
-                        (file.Equals(CgFiles[2]) &&
-                         Hash(dir,
-                             "3b0388e24097e108a8a21361f1319da1951d1714a0303aa0ef7c9c79e40943c80c5e7b05d8997a40b140acbaef97ced3ebdb9831c0d16475c01208e6ca09c50e")) ||
-                        (file.Equals(Constants[3]) &&
-                         Hash(dir,
-                             "80893899429650508b05da062f538a1fa20ec45ca84d42706f583bb86627a389305914424731be5721815039ccc1018e23a08eacfae651978621112d63570efa")) ||
-                        (file.Equals(Constants[6]) &&
-                         Hash(dir,
-                             "cb508d33a84530a4b588f960b67404a1c10f7617f3a6db5a6b84a4f2742438dcd72a27191246e763b67afdaf075cc155a2a5c9a9d4d65578afb7857b0d16b2ef")) ||
-                        (file.Contains(Constants[0]) &&
-                         Hash(dir,
-                             "12a3f24ecc788d7751c25fe99adcd7fdb11472e28b998e905dbd5f8687ea663a9eec0b83a543557f3e61ef6ed7104e11e17d981c7dce886644d782db18ffaa92")) ||
-                        path.Equals(Config))
-                    {
-                        QuickCopy(dir, bak);
-                    }
+                    if (!File.Exists(dir) || (!file.Equals(CgFiles[0]) || !Hash(dir,
+                        "9e1af39c5ba05b5c76ff186c6dffff36f547cdbc116c3eb3ac67c9100ecfffac352ff9180e832a83f68dd18791a38c15338da430f7cdf849ff46c861b179e412")) &&
+                        (!file.Equals(CgFiles[1]) || !Hash(dir,
+                            "090da4f0cb70313674bfd8efaad93d06c532941bde6cb31461106087ded89887ad0ab1c2d1e5670cc5fc564704ccc99214f3b7aff02fc7f1482af8307856c0f6")) &&
+                        (!file.Equals(CgFiles[2]) || !Hash(dir,
+                            "3b0388e24097e108a8a21361f1319da1951d1714a0303aa0ef7c9c79e40943c80c5e7b05d8997a40b140acbaef97ced3ebdb9831c0d16475c01208e6ca09c50e")) &&
+                        (!file.Equals(Constants[3]) || !Hash(dir,
+                            "80893899429650508b05da062f538a1fa20ec45ca84d42706f583bb86627a389305914424731be5721815039ccc1018e23a08eacfae651978621112d63570efa")) &&
+                        (!file.Equals(Constants[6]) || !Hash(dir,
+                            "cb508d33a84530a4b588f960b67404a1c10f7617f3a6db5a6b84a4f2742438dcd72a27191246e763b67afdaf075cc155a2a5c9a9d4d65578afb7857b0d16b2ef")) &&
+                        (!file.Contains(Constants[0]) || !Hash(dir,
+                            "12a3f24ecc788d7751c25fe99adcd7fdb11472e28b998e905dbd5f8687ea663a9eec0b83a543557f3e61ef6ed7104e11e17d981c7dce886644d782db18ffaa92")) &&
+                        !path.Equals(Config)) return;
+                    QuickCopy(dir, bak);
                 }
                 else
                 {
                     var exe = Path.Combine(
                         path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".exe"));
-                    if (!File.Exists(bak)) return;
-                    if (path.Equals(Game) || file.Equals(Constants[6]) || file.Contains(Constants[0]) ||
-                        path.Contains(Config))
-                    {
-                        QuickCopy(bak, exe);
-                    }
+                    if (!File.Exists(bak) || !path.Equals(Game) && !file.Equals(Constants[6]) && !file.Contains(Constants[0]) &&
+                        !path.Contains(Config)) return;
+                    QuickCopy(bak, exe);
                 }
             }
             else
             {
                 var dir = Path.Combine(from, file);
                 var toDir = Path.Combine(to, file);
-                if (!File.Exists(dir)) return;
-                if ((file.Equals(CgFiles[0]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[0]))) ||
-                    (file.Equals(CgFiles[1]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[1]))) ||
-                    (file.Equals(CgFiles[2]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[2]))) ||
-                    (file.Equals(Constants[6]) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[6])))) ||
-                    (file.Contains(Constants[0]) &&
-                     !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7], Constants[0])))))
-                {
-                    QuickCopy(dir, toDir);
-                }
+                if (!File.Exists(dir) || (!file.Equals(CgFiles[0]) || Hash(dir, Path.Combine(_cgBinPath, CgFiles[0]))) &&
+                    (!file.Equals(CgFiles[1]) || Hash(dir, Path.Combine(_cgBinPath, CgFiles[1]))) &&
+                    (!file.Equals(CgFiles[2]) || Hash(dir, Path.Combine(_cgBinPath, CgFiles[2]))) &&
+                    (!file.Equals(Constants[6]) || Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[6])))) &&
+                    (!file.Contains(Constants[0]) ||
+                     Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7], Constants[0]))))) return;
+                QuickCopy(dir, toDir);
             }
         }
 
@@ -525,13 +496,11 @@ namespace lol.updater
 
         private static void FileFix(string file)
         {
-            if (new FileInfo(file).Attributes
-                .Equals(FileAttributes.ReadOnly))
-            {
-                File.SetAttributes(file,
-                    FileAttributes.Normal);
-            }
             DeleteFile(string.Format("{0}:ZConstants[16].Identifier", file));
+            if (!new FileInfo(file).Attributes
+                .Equals(FileAttributes.ReadOnly)) return;
+            File.SetAttributes(file,
+                FileAttributes.Normal);
         }
 
         private static void Cfg(string file)
@@ -601,7 +570,6 @@ namespace lol.updater
         };
 
         private static readonly string[] Options = {"Y", "N"};
-
         private static readonly bool X64 = Environment.Is64BitOperatingSystem;
 
         private static readonly string AdobePath =
@@ -615,7 +583,7 @@ namespace lol.updater
                 .Cast<ManagementBaseObject>();
 
         private static readonly bool Riot = Directory.Exists(Constants[8]);
-        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
+        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Constants[8], Constants[11], Constants[13], Constants[15], Ver(Constants[11], Constants[13]),
