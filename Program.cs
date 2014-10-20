@@ -157,7 +157,7 @@ namespace lol.updater
                     }
                     using (
                         var stream =
-                            ((HttpWebRequest) WebRequest.Create(new Uri(
+                            ((HttpWebRequest)WebRequest.Create(new Uri(
                         "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"))).GetResponse()
                                 .GetResponseStream())
                     {
@@ -193,6 +193,7 @@ namespace lol.updater
                                 )
                             {
                                 ReadOnlyToNormal(Constants[20]);
+                                UnblockFile(Constants[20]);
                                 CgStart();
                             }
                             else
@@ -207,9 +208,20 @@ namespace lol.updater
                     }
 
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
+                    Parallel.ForEach(
+                                                Process.GetProcesses()
+                                                    .Where(
+                                                        process =>
+                                                            string.Equals(process.ProcessName, "Adobe AIR Installer",
+                                                                StringComparison.CurrentCultureIgnoreCase)).AsParallel()
+                                                , process =>
+                                                {
+                                                    process.Kill();
+                                                    process.WaitForExit();
+                                                });
                     using (
                         var stream =
-                                ((HttpWebRequest) WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                                ((HttpWebRequest)WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
                         Constants[19]))).GetResponse()
                                 .GetResponseStream())
                     {
@@ -237,16 +249,16 @@ namespace lol.updater
                         Options.Contains(input, StringComparer.InvariantCultureIgnoreCase))
                     {
                         if (!input.Equals(Options[0], StringComparison.CurrentCultureIgnoreCase)) return;
-                            var airUninst = new Process
+                        var airUninst = new Process
+                        {
+                            StartInfo = new ProcessStartInfo
                             {
-                                StartInfo = new ProcessStartInfo
-                                {
-                                    FileName = Constants[19],
-                                    Arguments = "-uninstall"
-                                }
-                            };
-                            airUninst.Start();
-                            airUninst.WaitForExit();
+                                FileName = Constants[19],
+                                Arguments = "-uninstall"
+                            }
+                        };
+                        airUninst.Start();
+                        airUninst.WaitForExit();
                     }
                     else
                     {
@@ -257,9 +269,8 @@ namespace lol.updater
                     using (
                         var stream =
                            ((HttpWebRequest)WebRequest.Create(new Uri(
-                        new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
-                        ((os.Platform == PlatformID.Win32NT) && os.Version.Major > 5)
-                            ? "Xp.dll"
+                        new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"), (os.Platform == PlatformID.Win32NT && os.Version.Major == 5)
+                        ? "Xp.dll"
                             : CpuInfo.AsParallel().Any(
                                 item =>
                                     item["Name"].ToString()
@@ -294,17 +305,15 @@ namespace lol.updater
                                     "{0} Please report that you got here to the lolupdater team on the website",
                                     e.Message);
                             }
-                            if (File.Exists(Constants[3]))
+                            finally
                             {
                                 if (!Hash(Path.Combine(Game, Constants[3]), Sha512Sum(Constants[3])))
                                 {
-                                    ByteDl(stream, Path.Combine(Game, Constants[3]));
+                                    Copy(string.Empty, string.Empty, Constants[3], Game,
+                                        null);
                                 }
+
                                 File.Delete(Constants[3]);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Error patching tbb, please contact the lolupdater team");
                             }
                         }
                         else
@@ -369,7 +378,7 @@ namespace lol.updater
 
         private static void DownloadCg()
         {
-            using (var stream = ((HttpWebRequest) WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+            using (var stream = ((HttpWebRequest)WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
                     Constants[20]))).GetResponse()
                 .GetResponseStream())
             {
@@ -387,7 +396,7 @@ namespace lol.updater
                     {
                         FileName =
                             Constants[20],
-                        Arguments = "/silent /TYPE=compact"
+                        Arguments = "/verysilent /TYPE=compact"
                     }
             };
             cg.Start();
@@ -419,12 +428,12 @@ namespace lol.updater
         private static bool Dll(byte arg, string func)
         {
             var ok = false;
-            var pDll = LoadLibrary(Constants[3]);
+            var pDll = LoadLibrary(SKernel);
             var pFunc = GetProcAddress(pDll, func);
             if (pDll == IntPtr.Zero) return false;
             if (pFunc != IntPtr.Zero)
             {
-                var bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
+                var bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -473,7 +482,7 @@ namespace lol.updater
                     (!file.Equals(CgFiles[2]) || Hash(dir, Path.Combine(_cgBinPath, CgFiles[2]))) &&
                     (!file.Equals(Constants[6]) || Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[6])))) &&
                     (!file.Contains(Constants[0]) ||
-                     Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7], Constants[0]))))) return;
+                     Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7], Constants[0])))) && !file.Equals(Constants[3])) return;
                 QuickCopy(dir, toDir);
             }
         }
@@ -487,17 +496,17 @@ namespace lol.updater
             UnblockFile(to);
         }
 
-        private static void ReadOnlyToNormal(string file)
+        private static void ReadOnlyToNormal(string filepath)
         {
-            if (!new FileInfo(file).Attributes
+            if (!new FileInfo(filepath).Attributes
                 .Equals(FileAttributes.ReadOnly)) return;
-            File.SetAttributes(file,
+            File.SetAttributes(filepath,
                 FileAttributes.Normal);
         }
 
-        private static void UnblockFile(string file)
+        private static void UnblockFile(string filepath)
         {
-            DeleteFile(string.Format("{0}:Zone.Identifier", file));
+            DeleteFile(string.Format("{0}:Zone.Identifier", filepath));
         }
 
         private static void Cfg(string file)
@@ -511,12 +520,12 @@ namespace lol.updater
             if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
-                    string.Format("{0}{1}", Environment.NewLine, Constants[6]));
+                    string.Format("{0}{1}", Environment.NewLine, Constants[5]));
             }
             else
             {
-                if (!text.Contains(Constants[6])) return;
-                text = text.Replace(Constants[6], "DefaultParticleMultiThreading=0");
+                if (!text.Contains(Constants[5])) return;
+                text = text.Replace(Constants[5], "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(dir, text);
             UnblockFile(dir);
@@ -566,7 +575,7 @@ namespace lol.updater
             "air15_win.exe", "Cg-3.1_April2012_Setup.exe"
         };
 
-        private static readonly string[] Options = {"Y", "N"};
+        private static readonly string[] Options = { "Y", "N" };
         private static readonly bool X64 = Environment.Is64BitOperatingSystem;
 
         private static readonly string AdobePath =
@@ -580,7 +589,7 @@ namespace lol.updater
                 .Cast<ManagementBaseObject>();
 
         private static readonly bool Riot = Directory.Exists(Constants[8]);
-        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
+        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Constants[8], Constants[11], Constants[13], Constants[15], Ver(Constants[11], Constants[13]),
@@ -595,7 +604,7 @@ namespace lol.updater
 
         private static readonly string Config = Riot
             ? "Config"
-            : Path.Combine(Constants[17], "DATA", "CFG", "defaults");
+            : Path.Combine(Constants[18], "DATA", "CFG", "defaults");
 
         private static int _userInput;
 
