@@ -465,10 +465,10 @@ namespace lol.updater
                              "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b")) ||
                         (file.Equals(Constants[4]) && Hash(dir, TbbSum)) ||
                         (file.Equals(Constants[7]) &&
-                         !Hash(dir,
+                         Hash(dir,
                              "cb508d33a84530a4b588f960b67404a1c10f7617f3a6db5a6b84a4f2742438dcd72a27191246e763b67afdaf075cc155a2a5c9a9d4d65578afb7857b0d16b2ef")) ||
                         (file.Contains(Constants[1]) &&
-                         !Hash(dir,
+                         Hash(dir,
                              "12a3f24ecc788d7751c25fe99adcd7fdb11472e28b998e905dbd5f8687ea663a9eec0b83a543557f3e61ef6ed7104e11e17d981c7dce886644d782db18ffaa92")) ||
                         path.Equals(Config))
                     {
