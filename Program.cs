@@ -37,67 +37,67 @@ namespace lol.updater
                 @"Global\TOTALLYNOTMYMUTEXVERYRANDOMANDRARE#DOGE: {9bba28e3-c2a3-4c71-a4f8-bb72b2f57c3b}");
             if (!mutex.WaitOne(TimeSpan.Zero, true)) return;
             GC.KeepAlive(mutex);
-                if (args.Length > 0)
+            if (args.Length > 0)
+            {
+                switch (args[0])
                 {
-                    switch (args[0])
+                    case "/?":
+                    case "-h":
+                    case "--help":
+                        Console.WriteLine(string.Join("Command-Line Arguments:", string.Empty,
+                            "-install : Installs LoLUpdater", "-uninst : Uninstalls LoLUpdater",
+                            "--help /? -h : Shows this menu"));
+                        Console.ReadLine();
+                        break;
+                    case "-install":
+                        _userInput = 1;
+                        Patch();
+                        break;
+                    case "-uninst":
+                        _userInput = 2;
+                        Patch();
+                        break;
+                }
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine(string.Join(Environment.NewLine,
+                    "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur",
+                    string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
+                    "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
+                int key = 0;
+                try
+                {
+                    key = Convert.ToInt32(Console.ReadLine());
+                }
+                catch (FormatException)
+                {
+                    Main(args);
+                }
+                catch (OverflowException)
+                {
+                    Main(args);
+                }
+                finally
+                {
+                    if (key == 1 || key == 2 || key == 3)
                     {
-                        case "/?":
-                        case "-h":
-                        case "--help":
-                            Console.WriteLine(string.Join("Command-Line Arguments:", string.Empty,
-                                "-install : Installs LoLUpdater", "-uninst : Uninstalls LoLUpdater",
-                                "--help /? -h : Shows this menu"));
-                            Console.ReadLine();
-                            break;
-                        case "-install":
-                            _userInput = 1;
-                            Patch();
-                            break;
-                        case "-uninst":
-                            _userInput = 2;
-                            Patch();
-                            break;
+                        if (key == 3)
+                        {
+                            Environment.Exit(0);
+                        }
+                        _userInput = key;
+                        Console.Clear();
+                        Patch();
+                    }
+                    else
+                    {
+                        Main(args);
                     }
                 }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine(string.Join(Environment.NewLine,
-                        "By installing you agree to that the lolupdater-team is not responsible for any damages or lost data if any of such would occur",
-                        string.Empty, "For a list of Command-Line Arguments, start lolupdater with --help", string.Empty,
-                        "Select method:", string.Empty, "1. Install/Update", "2. Uninstall", "3. Exit"));
-                        int key = 0;
-                    try
-                    {
-                        key = Convert.ToInt32(Console.ReadLine());
-                    }
-                    catch (FormatException)
-                    {
-                        Main(args);
-                    }
-                    catch (OverflowException)
-                    {
-                        Main(args);
-                    }
-                    finally
-                    {
-                        if (key == 1 || key == 2 || key == 3)
-                        {
-                            if (key == 3)
-                            {
-                                Environment.Exit(0);
-                            }
-                            _userInput = key;
-                            Console.Clear();
-                            Patch();
-                        }
-                        else
-                        {
-                            Main(args);
-                        }
-                    }
 
-                }
+            }
         }
 
         private static void Patch()
@@ -132,13 +132,13 @@ namespace lol.updater
             Copy(string.Empty, Adobe, Path.Combine(Constants[7], Constants[0]), string.Empty, installing);
             string[] garenaCfgFiles =
             {
-               Constants[5], "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
+               Constants[4], "GamePermanent.cfg", "GamePermanent_zh_MY.cfg",
                 "GamePermanent_en_SG.cfg"
             };
             // Just some extra File.Exists check, just in case, can obviously be expanded to verify the legitimacy of a LoL-installation.
             if (Riot & File.Exists("lol.launcher.exe"))
             {
-                Copy(string.Empty, Config, Constants[5], string.Empty, installing);
+                Copy(string.Empty, Config, Constants[4], string.Empty, installing);
             }
             else
             {
@@ -166,59 +166,7 @@ namespace lol.updater
                         pmbProcess.Start();
                         pmbProcess.WaitForExit();
                     }
-                    using (
-                        var stream =
-                            WebRequest.Create(
-                                new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                                    Constants[19]))
-                                .GetResponse()
-                                .GetResponseStream())
-                    {
-                        ByteDl(stream, Constants[19]);
-                    }
-                    var airwin = new Process
-                    {
-                        StartInfo =
-                            new ProcessStartInfo
-                            {
-                                FileName =
-                                    Constants[19],
-                                Arguments = "-silent"
-                            }
-                    };
-                    airwin.Start();
-                    airwin.WaitForExit();
-                    Console.WriteLine(
-                        "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
-                    var input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input))
-                    {
-                        if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) ||
-                            input.Equals("N", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            if (!input.Equals("Y", StringComparison.CurrentCultureIgnoreCase)) return;
-                                var airUninst = new Process
-                                {
-                                    StartInfo =
-                                        new ProcessStartInfo
-                                        {
-                                            FileName =
-                                                Constants[19],
-                                            Arguments = "-uninstall"
-                                        }
-                                };
-                                airUninst.Start();
-                                airUninst.WaitForExit();
-                        }
-                        else
-                        {
-                            AirPrompt();
-                        }
-                    }
-                    else
-                    {
-                        AirPrompt();
-                    }
+
                     using (
                         var stream =
                             WebRequest.Create(
@@ -243,10 +191,9 @@ namespace lol.updater
                         directX.Start();
                         directX.WaitForExit();
                     }
-                    if (string.IsNullOrEmpty(_cgBinPath) ||
-                        (!Hash(Path.Combine(_cgBinPath, CgFiles[0]), "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22"))
-                        || (!Hash(Path.Combine(_cgBinPath, CgFiles[1]), "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2"))
-                        || (!Hash(Path.Combine(_cgBinPath, CgFiles[2]), "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b")))
+                    if (string.IsNullOrEmpty(_cgBinPath) || !Hash(Path.Combine(_cgBinPath, CgFiles[0]), "ba3d17fc13894ee301bc11692d57222a21a9d9bbc060fb079741926fb10c9b1f5a4409b59dbf63f6a90a2f7aed245d52ead62ee9c6f8942732b405d4dfc13a22")
+                        || !Hash(Path.Combine(_cgBinPath, CgFiles[1]), "db7dd6d8b86732744807463081f408356f3031277f551c93d34b3bab3dbbd7f9bca8c03bf9533e94c6282c5fa68fa1f5066d56d9c47810d5ebbe7cee0df64db2")
+                        || !Hash(Path.Combine(_cgBinPath, CgFiles[2]), "cad3b5bc15349fb7a71205e7da5596a0cb53cd14ae2112e84f9a5bd844714b9e7b06e56b5938d303e5f7ab077cfa79f450f9f293de09563537125882d2094a2b"))
                     {
                         if (File.Exists(Constants[20]))
                         {
@@ -259,31 +206,86 @@ namespace lol.updater
                             }
                             else
                             {
-                                CgStart2();
+                                DownloadCg();
                             }
                         }
                         else
                         {
-                            CgStart2();
+                            DownloadCg();
                         }
                     }
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
+                    using (
+                        var stream =
+                            WebRequest.Create(
+                                new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                                    Constants[19]))
+                                .GetResponse()
+                                .GetResponseStream())
+                    {
+                        ByteDl(stream, Constants[19]);
+                    }
+                    var airwin = new Process
+                    {
+                        StartInfo =
+                            new ProcessStartInfo
+                            {
+                                FileName =
+                                    Constants[19],
+                                Arguments = "-silent"
+                            }
+                    };
+                    airwin.Start();
+                    airwin.WaitForExit();
+
                     Copy(AdobePath, string.Empty, Constants[6], Adobe, null);
                     Copy(AdobePath, string.Empty, Path.Combine(Constants[7], Constants[0]), Adobe, null);
+                    Console.WriteLine(
+                        "Do you need/use the Adobe AIR redistributable for anything special? If not press Y to uninstall it (Recommended!), otherwise press N");
+                    var input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input))
+                    {
+
+                        if (input.Equals("Y", StringComparison.CurrentCultureIgnoreCase) || input.Equals("N", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            if (!input.Equals("Y", StringComparison.CurrentCultureIgnoreCase)) return;
+                                var airUninst = new Process
+                                {
+                                    StartInfo =
+                                        new ProcessStartInfo
+                                        {
+                                            FileName =
+                                                Constants[19],
+                                            Arguments = "-uninstall"
+                                        }
+                                };
+                                airUninst.Start();
+                                airUninst.WaitForExit();
+                        }
+                        else
+                        {
+                            AirPrompt();
+                        }
+
+                    }
+                    else
+                    {
+                        AirPrompt();
+                    }
 
                     var os = Environment.OSVersion;
                     using (
                         var stream =
                             WebRequest.Create(new Uri(
                                 new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
-                                (os.Platform == PlatformID.Win32NT) && os.Version.Major > 5
+                                os.Platform == PlatformID.Win32NT && os.Version.Major > 5
                                     ? "Xp.dll"
                                     : CpuInfo.AsParallel().Any(
                                         item =>
                                             item["Name"].ToString()
                                                 .Any(
                                                     x =>
-                                                        new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}.Contains
+                                                        new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains
                                                             (x.ToString(CultureInfo.InvariantCulture))))
                                         ? "Avx2.dll"
                                         : (Dll(17, Constants[1]) & Dll(2, "GetEnabledXStateFeatures")
@@ -311,12 +313,18 @@ namespace lol.updater
                                    "{0} Please report that you got here to the lolupdater team on the website",
                                    ex.Message);
                             }
-                            if (!File.Exists(Constants[3])) return;
-                            if (!Hash(Path.Combine(Game, Constants[3]), Sha512Sum(Constants[3])))
+                            if (File.Exists(Constants[3]))
                             {
-                                ByteDl(stream, Path.Combine(Game, Constants[3]));
+                                if (!Hash(Path.Combine(Game, Constants[3]), Sha512Sum(Constants[3])))
+                                {
+                                    ByteDl(stream, Path.Combine(Game, Constants[3]));
+                                }
+                                File.Delete(Constants[3]);
                             }
-                            File.Delete(Constants[3]);
+                            else
+                            {
+                                Console.WriteLine("Error patching tbb, please contact the lolupdater team");
+                            }
                         }
                         else
                         {
@@ -394,7 +402,7 @@ namespace lol.updater
             }
         }
 
-        private static void CgStart2()
+        private static void DownloadCg()
         {
             using (var stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
                 Constants[20]))
@@ -452,7 +460,7 @@ namespace lol.updater
             if (pDll == IntPtr.Zero) return false;
             if (pFunc != IntPtr.Zero)
             {
-                var bar = (DllType) Marshal.GetDelegateForFunctionPointer(pFunc, typeof (DllType));
+                var bar = (DllType)Marshal.GetDelegateForFunctionPointer(pFunc, typeof(DllType));
                 ok = bar(arg);
             }
             FreeLibrary(pDll);
@@ -465,7 +473,7 @@ namespace lol.updater
             {
                 var dir = Path.Combine(path, file);
                 var bak = Path.Combine(
-                    path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".bak"));
+                    path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".bak"));
                 if (mode.Value)
                 {
                     if (!File.Exists(dir)) return;
@@ -478,11 +486,11 @@ namespace lol.updater
                         (file.Equals(CgFiles[2]) &&
                          Hash(dir,
                              "3b0388e24097e108a8a21361f1319da1951d1714a0303aa0ef7c9c79e40943c80c5e7b05d8997a40b140acbaef97ced3ebdb9831c0d16475c01208e6ca09c50e")) ||
-                        (file.Equals(Constants[4]) && Hash(dir, "80893899429650508b05da062f538a1fa20ec45ca84d42706f583bb86627a389305914424731be5721815039ccc1018e23a08eacfae651978621112d63570efa")) ||
-                        (file.Equals(Constants[7]) &&
+                        (file.Equals(Constants[3]) && Hash(dir, "80893899429650508b05da062f538a1fa20ec45ca84d42706f583bb86627a389305914424731be5721815039ccc1018e23a08eacfae651978621112d63570efa")) ||
+                        (file.Equals(Constants[6]) &&
                          Hash(dir,
                              "cb508d33a84530a4b588f960b67404a1c10f7617f3a6db5a6b84a4f2742438dcd72a27191246e763b67afdaf075cc155a2a5c9a9d4d65578afb7857b0d16b2ef")) ||
-                        (file.Contains(Constants[1]) &&
+                        (file.Contains(Constants[0]) &&
                          Hash(dir,
                              "12a3f24ecc788d7751c25fe99adcd7fdb11472e28b998e905dbd5f8687ea663a9eec0b83a543557f3e61ef6ed7104e11e17d981c7dce886644d782db18ffaa92")) ||
                         path.Equals(Config))
@@ -493,9 +501,9 @@ namespace lol.updater
                 else
                 {
                     var exe = Path.Combine(
-                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(dir), ".exe"));
+                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".exe"));
                     if (!File.Exists(bak)) return;
-                    if (path.Equals(Game) || file.Equals(Constants[7]) || file.Contains(Constants[1]) || path.Contains(Config))
+                    if (path.Equals(Game) || file.Equals(Constants[6]) || file.Contains(Constants[0]) || path.Contains(Config))
                     {
                         QuickCopy(bak, exe);
                     }
@@ -506,12 +514,11 @@ namespace lol.updater
                 var dir = Path.Combine(from, file);
                 var toDir = Path.Combine(to, file);
                 if (!File.Exists(dir)) return;
-                if ((file.Equals(CgFiles[0]) && !Hash(dir, Path.Combine(_cgBinPath, "cg.dll"))) ||
-                    (file.Equals(CgFiles[1]) && !Hash(dir, Path.Combine(_cgBinPath, "cgGL.dll"))) ||
-                    (file.Equals(CgFiles[2]) && !Hash(dir, Path.Combine(_cgBinPath, "cgD3D9.dll"))) ||
-                    (file.Equals(Constants[7]) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7])))) ||
-                    (file.Contains(Constants[1]) & File.Exists(dir) &&
-                     !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[8], Constants[1])))))
+                if ((file.Equals(CgFiles[0]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[0]))) ||
+                    (file.Equals(CgFiles[1]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[1]))) ||
+                    (file.Equals(CgFiles[2]) && !Hash(dir, Path.Combine(_cgBinPath, CgFiles[2]))) ||
+                    (file.Equals(Constants[6]) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[6])))) ||
+                    (file.Contains(Constants[0]) && !Hash(toDir, Sha512Sum(Path.Combine(AdobePath, Constants[7], Constants[0])))))
                 {
                     QuickCopy(dir, toDir);
                 }
@@ -605,7 +612,7 @@ namespace lol.updater
                 .Cast<ManagementBaseObject>();
 
         private static readonly bool Riot = Directory.Exists(Constants[8]);
-        private static readonly string[] CgFiles = {"Cg.dll", "CgGL.dll", "CgD3D9.dll"};
+        private static readonly string[] CgFiles = { "Cg.dll", "CgGL.dll", "CgD3D9.dll" };
 
         private static readonly string Adobe = Riot
             ? Path.Combine(Constants[8], Constants[11], Constants[13], Constants[15], Ver(Constants[11], Constants[13]), Constants[10], Constants[17], Constants[9],
