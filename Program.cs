@@ -155,11 +155,10 @@ namespace lol.updater
                         pmbProcess.Start();
                         pmbProcess.WaitForExit();
                     }
-                    var request = (HttpWebRequest) WebRequest.Create(new Uri(
-                        "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"));
                     using (
                         var stream =
-                            request.GetResponse()
+                            ((HttpWebRequest) WebRequest.Create(new Uri(
+                        "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"))).GetResponse()
                                 .GetResponseStream())
                     {
                         const string dX = "dxwebsetup.exe";
@@ -208,11 +207,10 @@ namespace lol.updater
                     }
 
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
-                    var request1 = (HttpWebRequest) WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                        Constants[19]));
                     using (
                         var stream =
-                                request1.GetResponse()
+                                ((HttpWebRequest) WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                        Constants[19]))).GetResponse()
                                 .GetResponseStream())
                     {
                         ByteDl(stream, Constants[19]);
@@ -256,7 +254,9 @@ namespace lol.updater
                     }
 
                     var os = Environment.OSVersion;
-                    var request2 = (HttpWebRequest) WebRequest.Create(new Uri(
+                    using (
+                        var stream =
+                           ((HttpWebRequest)WebRequest.Create(new Uri(
                         new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
                         os.Platform == PlatformID.Win32NT && os.Version.Major > 5
                             ? "Xp.dll"
@@ -265,18 +265,14 @@ namespace lol.updater
                                     item["Name"].ToString()
                                         .Any(
                                             x =>
-                                                new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}.Contains
+                                                new[] { "Haswell", "Broadwell", "Skylake", "Cannonlake" }.Contains
                                                     (x.ToString(CultureInfo.InvariantCulture))))
                                 ? "Avx2.dll"
                                 : (Dll(17, Constants[1]) & Dll(2, "GetEnabledXStateFeatures")
                                     ? "Avx.dll"
                                     : (Dll(10, Constants[1])
                                         ? "Sse2.dll"
-                                        : Dll(6, Constants[1]) ? "Sse.dll" : "Default.dll"))));
-                    using (
-                        var stream =
-                           request2
-                                .GetResponse()
+                                        : Dll(6, Constants[1]) ? "Sse.dll" : "Default.dll"))))).GetResponse()
                                 .GetResponseStream())
                     {
                         if (File.Exists(Path.Combine(Game, Constants[3])))
@@ -286,17 +282,17 @@ namespace lol.updater
                             {
                                 ByteDl(stream, Constants[3]);
                             }
-                            catch (WebException ex)
+                            catch (WebException e)
                             {
                                 Console.WriteLine(
                                     "{0} If you lost internet connection please rerun lolupdater later with an internet connection, else report bug to the lolupdater-team",
-                                    ex.Message);
+                                    e.Message);
                             }
-                            catch (Exception ex)
+                            catch (Exception e)
                             {
                                 Console.WriteLine(
                                     "{0} Please report that you got here to the lolupdater team on the website",
-                                    ex.Message);
+                                    e.Message);
                             }
                             if (File.Exists(Constants[3]))
                             {
@@ -373,10 +369,8 @@ namespace lol.updater
 
         private static void DownloadCg()
         {
-            var request =
-                (HttpWebRequest) WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                    Constants[20]));
-            using (var stream = request.GetResponse()
+            using (var stream = ((HttpWebRequest) WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+                    Constants[20]))).GetResponse()
                 .GetResponseStream())
             {
                 ByteDl(stream, Constants[20]);
