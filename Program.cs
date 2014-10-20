@@ -155,13 +155,11 @@ namespace lol.updater
                         pmbProcess.Start();
                         pmbProcess.WaitForExit();
                     }
-
+                    var request = (HttpWebRequest) WebRequest.Create(new Uri(
+                        "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"));
                     using (
                         var stream =
-                            WebRequest.Create(
-                                new Uri(
-                                    "http://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"))
-                                .GetResponse()
+                            request.GetResponse()
                                 .GetResponseStream())
                     {
                         const string dX = "dxwebsetup.exe";
@@ -210,12 +208,11 @@ namespace lol.updater
                     }
 
                     Parallel.ForEach(CgFiles, file => { Copy(_cgBinPath, string.Empty, file, Game, null); });
+                    var request1 = (HttpWebRequest) WebRequest.Create(new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
+                        Constants[19]));
                     using (
                         var stream =
-                            WebRequest.Create(
-                                new Uri(new Uri("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/"),
-                                    Constants[19]))
-                                .GetResponse()
+                                request1.GetResponse()
                                 .GetResponseStream())
                     {
                         ByteDl(stream, Constants[19]);
@@ -259,25 +256,26 @@ namespace lol.updater
                     }
 
                     var os = Environment.OSVersion;
+                    var request2 = (HttpWebRequest) WebRequest.Create(new Uri(
+                        new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
+                        os.Platform == PlatformID.Win32NT && os.Version.Major > 5
+                            ? "Xp.dll"
+                            : CpuInfo.AsParallel().Any(
+                                item =>
+                                    item["Name"].ToString()
+                                        .Any(
+                                            x =>
+                                                new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}.Contains
+                                                    (x.ToString(CultureInfo.InvariantCulture))))
+                                ? "Avx2.dll"
+                                : (Dll(17, Constants[1]) & Dll(2, "GetEnabledXStateFeatures")
+                                    ? "Avx.dll"
+                                    : (Dll(10, Constants[1])
+                                        ? "Sse2.dll"
+                                        : Dll(6, Constants[1]) ? "Sse.dll" : "Default.dll"))));
                     using (
                         var stream =
-                            WebRequest.Create(new Uri(
-                                new Uri("https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/"),
-                                os.Platform == PlatformID.Win32NT && os.Version.Major > 5
-                                    ? "Xp.dll"
-                                    : CpuInfo.AsParallel().Any(
-                                        item =>
-                                            item["Name"].ToString()
-                                                .Any(
-                                                    x =>
-                                                        new[] {"Haswell", "Broadwell", "Skylake", "Cannonlake"}.Contains
-                                                            (x.ToString(CultureInfo.InvariantCulture))))
-                                        ? "Avx2.dll"
-                                        : (Dll(17, Constants[1]) & Dll(2, "GetEnabledXStateFeatures")
-                                            ? "Avx.dll"
-                                            : (Dll(10, Constants[1])
-                                                ? "Sse2.dll"
-                                                : Dll(6, Constants[1]) ? "Sse.dll" : "Default.dll"))))
+                           request2
                                 .GetResponse()
                                 .GetResponseStream())
                     {
@@ -375,9 +373,10 @@ namespace lol.updater
 
         private static void DownloadCg()
         {
-            using (var stream = WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
-                Constants[20]))
-                .GetResponse()
+            var request =
+                (HttpWebRequest) WebRequest.Create(new Uri(new Uri("http://developer.download.nvidia.com/cg/Cg_3.1/"),
+                    Constants[20]));
+            using (var stream = request.GetResponse()
                 .GetResponseStream())
             {
                 ByteDl(stream, Constants[20]);
