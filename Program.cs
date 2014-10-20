@@ -195,7 +195,7 @@ namespace lol.updater
                                 "066792a95eaa99a3dde3a10877a4bcd201834223eeee2b05b274f04112e55123df50478680984c5882a27eb2137e4833ed4f3468127d81bc8451f033bba75114")
                                 )
                             {
-                                FileFix(Constants[20]);
+                                ReadOnlyToNormal(Constants[20]);
                                 CgStart();
                             }
                             else
@@ -283,7 +283,7 @@ namespace lol.updater
                     {
                         if (File.Exists(Path.Combine(Game, Constants[3])))
                         {
-                            FileFix(Path.Combine(Game, Constants[3]));
+                            ReadOnlyToNormal(Path.Combine(Game, Constants[3]));
                             try
                             {
                                 ByteDl(stream, Constants[3]);
@@ -415,7 +415,7 @@ namespace lol.updater
                     memoryStream.Write(buffer, 0, count);
                 } while (count != 0);
                 File.WriteAllBytes(path, memoryStream.ToArray());
-                FileFix(path);
+                UnblockFile(path);
             }
         }
 
@@ -487,27 +487,31 @@ namespace lol.updater
 
         private static void QuickCopy(string from, string to)
         {
-            FileFix(from);
+            ReadOnlyToNormal(from);
             File.Copy(from
                 , to,
                 true);
-            FileFix(to);
+            UnblockFile(to);
         }
 
-        private static void FileFix(string file)
+        private static void ReadOnlyToNormal(string file)
         {
-            DeleteFile(string.Format("{0}:ZConstants[16].Identifier", file));
             if (!new FileInfo(file).Attributes
                 .Equals(FileAttributes.ReadOnly)) return;
             File.SetAttributes(file,
                 FileAttributes.Normal);
         }
 
+        private static void UnblockFile(string file)
+        {
+            DeleteFile(string.Format("{0}:ZConstants[16].Identifier", file));
+        }
+
         private static void Cfg(string file)
         {
             var dir = Path.Combine(Config, file);
             if (!File.Exists(dir)) return;
-            FileFix(dir);
+            ReadOnlyToNormal(dir);
             var text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
                 string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
@@ -522,7 +526,7 @@ namespace lol.updater
                 text = text.Replace(Constants[6], "DefaultParticleMultiThreading=0");
             }
             File.WriteAllText(dir, text);
-            FileFix(dir);
+            UnblockFile(dir);
         }
 
         private static bool Hash(string file, string sha512)
