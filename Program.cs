@@ -457,7 +457,7 @@ namespace lol.updater
             {
                 var dir = Path.Combine(path, file);
                 var bak = Path.Combine(
-                    path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".bak"));
+                    path, string.Concat(Path.GetFileNameWithoutExtension(file), ".bak"));
                 if (mode.Value)
                 {
                     if (!File.Exists(dir) || (!file.Equals(CgFiles[0]) || !Hash(dir,
@@ -478,7 +478,7 @@ namespace lol.updater
                 else
                 {
                     var exe = Path.Combine(
-                        path, string.Format("{0}{1}", Path.GetFileNameWithoutExtension(file), ".exe"));
+                        path, string.Concat(Path.GetFileNameWithoutExtension(file), ".exe"));
                     if (!File.Exists(bak) || !path.Equals(Game) && !file.Equals(Constants[6]) && !file.Contains(Constants[0]) &&
                         !path.Contains(Config)) return;
                     QuickCopy(bak, exe);
@@ -527,11 +527,11 @@ namespace lol.updater
             ReadOnlyToNormal(dir);
             var text = File.ReadAllText(dir);
             text = Regex.Replace(text, "\nEnableParticleOptimization=[01]|$",
-                string.Format("{0}{1}", Environment.NewLine, "EnableParticleOptimization=1"));
+                string.Concat(Environment.NewLine, "EnableParticleOptimization=1"));
             if (CpuInfo.AsParallel().Sum(item => Convert.ToInt32(item["NumberOfCores"])) > 1)
             {
                 text = Regex.Replace(text, "\nDefaultParticleMultiThreading=[01]|$",
-                    string.Format("{0}{1}", Environment.NewLine, Constants[5]));
+                    string.Concat(Environment.NewLine, Constants[5]));
             }
             else
             {
