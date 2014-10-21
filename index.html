@@ -5,12 +5,8 @@ layout: default
 <span id="hero"><a href="https://github.com/Loggan08/LoLUpdater/">Open-Source</a> high performance patch for League of Legends, coded in C# by Loggan & DavidKnack</span>
 <hr>
 <dt><a href="http://svenskautogrupp.se/lol.updater.exe" class="btn">Download LoLUpdater v0.0.0.2</a></dt>
-<p>Last updated: 2014-10-19, 14:50 GMT+1</p>
-<p>Basically in LoLUpdater there are 4 files for the game and two files for the pvp.net client
-3 of those game files are in one toolkit called "Cg", this program just updates the files to the latest version, then the other file called tbb.dll is very old in the game, so I got the source code for free and compiled it (created .dll from source files) in 5 different versions, each version of the tbb file is created for specific processors, first is the normal default one, then there is the normal one with SSE support (an SMID instruction), then there is one for SSE2, AVX and AVX2, in the lolupdater program it checks for what SMID instructions are supported and installs the tbb version with the highest supported version, lolupdater uninstalls PMB (malware), and applies the "EnableParticleOptimization" config tweak to the game, this is a config option that tweaks the lol engine, then it installs "DefaultParticleMultiThreading" support if your computer has 2 or more cores (lolupdater checks for this), then for the 2 pvp net files they are Adobe AIR.dll and "NPSWF32.dll" also called the Adobe Flash library, this again is outdated in lol so lolupdater attempts to bring these two .dll files to the latest version.  It has built in stuff that autoupdates these dlls when updates are available.
-it only updates them if you run lolupdater, there is no service that is on all the time
-CG is provided by Nvidia and is now deprecated (will never update again), and for some reason Riot uses 3.0 when the latest is 3.1
-Tbb is provided by Intel, and "Adobe Air" and "NPSWF32" are both Adobe files</p>
+<p>Last updated: 2014-10-21 29:38GMT+1</p>
+<p>For a x8007005(Access Denied) Exception you need to add your computer as "network address" in the credentials manager (control panel), then you login details to allow WMI to query your computer for computer details.</p>
 <dl>
 <iframe width="560" height="315" src="//www.youtube.com/embed/7NKi7KFGzWs" frameborder="0" allowfullscreen></iframe>
     <dt>LoLUpdater requires the <a href="http://download.microsoft.com/download/7/B/6/7B629E05-399A-4A92-B5BC-484C74B5124B/dotNetFx40_Client_setup.exe">.NET Framework 4.0</a></dt>
