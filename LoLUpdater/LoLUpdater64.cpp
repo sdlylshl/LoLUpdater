@@ -216,7 +216,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			NULL
 			);
 	}
-	if (isAvxSupported())
+
+
+	extern int isAvxSupported();
+
+
+	if (isAvxSupported() == 1)
 	{
 		URLDownloadToFile(
 			NULL,
