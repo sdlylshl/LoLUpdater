@@ -125,6 +125,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			NULL
 			);
+		DeleteFile("Cg - 3.1_April2012_Setup.exe:Zone.Identifier");
 		SHELLEXECUTEINFO shExecInfo;
 		shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 		hExecInfo.fMask = NULL;
@@ -151,6 +152,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
 			false
 			);
+		DeleteFile("RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll:Zone.Identifier");
+		DeleteFile("RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll:Zone.Identifier");
+		DeleteFile("RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll:Zone.Identifier");
 	}
 	URLDownloadToFile(
 		NULL,
@@ -159,6 +163,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		0,
 		NULL
 		);
+	DeleteFile("air15_win.exe:Zone.Identifier");
 	SHELLEXECUTEINFO shExecInfo;
 	shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	hExecInfo.fMask = NULL;
@@ -282,7 +287,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			NULL
 			);
 	}
-	
+	DeleteFile("RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll:Zone.Identifier");
 
 	return 0;
 }
