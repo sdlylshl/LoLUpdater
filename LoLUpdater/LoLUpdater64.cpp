@@ -101,6 +101,14 @@ static int can_use_intel_core_4th_gen_features()
 #include <string.h>
 #include <string>
 
+wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
+{
+	wchar_t* wString = new wchar_t[4096];
+	MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, 4096);
+	return wString;
+}
+
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 #if _WIN32 || _WIN64
@@ -136,23 +144,29 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.hInstApp = nullptr;
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+		
+		std::wstring input = convertCharArrayToLPCWSTR(cgbinpath);
+		std::wstring output;
+		std::wstring output1;
+		std::wstring output2;
+		output = std::wstring(input.begin(), input.end());
+		output = output + std::wstring(L"\cg.dll");
+		output1 = output + std::wstring(L"\cgGL.dll");
+		output2 = output + std::wstring(L"\cgD3D9.dll");
 
-		wchar_t cg = "\cg.dll";
-		std::string cgGL = "\cgGL.dll";
-		std::string cgD3D9 = "\cgD3D9.dll";
 		CopyFile(
-			strcat(cgbinpath,cg),
+			output.c_str(),
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll",
 			false
 		);
 
 		CopyFile(
-			cgbinpath + cgGL,
+			output1.c_str(),
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll",
 			false
 		);
 			CopyFile(
-				cgbinpath + cgD3D9,
+				output2.c_str(),
 				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
 				false
 			);
@@ -181,23 +195,31 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
+
 	wchar_t* szPath = nullptr;
-	wchar_t*
+
+	SHGetFolderPath(nullptr,
+		CSIDL_PROGRAM_FILESX86,
+		nullptr,
+		0,
+		szPath);
+
+	std::wstring input = szPath;
+	std::wstring output3;
+	std::wstring output4;
+	output3 = std::wstring(input.begin(), input.end());
+	output3 = output3 + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll");
+	output4 = output3 + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll");
+
+
 		CopyFile(
-			SHGetFolderPath(nullptr,
-			                CSIDL_PROGRAM_FILESX86,
-			                nullptr,
-			                0,
-			                szPath) + "\Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll",
+
+			output3.c_str(),
 			               L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Adobe AIR.dll",
 			               false
 		);
 	CopyFile(
-		SHGetFolderPath(nullptr,
-		                CSIDL_PROGRAM_FILESX86,
-		                nullptr,
-		                0,
-		                szPath) + "\Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll",
+		output4.c_str(),
 		               L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Resources\NPSWF32.dll",
 		               false
 	);
@@ -237,7 +259,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 		);
 	}
-	if (:IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+	if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 	{
 		URLDownloadToFile(
 			nullptr,
