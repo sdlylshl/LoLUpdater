@@ -90,23 +90,23 @@ static int can_use_intel_core_4th_gen_features()
 
 	return the_4th_gen_features_available;
 }
-
+#include <tchar.h>
 #include <stdio.h>
 #include "ShlObj.h"
 #include <VersionHelpers.h>
-#include "stdafx.h"
 #include "Urlmon.h"
 #include "Windows.h"
 #include "stdlib.h"
 #include <string.h>
 #include <string>
 
-wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
-{
-	wchar_t* wString = new wchar_t[4096];
-	MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, 4096);
-	return wString;
-}
+// Windows 7 SP1 is the first version of Windows to support the AVX API.
+
+// The value for CONTEXT_XSTATE has changed between Windows 7 and
+// Windows 7 SP1 and greater.
+// While the value will be correct for future SDK headers, we need to set 
+// this value manually when building with a Windows 7 SDK for running on 
+// Windows 7 SPI OS bits.
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -119,22 +119,27 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 
-	char* cgbinpath = getenv("CG_BIN_PATH");
+	DWORD bufferSize = 65535;
+	std::wstring buff;
+	buff.resize(bufferSize);
+
+
+	DWORD cgbinpath = GetEnvironmentVariableW(L"CG_BIN_PATH", &buff[0], bufferSize);
 
 	if (cgbinpath == NULL)
 	{
-		URLDownloadToFile(
+		URLDownloadToFileA(
 			nullptr,
 			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
 			L"Cg-3.1_April2012_Setup.exe",
 			0,
 			nullptr
-		);
+			);
 		DeleteFile(L"Cg - 3.1_April2012_Setup.exe:Zone.Identifier");
 
-		SHELLEXECUTEINFO ShExecInfo = {0};
+		SHELLEXECUTEINFO ShExecInfo = { 0 };
 		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
 		ShExecInfo.lpFile = L"Cg - 3.1_April2012_Setup.exe";
@@ -144,8 +149,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.hInstApp = nullptr;
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-		
-		std::wstring input = convertCharArrayToLPCWSTR(cgbinpath);
+
+		std::string input = std::to_string(cgbinpath);
 		std::wstring output;
 		std::wstring output1;
 		std::wstring output2;
@@ -158,33 +163,33 @@ int _tmain(int argc, _TCHAR* argv[])
 			output.c_str(),
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll",
 			false
-		);
+			);
 
 		CopyFile(
 			output1.c_str(),
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll",
 			false
-		);
-			CopyFile(
-				output2.c_str(),
-				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
-				false
+			);
+		CopyFile(
+			output2.c_str(),
+			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
+			false
 			);
 		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll:Zone.Identifier");
 		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll:Zone.Identifier");
 		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll:Zone.Identifier");
 	}
-	URLDownloadToFile(
+	URLDownloadToFileA(
 		nullptr,
-		L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-		L"air15_win.exe",
+		"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
+		"air15_win.exe",
 		0,
 		nullptr
-	);
+		);
 	DeleteFile(L"air15_win.exe:Zone.Identifier");
-	SHELLEXECUTEINFO ShExecInfo = {0};
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
 	ShExecInfo.lpFile = L"air15_win.exe";
@@ -212,74 +217,127 @@ int _tmain(int argc, _TCHAR* argv[])
 	output4 = output3 + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll");
 
 
-		CopyFile(
+	CopyFile(
 
-			output3.c_str(),
-			               L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Adobe AIR.dll",
-			               false
+		output3.c_str(),
+		L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Adobe AIR.dll",
+		false
 		);
 	CopyFile(
 		output4.c_str(),
-		               L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Resources\NPSWF32.dll",
-		               false
-	);
+		L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Resources\NPSWF32.dll",
+		false
+		);
 
 
 	if (can_use_intel_core_4th_gen_features())
 	{
-		URLDownloadToFile(
+		URLDownloadToFileA(
 			nullptr,
 			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 			0,
 			nullptr
-		);
+			);
 	}
+#undef CONTEXT_XSTATE
+
+#if defined(_M_X64)
+#define CONTEXT_XSTATE                      (0x00100040)
+#else
+#define CONTEXT_XSTATE                      (0x00010040)
+#endif
+
+	// Since the AVX API is not declared in the Windows 7 SDK headers and 
+	// since we don't have the proper libs to work with, we will declare 
+	// the API as function pointers and get them with GetProcAddress calls 
+	// from kernel32.dll.  We also need to set some #defines.
+
+#define XSTATE_AVX                          (XSTATE_GSSE)
+#define XSTATE_MASK_AVX                     (XSTATE_MASK_GSSE)
+
+	typedef DWORD64(WINAPI *PGETENABLEDXSTATEFEATURES)();
+	PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = NULL;
+
+	typedef BOOL(WINAPI *PINITIALIZECONTEXT)(PVOID Buffer, DWORD ContextFlags, PCONTEXT* Context, PDWORD ContextLength);
+	PINITIALIZECONTEXT pfnInitializeContext = NULL;
+
+	typedef BOOL(WINAPI *PGETXSTATEFEATURESMASK)(PCONTEXT Context, PDWORD64 FeatureMask);
+	PGETXSTATEFEATURESMASK pfnGetXStateFeaturesMask = NULL;
+
+	typedef PVOID(WINAPI *LOCATEXSTATEFEATURE)(PCONTEXT Context, DWORD FeatureId, PDWORD Length);
+	LOCATEXSTATEFEATURE pfnLocateXStateFeature = NULL;
+
+	typedef BOOL(WINAPI *SETXSTATEFEATURESMASK)(PCONTEXT Context, DWORD64 FeatureMask);
+	SETXSTATEFEATURESMASK pfnSetXStateFeaturesMask = NULL;
 
 
-	extern int isAvxSupported();
+	PVOID Buffer;
+	PCONTEXT Context;
+	DWORD ContextSize;
+	DWORD64 FeatureMask;
+	DWORD FeatureLength;
+	ULONG Index;
+	BOOL Success;
+	PM128A Xmm;
+	PM128A Ymm;
 
-	if (isAvxSupported() == 1)
-	{
-		URLDownloadToFile(
-			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
-			0,
-			nullptr
-		);
-	}
-	if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
-	{
-		URLDownloadToFile(
-			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
-			0,
-			nullptr
-		);
-	}
-	if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-	{
-		URLDownloadToFile(
-			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
-			0,
-			nullptr
-		);
-	}
-	else
-	{
-		URLDownloadToFile(
-			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
-			0,
-			nullptr
-		);
-	}
-	DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll:Zone.Identifier");
 
-	return 0;
+
+	// Get the addresses of the AVX XState functions.
+	if (pfnGetEnabledXStateFeatures == NULL)
+	{
+		HMODULE hm = GetModuleHandle(_T("kernel32.dll"));
+
+		pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(hm, "GetEnabledXStateFeatures");
+		pfnInitializeContext = (PINITIALIZECONTEXT)GetProcAddress(hm, "InitializeContext");
+		pfnGetXStateFeaturesMask = (PGETXSTATEFEATURESMASK)GetProcAddress(hm, "GetXStateFeaturesMask");
+		pfnLocateXStateFeature = (LOCATEXSTATEFEATURE)GetProcAddress(hm, "LocateXStateFeature");
+		pfnSetXStateFeaturesMask = (SETXSTATEFEATURESMASK)GetProcAddress(hm, "SetXStateFeaturesMask");
+
+
+		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
+		{
+			URLDownloadToFileA(
+				nullptr,
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				0,
+				nullptr
+				);
+		}
+		if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+		{
+			URLDownloadToFileA(
+				nullptr,
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
+				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				0,
+				nullptr
+				);
+		}
+		if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+		{
+			URLDownloadToFileA(
+				nullptr,
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
+				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				0,
+				nullptr
+				);
+		}
+		else
+		{
+			URLDownloadToFileA(
+				nullptr,
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
+				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				0,
+				nullptr
+				);
+		}
+		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll:Zone.Identifier");
+
+		return 0;
+	}
 }
