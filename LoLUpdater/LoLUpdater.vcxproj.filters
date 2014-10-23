@@ -32,6 +32,9 @@
     <ClCompile Include="LoLUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LoLUpdater64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPUID32.asm">
