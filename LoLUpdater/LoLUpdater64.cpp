@@ -1,17 +1,14 @@
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
-
-
-
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
 
 int check_4th_gen_intel_core_features()
 {
-	const int the_4th_gen_features =
+	const int the_4th_gen_features = 
 		(_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
-	return _may_i_use_cpu_feature(the_4th_gen_features);
+	return _may_i_use_cpu_feature( the_4th_gen_features );
 }
 
 #else /* non-Intel compiler */
@@ -21,7 +18,7 @@ int check_4th_gen_intel_core_features()
 # include <intrin.h>
 #endif
 
-void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
+void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
 #if defined(_MSC_VER)
 	__cpuidex(abcd, eax, ecx);
@@ -29,14 +26,14 @@ void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
 	uint32_t ebx, edx;
 # if defined( __i386__ ) && defined ( __PIC__ )
 	/* in case of PIC under 32-bit EBX cannot be clobbered */
-	__asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
+	__asm__ ( "movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
 # else
-	__asm__("cpuid" : "+b" (ebx),
+	__asm__ ( "cpuid" : "+b" (ebx),
 # endif
-		"+a" (eax), "+c" (ecx), "=d" (edx));
+		"+a" (eax), "+c" (ecx), "=d" (edx) );
 	abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
 #endif
-}
+}     
 
 int check_xcr0_ymm()
 {
@@ -52,7 +49,7 @@ int check_xcr0_ymm()
 
 int check_4th_gen_intel_core_features()
 {
-	uint32_t abcd[4];
+	int abcd[4];
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 
@@ -95,16 +92,14 @@ static int can_use_intel_core_4th_gen_features()
 }
 
 #include <stdio.h>
-
-
 #include "ShlObj.h"
-
 #include <VersionHelpers.h>
 #include "stdafx.h"
 #include "Urlmon.h"
 #include "Windows.h"
 #include "stdlib.h"
 #include <string.h>
+#include <string>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -127,29 +122,38 @@ int _tmain(int argc, _TCHAR* argv[])
 			NULL
 			);
 		DeleteFile(L"Cg - 3.1_April2012_Setup.exe:Zone.Identifier");
-		SHELLEXECUTEINFO shExecInfo;
-		shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-		shExecInfo.fMask = NULL;
-		shExecInfo.hwnd = NULL;
-		shExecInfo.lpFile = L"Cg-3.1_April2012_Setup.exe";
-		shExecInfo.lpParameters = L"/verysilent";
-		shExecInfo.lpDirectory = NULL;
-		shExecInfo.nShow = SW_NORMAL;
-		shExecInfo.hInstApp = NULL;
-		WaitForSingleObject(shExecInfo.shExecInfo, INFINITE);
-		char* cgbinpath = getenv("CG_BIN_PATH");
+		
+		SHELLEXECUTEINFO ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ShExecInfo.hwnd = NULL;
+		ShExecInfo.lpVerb = NULL;
+		ShExecInfo.lpFile = L"Cg - 3.1_April2012_Setup.exe";
+		ShExecInfo.lpParameters = L"/verysilent";
+		ShExecInfo.lpDirectory = NULL;
+		ShExecInfo.nShow = SW_SHOW;
+		ShExecInfo.hInstApp = NULL;
+		ShellExecuteEx(&ShExecInfo);
+		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+
+		cgbinpath = getenv("CG_BIN_PATH");
+		std::string cg = "\cg.dll";
+		std::string cgGL = "\cgGL.dll";
+		std::string cgD3D9 = "\cgD3D9.dll";
+		char*
 		CopyFile(
-			strcat(cgbinpath, "\cg.dll"),
+		cgbinpath + cgD3D9,
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll",
 			false
 			);
 		CopyFile(
-			strcat(cgbinpath, "\cgGL.dll"),
+		cgbinpath += cgGL,
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll",
 			false
 			);
+		char*
 		CopyFile(
-			strcat(cgbinpath, "\cgGL.dll"),
+		cgbinpath + cgD3D9,
 			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
 			false
 			);
@@ -165,49 +169,21 @@ int _tmain(int argc, _TCHAR* argv[])
 		NULL
 		);
 	DeleteFile(L"air15_win.exe:Zone.Identifier");
-	SHELLEXECUTEINFO shExecInfo;
-	shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	shExecInfo.fMask = NULL;
-	shExecInfo.hwnd = NULL;
-	shExecInfo.lpFile = L"air15_win.exe";
-	shExecInfo.lpParameters = L"-silent";
-	shExecInfo.lpDirectory = NULL;
-	shExecInfo.nShow = SW_NORMAL;
-	shExecInfo.hInstApp = NULL;
-	WaitForSingleObject(ShExecInfo.shExecInfo, INFINITE);
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = NULL;
+	ShExecInfo.lpVerb = NULL;
+	ShExecInfo.lpFile = L"air15_win.exe";
+	ShExecInfo.lpParameters = L"-silent";
+	ShExecInfo.lpDirectory = NULL;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = NULL;
+	ShellExecuteEx(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
-	TCHAR szPath[MAX_PATH];
-	wchar_t *
-	if (ENIRONMENT32)
-	{
-		CopyFile(
-
-			SHGetFolderPath(NULL,
-			CSIDL_PROGRAM_FILESX86,
-			NULL,
-			0,
-			szPath) + "\Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll",
-			L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Adobe AIR.dll",
-			false
-			);
-		TCHAR szPath[MAX_PATH];
-		wchar_t*
-			
-		CopyFile(
-			SHGetFolderPath(NULL,
-			CSIDL_PROGRAM_FILESX86,
-			NULL,
-			0,
-			szPath) + "\Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll",
-			L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Resources\NPSWF32.dll",
-			false
-			);
-
-		;
-	}
-	else
-	{
-
+	wchar_t* szPath;
+	char
 		CopyFile(
 			SHGetFolderPath(NULL,
 			CSIDL_PROGRAM_FILESX86,
@@ -227,22 +203,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			false
 			);
 		
-	}
-	OSVERSIONINFO	vi;
-
-	memset(&vi, 0, sizeof vi);
-	vi.dwOSVersionInfoSize = sizeof vi;
-	GetVersionEx(&vi);
-	if (vi.dwPlatformId == VER_PLATFORM_WIN32_NT  &&  vi.dwMajorVersion = < )
-	{
-		URLDownloadToFile(
-			NULL,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/XP.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
-			0,
-			NULL
-			);
-	}
 
 
 	if (can_use_intel_core_4th_gen_features())
@@ -298,6 +258,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll:Zone.Identifier");
 
-	return 0;
+	return 1;
 }
 
