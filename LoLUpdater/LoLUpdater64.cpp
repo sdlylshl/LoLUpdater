@@ -99,15 +99,7 @@ static int can_use_intel_core_4th_gen_features()
 #include "stdlib.h"
 #include <string.h>
 #include <string>
-
-// Windows 7 SP1 is the first version of Windows to support the AVX API.
-
-// The value for CONTEXT_XSTATE has changed between Windows 7 and
-// Windows 7 SP1 and greater.
-// While the value will be correct for future SDK headers, we need to set 
-// this value manually when building with a Windows 7 SDK for running on 
-// Windows 7 SPI OS bits.
-
+#include "Shlwapi.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -119,10 +111,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 
-	char* libvar;
-	size_t requiredSize;
-	errno_t cgbinpath;
-	cgbinpath = getenv_s(&requiredSize, nullptr, 0, "CG_BIN_PATH");
+	char* cgbinpath = getenv("CG_BIN_PATH");
 
 	if (cgbinpath == NULL)
 	{
@@ -133,7 +122,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-		DeleteFile(L"Cg - 3.1_April2012_Setup.exe:Zone.Identifier");
+		DeleteFileA("Cg-3.1_April2012_Setup.exe:Zone.Identifier");
 
 		SHELLEXECUTEINFO ShExecInfo = { 0 };
 		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -148,34 +137,51 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
-	std::string input = std::to_string(cgbinpath);
-	std::wstring output;
-	std::wstring output1;
-	std::wstring output2;
-	output = std::wstring(input.begin(), input.end());
-	output = output + std::wstring(L"cg.dll");
-	output1 = output + std::wstring(L"cgGL.dll");
-	output2 = output + std::wstring(L"cgD3D9.dll");
 
+	char buffer_1[MAX_PATH] = "";
+	char *lpStr1;
+	lpStr1 = buffer_1;
+
+	// String for balance of path name.
+	wchar_t* buffer_3 = L"\Cg.dll";
+	wchar_t *lpStr3;
+	lpStr3 = buffer_3;
+
+	// String for directory name.
+	wchar_t* buffer_2 = cgbinpath;
+	wchar_t *lpStr2;
+	lpStr2 = buffer_2;
+
+	// String for directory name.
+	wchar_t* buffer_4 = L"\CgGL.dll";
+	wchar_t *lpStr4;
+	lpStr4 = buffer_4;
+
+	// String for directory name.
+	wchar_t* buffer_5 = L"\CgD3D9.dll";
+	wchar_t *lpStr5;
+	lpStr5 = buffer_5;
+	PathCombine(lpStr1, lpStr3, lpStr2);
 	CopyFile(
-		output.c_str(),
+		lpStr1,
 		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\Cg.dll",
 		false
 		);
-
+	PathCombine(lpStr1, lpStr4, lpStr2);
 	CopyFile(
-		output1.c_str(),
+		lpStr1,
 		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgGL.dll",
 		false
 		);
+	PathCombine(lpStr1, lpStr5, lpStr2);
 	CopyFile(
-		output2.c_str(),
+		lpStr1,
 		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgD3D9.dll",
 		false
 		);
-	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\Cg.dll:Zone.Identifier");
-	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgGL.dll:Zone.Identifier");
-	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgD3D9.dll:Zone.Identifier");
+	DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\Cg.dll:Zone.Identifier");
+	DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgGL.dll:Zone.Identifier");
+	DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgD3D9.dll:Zone.Identifier");
 
 	URLDownloadToFileA(
 		nullptr,
@@ -184,7 +190,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		0,
 		nullptr
 		);
-	DeleteFile(L"air15_win.exe:Zone.Identifier");
+	DeleteFileA("air15_win.exe:Zone.Identifier");
 	SHELLEXECUTEINFO ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -209,7 +215,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::wstring output3;
 	std::wstring output4;
-	output3 = szPath + std::wstring(L"Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll");
+	output3 = szPath + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll");
 	output4 = szPath + std::wstring(L"Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll");
 
 
@@ -243,55 +249,16 @@ int _tmain(int argc, _TCHAR* argv[])
 #define CONTEXT_XSTATE                      (0x00010040)
 #endif
 
-	// Since the AVX API is not declared in the Windows 7 SDK headers and 
-	// since we don't have the proper libs to work with, we will declare 
-	// the API as function pointers and get them with GetProcAddress calls 
-	// from kernel32.dll.  We also need to set some #defines.
 
-#define XSTATE_AVX                          (XSTATE_GSSE)
 #define XSTATE_MASK_AVX                     (XSTATE_MASK_GSSE)
 
 	typedef DWORD64(WINAPI *PGETENABLEDXSTATEFEATURES)();
-	PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = nullptr;
-
-	typedef BOOL(WINAPI *PINITIALIZECONTEXT)(PVOID Buffer, DWORD ContextFlags, PCONTEXT* Context, PDWORD ContextLength);
-	PINITIALIZECONTEXT pfnInitializeContext = NULL;
-
-	typedef BOOL(WINAPI *PGETXSTATEFEATURESMASK)(PCONTEXT Context, PDWORD64 FeatureMask);
-	PGETXSTATEFEATURESMASK pfnGetXStateFeaturesMask = NULL;
-
-	typedef PVOID(WINAPI *LOCATEXSTATEFEATURE)(PCONTEXT Context, DWORD FeatureId, PDWORD Length);
-	LOCATEXSTATEFEATURE pfnLocateXStateFeature = NULL;
-
-	typedef BOOL(WINAPI *SETXSTATEFEATURESMASK)(PCONTEXT Context, DWORD64 FeatureMask);
-	SETXSTATEFEATURESMASK pfnSetXStateFeaturesMask = NULL;
-
-
-	PVOID Buffer;
-	PCONTEXT Context;
-	DWORD ContextSize;
-	DWORD64 FeatureMask = 0;
-	DWORD FeatureLength;
-	ULONG Index;
-	BOOL Success;
-	PM128A Xmm;
-	PM128A Ymm;
-
-
-
-	// Get the addresses of the AVX XState functions.
-	if (pfnGetEnabledXStateFeatures == NULL)
-	{
 		HMODULE hm = GetModuleHandle(_T("kernel32.dll"));
 
-		pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(hm, "GetEnabledXStateFeatures");
-		pfnInitializeContext = (PINITIALIZECONTEXT)GetProcAddress(hm, "InitializeContext");
-		pfnGetXStateFeaturesMask = (PGETXSTATEFEATURESMASK)GetProcAddress(hm, "GetXStateFeaturesMask");
-		pfnLocateXStateFeature = (LOCATEXSTATEFEATURE)GetProcAddress(hm, "LocateXStateFeature");
-		pfnSetXStateFeaturesMask = (SETXSTATEFEATURESMASK)GetProcAddress(hm, "SetXStateFeaturesMask");
-
-
-		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
+		PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(hm, "GetEnabledXStateFeatures");
+		DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
+		// AVX
+		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != NULL)
 		{
 			URLDownloadToFileA(
 				nullptr,
@@ -301,6 +268,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				nullptr
 				);
 		}
+		//SSE2
 		if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 		{
 			URLDownloadToFileA(
@@ -311,6 +279,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				nullptr
 				);
 		}
+		//SSE
 		if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 		{
 			URLDownloadToFileA(
@@ -321,6 +290,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				nullptr
 				);
 		}
+		//Default
 		else
 		{
 			URLDownloadToFileA(
@@ -331,8 +301,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				nullptr
 				);
 		}
-		DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
+		DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
 
 		return 0;
-	}
 }

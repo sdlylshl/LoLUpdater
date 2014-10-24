@@ -30,12 +30,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="CPUID32.asm">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="CPUID64.asm">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>
