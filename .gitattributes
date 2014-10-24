@@ -1,10 +1,5 @@
-*.cs     text=auto
+*.cpp    text=auto
 *.sln    text=auto
-*.csproj text=auto
+*.vcxproj text=auto
 *.ico   binary
-*.coffe text=auto
-*.dll binary
-*.json text=auto
 *.md text=auto
-*.css text=auto
-*.html text=auto
