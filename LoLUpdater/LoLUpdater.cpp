@@ -255,16 +255,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 
 	char* tbb = "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll";
-	if (can_use_intel_core_4th_gen_features())
-	{
-		URLDownloadToFileA(
-			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
-			tbb,
-			0,
-			nullptr
-			);
-	}
+
 #undef CONTEXT_XSTATE
 
 #if defined(_M_X64)
@@ -281,50 +272,72 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(hm, "GetEnabledXStateFeatures");
 	DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
-	// AVX
-	if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != NULL)
+	if (can_use_intel_core_4th_gen_features())
 	{
 		URLDownloadToFileA(
 			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
 			tbb,
 			0,
 			nullptr
 			);
 	}
-	//SSE2
-	if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
-	{
-		URLDownloadToFileA(
-			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
-			tbb,
-			0,
-			nullptr
-			);
-	}
-	//SSE
-	if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-	{
-		URLDownloadToFileA(
-			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
-			tbb,
-			0,
-			nullptr
-			);
-	}
-	//Default
 	else
 	{
-		URLDownloadToFileA(
-			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-			tbb,
-			0,
-			nullptr
-			);
+		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != NULL)
+		{
+			URLDownloadToFileA(
+				nullptr,
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+				tbb,
+				0,
+				nullptr
+				);
+		}
+		else
+		{
+			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+			{
+				URLDownloadToFileA(
+					nullptr,
+					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
+					tbb,
+					0,
+					nullptr
+					);
+			}
+			else
+			{
+				//SSE
+				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+				{
+					URLDownloadToFileA(
+						nullptr,
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
+						tbb,
+						0,
+						nullptr
+						);
+				}
+				//Default
+				else
+				{
+					URLDownloadToFileA(
+						nullptr,
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
+						tbb,
+						0,
+						nullptr
+						);
+				}
+
+			}
+		}
 	}
+	
+	//SSE2
+	
+	
 	DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
 
 	return 1;
