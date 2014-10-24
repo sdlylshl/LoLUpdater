@@ -146,45 +146,45 @@ int _tmain(int argc, _TCHAR* argv[])
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 
-	wchar_t buffer_1[MAX_PATH] = L"";
-	wchar_t *lpStr1;
+	char buffer_1[MAX_PATH] = "";
+	char *lpStr1;
 	lpStr1 = buffer_1;
 
 	// String for balance of path name.
-	wchar_t* buffer_3 = L"\\Cg.dll";
-	wchar_t *lpStr3;
+	char* buffer_3 = "\\Cg.dll";
+	char *lpStr3;
 	lpStr3 = buffer_3;
 
 	// String for directory name.
-	wchar_t *buffer_2 = charToWChar(cgbinpath);
-	wchar_t *lpStr2;
+	char *buffer_2 = cgbinpath;
+	char *lpStr2;
 	lpStr2 = buffer_2;
 
 	// String for directory name.
-	wchar_t* buffer_4 = L"\\CgGL.dll";
-	wchar_t *lpStr4;
+	char* buffer_4 = "\\CgGL.dll";
+	char *lpStr4;
 	lpStr4 = buffer_4;
 
 	// String for directory name.
-	wchar_t* buffer_5 = L"\\CgD3D9.dll";
-	wchar_t *lpStr5;
+	char* buffer_5 = "\\CgD3D9.dll";
+	char *lpStr5;
 	lpStr5 = buffer_5;
-	PathCombine(lpStr1, lpStr3, lpStr2);
-	CopyFile(
+	PathCombineA(lpStr1, lpStr3, lpStr2);
+	CopyFileA(
 		lpStr1,
-		L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll",
+		"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll",
 		false
 		);
-	PathCombine(lpStr1, lpStr4, lpStr2);
-	CopyFile(
+	PathCombineA(lpStr1, lpStr4, lpStr2);
+	CopyFileA(
 		lpStr1,
-		L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll",
+		"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll",
 		false
 		);
-	PathCombine(lpStr1, lpStr5, lpStr2);
-	CopyFile(
+	PathCombineA(lpStr1, lpStr5, lpStr2);
+	CopyFileA(
 		lpStr1,
-		L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll",
+		"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll",
 		false
 		);
 	DeleteFileA("RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
@@ -215,32 +215,46 @@ int _tmain(int argc, _TCHAR* argv[])
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 
-	wchar_t* szPath = nullptr;
+	char* szPath = nullptr;
 
-	SHGetFolderPath(nullptr,
+	SHGetFolderPathA(nullptr,
 		CSIDL_PROGRAM_FILESX86,
 		nullptr,
 		0,
 		szPath);
 
-	std::wstring output3;
-	std::wstring output4;
-	output3 = szPath + std::wstring(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	output4 = szPath + std::wstring(L"Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+	char buffer_01[MAX_PATH] = "";
+	char *lpStr01;
+	lpStr01 = buffer_01;
 
+	// String for balance of path name.
+	char* buffer_03 = "\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll";
+	char *lpStr03;
+	lpStr03 = buffer_03;
 
-	CopyFile(
-		output3.c_str(),
-		L"RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Adobe AIR.dll",
+	// String for directory name.
+	char *buffer_02 = szPath;
+	char *lpStr02;
+	lpStr02 = buffer_02;
+
+	// String for balance of path name.
+	char* buffer_04 = "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll";
+	char *lpStr04;
+	lpStr04 = buffer_04;
+	PathCombineA(lpStr01, lpStr03, lpStr02);
+	CopyFileA(
+		lpStr01,
+		"RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Adobe AIR.dll",
 		false
 		);
-	CopyFile(
-		output4.c_str(),
-		L"RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll",
+	PathCombineA(lpStr01, lpStr04, lpStr02);
+	CopyFileA(
+		lpStr01,
+		"RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll",
 		false
 		);
 
-	char* tbb = "RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll";
+	char* tbb = "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll";
 	if (can_use_intel_core_4th_gen_features())
 	{
 		URLDownloadToFileA(
@@ -313,5 +327,5 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
 
-		return 0;
+		return 1;
 }
