@@ -119,12 +119,10 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #endif
 
-	DWORD bufferSize = 65535;
-	std::wstring buff;
-	buff.resize(bufferSize);
-
-
-	DWORD cgbinpath = GetEnvironmentVariableW(L"CG_BIN_PATH", &buff[0], bufferSize);
+	char* libvar;
+	size_t requiredSize;
+	errno_t cgbinpath;
+	cgbinpath = getenv_s(&requiredSize, nullptr, 0, "CG_BIN_PATH");
 
 	if (cgbinpath == NULL)
 	{
@@ -143,42 +141,42 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
 		ShExecInfo.lpFile = L"Cg-3.1_April2012_Setup.exe";
-		ShExecInfo.lpParameters = L"/verysilent";
+		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-
-		std::string input = std::to_string(cgbinpath);
-		std::wstring output;
-		std::wstring output1;
-		std::wstring output2;
-		output = std::wstring(input.begin(), input.end());
-		output = output + std::wstring(L"\cg.dll");
-		output1 = output + std::wstring(L"\cgGL.dll");
-		output2 = output + std::wstring(L"\cgD3D9.dll");
-
-		CopyFile(
-			output.c_str(),
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll",
-			false
-			);
-
-		CopyFile(
-			output1.c_str(),
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll",
-			false
-			);
-		CopyFile(
-			output2.c_str(),
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll",
-			false
-			);
-		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgD3D9.dll:Zone.Identifier");
-		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/Cg.dll:Zone.Identifier");
-		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/CgGL.dll:Zone.Identifier");
 	}
+	std::string input = std::to_string(cgbinpath);
+	std::wstring output;
+	std::wstring output1;
+	std::wstring output2;
+	output = std::wstring(input.begin(), input.end());
+	output = output + std::wstring(L"cg.dll");
+	output1 = output + std::wstring(L"cgGL.dll");
+	output2 = output + std::wstring(L"cgD3D9.dll");
+
+	CopyFile(
+		output.c_str(),
+		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\Cg.dll",
+		false
+		);
+
+	CopyFile(
+		output1.c_str(),
+		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgGL.dll",
+		false
+		);
+	CopyFile(
+		output2.c_str(),
+		L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgD3D9.dll",
+		false
+		);
+	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\Cg.dll:Zone.Identifier");
+	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgGL.dll:Zone.Identifier");
+	DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\CgD3D9.dll:Zone.Identifier");
+
 	URLDownloadToFileA(
 		nullptr,
 		"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
@@ -209,16 +207,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		0,
 		szPath);
 
-	std::wstring input = szPath;
 	std::wstring output3;
 	std::wstring output4;
-	output3 = std::wstring(input.begin(), input.end());
-	output3 = output3 + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll");
-	output4 = output3 + std::wstring(L"\Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll");
+	output3 = szPath + std::wstring(L"Common Files\Adobe AIR\Versions\1.0\Adobe AIR.dll");
+	output4 = szPath + std::wstring(L"Common Files\Adobe AIR\Versions\1.0\Resources\NPSWF32.dll");
 
 
 	CopyFile(
-
 		output3.c_str(),
 		L"RADS\projects\lol_air_client\releases\0.0.1.114\deploy\Adobe AIR\versions\1.0\Adobe AIR.dll",
 		false
@@ -229,13 +224,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		false
 		);
 
-
+	char* tbb = "RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll";
 	if (can_use_intel_core_4th_gen_features())
 	{
 		URLDownloadToFileA(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
-			"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+			tbb,
 			0,
 			nullptr
 			);
@@ -301,7 +296,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileA(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
-				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				tbb,
 				0,
 				nullptr
 				);
@@ -311,7 +306,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileA(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
-				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				tbb,
 				0,
 				nullptr
 				);
@@ -321,7 +316,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileA(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
-				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				tbb,
 				0,
 				nullptr
 				);
@@ -331,12 +326,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileA(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				tbb,
 				0,
 				nullptr
 				);
 		}
-		DeleteFile(L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll:Zone.Identifier");
+		DeleteFile(L"RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
 
 		return 0;
 	}
