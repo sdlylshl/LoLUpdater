@@ -97,7 +97,6 @@ static int can_use_intel_core_4th_gen_features()
 #include "Urlmon.h"
 #include "Windows.h"
 #include "stdlib.h"
-#include <string.h>
 #include <string>
 #include "Shlwapi.h"
 
@@ -119,17 +118,19 @@ std::string ExePath() {
 int _tmain(int argc, _TCHAR* argv[])
 {
 #if _WIN32 || _WIN64
+#include <direct.h>
+#define GetCurrentDir _getcwd
 #if _WIN64
 #define ENVIRONMENT64
 #else
 #define ENVIRONMENT32
 #endif
 #endif
-	
-	std::string path = ExePath();
-	char* start = strcpy((char*)malloc(path.length() + 1), path.c_str());
+	char cCurrentPath[FILENAME_MAX];
+	char* start = cCurrentPath;
+	printf(start);
 	char* cgbinpath = getenv("CG_BIN_PATH");
-
+	printf(cgbinpath);
 	if (cgbinpath == NULL)
 	{
 		URLDownloadToFileA(
@@ -203,7 +204,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(str3, start);
 	strcat(str3, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll");
 	puts(str3);
-
+	printf(lpStr1);
+	printf(str1);
 	CopyFileA(
 		lpStr1,
 		str1,
@@ -398,5 +400,5 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		DeleteFileA("RADS\solutions\lol_game_client_sln\releases\0.0.1.62\deploy\tbb.dll:Zone.Identifier");
 
-		return 1;
+		return 0;
 }
