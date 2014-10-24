@@ -130,8 +130,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		URLDownloadToFileA(
 			nullptr,
-			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			L"Cg-3.1_April2012_Setup.exe",
+			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+			"Cg-3.1_April2012_Setup.exe",
 			0,
 			nullptr
 			);
@@ -142,7 +142,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = L"Cg - 3.1_April2012_Setup.exe";
+		ShExecInfo.lpFile = L"Cg-3.1_April2012_Setup.exe";
 		ShExecInfo.lpParameters = L"/verysilent";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
@@ -234,8 +234,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		URLDownloadToFileA(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
-			L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
+			"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 			0,
 			nullptr
 			);
@@ -257,7 +257,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #define XSTATE_MASK_AVX                     (XSTATE_MASK_GSSE)
 
 	typedef DWORD64(WINAPI *PGETENABLEDXSTATEFEATURES)();
-	PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = NULL;
+	PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = nullptr;
 
 	typedef BOOL(WINAPI *PINITIALIZECONTEXT)(PVOID Buffer, DWORD ContextFlags, PCONTEXT* Context, PDWORD ContextLength);
 	PINITIALIZECONTEXT pfnInitializeContext = NULL;
@@ -275,7 +275,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	PVOID Buffer;
 	PCONTEXT Context;
 	DWORD ContextSize;
-	DWORD64 FeatureMask;
+	DWORD64 FeatureMask = 0;
 	DWORD FeatureLength;
 	ULONG Index;
 	BOOL Success;
@@ -300,8 +300,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileA(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
-				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 				0,
 				nullptr
 				);
@@ -310,8 +310,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileA(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
-				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
+				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 				0,
 				nullptr
 				);
@@ -320,8 +320,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileA(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
-				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
+				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 				0,
 				nullptr
 				);
@@ -330,8 +330,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileA(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-				L"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
+				"RADS/solutions/lol_game_client_sln/releases/0.0.1.62/deploy/tbb.dll",
 				0,
 				nullptr
 				);
