@@ -90,6 +90,10 @@ static int can_use_intel_core_4th_gen_features()
 
 	return the_4th_gen_features_available;
 }
+
+
+
+
 #include <tchar.h>
 #include <stdio.h>
 #include "ShlObj.h"
@@ -100,20 +104,16 @@ static int can_use_intel_core_4th_gen_features()
 #include <string>
 #include "Shlwapi.h"
 #include <direct.h>
-
-static wchar_t* charToWChar(const char* text)
+#include <fstream>
+bool is_file_exist(const char *fileName)
 {
-	size_t size = strlen(text) + 1;
-	wchar_t* wa = new wchar_t[size];
-	mbstowcs(wa, text, size);
-	return wa;
+	std::ifstream infile(fileName);
+	return infile.good();
 }
-
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 
-	char *buffer12 = nullptr;
+	char* buffer12 = nullptr;
 	char* start = _getcwd(
 		buffer12,
 		200
@@ -128,14 +128,14 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-		char strcg[1024];
+		char strcg[MAX_PATH];
 		strcpy(strcg, start);
 		strcat(strcg, "Cg-3.1_April2012_Setup.exe:Zone.Identifier");
 
 		DeleteFileA(strcg);
 
-		SHELLEXECUTEINFOA ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+		SHELLEXECUTEINFO ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
@@ -144,33 +144,67 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExA(&ShExecInfo);
+		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
-
-char str1[1024];
-	strcpy(str1, start);
-	strcat(str1, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll");
-
-	char str2[1024];
-	strcpy(str2, start);
-	strcat(str2, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll");
-
-	char str3[1024];
-	strcpy(str3, start);
-	strcat(str3, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll");
-
-	char str11[1024];
+	char str11[MAX_PATH];
 	strcpy(str11, cgbinpath);
 	strcat(str11, "\\Cg.dll");
 
-	char str22[1024];
+	char str22[MAX_PATH];
 	strcpy(str22, cgbinpath);
 	strcat(str22, "\\CgGL.dll");
 
-	char str33[1024];
+	char str33[MAX_PATH];
 	strcpy(str33, cgbinpath);
 	strcat(str33, "\\CgD3D9.dll");
+
+	char str1[MAX_PATH];
+	strcpy(str1, start);
+	strcat(str1, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll");
+
+	char str2[MAX_PATH];
+	strcpy(str2, start);
+	strcat(str2, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll");
+
+	char str3[MAX_PATH];
+	strcpy(str3, start);
+	strcat(str3, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll");
+
+	char str0[MAX_PATH];
+	strcpy(str0, start);
+	strcat(str0, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
+	char str01[MAX_PATH];
+	strcpy(str01, start);
+	strcat(str01, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll:Zone.Identifier");
+	char str02[MAX_PATH];
+	strcpy(str02, start);
+	strcat(str02, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll:Zone.Identifier");
+
+	if (is_file_exist("lol.exe"))
+	{
+		char str1[MAX_PATH];
+		strcpy(str1, start);
+		strcat(str1, "\\Game\\Cg.dll");
+
+		char str2[MAX_PATH];
+		strcpy(str2, start);
+		strcat(str1, "\\Game\\CgGL.dll");
+
+		char str3[MAX_PATH];
+		strcpy(str3, start);
+		strcat(str1, "\\Game\\CgD3D9.dll");
+
+		char str0[MAX_PATH];
+		strcpy(str0, start);
+		strcat(str0, "\\Game\\Cg.dll:Zone.Identifier");
+		char str01[MAX_PATH];
+		strcpy(str01, start);
+		strcat(str01, "\\Game\\CgGL.dll:Zone.Identifier");
+		char str02[MAX_PATH];
+		strcpy(str02, start);
+		strcat(str02, "\\Game\\\CgD3D9.dll:Zone.Identifier");
+	}
 
 	CopyFileA(
 		str11,
@@ -187,21 +221,13 @@ char str1[1024];
 		str3,
 		false
 		);
-	char str0[1024];
-	strcpy(str0, start);
-	strcat(str0, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
-	char str01[1024];
-	strcpy(str01, start);
-	strcat(str01, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll:Zone.Identifier");
-	char str02[1024];
-	strcpy(str02, start);
-	strcat(str02, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll:Zone.Identifier");
+
 	DeleteFileA(str0);
 	DeleteFileA(str01);
 	DeleteFileA(str02);
 
 
-	char strair[1024];
+	char strair[MAX_PATH];
 	strcpy(strair, start);
 	strcat(strair, "air15_win.exe:Zone.Identifier");
 	URLDownloadToFileA(
@@ -214,8 +240,8 @@ char str1[1024];
 	DeleteFileA(strair);
 
 
-	SHELLEXECUTEINFOA ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
@@ -224,59 +250,93 @@ char str1[1024];
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
 	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteExA(&ShExecInfo);
+	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
+	//Todo: Convert this to TCHAR*
+	char wide[MAX_PATH];
 
-	char* szPath = nullptr;
 
-	SHGetFolderPathA(nullptr,
+	SHGetFolderPathA(
+		nullptr,
 		CSIDL_PROGRAM_FILES,
 		nullptr,
-		0,
-		szPath);
+		NULL,
+		wide
+		);
 
-
-
-	char str00[1024];
-	strcpy(str00, szPath);
+	char str00[MAX_PATH];
+	strcpy(str00, wide);
 	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	printf(str00);
-	char str000[1024];
+	char str000[MAX_PATH];
 	strcpy(str000, start);
 	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	printf(str000);
+
+	char str001[MAX_PATH];
+	strcpy(str001, wide);
+	strcat(str001, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+	char str0001[MAX_PATH];
+	strcpy(str0001, start);
+	strcat(str0001, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+
+
+	if (is_file_exist("lol.exe"))
+	{
+		char str000[MAX_PATH];
+		strcpy(str000, start);
+		strcat(str000, "\\AIR\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
+
+		char str0001[MAX_PATH];
+		strcpy(str0001, start);
+		strcat(str0001, "\\AIR\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+
+
+
+	}
+
+
+
+
+
+
 	CopyFileA(
 		str00,
 		str000,
 		false
 		);
 
-	char str001[1024];
-	strcpy(str00, szPath);
-	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
-	char str0001[1024];
-	strcpy(str000, start);
-	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+
 	CopyFileA(
 		str001,
 		str0001,
 		false
 		);
 
-	char str0000[1024];
+	char str0000[MAX_PATH];
 	strcpy(str0000, str000);
 	strcat(str0000, ":Zone.Identifier");
-	puts(str0000);
-	DeleteFileA(str0000);
-	char str00001[1024];
+
+	char str00001[MAX_PATH];
 	strcpy(str00001, str0001);
 	strcat(str00001, ":Zone.Identifier");
+	DeleteFileA(str0000);
 	DeleteFileA(str00001);
 
-	char tbb[1024];
+	char tbb[MAX_PATH];
 	strcpy(tbb, start);
 	strcat(tbb, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll");
+
+	if (is_file_exist("lol.exe"))
+	{
+		char tbb[MAX_PATH];
+		strcpy(tbb, start);
+		strcat(tbb, "\\Game\\tbb.dll");
+
+	}
+
+
+
+
 
 #undef CONTEXT_XSTATE
 
@@ -297,24 +357,24 @@ char str1[1024];
 
 	if (can_use_intel_core_4th_gen_features())
 	{
-		printf("AVX2 true");
+
 		URLDownloadToFileA(
 			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
+			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
 			tbb,
 			0,
 			nullptr
 			);
+
 	}
 	else
 	{
 		// AVX
 		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
 		{
-			printf("AVX true");
 			URLDownloadToFileA(
 				nullptr,
-				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
 				0,
 				nullptr
@@ -322,13 +382,12 @@ char str1[1024];
 		}
 		else
 		{
-			printf("SSE2 true");
 			//SSE2
 			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
 				URLDownloadToFileA(
 					nullptr,
-					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
+					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
 					0,
 					nullptr
@@ -336,13 +395,12 @@ char str1[1024];
 			}
 			else
 			{
-				printf("SSE true");
 				//SSE
 				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
 					URLDownloadToFileA(
 						nullptr,
-						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
 						0,
 						nullptr
@@ -351,7 +409,6 @@ char str1[1024];
 				//Default
 				else
 				{
-					printf("Default true");
 					URLDownloadToFileA(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
@@ -360,15 +417,12 @@ char str1[1024];
 						nullptr
 						);
 				}
-				printf("None true");
 			}
 		}
 	}
-
-
-	char strtbb_c[1024];
-	strcpy(strtbb_c, start);
-	strcat(strtbb_c, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll:Zone.Identifier");
+	char strtbb_c[MAX_PATH];
+	strcpy(strtbb_c, tbb);
+	strcat(strtbb_c, ":Zone.Identifier");
 	DeleteFileA(strtbb_c);
 
 	return 1;
