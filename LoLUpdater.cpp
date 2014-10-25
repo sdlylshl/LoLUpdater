@@ -148,7 +148,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(str, start);
 	strcat(str, "\\");
 	strcat(str, cgbinpath);
-	puts(str);
 
 
 	char str1[160];
@@ -159,27 +158,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	char str2[160];
 	strcpy(str2, start);
 	strcat(str2, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll");
-	puts(str2);
 
 	char str3[160];
 	strcpy(str3, start);
 	strcat(str3, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll");
-	puts(str3);
 
 	char str11[160];
 	strcpy(str11, cgbinpath);
 	strcat(str11, "\\Cg.dll");
-	puts(str11);
 
 	char str22[160];
 	strcpy(str22, cgbinpath);
 	strcat(str22, "\\CgGL.dll");
-	puts(str22);
 
 	char str33[160];
 	strcpy(str33, cgbinpath);
 	strcat(str33, "\\CgD3D9.dll");
-	puts(str33);
 
 	CopyFileA(
 		str11,
@@ -198,19 +192,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 	char str0[160];
 	strcpy(str0, start);
-	strcpy(str0, "\\");
-	strcat(str0, "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
-	puts(str0);
+	strcat(str0, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
 	char str01[160];
 	strcpy(str01, start);
-	strcpy(str01, "\\");
-	strcat(str01, "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll:Zone.Identifier");
-	puts(str01);
+	strcat(str01, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll:Zone.Identifier");
 	char str02[160];
 	strcpy(str02, start);
-	strcpy(str02, "\\");
-	strcat(str02, "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll:Zone.Identifier");
-	puts(str02);
+	strcat(str02, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll:Zone.Identifier");
 	DeleteFileA(str0);
 	DeleteFileA(str01);
 	DeleteFileA(str02);
@@ -260,13 +248,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	char str00[160];
 	strcpy(str00, szPath);
-	strcpy(str00, "\\");
-	strcat(str00, "Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
+	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
 	puts(str00);
 	char str000[160];
 	strcpy(str000, start);
-	strcpy(str000, "\\");
-	strcat(str000, "RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Adobe AIR.dll");
+	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
 	puts(str000);
 	CopyFileA(
 		str00,
@@ -275,19 +261,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 	char str0000[160];
 	strcpy(str0000, start);
-	strcpy(str0000, "\\");
-	strcat(str0000, "RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Adobe AIR.dll:Zone.Identifier");
+	strcat(str0000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll:Zone.Identifier");
 	puts(str0000);
 	DeleteFileA(str0000);
 	char str0001[160];
 	strcpy(str0001, szPath);
-	strcpy(str0001, "\\");
-	strcat(str0001, "Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+	strcat(str0001, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
 	puts(str0001);
 	char str001[160];
 	strcpy(str001, start);
-	strcpy(str001, "\\");
-	strcat(str001, "RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll");
+	strcat(str001, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll");
 	puts(str001);
 	CopyFileA(
 		str0001,
@@ -296,15 +279,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 	char str00000[160];
 	strcpy(str00000, start);
-	strcpy(str00000, "\\");
-	strcat(str00000, "RADS\\projects\\lol_air_client\\releases\\0.0.1.114\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll:Zone.Identifier");
-	puts(str00000);
+	strcat(str00000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll:Zone.Identifier");
 	DeleteFileA(str00000);
 	char str002[160];
 	strcpy(str002, start);
-	strcpy(str002, "\\");
-	strcat(str002, "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll");
-	puts(str002);
+	strcat(str002, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll");
 	char* tbb = str002;
 
 #undef CONTEXT_XSTATE
@@ -391,10 +370,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	char strtbb_c[160];
 	strcpy(strtbb_c, start);
-	strcpy(strtbb_c, "\\");
-	strcat(strtbb_c, "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll:Zone.Identifier");
-	puts(strtbb_c);
+	strcat(strtbb_c, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll:Zone.Identifier");
 	DeleteFileA(strtbb_c);
 
-	return 0;
+	return 1;
 }
