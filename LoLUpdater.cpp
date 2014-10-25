@@ -134,17 +134,17 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		DeleteFileA(strcg);
 
-		SHELLEXECUTEINFO ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+		SHELLEXECUTEINFOA ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = L"Cg-3.1_April2012_Setup.exe";
-		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
+		ShExecInfo.lpFile = "Cg-3.1_April2012_Setup.exe";
+		ShExecInfo.lpParameters = "/verysilent /TYPE=compact";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteEx(&ShExecInfo);
+		ShellExecuteExA(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 
@@ -212,36 +212,29 @@ char str1[1024];
 		nullptr
 		);
 	DeleteFileA(strair);
-	SHELLEXECUTEINFO ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+
+
+	SHELLEXECUTEINFOA ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = L"air15_win.exe";
-	ShExecInfo.lpParameters = L"-silent";
+	ShExecInfo.lpFile = "air15_win.exe";
+	ShExecInfo.lpParameters = "-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
 	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteEx(&ShExecInfo);
+	ShellExecuteExA(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 
 	char* szPath = nullptr;
-#if _WIN32 || _WIN64
-#if _WIN64
-	SHGetFolderPathA(nullptr,
-		CSIDL_PROGRAM_FILESX86,
-		nullptr,
-		0,
-		szPath);
-#else
+
 	SHGetFolderPathA(nullptr,
 		CSIDL_PROGRAM_FILES,
 		nullptr,
 		0,
 		szPath);
-#endif
-#endif
 
 
 
