@@ -90,7 +90,10 @@ static int can_use_intel_core_4th_gen_features()
 
 	return the_4th_gen_features_available;
 }
-#define _UNICODE
+
+
+
+
 #include <tchar.h>
 #include <stdio.h>
 #include "ShlObj.h"
@@ -101,8 +104,6 @@ static int can_use_intel_core_4th_gen_features()
 #include <string>
 #include "Shlwapi.h"
 #include <direct.h>
-
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -223,7 +224,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//Todo: Convert this to TCHAR*
 	char wide[MAX_PATH];
-	
+
 
 	SHGetFolderPathA(
 		nullptr,
@@ -237,11 +238,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	char str00[MAX_PATH];
 	strcpy(str00, wide);
 	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	printf(str00);
 	char str000[MAX_PATH];
 	strcpy(str000, start);
 	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	printf(str000);
 	CopyFileA(
 		str00,
 		str000,
@@ -263,7 +262,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	char str0000[MAX_PATH];
 	strcpy(str0000, str000);
 	strcat(str0000, ":Zone.Identifier");
-	puts(str0000);
 	DeleteFileA(str0000);
 	char str00001[MAX_PATH];
 	strcpy(str00001, str0001);
@@ -273,6 +271,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char tbb[MAX_PATH];
 	strcpy(tbb, start);
 	strcat(tbb, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll");
+
 
 #undef CONTEXT_XSTATE
 
@@ -293,9 +292,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (can_use_intel_core_4th_gen_features())
 	{
+	
 		URLDownloadToFileA(
 			nullptr,
-			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX2.dll",
+			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
 			tbb,
 			0,
 			nullptr
@@ -309,7 +309,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileA(
 				nullptr,
-				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/AVX.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
 				0,
 				nullptr
@@ -322,7 +322,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				URLDownloadToFileA(
 					nullptr,
-					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE2.dll",
+					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
 					0,
 					nullptr
@@ -335,7 +335,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileA(
 						nullptr,
-						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/SSE.dll",
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
 						0,
 						nullptr
