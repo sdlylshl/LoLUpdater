@@ -153,7 +153,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	char str1[160];
 	strcpy(str1, start);
 	strcat(str1, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll");
-	puts(str1);
 
 	char str2[160];
 	strcpy(str2, start);
@@ -190,13 +189,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		str3,
 		false
 		);
-	char str0[160];
+	char str0[500];
 	strcpy(str0, start);
 	strcat(str0, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\Cg.dll:Zone.Identifier");
-	char str01[160];
+	char str01[500];
 	strcpy(str01, start);
 	strcat(str01, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgGL.dll:Zone.Identifier");
-	char str02[160];
+	char str02[500];
 	strcpy(str02, start);
 	strcat(str02, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\CgD3D9.dll:Zone.Identifier");
 	DeleteFileA(str0);
@@ -246,42 +245,41 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 
-	char str00[160];
+	char str00[500];
 	strcpy(str00, szPath);
 	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	puts(str00);
-	char str000[160];
+	char str000[500];
 	strcpy(str000, start);
 	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll");
-	puts(str000);
 	CopyFileA(
 		str00,
 		str000,
 		false
 		);
-	char str0000[160];
-	strcpy(str0000, start);
-	strcat(str0000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Adobe AIR.dll:Zone.Identifier");
-	puts(str0000);
-	DeleteFileA(str0000);
-	char str0001[160];
-	strcpy(str0001, szPath);
-	strcat(str0001, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
-	puts(str0001);
-	char str001[160];
-	strcpy(str001, start);
-	strcat(str001, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll");
-	puts(str001);
+
+	char str001[500];
+	strcpy(str00, szPath);
+	strcat(str00, "\\Common Files\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
+	char str0001[500];
+	strcpy(str000, start);
+	strcat(str000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\Resources\\NPSWF32.dll");
 	CopyFileA(
-		str0001,
 		str001,
+		str0001,
 		false
 		);
-	char str00000[160];
-	strcpy(str00000, start);
-	strcat(str00000, "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\versions\\1.0\\Resources\\NPSWF32.dll:Zone.Identifier");
-	DeleteFileA(str00000);
-	char str002[160];
+
+	char str0000[500];
+	strcpy(str0000, str000);
+	strcat(str0000, ":Zone.Identifier");
+	puts(str0000);
+	DeleteFileA(str0000);
+	char str00001[500];
+	strcpy(str00001, str0001);
+	strcat(str00001, ":Zone.Identifier");
+	DeleteFileA(str00001);
+
+	char str002[500];
 	strcpy(str002, start);
 	strcat(str002, "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\tbb.dll");
 	char* tbb = str002;
