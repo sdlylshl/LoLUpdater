@@ -97,7 +97,6 @@ static int can_use_intel_core_4th_gen_features()
 #include <tchar.h>
 #include <stdio.h>
 #include "ShlObj.h"
-#include <VersionHelpers.h>
 #include "Urlmon.h"
 #include "Windows.h"
 #include "stdlib.h"
