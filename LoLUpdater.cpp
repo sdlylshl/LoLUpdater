@@ -5,10 +5,10 @@
 #include <tchar.h>
 #include "ShlObj.h"
 #include <direct.h>
+#include  <iostream>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	
 	if (cgbinpath == NULL)
 	{
 		strcpy(cginstunblock, workingdir);
@@ -72,8 +72,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 #endif
 #endif
-
-	// String-combining logic
 #if XP
 	strcpy(airdir, buff_c);
 	strcpy(airdir, adobepathXP);
@@ -87,34 +85,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	wstrValue[0] = (wchar_t)buff_w;
 	std::string strValue;
 	strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
-
-
 	std::string sym(1, strValue[0]);
-
-	const char* char_value = sym.c_str();
-	strcpy(airdir, char_value);
+	strcpy(airdir, sym.c_str());
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
-	printf("gets here");
-	strcpy(flashdir, (const char*)char_value);
+	strcpy(flashdir, sym.c_str());
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
-
-	printf("gets here");
-
 #endif
-	// Temp test to check if correct value is returned
-	printf(airdir);
-	printf(flashdir);
-	// end test
 	strcpy(airfile, workingdir);
 	strcpy(airfile, airpath);
 	strcat(airfile, air);
-
 	strcpy(flashdir, workingdir);
 	strcpy(flashdir, airpath);
 	strcat(flashdir, flash);
-
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
 	strcpy(cgd3d9bin, cgbinpath);
