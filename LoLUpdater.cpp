@@ -5,10 +5,22 @@
 #include <tchar.h>
 #include "ShlObj.h"
 #include <direct.h>
+<<<<<<< HEAD
 #include  <iostream>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+=======
+#include <array>
+#include <iostream>
+#if !_XP
+#include <VersionHelpers.h>
+#endif
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	std::cout << "LoLUpdater Alpha 1 Build 5" << std::endl << "Patching...";
+>>>>>>> origin/master
 	if (cgbinpath == NULL)
 	{
 		strcpy(cginstunblock, workingdir);
