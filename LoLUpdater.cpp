@@ -5,22 +5,19 @@
 #include <tchar.h>
 #include "ShlObj.h"
 #include <direct.h>
+#include <array>
 #if !_XP
 #include <VersionHelpers.h>
 #endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	char* unblock = ":Zone.Identifier";
-	char* workingdirbuffer = nullptr;
-	char* workingdir = _getcwd(
-		workingdirbuffer,
-		MAX_PATH
-		);
-	char* cgbinpath = getenv("CG_BIN_PATH");
+	
 	if (cgbinpath == NULL)
 	{
-		char* cginstaller = "Cg-3.1_April2012_Setup.exe";
+		strcpy(cginstunblock, workingdir);
+		strcpy(cginstunblock, cginstaller);
+		strcpy(cginstunblock, unblock);
 		URLDownloadToFile(
 			nullptr,
 			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
@@ -28,11 +25,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-		char cginstunblock[MAX_PATH];
-		strcpy(cginstunblock, workingdir);
-		strcpy(cginstunblock, cginstaller);
-		strcpy(cginstunblock, unblock);
-
 		DeleteFile(cginstunblock);
 
 		SHELLEXECUTEINFO ShExecInfo = { 0 };
@@ -48,176 +40,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
-	char buff_c[MAX_PATH];
-	char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-	char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
-	char* air = "Adobe AIR.dll";
-	char airfile[MAX_PATH];
-	strcpy(airfile, workingdir);
-	strcpy(airfile, adobepath);
-	strcat(airfile, air);
 
-	char airdir[MAX_PATH];
-	strcpy(airdir, workingdir);
-	strcpy(airdir, airpath);
-	strcat(airdir, air);
-
-	char* flash = "Resources\\NPSWF32.dll";
-
-	char flashfile[MAX_PATH];
-	strcpy(flashfile, workingdir);
-	strcpy(flashfile, adobepath);
-	strcat(flashfile, flash);
-
-	char flashdir[MAX_PATH];
-	strcpy(flashdir, workingdir);
-	strcpy(flashdir, airpath);
-	strcat(flashdir, flash);
-
-
-	char* cgfile = "\\Cg.dll";
-	char* cgglfile = "\\CgGL.dll";
-	char* cgd3d9file = "\\CgD3D9.dll";
-	char cgbin[MAX_PATH];
-	strcpy(cgbin, cgbinpath);
-	strcat(cgbin, cgfile);
-
-	char cgd3d9bin[MAX_PATH];
-	strcpy(cgd3d9bin, cgbinpath);
-	strcat(cgd3d9bin, cgd3d9file);
-
-
-	char cgglbin[MAX_PATH];
-	strcpy(cgglbin, cgbinpath);
-	strcat(cgglbin, cgglfile);
-
-	char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
-	char cgpath[MAX_PATH];
-	strcpy(cgpath, workingdir);
-	strcpy(cgpath, slnpath);
-	strcat(cgpath, cgd3d9file);
-
-
-	char cgglpath[MAX_PATH];
-	strcpy(cgglpath, workingdir);
-	strcpy(cgglpath, slnpath);
-	strcat(cgglpath, cgglfile);
-
-	char cgd3d9path[MAX_PATH];
-	strcpy(cgd3d9path, workingdir);
-	strcpy(cgd3d9path, slnpath);
-	strcat(cgd3d9path, cgd3d9file);
-
-	char cgglunblock[MAX_PATH];
-	strcpy(cgglunblock, cgglpath);
-	strcat(cgglunblock, unblock);
-
-	char cgunblock[MAX_PATH];
-	strcpy(cgglunblock, cgpath);
-	strcat(cgglunblock, unblock);
-
-	char cgd3d9unblock[MAX_PATH];
-	strcpy(cgglunblock, cgd3d9path);
-	strcat(cgglunblock, unblock);
-
-	char* game = "\\Game";
-	char* tbbfile = "\\tbb.dll";
-	char tbb[MAX_PATH];
-	strcpy(tbb, workingdir);
-	strcpy(tbb, slnpath);
-	strcpy(tbb, tbbfile);
-
-	// Check for Garena
-	if (is_file_exist("lol.exe"))
-	{
-
-		char tbb[MAX_PATH];
-		strcpy(tbb, workingdir);
-		strcpy(tbb, game);
-		strcpy(tbb, tbbfile);
-
-		char cgpath[MAX_PATH];
-		strcpy(cgpath, workingdir);
-		strcpy(cgpath, game);
-		strcat(cgpath, cgd3d9file);
-
-		char cgglpath[MAX_PATH];
-		strcpy(cgglpath, workingdir);
-		strcpy(cgglpath, game);
-		strcat(cgglpath, cgglfile);
-
-		char cgd3d9path[MAX_PATH];
-		strcpy(cgd3d9path, workingdir);
-		strcpy(cgd3d9path, game);
-		strcat(cgd3d9path, cgd3d9file);
-
-		char cgglunblock[MAX_PATH];
-		strcpy(cgglunblock, cgglpath);
-		strcat(cgglunblock, unblock);
-
-		char cgunblock[MAX_PATH];
-		strcpy(cgglunblock, cgpath);
-		strcat(cgglunblock, unblock);
-
-		char cgd3d9unblock[MAX_PATH];
-		strcpy(cgglunblock, cgd3d9path);
-		strcat(cgglunblock, unblock);
-
-		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
-		char airdir[MAX_PATH];
-		strcpy(airdir, workingdir);
-		strcpy(airdir, airpath);
-		strcat(airdir, air);
-
-		char flashdir[MAX_PATH];
-		strcpy(flashdir, workingdir);
-		strcpy(flashdir, airpath);
-		strcat(flashdir, flash);
-	}
-	CopyFile(
-		cgbin,
-		cgpath,
-		false
-		);
-	CopyFile(
-		cgglbin,
-		cgglpath,
-		false
-		);
-	CopyFile(
-		cgd3d9bin,
-		cgd3d9path,
-		false
-		);
-
-	char* airwin = "air15_win.exe";
-	char strair[MAX_PATH];
-	strcpy(strair, workingdir);
-	strcpy(strair, airwin);
-	strcat(strair, unblock);
-	URLDownloadToFile(
-		nullptr,
-		"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-		airwin,
-		0,
-		nullptr
-		);
-	DeleteFile(strair);
-
-	SHELLEXECUTEINFO ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo.hwnd = nullptr;
-	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airwin;
-	ShExecInfo.lpParameters = "-silent";
-	ShExecInfo.lpDirectory = nullptr;
-	ShExecInfo.nShow = SW_SHOW;
-	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteEx(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-
-
+#if XP
 #if defined(ENVIRONMENT64)
 	SHGetFolderPath(
 		nullptr,
@@ -235,6 +59,190 @@ int _tmain(int argc, _TCHAR* argv[])
 		buff_c
 		);
 #endif
+#else
+#if defined(ENVIRONMENT64)
+	SHGetKnownFolderPath(
+		FOLDERID_ProgramFilesCommonX64,
+		0,
+		nullptr,
+		buff_w
+		);
+#elif defined (ENVIRONMENT32)
+	SHGetKnownFolderPath(
+		FOLDERID_ProgramFilesCommon,
+		0,
+		nullptr,
+		buff_w
+		);
+#endif
+#endif
+
+	// String-combining logic
+#if XP
+	strcpy(airdir, buff_c);
+	strcpy(airdir, adobepathXP);
+	strcat(airdir, air);
+
+	strcpy(flashfile, buff_c);
+	strcpy(flashfile, adobepathXP);
+	strcat(flashfile, flash);
+#else
+
+	std::wstring wstrValue;
+	wstrValue[0] = (wchar_t)buff_w;
+
+	std::string strValue;
+	strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
+
+	char char_value = strValue[0];
+
+	strcpy(airdir, (const char*)char_value);
+	strcpy(airdir, adobepath);
+	strcat(airdir, air);
+
+	strcpy(flashdir, (const char*)char_value);
+	strcpy(flashdir, adobepath);
+	strcat(flashdir, flash);
+
+
+
+#endif
+	// Temp test to check if correct value is returned
+	printf(airdir);
+	printf(flashdir);
+	// end test
+	strcpy(airfile, workingdir);
+	strcpy(airfile, airpath);
+	strcat(airfile, air);
+
+	strcpy(flashdir, workingdir);
+	strcpy(flashdir, airpath);
+	strcat(flashdir, flash);
+
+	strcpy(cgbin, cgbinpath);
+	strcat(cgbin, cgfile);
+	strcpy(cgd3d9bin, cgbinpath);
+	strcat(cgd3d9bin, cgd3d9file);
+	strcpy(cgglbin, cgbinpath);
+	strcat(cgglbin, cgglfile);
+	strcpy(cgpath, workingdir);
+	strcpy(cgpath, slnpath);
+	strcat(cgpath, cgd3d9file);
+	strcpy(cgglpath, workingdir);
+	strcpy(cgglpath, slnpath);
+	strcat(cgglpath, cgglfile);
+	strcpy(cgd3d9path, workingdir);
+	strcpy(cgd3d9path, slnpath);
+	strcat(cgd3d9path, cgd3d9file);
+	strcpy(cgglunblock, cgglpath);
+	strcat(cgglunblock, unblock);
+	strcpy(cgglunblock, cgpath);
+	strcat(cgglunblock, unblock);
+	strcpy(cgglunblock, cgd3d9path);
+	strcat(cgglunblock, unblock);
+	strcpy(tbb, workingdir);
+	strcpy(tbb, slnpath);
+	strcpy(tbb, tbbfile);
+	strcpy(strair, workingdir);
+	strcpy(strair, airwin);
+	strcat(strair, unblock);
+	strcpy(airunblock, airdir);
+	strcat(airunblock, unblock);
+	strcpy(airunblock, flashdir);
+	strcat(airunblock, unblock);
+	strcpy(tbbunblock, tbb);
+	strcat(tbbunblock, unblock);
+
+	// Check for Garena
+	if (is_file_exist("lol.exe"))
+	{
+		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
+
+		// Separate string´-combining logic for Garena
+		strcpy(tbb, workingdir);
+		strcpy(tbb, game);
+		strcpy(tbb, tbbfile);
+		strcpy(cgpath, workingdir);
+		strcpy(cgpath, game);
+		strcat(cgpath, cgd3d9file);
+		strcpy(cgglpath, workingdir);
+		strcpy(cgglpath, game);
+		strcat(cgglpath, cgglfile);
+		strcpy(cgd3d9path, workingdir);
+		strcpy(cgd3d9path, game);
+		strcat(cgd3d9path, cgd3d9file);
+		strcpy(cgglunblock, cgglpath);
+		strcat(cgglunblock, unblock);
+		strcpy(cgglunblock, cgpath);
+		strcat(cgglunblock, unblock);
+		strcpy(cgglunblock, cgd3d9path);
+		strcat(cgglunblock, unblock);
+#if XP
+		strcpy(airdir, buff_c);
+		strcpy(airdir, airpath);
+		strcat(airdir, air);
+
+		strcpy(flashfile, buff_c);
+		strcpy(flashfile, adobepath);
+		strcat(flashfile, flash);
+#else
+
+		std::wstring wstrValue;
+		wstrValue[0] = (wchar_t)buff_w;
+
+		std::string strValue;
+		strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
+
+		char char_value = strValue[0];
+
+		strcpy(airdir, (const char*)char_value);
+		strcpy(airdir, airpath);
+		strcat(airdir, air);
+
+		strcpy(flashdir, (const char*)char_value);
+		strcpy(flashdir, airpath);
+		strcat(flashdir, flash);
+
+
+
+#endif
+
+	}
+	CopyFile(
+		cgbin,
+		cgpath,
+		false
+		);
+	CopyFile(
+		cgglbin,
+		cgglpath,
+		false
+		);
+	CopyFile(
+		cgd3d9bin,
+		cgd3d9path,
+		false
+		);
+	URLDownloadToFile(
+		nullptr,
+		"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
+		airwin,
+		0,
+		nullptr
+		);
+	DeleteFile(strair);
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = nullptr;
+	ShExecInfo.lpFile = airwin;
+	ShExecInfo.lpParameters = "-silent";
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteEx(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 	CopyFile(
 		airfile,
@@ -246,16 +254,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		flashdir,
 		false
 		);
-
-	char airunblock[MAX_PATH];
-	strcpy(airunblock, airdir);
-	strcat(airunblock, unblock);
-
-	char flashunblock[MAX_PATH];
-	strcpy(airunblock, flashdir);
-	strcat(airunblock, unblock);
-
-
 #if _XP
 	// XP
 		URLDownloadToFile(
@@ -266,7 +264,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 			);
 #else
-
 	if (can_use_intel_core_4th_gen_features())
 	{
 		// AVX2
@@ -277,7 +274,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-
 	}
 	else
 	{
@@ -335,17 +331,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #endif
 
-	char tbbunblock[MAX_PATH];
-	strcpy(tbbunblock, tbb);
-	strcat(tbbunblock, unblock);
-
 	// Unblocks all files
-	char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
 	for each (char* i in unblockfiles) {
 		DeleteFile(i);
 	}
-
-
-
 	return 0;
 }

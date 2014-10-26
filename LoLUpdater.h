@@ -18,6 +18,7 @@ int check_4th_gen_intel_core_features()
 #endif
 #include <fstream>
 #include "Windows.h"
+#include <direct.h>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -131,12 +132,49 @@ HMODULE hm = GetModuleHandleA("kernel32.dll");
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(hm, "GetEnabledXStateFeatures");
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
-template<class InputIterator, class Function>
-Function for_each(InputIterator first, InputIterator last, Function fn)
-{
-	while (first != last) {
-		fn(*first);
-		++first;
-	}
-	return move(fn);      // or, since C++11: return move(fn);
-}
+char* unblock = ":Zone.Identifier";
+char* workingdirbuffer = nullptr;
+char* workingdir = _getcwd(
+	workingdirbuffer,
+	MAX_PATH
+	);
+
+// Buffers
+wchar_t* buff_w[MAX_PATH];
+char tbb[MAX_PATH];
+char buff_c[MAX_PATH];
+char airfile[MAX_PATH];
+char airdir[MAX_PATH];
+char flashfile[MAX_PATH];
+char flashdir[MAX_PATH];
+char cgbin[MAX_PATH];
+char cginstunblock[MAX_PATH];
+char strair[MAX_PATH];
+char airunblock[MAX_PATH];
+char cgd3d9bin[MAX_PATH];
+char cgglbin[MAX_PATH];
+char cgpath[MAX_PATH];
+char cgglpath[MAX_PATH];
+char tbbunblock[MAX_PATH];
+char flashunblock[MAX_PATH];
+char cgd3d9path[MAX_PATH];
+char cgglunblock[MAX_PATH];
+char cgunblock[MAX_PATH];
+char cgd3d9unblock[MAX_PATH];
+
+// Variables
+char* flash = "Resources\\NPSWF32.dll";
+char* cgfile = "\\Cg.dll";
+char* cgglfile = "\\CgGL.dll";
+char* cgd3d9file = "\\CgD3D9.dll";
+char* cginstaller = "Cg-3.1_April2012_Setup.exe";
+char* cgbinpath = getenv("CG_BIN_PATH");
+char* airwin = "air15_win.exe";
+char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
+char* game = "\\Game";
+char* tbbfile = "\\tbb.dll";
+char* adobepathXP = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+char* adobepath = "\\Adobe AIR\\Versions\\1.0\\";
+char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+char* air = "Adobe AIR.dll";
+char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
