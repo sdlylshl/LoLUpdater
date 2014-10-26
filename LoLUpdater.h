@@ -135,33 +135,35 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 char* unblock = ":Zone.Identifier";
 
 // Buffers
-char buff_c[MAX_PATH];
-char tbb[MAX_PATH];
-char airfile[MAX_PATH];
-char airdir[MAX_PATH];
-char flashfile[MAX_PATH];
-char flashdir[MAX_PATH];
-char cgbin[MAX_PATH];
-char cginst[MAX_PATH];
-char cginstunblock[MAX_PATH];
-char airinst[MAX_PATH];
-char airinstunblock[MAX_PATH];
-char strair[MAX_PATH];
-char airunblock[MAX_PATH];
-char cgd3d9bin[MAX_PATH];
-char cgglbin[MAX_PATH];
-char cgpath[MAX_PATH];
-char cgglpath[MAX_PATH];
-char tbbunblock[MAX_PATH];
-char flashunblock[MAX_PATH];
-char cgd3d9path[MAX_PATH];
-char cgglunblock[MAX_PATH];
-char cgunblock[MAX_PATH];
-char cgd3d9unblock[MAX_PATH];
+char buff_c[1024];
+char tbb[1024];
+char airfile[1024];
+char airdir[1024];
+char flashfile[1024];
+char flashdir[1024];
+char cgbin[1024];
+char cginst[1024];
+char cginstunblock[1024];
+char airinst[1024];
+char airinstunblock[1024];
+char strair[1024];
+char airunblock[1024];
+char cgd3d9bin[1024];
+char cgglbin[1024];
+char cgpath[1024];
+char cgglpath[1024];
+char tbbunblock[1024];
+char flashunblock[1024];
+char cgd3d9path[1024];
+char cgglunblock[1024];
+char cgunblock[1024];
+char cgd3d9unblock[1024];
 // Variables
-char* cwd = _getcwd(
-	nullptr,
-	0
+
+char *cwd = nullptr;
+char* start = _getcwd(
+	cwd,
+	200
 	);
 
 char* air = "Adobe AIR.dll";

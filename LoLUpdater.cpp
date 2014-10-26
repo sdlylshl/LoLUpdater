@@ -76,6 +76,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(cgglbin, cgbinpath);
 	strcat(cgglbin, cgglfile);
 	std::cout << cgglbin;
+
+	// Crashes here
 	strcpy(cgpath, cwd);
 	strcpy(cgpath, slnpath);
 	strcat(cgpath, cgfile);
@@ -296,7 +298,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		DeleteFileA(i);
 	}
-	std::cout << "LoLUpdater finished!";
+	std::cout << "LoLUpdater finished!" << std::endl << "";
 	system("pause");
 
 	return 0;
