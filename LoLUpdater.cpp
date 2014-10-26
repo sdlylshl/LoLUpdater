@@ -39,12 +39,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 #if defined ENVIRONMENT32
 	strcpy(airdir, &workingdir[0]);
-	strcpy(airdir, "Program Files");
+	strcpy(airdir, "\\Program Files");
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
 #elif defined ENVIRONMENT64
 	strcpy(airdir, &workingdir[0]);
-	strcpy(airdir, "Program Files (x86)");
+	strcpy(airdir, "\\Program Files (x86)");
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
 #endif
