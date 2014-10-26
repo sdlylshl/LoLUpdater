@@ -48,8 +48,33 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
+	char buff_c[MAX_PATH];
+	char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+	char* air = "Adobe AIR.dll";
+	char airfile[MAX_PATH];
+	strcpy(airfile, buff_c);
+	strcpy(airfile, adobepath);
+	strcat(airfile, air);
 
-	// Todo: convert to foreach/Parallelforeacg
+	char airdir[MAX_PATH];
+	strcpy(airdir, workingdir);
+	strcpy(airdir, airpath);
+	strcat(airdir, air);
+
+	char* flash = "Resources\\NPSWF32.dll";
+
+	char flashfile[MAX_PATH];
+	strcpy(flashfile, buff_c);
+	strcpy(flashfile, adobepath);
+	strcat(flashfile, flash);
+
+	char flashdir[MAX_PATH];
+	strcpy(flashdir, workingdir);
+	strcpy(flashdir, airpath);
+	strcat(flashdir, flash);
+
+
 	char* cgfile = "\\Cg.dll";
 	char* cgglfile = "\\CgGL.dll";
 	char* cgd3d9file = "\\CgD3D9.dll";
@@ -102,6 +127,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(tbb, slnpath);
 	strcpy(tbb, tbbfile);
 
+	// Check for Garena
 	if (is_file_exist("lol.exe"))
 	{
 
@@ -136,6 +162,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		char cgd3d9unblock[MAX_PATH];
 		strcpy(cgglunblock, cgd3d9path);
 		strcat(cgglunblock, unblock);
+
+		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
+		char airdir[MAX_PATH];
+		strcpy(airdir, workingdir);
+		strcpy(airdir, airpath);
+		strcat(airdir, air);
+
+		char flashdir[MAX_PATH];
+		strcpy(flashdir, workingdir);
+		strcpy(flashdir, airpath);
+		strcat(flashdir, flash);
 	}
 	CopyFile(
 		cgbin,
@@ -180,8 +217,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
-	char wide[MAX_PATH];
-
 
 #if defined(ENVIRONMENT64)
 	SHGetFolderPath(
@@ -197,49 +232,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		CSIDL_PROGRAM_FILES,
 		nullptr,
 		NULL,
-		wide
+		buff_c
 		);
 #endif
-
-	char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-	char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
-	char* air = "Adobe AIR.dll";
-	char airfile[MAX_PATH];
-	strcpy(airfile, wide);
-	strcpy(airfile, adobepath);
-	strcat(airfile, air);
-
-	char airdir[MAX_PATH];
-	strcpy(airdir, workingdir);
-	strcpy(airdir, airpath);
-	strcat(airdir, air);
-
-	char* flash = "Resources\\NPSWF32.dll";
-
-	char flashfile[MAX_PATH];
-	strcpy(flashfile, wide);
-	strcpy(flashfile, adobepath);
-	strcat(flashfile, flash);
-
-	char flashdir[MAX_PATH];
-	strcpy(flashdir, workingdir);
-	strcpy(flashdir, airpath);
-	strcat(flashdir, flash);
-
-
-	if (is_file_exist("lol.exe"))
-	{
-		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
-		char airdir[MAX_PATH];
-		strcpy(airdir, workingdir);
-		strcpy(airdir, airpath);
-		strcat(airdir, air);
-
-		char flashdir[MAX_PATH];
-		strcpy(flashdir, workingdir);
-		strcpy(flashdir, airpath);
-		strcat(flashdir, flash);
-	}
 
 	CopyFile(
 		airfile,
