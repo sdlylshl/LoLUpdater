@@ -38,95 +38,103 @@ int _tmain(int argc, _TCHAR* argv[])
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 	
-#if defined ENVIRONMENT32
-	strcpy(airdir, (const char*) workingdirbuffer[0]);
-	strcpy(airdir, "\\Program Files");
-	strcpy(airdir, adobepath);
-	strcat(airdir, air);
-
-	strcpy(airdir, (const char*)workingdirbuffer[0]);
-	strcpy(airdir, "\\Program Files");
-	strcpy(airdir, adobepath);
-	strcat(airdir, flash);
-#elif defined ENVIRONMENT64
-	
-	strcpy(airdir, (const char*) workingdirbuffer[0]);
-	strcpy(airdir, "\\Program Files (x86)");
-	strcpy(flashdir, adobepath);
-	strcat(flashdir, air);
-
-	strcpy(airdir, (const char*)workingdirbuffer[0]);
-	strcpy(airdir, "\\Program Files (x86)");
-	strcpy(airdir, adobepath);
-	strcat(airdir, flash);
+#if defined(ENVIRONMENT64)
+	SHGetFolderPath(
+		nullptr,
+		CSIDL_PROGRAM_FILESX86,
+		nullptr,
+		NULL,
+		buff_c
+		);
+#elif defined (ENVIRONMENT32)
+	SHGetFolderPath(
+		nullptr,
+		CSIDL_PROGRAM_FILES,
+		nullptr,
+		NULL,
+		buff_c
+		);
 #endif
-
-	// String-combining logic
-	strcpy(airfile, workingdirbuffer);
-	strcpy(airfile, airpath);
+	std::cout << "gets here";
+	strcpy(airfile, buff_c);
+	strcpy(airfile, adobepath);
 	strcat(airfile, air);
-
-	strcpy(flashfile, workingdirbuffer);
-	strcpy(flashfile, airpath);
+	std::cout << "gets here";
+	strcpy(flashfile, buff_c);
+	strcpy(flashfile, adobepath);
 	strcat(flashfile, flash);
-
+	std::cout << "gets here";
+	// String-combining logic
+	
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
-
+	std::cout << "gets here";
 	strcpy(cgd3d9bin, cgbinpath);
 	strcat(cgd3d9bin, cgd3d9file);
-
+	std::cout << "gets here";
 	strcpy(cgglbin, cgbinpath);
 	strcat(cgglbin, cgglfile);
-
+	std::cout << "gets here";
 	strcpy(cgpath, workingdirbuffer);
 	strcpy(cgpath, slnpath);
 	strcat(cgpath, cgfile);
-
+	std::cout << "gets here";
 	strcpy(cgglpath, workingdirbuffer);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
-
+	std::cout << "gets here";
 	strcpy(cgd3d9path, workingdirbuffer);
 	strcpy(cgd3d9path, slnpath);
 	strcat(cgd3d9path, cgd3d9file);
-
-	strcpy(cgglunblock, cgglpath);
-	strcat(cgglunblock, unblock);
-
-	strcpy(cgunblock, cgpath);
-	strcat(cgunblock, unblock);
-
-	strcpy(cgd3d9unblock, cgd3d9path);
-	strcat(cgd3d9unblock, unblock); 
+	std::cout << "gets here";
 
 	strcpy(tbb, workingdirbuffer);
 	strcpy(tbb, slnpath);
 	strcat(tbb, tbbfile);
 
+	strcpy(airdir, workingdirbuffer);
+	strcpy(airdir, airpath);
+	strcat(airdir, air);
+	std::cout << "gets here";
+	strcpy(flashdir, workingdirbuffer);
+	strcpy(flashdir, airpath);
+	strcat(flashdir, flash);
+	std::cout << "gets here";
+
+	strcpy(cgglunblock, cgglpath);
+	strcat(cgglunblock, unblock);
+	std::cout << "gets here";
+	strcpy(cgunblock, cgpath);
+	strcat(cgunblock, unblock);
+	std::cout << "gets here";
+	strcpy(cgd3d9unblock, cgd3d9path);
+	strcat(cgd3d9unblock, unblock); 
+	std::cout << "gets here";
+
+	std::cout << "gets here";
 	strcpy(strair, workingdirbuffer);
 	strcpy(strair, airwin);
 	strcat(strair, unblock);
-
+	std::cout << "gets here";
 	strcpy(airunblock, airdir);
 	strcat(airunblock, unblock);
-
+	std::cout << "gets here";
 	strcpy(airunblock, flashdir);
 	strcat(airunblock, unblock);
-
+	std::cout << "gets here";
 	strcpy(tbbunblock, tbb);
 	strcat(tbbunblock, unblock);
-
+	std::cout << "gets here";
 	// Check for Garena
 	if (is_file_exist("lol.exe"))
 	{
 
 		// Separate string-combining logic for Garena
-		strcpy(airfile, workingdirbuffer);
+		strcpy(airfile, buff_c);
 		strcpy(airfile, gair);
 		strcat(airfile, air);
 
-		strcpy(flashfile, workingdirbuffer);
+		strcpy(flashfile, buff_c);
 		strcpy(flashfile, gair);
 		strcat(flashfile, flash);
 
