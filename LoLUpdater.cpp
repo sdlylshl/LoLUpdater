@@ -56,21 +56,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 #endif
 #else
-#if defined(ENVIRONMENT64)
 	SHGetKnownFolderPath(
-		FOLDERID_ProgramFilesCommonX64,
+		FOLDERID_ProgramFilesCommonX86,
 		0,
 		nullptr,
 		buff_w
 		);
-#elif defined (ENVIRONMENT32)
-	SHGetKnownFolderPath(
-		FOLDERID_ProgramFilesCommon,
-		0,
-		nullptr,
-		buff_w
-		);
-#endif
 #endif
 #if XP
 	strcpy(airdir, buff_c);
