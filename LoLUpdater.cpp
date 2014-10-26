@@ -6,13 +6,14 @@
 #include "ShlObj.h"
 #include <direct.h>
 #include <array>
+#include <iostream>
 #if !_XP
 #include <VersionHelpers.h>
 #endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	
+	std::cout << "LoLUpdater Alpha 1 Build 5" << std::endl << "Patching...";
 	if (cgbinpath == NULL)
 	{
 		strcpy(cginstunblock, workingdir);
