@@ -224,7 +224,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		CSIDL_PROGRAM_FILESX86,
 		nullptr,
 		NULL,
-		wide
+		buff_c
 		);
 #elif defined (ENVIRONMENT32)
 	SHGetFolderPath(
