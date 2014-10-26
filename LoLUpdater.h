@@ -135,7 +135,6 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 char* unblock = ":Zone.Identifier";
 
 // Buffers
-char airinst_buff[MAX_PATH];
 char buff_c[MAX_PATH];
 char tbb[MAX_PATH];
 char airfile[MAX_PATH];
@@ -143,7 +142,10 @@ char airdir[MAX_PATH];
 char flashfile[MAX_PATH];
 char flashdir[MAX_PATH];
 char cgbin[MAX_PATH];
+char cginst[MAX_PATH];
 char cginstunblock[MAX_PATH];
+char airinst[MAX_PATH];
+char airinstunblock[MAX_PATH];
 char strair[MAX_PATH];
 char airunblock[MAX_PATH];
 char cgd3d9bin[MAX_PATH];
@@ -156,7 +158,6 @@ char cgd3d9path[MAX_PATH];
 char cgglunblock[MAX_PATH];
 char cgunblock[MAX_PATH];
 char cgd3d9unblock[MAX_PATH];
-
 // Variables
 char* cwd = _getcwd(
 	nullptr,
@@ -172,14 +173,13 @@ char* cgd3d9file = "\\CgD3D9.dll";
 
 char* tbbfile = "\\tbb.dll";
 
-char* cginstaller = "Cg-3.1_April2012_Setup.exe";
-char* airwin = "air15_win.exe";
-
 char* cgbinpath = getenv("CG_BIN_PATH");
-char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0";
+char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
-char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0";
+char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+
+char* airwin = "air15_win.exe";
 
 char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
 

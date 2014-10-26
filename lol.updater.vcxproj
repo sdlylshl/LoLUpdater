@@ -269,6 +269,8 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <ErrorReporting>None</ErrorReporting>
       <StringPooling>true</StringPooling>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
