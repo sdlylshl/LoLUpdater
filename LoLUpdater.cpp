@@ -57,23 +57,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 #endif
 #else
-#if defined(ENVIRONMENT64)
 	SHGetKnownFolderPath(
-		FOLDERID_ProgramFilesCommonX64,
-		0,
-		nullptr,
-		buff_w
-		);
-#elif defined (ENVIRONMENT32)
-	SHGetKnownFolderPath(
-		FOLDERID_ProgramFilesCommon,
+		FOLDERID_ProgramFilesCommonX86,
 		0,
 		nullptr,
 		buff_w
 		);
 #endif
-#endif
-
+	std::wcout << buff_w;
 	// String-combining logic
 #if XP
 	strcpy(airdir, buff_c);
@@ -90,31 +81,27 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::string strValue;
 	strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
+	std::string sym(1, strValue[0]);
 
-	char char_value = strValue[0];
-
-	strcpy(airdir, (const char*)char_value);
+	std::wcout << sym.c_str();
+	strcpy(airdir, sym.c_str());
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
 
-	strcpy(flashdir, (const char*)char_value);
+	strcpy(flashdir, sym.c_str());
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
 
 
 
 #endif
-	// Temp test to check if correct value is returned
-	printf(airdir);
-	printf(flashdir);
-	// end test
 	strcpy(airfile, workingdir);
 	strcpy(airfile, airpath);
 	strcat(airfile, air);
 
-	strcpy(flashdir, workingdir);
-	strcpy(flashdir, airpath);
-	strcat(flashdir, flash);
+	strcpy(flashfile, workingdir);
+	strcpy(flashfile, airpath);
+	strcat(flashfile, flash);
 
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
@@ -124,7 +111,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgglbin, cgglfile);
 	strcpy(cgpath, workingdir);
 	strcpy(cgpath, slnpath);
-	strcat(cgpath, cgd3d9file);
+	strcat(cgpath, cgfile);
 	strcpy(cgglpath, workingdir);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
@@ -133,10 +120,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgd3d9path, cgd3d9file);
 	strcpy(cgglunblock, cgglpath);
 	strcat(cgglunblock, unblock);
-	strcpy(cgglunblock, cgpath);
-	strcat(cgglunblock, unblock);
-	strcpy(cgglunblock, cgd3d9path);
-	strcat(cgglunblock, unblock);
+	strcpy(cgunblock, cgpath);
+	strcat(cgunblock, unblock);
+	strcpy(cgd3d9unblock, cgd3d9path);
+	strcat(cgd3d9unblock, unblock);
 	strcpy(tbb, workingdir);
 	strcpy(tbb, slnpath);
 	strcpy(tbb, tbbfile);
