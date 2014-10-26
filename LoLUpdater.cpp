@@ -1,21 +1,13 @@
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
 
-// Not all includes are used, some are reserved for future use
-#include <iostream>
 #include "LoLUpdater.h"
 #include <tchar.h>
-#include <stdio.h>
 #include "ShlObj.h"
-#include "Urlmon.h"
-#include "stdlib.h"
-#include <string>
-#include "Shlwapi.h"
 #include <direct.h>
-#include "Windows.h"
+#if !_XP
 #include <VersionHelpers.h>
-#include <regex>
-
+#endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -272,9 +264,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	DeleteFileA(str00001);
 
 
+#if _XP
 
-	if (!IsWindowsVistaOrGreater())
-	{
 		URLDownloadToFileA(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
@@ -282,29 +273,41 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
+#else
+
+	if (can_use_intel_core_4th_gen_features())
+	{
+
+		URLDownloadToFileA(
+			nullptr,
+			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
+			tbb,
+			0,
+			nullptr
+			);
+
 	}
 	else
 	{
-		if (can_use_intel_core_4th_gen_features())
+		// AVX
+		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
 		{
-
 			URLDownloadToFileA(
 				nullptr,
-				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
+				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
 				0,
 				nullptr
 				);
-
 		}
 		else
 		{
-			// AVX
-			if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
+			//SSE2
+			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
 				URLDownloadToFileA(
 					nullptr,
-					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
+					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
 					0,
 					nullptr
@@ -312,45 +315,34 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			else
 			{
-				//SSE2
-				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+				//SSE
+				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
 					URLDownloadToFileA(
 						nullptr,
-						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
 						0,
 						nullptr
 						);
 				}
+				//Default
 				else
 				{
-					//SSE
-					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-					{
-						URLDownloadToFileA(
-							nullptr,
-							"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
-							tbb,
-							0,
-							nullptr
-							);
-					}
-					//Default
-					else
-					{
-						URLDownloadToFileA(
-							nullptr,
-							"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-							tbb,
-							0,
-							nullptr
-							);
-					}
+					URLDownloadToFileA(
+						nullptr,
+						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
+						tbb,
+						0,
+						nullptr
+						);
 				}
 			}
 		}
 	}
+
+#endif
+
 	char strtbb_c[MAX_PATH];
 	strcpy(strtbb_c, tbb);
 	strcat(strtbb_c, zone);

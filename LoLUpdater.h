@@ -17,10 +17,9 @@ int check_4th_gen_intel_core_features()
 # include <intrin.h>
 #endif
 #include <fstream>
-#include <bemapiset.h>
-#include <libloaderapi.h>
+#include "Windows.h"
 
-void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
+inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
 #if defined(_MSC_VER)
 	__cpuidex(abcd, eax, ecx);
@@ -37,7 +36,7 @@ void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 #endif
 }
 
-int check_xcr0_ymm()
+inline int check_xcr0_ymm()
 {
 	uint32_t xcr0;
 #if defined(_MSC_VER)
@@ -49,7 +48,8 @@ int check_xcr0_ymm()
 }
 
 
-int check_4th_gen_intel_core_features()
+
+inline int check_4th_gen_intel_core_features()
 {
 	int abcd[4];
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
@@ -100,8 +100,7 @@ static int can_use_intel_core_4th_gen_features()
 #else
 #define ENVIRONMENT32
 #endif
-#endif
-#if __GNUC__
+#else
 #if __x86_64__ || __ppc64__
 #define ENVIRONMENT64
 #else
