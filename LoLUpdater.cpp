@@ -63,6 +63,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		buff_w
 		);
 #endif
+	std::wcout << buff_w;
 #if XP
 	strcpy(airdir, buff_c);
 	strcpy(airdir, adobepathXP);
@@ -80,6 +81,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(airdir, sym.c_str());
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
+	std::cout << sym.c_str();
 	strcpy(flashdir, sym.c_str());
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
@@ -98,7 +100,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgglbin, cgglfile);
 	strcpy(cgpath, workingdir);
 	strcpy(cgpath, slnpath);
-	strcat(cgpath, cgd3d9file);
+	strcat(cgpath, cgfile);
 	strcpy(cgglpath, workingdir);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
@@ -107,10 +109,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgd3d9path, cgd3d9file);
 	strcpy(cgglunblock, cgglpath);
 	strcat(cgglunblock, unblock);
-	strcpy(cgglunblock, cgpath);
-	strcat(cgglunblock, unblock);
-	strcpy(cgglunblock, cgd3d9path);
-	strcat(cgglunblock, unblock);
+	strcpy(cgunblock, cgpath);
+	strcat(cgunblock, unblock);
+	strcpy(cgd3d9unblock, cgd3d9path);
+	strcat(cgd3d9unblock, unblock);
 	strcpy(tbb, workingdir);
 	strcpy(tbb, slnpath);
 	strcpy(tbb, tbbfile);
