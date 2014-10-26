@@ -12,7 +12,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "LoLUpdater Alpha 1 Build 5" << std::endl << "Patching...";
 	if (cgbinpath == NULL)
 	{
-		strcpy(cginstunblock, workingdir);
+		strcpy(cginstunblock, workingdirbuffer);
 		strcpy(cginstunblock, cginstaller);
 		strcpy(cginstunblock, unblock);
 		URLDownloadToFile(
@@ -38,22 +38,22 @@ int _tmain(int argc, _TCHAR* argv[])
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 #if defined ENVIRONMENT32
-	strcpy(airdir, &workingdir[0]);
+	strcpy(airdir, &workingdirbuffer[0]);
 	strcpy(airdir, "\\Program Files");
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
 #elif defined ENVIRONMENT64
-	strcpy(airdir, &workingdir[0]);
+	strcpy(airdir, &workingdirbuffer[0]);
 	strcpy(airdir, "\\Program Files (x86)");
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
 #endif
 
 	// String-combining logic
-	strcpy(airdir, workingdir);
+	strcpy(airdir, workingdirbuffer);
 	strcpy(airdir, airpath);
 	strcat(airdir, air);
-	strcpy(flashdir, workingdir);
+	strcpy(flashdir, workingdirbuffer);
 	strcpy(flashdir, airpath);
 	strcat(flashdir, flash);
 	strcpy(cgbin, cgbinpath);
@@ -62,13 +62,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgd3d9bin, cgd3d9file);
 	strcpy(cgglbin, cgbinpath);
 	strcat(cgglbin, cgglfile);
-	strcpy(cgpath, workingdir);
+	strcpy(cgpath, workingdirbuffer);
 	strcpy(cgpath, slnpath);
 	strcat(cgpath, cgfile);
-	strcpy(cgglpath, workingdir);
+	strcpy(cgglpath, workingdirbuffer);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
-	strcpy(cgd3d9path, workingdir);
+	strcpy(cgd3d9path, workingdirbuffer);
 	strcpy(cgd3d9path, slnpath);
 	strcat(cgd3d9path, cgd3d9file);
 	strcpy(cgglunblock, cgglpath);
@@ -77,10 +77,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(cgunblock, unblock);
 	strcpy(cgd3d9unblock, cgd3d9path);
 	strcat(cgd3d9unblock, unblock);
-	strcpy(tbb, workingdir);
+	strcpy(tbb, workingdirbuffer);
 	strcpy(tbb, slnpath);
 	strcpy(tbb, tbbfile);
-	strcpy(strair, workingdir);
+	strcpy(strair, workingdirbuffer);
 	strcpy(strair, airwin);
 	strcat(strair, unblock);
 	strcpy(airunblock, airdir);
@@ -95,24 +95,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 
 		// Separate string-combining logic for Garena
-		strcpy(airdir, workingdir);
+		strcpy(airdir, workingdirbuffer);
 		strcpy(airdir, gair);
 		strcat(airdir, air);
 
-		strcpy(flashdir, workingdir);
+		strcpy(flashdir, workingdirbuffer);
 		strcpy(flashdir, gair);
 		strcat(flashdir, flash);
 
-		strcpy(tbb, workingdir);
+		strcpy(tbb, workingdirbuffer);
 		strcpy(tbb, game);
 		strcpy(tbb, tbbfile);
-		strcpy(cgpath, workingdir);
+		strcpy(cgpath, workingdirbuffer);
 		strcpy(cgpath, game);
 		strcat(cgpath, cgd3d9file);
-		strcpy(cgglpath, workingdir);
+		strcpy(cgglpath, workingdirbuffer);
 		strcpy(cgglpath, game);
 		strcat(cgglpath, cgglfile);
-		strcpy(cgd3d9path, workingdir);
+		strcpy(cgd3d9path, workingdirbuffer);
 		strcpy(cgd3d9path, game);
 		strcat(cgd3d9path, cgd3d9file);
 		strcpy(cgglunblock, cgglpath);
@@ -249,6 +249,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Unblocks all files
 	for each (char* i in unblockfiles) {
 		DeleteFile(i);
+		std::cout << i;
 	}
+
 	return 0;
 }
