@@ -49,16 +49,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(flashdir, flash);
 #endif
 
-
 	// String-combining logic
 	strcpy(airdir, workingdir);
 	strcpy(airdir, airpath);
 	strcat(airdir, air);
-
 	strcpy(flashdir, workingdir);
 	strcpy(flashdir, airpath);
 	strcat(flashdir, flash);
-
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
 	strcpy(cgd3d9bin, cgbinpath);
@@ -96,9 +93,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Check for Garena
 	if (is_file_exist("lol.exe"))
 	{
-		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
 
-		// Separate string´-combining logic for Garena
+		// Separate string-combining logic for Garena
 		strcpy(airdir, workingdir);
 		strcpy(airdir, gair);
 		strcat(airdir, air);
