@@ -175,6 +175,7 @@ char* game = "\\Game";
 char* tbbfile = "\\tbb.dll";
 char* adobepathXP = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 char* adobepath = "\\Adobe AIR\\Versions\\1.0\\";
+char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
 char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 char* air = "Adobe AIR.dll";
 char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };

@@ -64,16 +64,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		buff_w
 		);
 #endif
-	std::wcout << buff_w;
-	// String-combining logic
+
 #if XP
 	strcpy(airdir, buff_c);
 	strcpy(airdir, adobepathXP);
 	strcat(airdir, air);
 
-	strcpy(flashfile, buff_c);
-	strcpy(flashfile, adobepathXP);
-	strcat(flashfile, flash);
+	strcpy(flashdir, buff_c);
+	strcpy(flashdir, adobepathXP);
+	strcat(flashdir, flash);
 #else
 
 	std::wstring wstrValue;
@@ -84,24 +83,26 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string sym(1, strValue[0]);
 
 	std::wcout << sym.c_str();
-	strcpy(airdir, sym.c_str());
-	strcpy(airdir, adobepath);
-	strcat(airdir, air);
+	strcpy(airfile, sym.c_str());
+	strcpy(airfile, adobepath);
+	strcat(airfile, air);
 
-	strcpy(flashdir, sym.c_str());
-	strcpy(flashdir, adobepath);
-	strcat(flashdir, flash);
+	strcpy(flashfile, sym.c_str());
+	strcpy(flashfile, adobepath);
+	strcat(flashfile, flash);
 
 
 
 #endif
-	strcpy(airfile, workingdir);
-	strcpy(airfile, airpath);
-	strcat(airfile, air);
 
-	strcpy(flashfile, workingdir);
-	strcpy(flashfile, airpath);
-	strcat(flashfile, flash);
+	// String-combining logic
+	strcpy(airdir, workingdir);
+	strcpy(airdir, airpath);
+	strcat(airdir, air);
+
+	strcpy(flashdir, workingdir);
+	strcpy(flashdir, airpath);
+	strcat(flashdir, flash);
 
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
@@ -143,6 +144,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		char* airpath = "\\AIR\\Adobe AIR\\Versions\\1.0\\";
 
 		// Separate string´-combining logic for Garena
+		strcpy(airdir, workingdir);
+		strcpy(airdir, gair);
+		strcat(airdir, air);
+
+		strcpy(flashdir, workingdir);
+		strcpy(flashdir, gair);
+		strcat(flashdir, flash);
+
 		strcpy(tbb, workingdir);
 		strcpy(tbb, game);
 		strcpy(tbb, tbbfile);
@@ -161,35 +170,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		strcat(cgglunblock, unblock);
 		strcpy(cgglunblock, cgd3d9path);
 		strcat(cgglunblock, unblock);
-#if XP
-		strcpy(airdir, buff_c);
-		strcpy(airdir, airpath);
-		strcat(airdir, air);
-
-		strcpy(flashfile, buff_c);
-		strcpy(flashfile, adobepath);
-		strcat(flashfile, flash);
-#else
-
-		std::wstring wstrValue;
-		wstrValue[0] = (wchar_t)buff_w;
-
-		std::string strValue;
-		strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
-
-		char char_value = strValue[0];
-
-		strcpy(airdir, (const char*)char_value);
-		strcpy(airdir, airpath);
-		strcat(airdir, air);
-
-		strcpy(flashdir, (const char*)char_value);
-		strcpy(flashdir, airpath);
-		strcat(flashdir, flash);
-
-
-
-#endif
 
 	}
 	CopyFile(
