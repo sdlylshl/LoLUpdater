@@ -136,13 +136,11 @@ char* unblock = ":Zone.Identifier";
 char* workingdirbuffer = nullptr;
 char* workingdir = _getcwd(
 	workingdirbuffer,
-	MAX_PATH
+	260
 	);
 
 // Buffers
-wchar_t* buff_w[MAX_PATH];
 char tbb[MAX_PATH];
-char buff_c[MAX_PATH];
 char airfile[MAX_PATH];
 char airdir[MAX_PATH];
 char flashfile[MAX_PATH];
@@ -173,8 +171,7 @@ char* airwin = "air15_win.exe";
 char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
 char* game = "\\Game";
 char* tbbfile = "\\tbb.dll";
-char* adobepathXP = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-char* adobepath = "\\Adobe AIR\\Versions\\1.0\\";
+char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
 char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 char* air = "Adobe AIR.dll";

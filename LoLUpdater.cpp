@@ -37,63 +37,18 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
-
-#if XP
-#if defined(ENVIRONMENT64)
-	SHGetFolderPath(
-		nullptr,
-		CSIDL_PROGRAM_FILESX86,
-		nullptr,
-		NULL,
-		buff_c
-		);
-#elif defined (ENVIRONMENT32)
-	SHGetFolderPath(
-		nullptr,
-		CSIDL_PROGRAM_FILES,
-		nullptr,
-		NULL,
-		buff_c
-		);
-#endif
-#else
-	SHGetKnownFolderPath(
-		FOLDERID_ProgramFilesCommonX86,
-		0,
-		nullptr,
-		buff_w
-		);
-#endif
-
-#if XP
-	strcpy(airdir, buff_c);
-	strcpy(airdir, adobepathXP);
+#if defined ENVIRONMENT32
+	strcpy(airdir, &workingdir[0]);
+	strcpy(airdir, "Program Files");
+	strcpy(airdir, adobepath);
 	strcat(airdir, air);
-
-	strcpy(flashdir, buff_c);
-	strcpy(flashdir, adobepathXP);
+#elif defined ENVIRONMENT64
+	strcpy(airdir, &workingdir[0]);
+	strcpy(airdir, "Program Files (x86)");
+	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
-#else
-
-	std::wstring wstrValue;
-	wstrValue[0] = (wchar_t)buff_w;
-
-	std::string strValue;
-	strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
-	std::string sym(1, strValue[0]);
-
-	std::wcout << sym.c_str();
-	strcpy(airfile, sym.c_str());
-	strcpy(airfile, adobepath);
-	strcat(airfile, air);
-
-	strcpy(flashfile, sym.c_str());
-	strcpy(flashfile, adobepath);
-	strcat(flashfile, flash);
-
-
-
 #endif
+
 
 	// String-combining logic
 	strcpy(airdir, workingdir);
