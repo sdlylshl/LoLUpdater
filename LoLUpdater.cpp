@@ -53,7 +53,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 	char* air = "Adobe AIR.dll";
 	char airfile[MAX_PATH];
-	strcpy(airfile, buff_c);
+	strcpy(airfile, workingdir);
 	strcpy(airfile, adobepath);
 	strcat(airfile, air);
 
@@ -65,7 +65,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* flash = "Resources\\NPSWF32.dll";
 
 	char flashfile[MAX_PATH];
-	strcpy(flashfile, buff_c);
+	strcpy(flashfile, workingdir);
 	strcpy(flashfile, adobepath);
 	strcat(flashfile, flash);
 
