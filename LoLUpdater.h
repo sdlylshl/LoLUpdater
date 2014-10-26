@@ -135,7 +135,7 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 char* unblock = ":Zone.Identifier";
 
 // Buffers
-char workingdirbuffer[MAX_PATH];
+char airinst_buff[MAX_PATH];
 char buff_c[MAX_PATH];
 char tbb[MAX_PATH];
 char airfile[MAX_PATH];
@@ -159,8 +159,8 @@ char cgd3d9unblock[MAX_PATH];
 
 // Variables
 char* cwd = _getcwd(
-	workingdirbuffer,
-	MAX_PATH
+	nullptr,
+	0
 	);
 
 char* air = "Adobe AIR.dll";
@@ -186,3 +186,4 @@ char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airu
 // Garena variables
 char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
 char* game = "\\Game";
+
