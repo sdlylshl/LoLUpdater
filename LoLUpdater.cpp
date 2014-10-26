@@ -5,10 +5,6 @@
 #include <tchar.h>
 #include "ShlObj.h"
 #include <direct.h>
-#include <array>
-#if !_XP
-#include <VersionHelpers.h>
-#endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -87,24 +83,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(flashfile, adobepathXP);
 	strcat(flashfile, flash);
 #else
-	printf("gets here");
 	std::wstring wstrValue;
 	wstrValue[0] = (wchar_t)buff_w;
-
 	std::string strValue;
 	strValue.assign(wstrValue.begin(), wstrValue.end());  // convert wstring to string
 
-	char char_value = strValue[0];
 
-	strcpy(airdir, (const char*)char_value);
+	std::string sym(1, strValue[0]);
+
+	const char* char_value = sym.c_str();
+	strcpy(airdir, char_value);
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
-
+	printf("gets here");
 	strcpy(flashdir, (const char*)char_value);
 	strcpy(flashdir, adobepath);
 	strcat(flashdir, flash);
 
-
+	printf("gets here");
 
 #endif
 	// Temp test to check if correct value is returned
