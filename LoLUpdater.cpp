@@ -87,7 +87,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(flashfile, adobepathXP);
 	strcat(flashfile, flash);
 #else
-
+	printf("gets here");
 	std::wstring wstrValue;
 	wstrValue[0] = (wchar_t)buff_w;
 
