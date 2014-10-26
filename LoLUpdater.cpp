@@ -137,7 +137,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		strcpy(cgglunblock, cgd3d9path);
 		strcat(cgglunblock, unblock);
 	}
-
 	CopyFile(
 		cgbin,
 		cgpath,
@@ -154,10 +153,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		false
 		);
 
-	DeleteFile(cgunblock);
-	DeleteFile(cgglunblock);
-	DeleteFile(cgd3d9unblock);
-
 	char* airwin = "air15_win.exe";
 	char strair[MAX_PATH];
 	strcpy(strair, workingdir);
@@ -171,7 +166,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		nullptr
 		);
 	DeleteFile(strair);
-
 
 	SHELLEXECUTEINFO ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -265,12 +259,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	char flashunblock[MAX_PATH];
 	strcpy(airunblock, flashdir);
 	strcat(airunblock, unblock);
-	DeleteFile(airunblock);
-	DeleteFile(flashunblock);
 
 
 #if _XP
-
+	// XP
 		URLDownloadToFile(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
@@ -282,7 +274,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (can_use_intel_core_4th_gen_features())
 	{
-
+		// AVX2
 		URLDownloadToFile(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
@@ -297,7 +289,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX
 		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
 		{
-			URLDownloadToFileA(
+			URLDownloadToFile(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
@@ -310,7 +302,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			//SSE2
 			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
-				URLDownloadToFileA(
+				URLDownloadToFile(
 					nullptr,
 					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
@@ -323,7 +315,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//SSE
 				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
-					URLDownloadToFileA(
+					URLDownloadToFile(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
@@ -351,7 +343,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	char tbbunblock[MAX_PATH];
 	strcpy(tbbunblock, tbb);
 	strcat(tbbunblock, unblock);
-	DeleteFile(tbbunblock);
+
+	// Unblocks all files
+	char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
+	for each (char* i in unblockfiles) {
+		DeleteFile(i);
+	}
+
+
 
 	return 0;
 }
