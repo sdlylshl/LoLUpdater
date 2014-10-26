@@ -37,56 +37,83 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
+	
 #if defined ENVIRONMENT32
-	strcpy(airdir, &workingdirbuffer[0]);
+	strcpy(airdir, (const char*) workingdirbuffer[0]);
 	strcpy(airdir, "\\Program Files");
 	strcpy(airdir, adobepath);
 	strcat(airdir, air);
+
+	strcpy(airdir, (const char*)workingdirbuffer[0]);
+	strcpy(airdir, "\\Program Files");
+	strcpy(airdir, adobepath);
+	strcat(airdir, flash);
 #elif defined ENVIRONMENT64
-	strcpy(airdir, &workingdirbuffer[0]);
+	
+	strcpy(airdir, (const char*) workingdirbuffer[0]);
 	strcpy(airdir, "\\Program Files (x86)");
 	strcpy(flashdir, adobepath);
-	strcat(flashdir, flash);
+	strcat(flashdir, air);
+
+	strcpy(airdir, (const char*)workingdirbuffer[0]);
+	strcpy(airdir, "\\Program Files (x86)");
+	strcpy(airdir, adobepath);
+	strcat(airdir, flash);
 #endif
 
 	// String-combining logic
-	strcpy(airdir, workingdirbuffer);
-	strcpy(airdir, airpath);
-	strcat(airdir, air);
-	strcpy(flashdir, workingdirbuffer);
-	strcpy(flashdir, airpath);
-	strcat(flashdir, flash);
+	strcpy(airfile, workingdirbuffer);
+	strcpy(airfile, airpath);
+	strcat(airfile, air);
+
+	strcpy(flashfile, workingdirbuffer);
+	strcpy(flashfile, airpath);
+	strcat(flashfile, flash);
+
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
+
 	strcpy(cgd3d9bin, cgbinpath);
 	strcat(cgd3d9bin, cgd3d9file);
+
 	strcpy(cgglbin, cgbinpath);
 	strcat(cgglbin, cgglfile);
+
 	strcpy(cgpath, workingdirbuffer);
 	strcpy(cgpath, slnpath);
 	strcat(cgpath, cgfile);
+
 	strcpy(cgglpath, workingdirbuffer);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
+
 	strcpy(cgd3d9path, workingdirbuffer);
 	strcpy(cgd3d9path, slnpath);
 	strcat(cgd3d9path, cgd3d9file);
+
 	strcpy(cgglunblock, cgglpath);
 	strcat(cgglunblock, unblock);
+
 	strcpy(cgunblock, cgpath);
 	strcat(cgunblock, unblock);
+
 	strcpy(cgd3d9unblock, cgd3d9path);
-	strcat(cgd3d9unblock, unblock);
+	strcat(cgd3d9unblock, unblock); 
+
 	strcpy(tbb, workingdirbuffer);
 	strcpy(tbb, slnpath);
-	strcpy(tbb, tbbfile);
+	strcat(tbb, tbbfile);
+
 	strcpy(strair, workingdirbuffer);
 	strcpy(strair, airwin);
 	strcat(strair, unblock);
+
 	strcpy(airunblock, airdir);
 	strcat(airunblock, unblock);
+
 	strcpy(airunblock, flashdir);
 	strcat(airunblock, unblock);
+
 	strcpy(tbbunblock, tbb);
 	strcat(tbbunblock, unblock);
 
@@ -95,49 +122,40 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 
 		// Separate string-combining logic for Garena
-		strcpy(airdir, workingdirbuffer);
-		strcpy(airdir, gair);
-		strcat(airdir, air);
+		strcpy(airfile, workingdirbuffer);
+		strcpy(airfile, gair);
+		strcat(airfile, air);
 
-		strcpy(flashdir, workingdirbuffer);
-		strcpy(flashdir, gair);
-		strcat(flashdir, flash);
+		strcpy(flashfile, workingdirbuffer);
+		strcpy(flashfile, gair);
+		strcat(flashfile, flash);
 
 		strcpy(tbb, workingdirbuffer);
 		strcpy(tbb, game);
-		strcpy(tbb, tbbfile);
+		strcat(tbb, tbbfile);
+
 		strcpy(cgpath, workingdirbuffer);
 		strcpy(cgpath, game);
 		strcat(cgpath, cgd3d9file);
+
 		strcpy(cgglpath, workingdirbuffer);
 		strcpy(cgglpath, game);
 		strcat(cgglpath, cgglfile);
+
 		strcpy(cgd3d9path, workingdirbuffer);
 		strcpy(cgd3d9path, game);
 		strcat(cgd3d9path, cgd3d9file);
+
 		strcpy(cgglunblock, cgglpath);
 		strcat(cgglunblock, unblock);
+
 		strcpy(cgglunblock, cgpath);
 		strcat(cgglunblock, unblock);
+
 		strcpy(cgglunblock, cgd3d9path);
 		strcat(cgglunblock, unblock);
 
 	}
-	CopyFile(
-		cgbin,
-		cgpath,
-		false
-		);
-	CopyFile(
-		cgglbin,
-		cgglpath,
-		false
-		);
-	CopyFile(
-		cgd3d9bin,
-		cgd3d9path,
-		false
-		);
 	URLDownloadToFile(
 		nullptr,
 		"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
@@ -159,16 +177,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
-	CopyFile(
-		airfile,
-		airdir,
-		false
-		);
-	CopyFile(
-		flashfile,
-		flashdir,
-		false
-		);
+	
 #if _XP
 	// XP
 		URLDownloadToFile(
@@ -245,6 +254,32 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 #endif
+
+	CopyFile(
+		cgbin,
+		cgpath,
+		false
+		);
+	CopyFile(
+		cgglbin,
+		cgglpath,
+		false
+		);
+	CopyFile(
+		cgd3d9bin,
+		cgd3d9path,
+		false
+		);
+	CopyFile(
+		airfile,
+		airdir,
+		false
+		);
+	CopyFile(
+		flashfile,
+		flashdir,
+		false
+		);
 
 	// Unblocks all files
 	for each (char* i in unblockfiles) {

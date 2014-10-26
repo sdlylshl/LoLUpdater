@@ -136,7 +136,7 @@ char* unblock = ":Zone.Identifier";
 char* workingdirbuffer = nullptr;
 char* workingdir = _getcwd(
 	workingdirbuffer,
-	260
+	MAX_PATH
 	);
 
 // Buffers
@@ -161,18 +161,26 @@ char cgunblock[MAX_PATH];
 char cgd3d9unblock[MAX_PATH];
 
 // Variables
+char* air = "Adobe AIR.dll";
 char* flash = "Resources\\NPSWF32.dll";
+
 char* cgfile = "\\Cg.dll";
 char* cgglfile = "\\CgGL.dll";
 char* cgd3d9file = "\\CgD3D9.dll";
-char* cginstaller = "Cg-3.1_April2012_Setup.exe";
-char* cgbinpath = getenv("CG_BIN_PATH");
-char* airwin = "air15_win.exe";
-char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
-char* game = "\\Game";
+
 char* tbbfile = "\\tbb.dll";
+
+char* cginstaller = "Cg-3.1_April2012_Setup.exe";
+char* airwin = "air15_win.exe";
+
+char* cgbinpath = getenv("CG_BIN_PATH");
 char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
+
+char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
 char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
-char* air = "Adobe AIR.dll";
+
 char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
+
+// Garena variables
+char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
+char* game = "\\Game";
