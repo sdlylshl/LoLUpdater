@@ -107,6 +107,8 @@ static int can_use_intel_core_4th_gen_features()
 #endif
 #endif
 
+#include <iostream>
+#include <fstream>
 #include <tchar.h>
 #include <stdio.h>
 #include "ShlObj.h"
@@ -118,6 +120,8 @@ static int can_use_intel_core_4th_gen_features()
 #include <direct.h>
 #include <fstream>
 #include <VersionHelpers.h>
+#include <regex>
+
 
 bool is_file_exist(const char *fileName)
 {
@@ -126,7 +130,7 @@ bool is_file_exist(const char *fileName)
 }
 int _tmain(int argc, _TCHAR* argv[])
 {
-
+	char* zone = ":Zone.Identifier";
 	char* buffer12 = nullptr;
 	char* start = _getcwd(
 		buffer12,
@@ -135,16 +139,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* cgbinpath = getenv("CG_BIN_PATH");
 	if (cgbinpath == NULL)
 	{
+		char* cginstaller = "Cg-3.1_April2012_Setup.exe";
 		URLDownloadToFileA(
 			nullptr,
 			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			"Cg-3.1_April2012_Setup.exe",
+			cginstaller,
 			0,
 			nullptr
 			);
 		char strcg[MAX_PATH];
 		strcpy(strcg, start);
-		strcat(strcg, "Cg-3.1_April2012_Setup.exe:Zone.Identifier");
+		strcpy(strcg, cginstaller);
+		strcpy(strcg, zone);
 
 		DeleteFileA(strcg);
 
@@ -153,7 +159,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = "Cg-3.1_April2012_Setup.exe";
+		ShExecInfo.lpFile = cginstaller;
 		ShExecInfo.lpParameters = "/verysilent /TYPE=compact";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
@@ -192,7 +198,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(str3, start);
 	strcpy(str2, slnpath);
 	strcat(str2, cgd3d9);
-	char* zone = ":Zone.Identifier";
+
 	char str0[MAX_PATH];
 	strcpy(str0, start);
 	strcpy(str0, str1);
