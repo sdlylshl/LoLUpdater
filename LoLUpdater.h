@@ -121,32 +121,33 @@ typedef DWORD64(WINAPI * PGETENABLEDXSTATEFEATURES)();
 // Not sure of how to remove C-Style cast here
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
+#define MAX_PATH_EXT (MAX_PATH+1)
 // Buffers
-char buff_c[MAX_PATH+1];
-char tbb[MAX_PATH+1];
-char airfile[MAX_PATH+1];
-char airdir[MAX_PATH+1];
-char flashfile[MAX_PATH+1];
-char flashdir[MAX_PATH+1];
-char cgbin[MAX_PATH+1];
-char cginst[MAX_PATH+1];
-char cginstunblock[MAX_PATH+1];
-char airinst[MAX_PATH+1];
-char airinstunblock[MAX_PATH+1];
-char strair[MAX_PATH+1];
-char airunblock[MAX_PATH+1];
-char cgd3d9bin[MAX_PATH+1];
-char cgglbin[MAX_PATH+1];
-char cgpath[MAX_PATH+1];
-char cgglpath[MAX_PATH+1];
-char tbbunblock[MAX_PATH+1];
-char flashunblock[MAX_PATH+1];
-char cgd3d9path[MAX_PATH+1];
-char cgglunblock[MAX_PATH+1];
-char cgunblock[MAX_PATH+1];
-char cgd3d9unblock[MAX_PATH+1];
-char airpath_f[MAX_PATH+1];
-char slnpath_f[MAX_PATH+1];
+char buff_c[MAX_PATH_EXT];
+char tbb[MAX_PATH_EXT];
+char airfile[MAX_PATH_EXT];
+char airdir[MAX_PATH_EXT];
+char flashfile[MAX_PATH_EXT];
+char flashdir[MAX_PATH_EXT];
+char cgbin[MAX_PATH_EXT];
+char cginst[MAX_PATH_EXT];
+char cginstunblock[MAX_PATH_EXT];
+char airinst[MAX_PATH_EXT];
+char airinstunblock[MAX_PATH_EXT];
+char strair[MAX_PATH_EXT];
+char airunblock[MAX_PATH_EXT];
+char cgd3d9bin[MAX_PATH_EXT];
+char cgglbin[MAX_PATH_EXT];
+char cgpath[MAX_PATH_EXT];
+char cgglpath[MAX_PATH_EXT];
+char tbbunblock[MAX_PATH_EXT];
+char flashunblock[MAX_PATH_EXT];
+char cgd3d9path[MAX_PATH_EXT];
+char cgglunblock[MAX_PATH_EXT];
+char cgunblock[MAX_PATH_EXT];
+char cgd3d9unblock[MAX_PATH_EXT];
+char airpath_f[MAX_PATH_EXT];
+char slnpath_f[MAX_PATH_EXT];
 // Constants
 char* cwd = getcwd(
 	nullptr,

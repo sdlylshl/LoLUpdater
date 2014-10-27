@@ -10,7 +10,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (cgbinpath == NULL)
 	{
 		strcpy(cginstunblock, cginstaller);
-		strncat(cginstunblock, unblock, MAX_PATH+1);
+		strncat(cginstunblock, unblock, MAX_PATH_EXT);
 		URLDownloadToFileA(
 			nullptr,
 			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
@@ -36,18 +36,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Path builder
 #if defined(ENVIRONMENT64)
 	strcpy(buff_c, &drive);
-	strncat(buff_c, ":\\Program Files (x86)", MAX_PATH+1);
-	strncat(buff_c, adobepath, MAX_PATH+1);
+	strncat(buff_c, ":\\Program Files (x86)", MAX_PATH_EXT);
+	strncat(buff_c, adobepath, MAX_PATH_EXT);
 
 #elif defined (ENVIRONMENT32)
 	strcpy(buff_c, &drive);
-	strncat(buff_c, ":\\Program Files", MAX_PATH+1);
-	strncat(buff_c, adobepath, MAX_PATH+1);
+	strncat(buff_c, ":\\Program Files", MAX_PATH_EXT);
+	strncat(buff_c, adobepath, MAX_PATH_EXT);
 #endif
 	strcpy(slnpath_f, cwd);
-	strncat(slnpath_f, slnpath, MAX_PATH+1);
+	strncat(slnpath_f, slnpath, MAX_PATH_EXT);
 	strcpy(airpath_f, cwd);
-	strncat(airpath_f, airpath, MAX_PATH+1);
+	strncat(airpath_f, airpath, MAX_PATH_EXT);
 
 	// End Path builder
 
@@ -55,68 +55,68 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Gets location of latest adobeair dll
 	strcpy(airfile, buff_c);
-	strncat(airfile, air, MAX_PATH+1);
+	strncat(airfile, air, MAX_PATH_EXT);
 
 	// Gets location of latest flash dll
 	strcpy(flashfile, buff_c);
-	strncat(flashfile, flash, MAX_PATH+1);
+	strncat(flashfile, flash, MAX_PATH_EXT);
 
 	// Common Files UNBLOCK
 	strcpy(airunblock, airdir);
-	strncat(airunblock, unblock, MAX_PATH+1);
+	strncat(airunblock, unblock, MAX_PATH_EXT);
 
 	strcpy(flashunblock, flashdir);
-	strncat(flashunblock, unblock, MAX_PATH+1);
+	strncat(flashunblock, unblock, MAX_PATH_EXT);
 
 	// CG_BIN_PATH
 
 	// Gets location of latest cg dll
 	strcpy(cgbin, cgbinpath);
-	strncat(cgbin, cgfile, MAX_PATH+1);
+	strncat(cgbin, cgfile, MAX_PATH_EXT);
 
 	// Gets location of latest cgd3d9 dll
 	strcpy(cgd3d9bin, cgbinpath);
-	strncat(cgd3d9bin, cgd3d9file, MAX_PATH+1);
+	strncat(cgd3d9bin, cgd3d9file, MAX_PATH_EXT);
 
 	// Gets location of latest cggl dll
 	strcpy(cgglbin, cgbinpath);
-	strncat(cgglbin, cgglfile, MAX_PATH+1);
+	strncat(cgglbin, cgglfile, MAX_PATH_EXT);
 
 	// CG_BIN_PATH UNBLOCK
 	strcpy(cgglunblock, cgglpath);
-	strncat(cgglunblock, unblock, MAX_PATH+1);
+	strncat(cgglunblock, unblock, MAX_PATH_EXT);
 
 	strcpy(cgunblock, cgpath);
-	strncat(cgunblock, unblock, MAX_PATH+1);
+	strncat(cgunblock, unblock, MAX_PATH_EXT);
 
 	strcpy(cgd3d9unblock, cgd3d9path);
-	strncat(cgd3d9unblock, unblock, MAX_PATH+1);
+	strncat(cgd3d9unblock, unblock, MAX_PATH_EXT);
 
 	// Working Directory
 	strcpy(cgpath, slnpath_f);
-	strncat(cgpath, cgfile, MAX_PATH+1);
+	strncat(cgpath, cgfile, MAX_PATH_EXT);
 
 	strcpy(cgglpath, slnpath_f);
-	strncat(cgglpath, cgglfile, MAX_PATH+1);
+	strncat(cgglpath, cgglfile, MAX_PATH_EXT);
 
 	strcpy(cgd3d9path, slnpath_f);
-	strncat(cgd3d9path, cgd3d9file, MAX_PATH+1);
+	strncat(cgd3d9path, cgd3d9file, MAX_PATH_EXT);
 
 	strcpy(tbb, slnpath_f);
-	strncat(tbb, tbbfile, MAX_PATH+1);
+	strncat(tbb, tbbfile, MAX_PATH_EXT);
 
 	strcpy(airdir, airpath_f);
-	strncat(airdir, air, MAX_PATH+1);
+	strncat(airdir, air, MAX_PATH_EXT);
 
 	strcpy(flashdir, airpath_f);
-	strncat(flashdir, flash, MAX_PATH+1);
+	strncat(flashdir, flash, MAX_PATH_EXT);
 
 	// Misc UNBLOCK
 	strcpy(tbbunblock, tbb);
-	strncat(tbbunblock, unblock, MAX_PATH+1);
+	strncat(tbbunblock, unblock, MAX_PATH_EXT);
 
 	strcpy(airinstunblock, airwin);
-	strncat(airinstunblock, unblock, MAX_PATH+1);
+	strncat(airinstunblock, unblock, MAX_PATH_EXT);
 
 		URLDownloadToFileA(
 			nullptr,
@@ -148,36 +148,36 @@ int _tmain(int argc, _TCHAR* argv[])
 		// Separate string-combining logic for Garena
 		strcpy(airdir, buff_c);
 		strcpy(airdir, airpath);
-		strncat(airdir, air, MAX_PATH+1);
+		strncat(airdir, air, MAX_PATH_EXT);
 
 		strcpy(flashdir, buff_c);
 		strcpy(flashdir, airpath);
-		strncat(flashdir, flash, MAX_PATH+1);
+		strncat(flashdir, flash, MAX_PATH_EXT);
 
 		strcpy(tbb, cwd);
 		strcpy(tbb, slnpath);
-		strncat(tbb, tbbfile, MAX_PATH+1);
+		strncat(tbb, tbbfile, MAX_PATH_EXT);
 
 		strcpy(cgd3d9path, cwd);
 		strcpy(cgd3d9path, slnpath);
-		strncat(cgd3d9path, cgd3d9file, MAX_PATH+1);
+		strncat(cgd3d9path, cgd3d9file, MAX_PATH_EXT);
 
 		strcpy(cgglpath, cwd);
 		strcpy(cgglpath, slnpath);
-		strncat(cgglpath, cgglfile, MAX_PATH+1);
+		strncat(cgglpath, cgglfile, MAX_PATH_EXT);
 
 		strcpy(cgpath, cwd);
 		strcpy(cgpath, slnpath);
-		strncat(cgpath, cgfile, MAX_PATH+1);
+		strncat(cgpath, cgfile, MAX_PATH_EXT);
 
 		strcpy(cgglunblock, cgglpath);
-		strncat(cgglunblock, unblock, MAX_PATH+1);
+		strncat(cgglunblock, unblock, MAX_PATH_EXT);
 
 		strcpy(cgunblock, cgpath);
-		strncat(cgunblock, unblock, MAX_PATH+1);
+		strncat(cgunblock, unblock, MAX_PATH_EXT);
 
 		strcpy(cgd3d9unblock, cgd3d9path);
-		strncat(cgd3d9unblock, unblock, MAX_PATH+1);
+		strncat(cgd3d9unblock, unblock, MAX_PATH_EXT);
 	}
 #if _XP
 	// XP
