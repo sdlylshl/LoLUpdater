@@ -25,53 +25,70 @@
 #include "tbb/atomic.h"
 #include "../tbb/tls.h"
 
-namespace Harness {
+namespace Harness
+{
+	static tbb::atomic<unsigned> ctInstantParallelism;
+	static tbb::atomic<unsigned> ctPeakParallelism;
+	static tbb::internal::tls<uintptr_t> ctNested;
 
-static tbb::atomic<unsigned> ctInstantParallelism;
-static tbb::atomic<unsigned> ctPeakParallelism;
-static tbb::internal::tls<uintptr_t>  ctNested;
+	class ConcurrencyTracker
+	{
+		bool m_Outer;
 
-class ConcurrencyTracker {
-    bool    m_Outer;
+		static void Started()
+		{
+			unsigned p = ++ctInstantParallelism;
+			unsigned q = ctPeakParallelism;
+			while (q < p)
+			{
+				q = ctPeakParallelism.compare_and_swap(p, q);
+			}
+		}
 
-    static void Started () {
-        unsigned p = ++ctInstantParallelism;
-        unsigned q = ctPeakParallelism;
-        while( q<p ) {
-            q = ctPeakParallelism.compare_and_swap(p,q);
-        }
-    }
+		static void Stopped()
+		{
+			ASSERT ( ctInstantParallelism > 0, "Mismatched call to ConcurrencyTracker::Stopped()" );
+			--ctInstantParallelism;
+		}
 
-    static void Stopped () {
-        ASSERT ( ctInstantParallelism > 0, "Mismatched call to ConcurrencyTracker::Stopped()" );
-        --ctInstantParallelism;
-    }
-public:
-    ConcurrencyTracker() : m_Outer(false) {
-        uintptr_t nested = ctNested;
-        ASSERT (nested == 0 || nested == 1, NULL);
-        if ( !ctNested ) {
-            Started();
-            m_Outer = true;
-            ctNested = 1;
-        }
-    }
-    ~ConcurrencyTracker() {
-        if ( m_Outer ) {
-            Stopped();
-            ctNested = 0;
-        }
-    }
+	public:
+		ConcurrencyTracker() : m_Outer(false)
+		{
+			uintptr_t nested = ctNested;
+			ASSERT (nested == 0 || nested == 1, NULL);
+			if (!ctNested)
+			{
+				Started();
+				m_Outer = true;
+				ctNested = 1;
+			}
+		}
 
-    static unsigned PeakParallelism() { return ctPeakParallelism; }
-    static unsigned InstantParallelism() { return ctInstantParallelism; }
+		~ConcurrencyTracker()
+		{
+			if (m_Outer)
+			{
+				Stopped();
+				ctNested = 0;
+			}
+		}
 
-    static void Reset() {
-        ASSERT (ctInstantParallelism == 0, "Reset cannot be called when concurrency tracking is underway");
-        ctInstantParallelism = ctPeakParallelism = 0;
-    }
-}; // ConcurrencyTracker
+		static unsigned PeakParallelism()
+		{
+			return ctPeakParallelism;
+		}
 
+		static unsigned InstantParallelism()
+		{
+			return ctInstantParallelism;
+		}
+
+		static void Reset()
+		{
+			ASSERT (ctInstantParallelism == 0, "Reset cannot be called when concurrency tracking is underway");
+			ctInstantParallelism = ctPeakParallelism = 0;
+		}
+	}; // ConcurrencyTracker
 } // namespace Harness
 
 #endif /* tbb_tests_harness_concurrency_tracker_H */

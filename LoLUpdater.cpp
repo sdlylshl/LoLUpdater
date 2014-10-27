@@ -5,14 +5,12 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 5" << std::endl << "Patching...";
-	std::cout << "";
+	std::cout << "LoLUpdater Alpha 1 Build 6" << std::endl << "Patching..." << std::endl << "";
+
 	if (cgbinpath == NULL)
 	{
-
-
 		strcpy(cginstunblock, cginstaller);
-		strcat(cginstunblock, unblock);
+		strncat(cginstunblock, unblock, MAX_PATH);
 		URLDownloadToFileA(
 			nullptr,
 			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
@@ -21,8 +19,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 		);
 		DeleteFileA(cginstunblock);
-		SHELLEXECUTEINFO ShExecInfo = {0};
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+		SHELLEXECUTEINFOA ShExecInfo = {0};
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
@@ -31,105 +29,116 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteEx(&ShExecInfo);
+		ShellExecuteExA(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 
+	// Path builder
 #if defined(ENVIRONMENT64)
-	SHGetFolderPathA(
-		nullptr,
-		CSIDL_PROGRAM_FILESX86,
-		nullptr,
-		NULL,
-		buff_c
-		);
+	strcpy(buff_c, &drive);
+	strncat(buff_c, ":\\Program Files (x86)", MAX_PATH);
+	strncat(buff_c, adobepath, MAX_PATH);
+
 #elif defined (ENVIRONMENT32)
-	SHGetFolderPathA(
-		nullptr,
-		CSIDL_PROGRAM_FILES,
-		nullptr,
-		NULL,
-		buff_c
-		);
+	strcpy(buff_c, &drive);
+	strncat(buff_c, ":\\Program Files", MAX_PATH);
+	strncat(buff_c, adobepath, MAX_PATH);
 #endif
-	// String-combining logic
+	strcpy(slnpath_f, cwd);
+	strncat(slnpath_f, slnpath, MAX_PATH);
+	strcpy(airpath_f, cwd);
+	strncat(airpath_f, airpath, MAX_PATH);
 
+	// End Path builder
+
+	// Common Files
+
+	// Gets location of latest adobeair dll
 	strcpy(airfile, buff_c);
-	strcpy(airfile, adobepath);
-	strcat(airfile, air);
-	strcpy(flashfile, buff_c);
-	strcpy(flashfile, adobepath);
-	strcat(flashfile, flash);
-	strcpy(cgbin, cgbinpath);
-	strcat(cgbin, cgfile);
-	strcpy(cgd3d9bin, cgbinpath);
-	strcat(cgd3d9bin, cgd3d9file);
-	strcpy(cgglbin, cgbinpath);
-	strcat(cgglbin, cgglfile);
-	// Problem starts here
-	strcpy(cgpath, cwd);
-	strcpy(cgpath, slnpath);
-	strcat(cgpath, cgfile);
-	strcpy(cgglpath, cwd);
-	strcpy(cgglpath, slnpath);
-	strcat(cgglpath, cgglfile);
-	strcpy(cgd3d9path, cwd);
-	strcpy(cgd3d9path, slnpath);
-	strcat(cgd3d9path, cgd3d9file);
-	strcpy(tbb, cwd);
-	strcpy(tbb, slnpath);
-	strcat(tbb, tbbfile);
-	strcpy(airdir, cwd);
-	strcpy(airdir, airpath);
-	strcat(airdir, air);
-	strcpy(flashdir, cwd);
-	strcpy(flashdir, airpath);
-	strcat(flashdir, flash);
-	// problem ends here
-	strcpy(cgglunblock, cgglpath);
-	strcat(cgglunblock, unblock);
-	strcpy(cgunblock, cgpath);
-	strcat(cgunblock, unblock);
-	strcpy(cgd3d9unblock, cgd3d9path);
-	strcat(cgd3d9unblock, unblock);
+	strncat(airfile, air, MAX_PATH);
 
+	// Gets location of latest flash dll
+	strcpy(flashfile, buff_c);
+	strncat(flashfile, flash, MAX_PATH);
+
+	// Common Files UNBLOCK
 	strcpy(airunblock, airdir);
-	strcat(airunblock, unblock);
+	strncat(airunblock, unblock, MAX_PATH);
 
 	strcpy(flashunblock, flashdir);
-	strcat(flashunblock, unblock);
+	strncat(flashunblock, unblock, MAX_PATH);
 
-	strcpy(tbbunblock, cwd);
+	// CG_BIN_PATH
+
+	// Gets location of latest cg dll
+	strcpy(cgbin, cgbinpath);
+	strncat(cgbin, cgfile, MAX_PATH);
+
+	// Gets location of latest cgd3d9 dll
+	strcpy(cgd3d9bin, cgbinpath);
+	strncat(cgd3d9bin, cgd3d9file, MAX_PATH);
+
+	// Gets location of latest cggl dll
+	strcpy(cgglbin, cgbinpath);
+	strncat(cgglbin, cgglfile, MAX_PATH);
+
+	// CG_BIN_PATH UNBLOCK
+	strcpy(cgglunblock, cgglpath);
+	strncat(cgglunblock, unblock, MAX_PATH);
+
+	strcpy(cgunblock, cgpath);
+	strncat(cgunblock, unblock, MAX_PATH);
+
+	strcpy(cgd3d9unblock, cgd3d9path);
+	strncat(cgd3d9unblock, unblock, MAX_PATH);
+
+	// Working Directory
+	strcpy(cgpath, slnpath_f);
+	strncat(cgpath, cgfile, MAX_PATH);
+
+	strcpy(cgglpath, slnpath_f);
+	strncat(cgglpath, cgglfile, MAX_PATH);
+
+	strcpy(cgd3d9path, slnpath_f);
+	strncat(cgd3d9path, cgd3d9file, MAX_PATH);
+
+	strcpy(tbb, slnpath_f);
+	strncat(tbb, tbbfile, MAX_PATH);
+
+	strcpy(airdir, airpath_f);
+	strncat(airdir, air, MAX_PATH);
+
+	strcpy(flashdir, airpath_f);
+	strncat(flashdir, flash, MAX_PATH);
+
+	// Misc UNBLOCK
 	strcpy(tbbunblock, tbb);
-	strcat(tbbunblock, unblock);
+	strncat(tbbunblock, unblock, MAX_PATH);
 
+	strcpy(airinstunblock, airwin);
+	strncat(airinstunblock, unblock, MAX_PATH);
 
-		strcpy(airinstunblock, airwin);
-		strcpy(airinstunblock, unblock);
-		if (is_file_exist(airwin))
-		{
-			URLDownloadToFileA(
-				nullptr,
-				"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-				airwin,
-				0,
-				nullptr
-				);
-		}
-		
-		DeleteFileA(airinstunblock);
-		SHELLEXECUTEINFO ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-		ShExecInfo.hwnd = nullptr;
-		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = airwin;
-		ShExecInfo.lpParameters = "-silent";
-		ShExecInfo.lpDirectory = nullptr;
-		ShExecInfo.nShow = SW_SHOW;
-		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteEx(&ShExecInfo);
-		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+		URLDownloadToFileA(
+			nullptr,
+			"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
+			airwin,
+			0,
+			nullptr
+		);
+
+	DeleteFileA(airinstunblock);
+	SHELLEXECUTEINFOA ShExecInfo = {0};
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = nullptr;
+	ShExecInfo.lpFile = airwin;
+	ShExecInfo.lpParameters = "-silent";
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteExA(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 	// Check for Garena
 	if (is_file_exist("lol.exe"))
@@ -139,40 +148,40 @@ int _tmain(int argc, _TCHAR* argv[])
 		// Separate string-combining logic for Garena
 		strcpy(airdir, buff_c);
 		strcpy(airdir, airpath);
-		strcat(airdir, air);
+		strncat(airdir, air, MAX_PATH);
 
 		strcpy(flashdir, buff_c);
 		strcpy(flashdir, airpath);
-		strcat(flashdir, flash);
+		strncat(flashdir, flash, MAX_PATH);
 
 		strcpy(tbb, cwd);
 		strcpy(tbb, slnpath);
-		strcat(tbb, tbbfile);
+		strncat(tbb, tbbfile, MAX_PATH);
 
 		strcpy(cgd3d9path, cwd);
 		strcpy(cgd3d9path, slnpath);
-		strcat(cgd3d9path, cgd3d9file);
+		strncat(cgd3d9path, cgd3d9file, MAX_PATH);
 
 		strcpy(cgglpath, cwd);
 		strcpy(cgglpath, slnpath);
-		strcat(cgglpath, cgglfile);
+		strncat(cgglpath, cgglfile, MAX_PATH);
 
 		strcpy(cgpath, cwd);
-		strcpy(cgpath, slnpath );
-		strcat(cgpath, cgfile);
+		strcpy(cgpath, slnpath);
+		strncat(cgpath, cgfile, MAX_PATH);
 
 		strcpy(cgglunblock, cgglpath);
-		strcat(cgglunblock, unblock);
+		strncat(cgglunblock, unblock, MAX_PATH);
 
 		strcpy(cgunblock, cgpath);
-		strcat(cgunblock, unblock);
+		strncat(cgunblock, unblock, MAX_PATH);
 
 		strcpy(cgd3d9unblock, cgd3d9path);
-		strcat(cgd3d9unblock, unblock);
+		strncat(cgd3d9unblock, unblock, MAX_PATH);
 	}
 #if _XP
 	// XP
-		URLDownloadToFile(
+		URLDownloadToFileA(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
 			tbb,
@@ -183,7 +192,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (can_use_intel_core_4th_gen_features())
 	{
 		// AVX2
-		URLDownloadToFile(
+		URLDownloadToFileA(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
 			tbb,
@@ -196,7 +205,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX
 		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
 		{
-			URLDownloadToFile(
+			URLDownloadToFileA(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
@@ -209,7 +218,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			//SSE2
 			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
-				URLDownloadToFile(
+				URLDownloadToFileA(
 					nullptr,
 					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
@@ -222,7 +231,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//SSE
 				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
-					URLDownloadToFile(
+					URLDownloadToFileA(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
@@ -233,7 +242,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//Default
 				else
 				{
-					URLDownloadToFile(
+					URLDownloadToFileA(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
 						tbb,
@@ -271,15 +280,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		flashdir,
 		false
 	);
-
-	// Unblocks all files
 	for each (char* i in unblockfiles)
 	{
 		DeleteFileA(i);
 	}
+
 	std::cout << "LoLUpdater finished!" << std::endl << "";
-	std::cout << flashdir;
-	std::cout << cgglpath;
 	system("pause");
 
 	return 0;
