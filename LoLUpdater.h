@@ -1,3 +1,7 @@
+#include <tchar.h>
+#include "ShlObj.h"
+#include <direct.h>
+#include <iostream>
 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
@@ -108,6 +112,13 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #endif
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 
 inline bool is_file_exist(const char *fileName)
 {
@@ -135,35 +146,34 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 char* unblock = ":Zone.Identifier";
 
 // Buffers
-char buff_c[1024];
-char tbb[1024];
-char airfile[1024];
-char airdir[1024];
-char flashfile[1024];
-char flashdir[1024];
-char cgbin[1024];
-char cginst[1024];
-char cginstunblock[1024];
-char airinst[1024];
-char airinstunblock[1024];
-char strair[1024];
-char airunblock[1024];
-char cgd3d9bin[1024];
-char cgglbin[1024];
-char cgpath[1024];
-char cgglpath[1024];
-char tbbunblock[1024];
-char flashunblock[1024];
-char cgd3d9path[1024];
-char cgglunblock[1024];
-char cgunblock[1024];
-char cgd3d9unblock[1024];
+char buff_c[MAX_PATH];
+char tbb[MAX_PATH];
+char airfile[MAX_PATH];
+char airdir[MAX_PATH];
+char flashfile[MAX_PATH];
+char flashdir[MAX_PATH];
+char cgbin[MAX_PATH];
+char cginst[MAX_PATH];
+char cginstunblock[MAX_PATH];
+char airinst[MAX_PATH];
+char airinstunblock[MAX_PATH];
+char strair[MAX_PATH];
+char airunblock[MAX_PATH];
+char cgd3d9bin[MAX_PATH];
+char cgglbin[MAX_PATH];
+char cgpath[MAX_PATH];
+char cgglpath[MAX_PATH];
+char tbbunblock[MAX_PATH];
+char flashunblock[MAX_PATH];
+char cgd3d9path[MAX_PATH];
+char cgglunblock[MAX_PATH];
+char cgunblock[MAX_PATH];
+char cgd3d9unblock[MAX_PATH];
 // Variables
 
-char *cwd = nullptr;
-char* start = _getcwd(
-	cwd,
-	200
+char* cwd = _getcwd(
+	nullptr,
+	0
 	);
 
 char* air = "Adobe AIR.dll";
@@ -173,6 +183,7 @@ char* cgfile = "\\Cg.dll";
 char* cgglfile = "\\CgGL.dll";
 char* cgd3d9file = "\\CgD3D9.dll";
 
+char* cginstaller = "Cg-3.1_April2012_Setup.exe";
 char* tbbfile = "\\tbb.dll";
 
 char* cgbinpath = getenv("CG_BIN_PATH");
@@ -184,8 +195,3 @@ char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\
 char* airwin = "air15_win.exe";
 
 char* unblockfiles[] = { cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock };
-
-// Garena variables
-char* gair = "\\Air\\Adobe AIR\\Versions\\1.0\\";
-char* game = "\\Game";
-

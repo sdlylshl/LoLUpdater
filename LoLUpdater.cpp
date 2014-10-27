@@ -2,10 +2,6 @@
 //
 
 #include "LoLUpdater.h"
-#include <tchar.h>
-#include "ShlObj.h"
-#include <direct.h>
-#include <iostream>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -13,30 +9,29 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "";
 	if (cgbinpath == NULL)
 	{
-		strcpy(cginst, cwd);
-		strcat(cginst, "\\Cg-3.1_April2012_Setup.exe");
 
-		strcpy(cginstunblock, cginst);
+
+		strcpy(cginstunblock, cginstaller);
 		strcat(cginstunblock, unblock);
 		URLDownloadToFileA(
 			nullptr,
 			"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			cginst,
+			cginstaller,
 			0,
 			nullptr
 		);
 		DeleteFileA(cginstunblock);
-		SHELLEXECUTEINFOA ShExecInfo = {0};
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+		SHELLEXECUTEINFO ShExecInfo = {0};
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = cginst;
+		ShExecInfo.lpFile = cginstaller;
 		ShExecInfo.lpParameters = "/verysilent /TYPE=compact";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExA(&ShExecInfo);
+		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 	}
 
@@ -45,15 +40,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		nullptr,
 		CSIDL_PROGRAM_FILESX86,
 		nullptr,
-		0,
+		NULL,
 		buff_c
-	);
+		);
 #elif defined (ENVIRONMENT32)
 	SHGetFolderPathA(
 		nullptr,
 		CSIDL_PROGRAM_FILES,
 		nullptr,
-		0,
+		NULL,
 		buff_c
 		);
 #endif
@@ -62,53 +57,39 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(airfile, buff_c);
 	strcpy(airfile, adobepath);
 	strcat(airfile, air);
-	std::cout << airfile;
 	strcpy(flashfile, buff_c);
 	strcpy(flashfile, adobepath);
 	strcat(flashfile, flash);
-	std::cout << flashfile;
 	strcpy(cgbin, cgbinpath);
 	strcat(cgbin, cgfile);
-	std::cout << cgbin;
 	strcpy(cgd3d9bin, cgbinpath);
 	strcat(cgd3d9bin, cgd3d9file);
-	std::cout << cgd3d9bin;
 	strcpy(cgglbin, cgbinpath);
 	strcat(cgglbin, cgglfile);
-	std::cout << cgglbin;
-
-	// Crashes here
+	// Problem starts here
 	strcpy(cgpath, cwd);
 	strcpy(cgpath, slnpath);
 	strcat(cgpath, cgfile);
-	std::cout << cgpath;
 	strcpy(cgglpath, cwd);
 	strcpy(cgglpath, slnpath);
 	strcat(cgglpath, cgglfile);
-	std::cout << cgglpath;
 	strcpy(cgd3d9path, cwd);
 	strcpy(cgd3d9path, slnpath);
 	strcat(cgd3d9path, cgd3d9file);
-	std::cout << cgd3d9path;
 	strcpy(tbb, cwd);
 	strcpy(tbb, slnpath);
 	strcat(tbb, tbbfile);
-	std::cout << tbb;
 	strcpy(airdir, cwd);
 	strcpy(airdir, airpath);
 	strcat(airdir, air);
-	std::cout << airdir;
 	strcpy(flashdir, cwd);
 	strcpy(flashdir, airpath);
 	strcat(flashdir, flash);
-	std::cout << flashdir;
-
+	// problem ends here
 	strcpy(cgglunblock, cgglpath);
 	strcat(cgglunblock, unblock);
-
 	strcpy(cgunblock, cgpath);
 	strcat(cgunblock, unblock);
-
 	strcpy(cgd3d9unblock, cgd3d9path);
 	strcat(cgd3d9unblock, unblock);
 
@@ -123,26 +104,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcat(tbbunblock, unblock);
 
 
-	if (!is_file_exist(airwin))
-	{
-		strcpy(airinst, cwd);
-		strcpy(airinst, "\\");
-		strcpy(airinst, airwin);
-
-		strcpy(airinstunblock, airinst);
+		strcpy(airinstunblock, airwin);
 		strcpy(airinstunblock, unblock);
-
-		URLDownloadToFileA(
-			nullptr,
-			"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-			airwin,
-			0,
-			nullptr
-			);
-
+		if (is_file_exist(airwin))
+		{
+			URLDownloadToFileA(
+				nullptr,
+				"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
+				airwin,
+				0,
+				nullptr
+				);
+		}
+		
 		DeleteFileA(airinstunblock);
-		SHELLEXECUTEINFOA ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+		SHELLEXECUTEINFO ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
@@ -151,35 +128,37 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExA(&ShExecInfo);
+		ShellExecuteEx(&ShExecInfo);
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-	}
+
 	// Check for Garena
 	if (is_file_exist("lol.exe"))
 	{
+		char* airpath = "\\Air\\Adobe AIR\\Versions\\1.0\\";
+		char* slnpath = "\\Game";
 		// Separate string-combining logic for Garena
 		strcpy(airdir, buff_c);
-		strcpy(airdir, gair);
+		strcpy(airdir, airpath);
 		strcat(airdir, air);
 
 		strcpy(flashdir, buff_c);
-		strcpy(flashdir, gair);
+		strcpy(flashdir, airpath);
 		strcat(flashdir, flash);
 
 		strcpy(tbb, cwd);
-		strcpy(tbb, game);
+		strcpy(tbb, slnpath);
 		strcat(tbb, tbbfile);
 
 		strcpy(cgd3d9path, cwd);
-		strcpy(cgd3d9path, game);
+		strcpy(cgd3d9path, slnpath);
 		strcat(cgd3d9path, cgd3d9file);
 
 		strcpy(cgglpath, cwd);
-		strcpy(cgglpath, game);
+		strcpy(cgglpath, slnpath);
 		strcat(cgglpath, cgglfile);
 
 		strcpy(cgpath, cwd);
-		strcpy(cgpath, game);
+		strcpy(cgpath, slnpath );
 		strcat(cgpath, cgfile);
 
 		strcpy(cgglunblock, cgglpath);
@@ -193,7 +172,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 #if _XP
 	// XP
-		URLDownloadToFileA(
+		URLDownloadToFile(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
 			tbb,
@@ -204,7 +183,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (can_use_intel_core_4th_gen_features())
 	{
 		// AVX2
-		URLDownloadToFileA(
+		URLDownloadToFile(
 			nullptr,
 			"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
 			tbb,
@@ -217,7 +196,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX
 		if (IsProcessorFeaturePresent(PF_XSAVE_ENABLED) & (FeatureMask & XSTATE_MASK_AVX) != 0)
 		{
-			URLDownloadToFileA(
+			URLDownloadToFile(
 				nullptr,
 				"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb,
@@ -230,7 +209,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			//SSE2
 			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
-				URLDownloadToFileA(
+				URLDownloadToFile(
 					nullptr,
 					"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb,
@@ -243,7 +222,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//SSE
 				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
-					URLDownloadToFileA(
+					URLDownloadToFile(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb,
@@ -254,7 +233,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				//Default
 				else
 				{
-					URLDownloadToFileA(
+					URLDownloadToFile(
 						nullptr,
 						"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
 						tbb,
@@ -299,6 +278,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		DeleteFileA(i);
 	}
 	std::cout << "LoLUpdater finished!" << std::endl << "";
+	std::cout << flashdir;
+	std::cout << cgglpath;
 	system("pause");
 
 	return 0;
