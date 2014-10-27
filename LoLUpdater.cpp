@@ -5,7 +5,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 6" << std::endl << "Patching..." << std::endl << "";
+	std::cout << "LoLUpdater Alpha 1 Build 6" << std::endl << "Patching..." << std::endl;
 
 	if (cgbinpath == NULL)
 	{
