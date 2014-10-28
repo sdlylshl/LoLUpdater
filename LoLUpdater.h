@@ -99,7 +99,7 @@ static int can_use_intel_core_4th_gen_features()
 #endif
 #endif
 
-inline bool is_file_exist(const char* fileName)
+inline bool file_exists(std::wstring fileName)
 {
 	std::ifstream infile(fileName);
 	return infile.good();
@@ -121,60 +121,63 @@ typedef DWORD64(WINAPI * PGETENABLEDXSTATEFEATURES)();
 // Not sure of how to remove C-Style cast here
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
-#define MAX_PATH_EXT (MAX_PATH+1)
+
+// Redefinition of PATH_MAX
+#define PATH_MAX (MAX_PATH+1)
+
 // Buffers
-char buff_c[MAX_PATH_EXT];
-char tbb[MAX_PATH_EXT];
-char airfile[MAX_PATH_EXT];
-char airdir[MAX_PATH_EXT];
-char flashfile[MAX_PATH_EXT];
-char flashdir[MAX_PATH_EXT];
-char cgbin[MAX_PATH_EXT];
-char cginst[MAX_PATH_EXT];
-char cginstunblock[MAX_PATH_EXT];
-char airinst[MAX_PATH_EXT];
-char airinstunblock[MAX_PATH_EXT];
-char strair[MAX_PATH_EXT];
-char airunblock[MAX_PATH_EXT];
-char cgd3d9bin[MAX_PATH_EXT];
-char cgglbin[MAX_PATH_EXT];
-char cgpath[MAX_PATH_EXT];
-char cgglpath[MAX_PATH_EXT];
-char tbbunblock[MAX_PATH_EXT];
-char flashunblock[MAX_PATH_EXT];
-char cgd3d9path[MAX_PATH_EXT];
-char cgglunblock[MAX_PATH_EXT];
-char cgunblock[MAX_PATH_EXT];
-char cgd3d9unblock[MAX_PATH_EXT];
-char airpath_f[MAX_PATH_EXT];
-char slnpath_f[MAX_PATH_EXT];
+std::wstring buff_c[PATH_MAX];
+std::wstring tbb[PATH_MAX];
+std::wstring airfile[PATH_MAX];
+std::wstring airdir[PATH_MAX];
+std::wstring flashfile[PATH_MAX];
+std::wstring flashdir[PATH_MAX];
+std::wstring cgbin[PATH_MAX];
+std::wstring cginst[PATH_MAX];
+std::wstring cginstunblock[PATH_MAX];
+std::wstring airinst[PATH_MAX];
+std::wstring airinstunblock[PATH_MAX];
+std::wstring strair[PATH_MAX];
+std::wstring airunblock[PATH_MAX];
+std::wstring cgd3d9bin[PATH_MAX];
+std::wstring cgglbin[PATH_MAX];
+std::wstring cgpath[PATH_MAX];
+std::wstring cgglpath[PATH_MAX];
+std::wstring tbbunblock[PATH_MAX];
+std::wstring flashunblock[PATH_MAX];
+std::wstring cgd3d9path[PATH_MAX];
+std::wstring cgglunblock[PATH_MAX];
+std::wstring cgunblock[PATH_MAX];
+std::wstring cgd3d9unblock[PATH_MAX];
+std::wstring airpath_f[PATH_MAX];
+std::wstring slnpath_f[PATH_MAX];
 // Constants
-char* cwd = getcwd(
+std::wstring cwd(_wgetcwd(
 	nullptr,
 	0
-);
+	));
 
-char drive = cwd[0];
+std::wstring drive(&cwd[0]);
 
-char* cgbinpath = getenv("CG_BIN_PATH");
+std::wstring cgbinpath = _wgetenv(L"CG_BIN_PATH");
 
-char* unblock = ":Zone.Identifier";
+std::wstring unblock(L":Zone.Identifier");
 
-char* air = "Adobe AIR.dll";
-char* flash = "Resources\\NPSWF32.dll";
+std::wstring air(L"Adobe AIR.dll");
+std::wstring flash(L"Resources\\NPSWF32.dll");
 
-char* cgfile = "\\Cg.dll";
-char* cgglfile = "\\CgGL.dll";
-char* cgd3d9file = "\\CgD3D9.dll";
+std::wstring cgfile(L"\\Cg.dll");
+std::wstring cgglfile(L"\\CgGL.dll");
+std::wstring cgd3d9file(L"\\CgD3D9.dll");
 
-char* cginstaller = "Cg-3.1_April2012_Setup.exe";
-char* tbbfile = "\\tbb.dll";
+std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+std::wstring tbbfile(L"\\tbb.dll");
 
-char* adobepath = "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
 
-char* slnpath = "\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy";
-char* airpath = "\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
+std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
-char* airwin = "air15_win.exe";
+std::wstring airwin(L"air15_win.exe");
 
-char* unblockfiles[] = {cgunblock, cgglunblock, cgd3d9unblock, tbbunblock, airunblock, flashunblock};
+std::wstring unblockfiles[] = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
