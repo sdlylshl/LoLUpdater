@@ -7,37 +7,12 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	std::cout << "LoLUpdater Alpha 1 Build 7" << std::endl << "Patching..." << std::endl;
 
-	if (cgbinpath.empty())
-	{
-		memcpy(cginstunblock, &cginstaller[0], PATH_MAX);
-		memcpy(cginstunblock, &unblock[0], PATH_MAX);
-		URLDownloadToFileW(
-			nullptr,
-			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			&cginstaller[0],
-			0,
-			nullptr
-		);
-		DeleteFileW(cginstunblock[0].c_str());
-		SHELLEXECUTEINFOW ShExecInfo = {0};
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
-		ShExecInfo.hwnd = nullptr;
-		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = &cginstaller[0];
-		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
-		ShExecInfo.lpDirectory = nullptr;
-		ShExecInfo.nShow = SW_SHOW;
-		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExW(&ShExecInfo);
-		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-	}
-
 	// Path builder
+
 #if defined(ENVIRONMENT64)
 	memcpy(buff_c, &drive, PATH_MAX);
 	memcpy(buff_c, L":\\Program Files (x86)", PATH_MAX);
-	memcpy(buff_c, &adobepath[0], PATH_MAX);
+	memcpy(buff_c, &adobepath, PATH_MAX);
 
 #elif defined (ENVIRONMENT32)
 	memcpy(buff_c, &drive, PATH_MAX);
@@ -46,10 +21,44 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 	memcpy(slnpath_f, &cwd, PATH_MAX);
 	memcpy(slnpath_f, &slnpath, PATH_MAX);
-	memcpy(airpath_f, &cwd, PATH_MAX);
-	memcpy(airpath_f, &airpath, PATH_MAX);
+
+	memcpy(cginst, &cwd, PATH_MAX);
+	memcpy(cginst, &cginstaller, PATH_MAX);
+
+	memcpy(airinst, &cwd, PATH_MAX);
+	memcpy(airinst, &airwin, PATH_MAX);
 
 	// End Path builder
+
+
+	if (cgbinpath.empty())
+	{
+
+		memcpy(cginstunblock, cginst, PATH_MAX);
+		memcpy(cginstunblock, &unblock, PATH_MAX);
+
+		URLDownloadToFileW(
+			nullptr,
+			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+			cginst[0].c_str(),
+			0,
+			nullptr
+			);
+
+		DeleteFileW(cginstunblock[0].c_str());
+		SHELLEXECUTEINFOW ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ShExecInfo.hwnd = nullptr;
+		ShExecInfo.lpVerb = nullptr;
+		ShExecInfo.lpFile = cginst[0].c_str();
+		ShExecInfo.lpParameters = L"/verysilent ";
+		ShExecInfo.lpDirectory = nullptr;
+		ShExecInfo.nShow = SW_SHOW;
+		ShExecInfo.hInstApp = nullptr;
+		ShellExecuteExW(&ShExecInfo);
+		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	}
 
 	// Common Files
 
@@ -115,13 +124,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	memcpy(tbbunblock, tbb, PATH_MAX);
 	memcpy(tbbunblock, &unblock, PATH_MAX);
 
-	memcpy(airinstunblock, &airwin, PATH_MAX);
+	memcpy(airinstunblock, airinst, PATH_MAX);
 	memcpy(airinstunblock, &unblock, PATH_MAX);
 
 		URLDownloadToFileW(
 			nullptr,
 			L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-			&airwin[0],
+			airinst[0].c_str(),
 			0,
 			nullptr
 		);
@@ -132,7 +141,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = &airwin[0];
+	ShExecInfo.lpFile = airinst[0].c_str();
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;

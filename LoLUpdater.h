@@ -99,7 +99,7 @@ static int can_use_intel_core_4th_gen_features()
 #endif
 #endif
 
-inline bool file_exists(std::wstring fileName)
+inline bool file_exists(std::wstring(fileName))
 {
 	std::ifstream infile(fileName);
 	return infile.good();
@@ -123,7 +123,7 @@ PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATUR
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
 // Redefinition of PATH_MAX
-#define PATH_MAX (MAX_PATH)
+#define PATH_MAX (MAX_PATH+1)
 
 // Buffers
 std::wstring buff_c[PATH_MAX];
@@ -170,7 +170,7 @@ std::wstring cgfile(L"\\Cg.dll");
 std::wstring cgglfile(L"\\CgGL.dll");
 std::wstring cgd3d9file(L"\\CgD3D9.dll");
 
-std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+std::wstring cginstaller(L"\\Cg-3.1_April2012_Setup.exe");
 std::wstring tbbfile(L"\\tbb.dll");
 
 std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
@@ -178,6 +178,6 @@ std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
 std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
 std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
-std::wstring airwin(L"air15_win.exe");
+std::wstring airwin(L"\\air15_win.exe");
 
 std::wstring unblockfiles[] = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
