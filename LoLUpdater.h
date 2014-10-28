@@ -157,9 +157,9 @@ std::wstring cwd(_wgetcwd(
 	0
 	));
 
-std::wstring drive(&cwd[0]);
+std::wstring drive(&cwd.c_str()[0]);
 
-std::wstring cgbinpath = _wgetenv(L"CG_BIN_PATH");
+std::wstring cgbinpath(_wgetenv(L"CG_BIN_PATH"));
 
 std::wstring unblock(L":Zone.Identifier");
 
@@ -169,7 +169,8 @@ std::wstring flash(L"Resources\\NPSWF32.dll");
 std::wstring cgfile(L"\\Cg.dll");
 std::wstring cgglfile(L"\\CgGL.dll");
 std::wstring cgd3d9file(L"\\CgD3D9.dll");
-
+std::wstring progx86(L":\\Program Files (x86)");
+std::wstring prog(L":\\Program Files");
 std::wstring cginstaller(L"\\Cg-3.1_April2012_Setup.exe");
 std::wstring tbbfile(L"\\tbb.dll");
 
