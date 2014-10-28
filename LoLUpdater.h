@@ -123,7 +123,7 @@ PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATUR
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
 // Redefinition of PATH_MAX
-#define PATH_MAX (MAX_PATH+1)
+#define PATH_MAX (MAX_PATH)
 
 // Buffers
 std::wstring buff_c[PATH_MAX];

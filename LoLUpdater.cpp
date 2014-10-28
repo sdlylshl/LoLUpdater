@@ -7,7 +7,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	std::cout << "LoLUpdater Alpha 1 Build 7" << std::endl << "Patching..." << std::endl;
 
-	if (cgbinpath == L"")
+	if (cgbinpath.empty())
 	{
 		memcpy(cginstunblock, &cginstaller[0], PATH_MAX);
 		memcpy(cginstunblock, &unblock[0], PATH_MAX);
@@ -35,88 +35,88 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Path builder
 #if defined(ENVIRONMENT64)
-	memcpy(buff_c, &drive);
+	memcpy(buff_c, &drive, PATH_MAX);
 	memcpy(buff_c, L":\\Program Files (x86)", PATH_MAX);
-	memcpy(buff_c, adobepath, PATH_MAX);
+	memcpy(buff_c, &adobepath[0], PATH_MAX);
 
 #elif defined (ENVIRONMENT32)
-	memcpy(buff_c, drive.c_str(), PATH_MAX);
+	memcpy(buff_c, &drive, PATH_MAX);
 	memcpy(buff_c, L":\\Program Files", PATH_MAX);
-	memcpy(buff_c, &adobepath[0], PATH_MAX);
+	memcpy(buff_c, &adobepath, PATH_MAX);
 #endif
-	memcpy(slnpath_f, &cwd[0], PATH_MAX);
-	memcpy(slnpath_f, &slnpath[0], PATH_MAX);
-	memcpy(airpath_f, &cwd[0], PATH_MAX);
-	memcpy(airpath_f, &airpath[0], PATH_MAX);
+	memcpy(slnpath_f, &cwd, PATH_MAX);
+	memcpy(slnpath_f, &slnpath, PATH_MAX);
+	memcpy(airpath_f, &cwd, PATH_MAX);
+	memcpy(airpath_f, &airpath, PATH_MAX);
 
 	// End Path builder
 
 	// Common Files
 
 	// Gets location of latest adobeair dll
-	memcpy(airfile, buff_c[0].c_str(), PATH_MAX);
-	memcpy(airfile, &air[0], PATH_MAX);
+	memcpy(airfile, &buff_c, PATH_MAX);
+	memcpy(airfile, &air, PATH_MAX);
 
 	// Gets location of latest flash dll
-	memcpy(flashfile, buff_c[0].c_str(), PATH_MAX);
-	memcpy(flashfile, &flash[0], PATH_MAX);
+	memcpy(flashfile, buff_c, PATH_MAX);
+	memcpy(flashfile, &flash, PATH_MAX);
 
 	// Common Files UNBLOCK
-	memcpy(airunblock, airdir[0].c_str(), PATH_MAX);
-	memcpy(airunblock, &unblock[0], PATH_MAX);
+	memcpy(airunblock, airdir, PATH_MAX);
+	memcpy(airunblock, &unblock, PATH_MAX);
 
-	memcpy(flashunblock, flashdir[0].c_str(), PATH_MAX);
-	memcpy(flashunblock, &unblock[0], PATH_MAX);
+	memcpy(flashunblock, flashdir, PATH_MAX);
+	memcpy(flashunblock, &unblock, PATH_MAX);
 
 	// CG_BIN_PATH
 
 	// Gets location of latest cg dll
-	memcpy(cgbin, &cgbinpath[0], PATH_MAX);
-	memcpy(cgbin, &cgfile[0], PATH_MAX);
+	memcpy(cgbin, &cgbinpath, PATH_MAX);
+	memcpy(cgbin, &cgfile, PATH_MAX);
 
 	// Gets location of latest cgd3d9 dll
-	memcpy(cgd3d9bin, &cgbinpath[0], PATH_MAX);
-	memcpy(cgd3d9bin, &cgd3d9file[0], PATH_MAX);
+	memcpy(cgd3d9bin, &cgbinpath, PATH_MAX);
+	memcpy(cgd3d9bin, &cgd3d9file, PATH_MAX);
 
 	// Gets location of latest cggl dll
-	memcpy(cgglbin, &cgbinpath[0], PATH_MAX);
-	memcpy(cgglbin, &cgglfile[0], PATH_MAX);
+	memcpy(cgglbin, &cgbinpath, PATH_MAX);
+	memcpy(cgglbin, &cgglfile, PATH_MAX);
 
 	// CG_BIN_PATH UNBLOCK
-	memcpy(cgglunblock, cgglpath[0].c_str(), PATH_MAX);
-	memcpy(cgglunblock, &unblock[0], PATH_MAX);
+	memcpy(cgglunblock, cgglpath, PATH_MAX);
+	memcpy(cgglunblock, &unblock, PATH_MAX);
 
-	memcpy(cgunblock, cgpath[0].c_str(), PATH_MAX);
-	memcpy(cgunblock, &unblock[0], PATH_MAX);
+	memcpy(cgunblock, cgpath, PATH_MAX);
+	memcpy(cgunblock, &unblock, PATH_MAX);
 
-	memcpy(cgd3d9unblock, cgd3d9path[0].c_str(), PATH_MAX);
-	memcpy(cgd3d9unblock, &unblock[0], PATH_MAX);
+	memcpy(cgd3d9unblock, cgd3d9path, PATH_MAX);
+	memcpy(cgd3d9unblock, &unblock, PATH_MAX);
 
 	// Working Directory
-	memcpy(cgpath, slnpath_f[0].c_str(), PATH_MAX);
-	memcpy(cgpath, &cgfile[0], PATH_MAX);
+	memcpy(cgpath, slnpath_f, PATH_MAX);
+	memcpy(cgpath, &cgfile, PATH_MAX);
 
-	memcpy(cgglpath, slnpath_f[0].c_str(), PATH_MAX);
-	memcpy(cgglpath, &cgglfile[0], PATH_MAX);
+	memcpy(cgglpath, slnpath_f, PATH_MAX);
+	memcpy(cgglpath, &cgglfile, PATH_MAX);
 
-	memcpy(cgd3d9path, slnpath_f[0].c_str(), PATH_MAX);
-	memcpy(cgd3d9path, &cgd3d9file[0], PATH_MAX);
+	memcpy(cgd3d9path, slnpath_f, PATH_MAX);
+	memcpy(cgd3d9path, &cgd3d9file, PATH_MAX);
 
-	memcpy(tbb, slnpath_f[0].c_str(), PATH_MAX);
-	memcpy(tbb, &tbbfile[0], PATH_MAX);
+	memcpy(tbb, slnpath_f, PATH_MAX);
+	memcpy(tbb, &tbbfile, PATH_MAX);
 
-	memcpy(airdir, airpath_f[0].c_str(), PATH_MAX);
-	memcpy(airdir, &air[0], PATH_MAX);
+	memcpy(airdir, airpath_f, PATH_MAX);
+	memcpy(airdir, &air, PATH_MAX);
 
-	memcpy(flashdir, airpath_f[0].c_str(), PATH_MAX);
-	memcpy(flashdir, &flash[0], PATH_MAX);
+	memcpy(flashdir, airpath_f, PATH_MAX);
+	memcpy(flashdir, &flash, PATH_MAX);
 
 	// Misc UNBLOCK
-	memcpy(tbbunblock, tbb[0].c_str(), PATH_MAX);
-	memcpy(tbbunblock, &unblock[0], PATH_MAX);
+	memcpy(tbbunblock, tbb, PATH_MAX);
+	memcpy(tbbunblock, &unblock, PATH_MAX);
 
-	memcpy(airinstunblock, &airwin[0], PATH_MAX);
-	memcpy(airinstunblock, &unblock[0], PATH_MAX);
+	memcpy(airinstunblock, &airwin, PATH_MAX);
+	memcpy(airinstunblock, &unblock, PATH_MAX);
 
 		URLDownloadToFileW(
 			nullptr,
@@ -146,11 +146,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
 		std::wstring slnpath(L"\\Game");
 		// Separate string-combining logic for Garena
-		memcpy(airdir, buff_c[0].c_str(), PATH_MAX);
+		memcpy(airdir, buff_c, PATH_MAX);
 		memcpy(airdir, &airpath[0], PATH_MAX);
 		memcpy(airdir, &air[0], PATH_MAX);
 
-		memcpy(flashdir, buff_c[0].c_str(), PATH_MAX);
+		memcpy(flashdir, buff_c, PATH_MAX);
 		memcpy(flashdir, &airpath[0], PATH_MAX);
 		memcpy(flashdir, &flash[0], PATH_MAX);
 
@@ -170,13 +170,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		memcpy(cgpath, &slnpath[0], PATH_MAX);
 		memcpy(cgpath, &cgfile[0], PATH_MAX);
 
-		memcpy(cgglunblock, cgglpath[0].c_str(), PATH_MAX);
+		memcpy(cgglunblock, cgglpath, PATH_MAX);
 		memcpy(cgglunblock, &unblock[0], PATH_MAX);
 
-		memcpy(cgunblock, cgpath[0].c_str(), PATH_MAX);
+		memcpy(cgunblock, cgpath, PATH_MAX);
 		memcpy(cgunblock, &unblock[0], PATH_MAX);
 
-		memcpy(cgd3d9unblock, cgd3d9path[0].c_str(), PATH_MAX);
+		memcpy(cgd3d9unblock, cgd3d9path, PATH_MAX);
 		memcpy(cgd3d9unblock, &unblock[0], PATH_MAX);
 	}
 #if _XP
