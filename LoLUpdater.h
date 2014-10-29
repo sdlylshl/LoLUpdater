@@ -160,22 +160,25 @@ std::wstringstream airpath_f[PATH_MAX];
 std::wstringstream slnpath_f[PATH_MAX];
 
 // Constants
+std::wstring cwd(_wgetcwd(
+	nullptr,
+	0
+	));
+std::wstring drive(&cwd[0]);
+std::wstring cgbinpath(_wgetenv(L"CG_BIN_PATH"));
+std::wstring unblock(L":Zone.Identifier");
+std::wstring air(L"Adobe AIR.dll");
+std::wstring flash(L"Resources\\NPSWF32.dll");
+std::wstring cgfile(L"\\Cg.dll");
+std::wstring cgglfile(L"\\CgGL.dll");
+std::wstring cgd3d9file(L"\\CgD3D9.dll");
+std::wstring prog(L":\\Program Files (x86)");
+std::wstring progx86(L":\\Program Files");
+std::wstring cginstaller(L"\\Cg-3.1_April2012_Setup.exe");
+std::wstring tbbfile(L"\\tbb.dll");
+std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
+std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
+std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
+std::wstring airwin(L"\\air15_win.exe");
 
-std::vector<std::wstring> cwd;
-std::vector<std::wstring> drive;
-std::vector<std::wstring> cgbinpath;
-std::vector<std::wstring> unblock;
-std::vector<std::wstring> air;
-std::vector<std::wstring> flash;
-std::vector<std::wstring> cgfile;
-std::vector<std::wstring> cgglfile;
-std::vector<std::wstring> cgd3d9file;
-std::vector<std::wstring> progx86;
-std::vector<std::wstring> prog;
-std::vector<std::wstring> cginstaller;
-std::vector<std::wstring> tbbfile;
-std::vector<std::wstring> adobepath;
-std::vector<std::wstring> slnpath;
-std::vector<std::wstring> airpath;
-std::vector<std::wstring> airwin;
-std::vector<std::wstring> unblockfiles[] = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
+std::wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
