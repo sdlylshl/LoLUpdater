@@ -2,7 +2,10 @@
 #include "ShlObj.h"
 #include <direct.h>
 #include <iostream>
+#include <sstream>
 #include <algorithm>
+#include <iterator>
+#include <locale>
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -21,6 +24,7 @@ int check_4th_gen_intel_core_features()
 # include <intrin.h>
 #endif
 #include <fstream>
+#include <vector>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -34,7 +38,10 @@ inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 	__asm__("cpuid" : "+b" (ebx),
 # endif
 		"+a" (eax), "+c" (ecx), "=d" (edx));
-	abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
+	abcd[0] = eax;
+	abcd[1] = ebx;
+	abcd[2] = ecx;
+	abcd[3] = edx;
 #endif
 }
 
@@ -126,59 +133,49 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 #define PATH_MAX (MAX_PATH+1)
 
 // Buffers
-std::wstring buff_c[PATH_MAX];
-std::wstring tbb[PATH_MAX];
-std::wstring airfile[PATH_MAX];
-std::wstring airdir[PATH_MAX];
-std::wstring flashfile[PATH_MAX];
-std::wstring flashdir[PATH_MAX];
-std::wstring cgbin[PATH_MAX];
-std::wstring cginst[PATH_MAX];
-std::wstring cginstunblock[PATH_MAX];
-std::wstring airinst[PATH_MAX];
-std::wstring airinstunblock[PATH_MAX];
-std::wstring strair[PATH_MAX];
-std::wstring airunblock[PATH_MAX];
-std::wstring cgd3d9bin[PATH_MAX];
-std::wstring cgglbin[PATH_MAX];
-std::wstring cgpath[PATH_MAX];
-std::wstring cgglpath[PATH_MAX];
-std::wstring tbbunblock[PATH_MAX];
-std::wstring flashunblock[PATH_MAX];
-std::wstring cgd3d9path[PATH_MAX];
-std::wstring cgglunblock[PATH_MAX];
-std::wstring cgunblock[PATH_MAX];
-std::wstring cgd3d9unblock[PATH_MAX];
-std::wstring airpath_f[PATH_MAX];
-std::wstring slnpath_f[PATH_MAX];
+std::wstringstream buff_c[PATH_MAX];
+std::wstringstream tbb[PATH_MAX];
+std::wstringstream airfile[PATH_MAX];
+std::wstringstream airdir[PATH_MAX];
+std::wstringstream flashfile[PATH_MAX];
+std::wstringstream flashdir[PATH_MAX];
+std::wstringstream cgbin[PATH_MAX];
+std::wstringstream cginst[PATH_MAX];
+std::wstringstream cginstunblock[PATH_MAX];
+std::wstringstream airinst[PATH_MAX];
+std::wstringstream airinstunblock[PATH_MAX];
+std::wstringstream strair[PATH_MAX];
+std::wstringstream airunblock[PATH_MAX];
+std::wstringstream cgd3d9bin[PATH_MAX];
+std::wstringstream cgglbin[PATH_MAX];
+std::wstringstream cgpath[PATH_MAX];
+std::wstringstream cgglpath[PATH_MAX];
+std::wstringstream tbbunblock[PATH_MAX];
+std::wstringstream flashunblock[PATH_MAX];
+std::wstringstream cgd3d9path[PATH_MAX];
+std::wstringstream cgglunblock[PATH_MAX];
+std::wstringstream cgunblock[PATH_MAX];
+std::wstringstream cgd3d9unblock[PATH_MAX];
+std::wstringstream airpath_f[PATH_MAX];
+std::wstringstream slnpath_f[PATH_MAX];
+
 // Constants
-std::wstring cwd(_wgetcwd(
-	nullptr,
-	0
-	));
 
-std::wstring drive(&cwd.c_str()[0]);
-
-std::wstring cgbinpath(_wgetenv(L"CG_BIN_PATH"));
-
-std::wstring unblock(L":Zone.Identifier");
-
-std::wstring air(L"Adobe AIR.dll");
-std::wstring flash(L"Resources\\NPSWF32.dll");
-
-std::wstring cgfile(L"\\Cg.dll");
-std::wstring cgglfile(L"\\CgGL.dll");
-std::wstring cgd3d9file(L"\\CgD3D9.dll");
-std::wstring progx86(L":\\Program Files (x86)");
-std::wstring prog(L":\\Program Files");
-std::wstring cginstaller(L"\\Cg-3.1_April2012_Setup.exe");
-std::wstring tbbfile(L"\\tbb.dll");
-
-std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
-
-std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
-std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
-
-std::wstring airwin(L"\\air15_win.exe");
-
-std::wstring unblockfiles[] = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
+std::vector<std::wstring> cwd;
+std::vector<std::wstring> drive;
+std::vector<std::wstring> cgbinpath;
+std::vector<std::wstring> unblock;
+std::vector<std::wstring> air;
+std::vector<std::wstring> flash;
+std::vector<std::wstring> cgfile;
+std::vector<std::wstring> cgglfile;
+std::vector<std::wstring> cgd3d9file;
+std::vector<std::wstring> progx86;
+std::vector<std::wstring> prog;
+std::vector<std::wstring> cginstaller;
+std::vector<std::wstring> tbbfile;
+std::vector<std::wstring> adobepath;
+std::vector<std::wstring> slnpath;
+std::vector<std::wstring> airpath;
+std::vector<std::wstring> airwin;
+std::vector<std::wstring> unblockfiles = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
