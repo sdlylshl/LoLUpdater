@@ -51,7 +51,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	copy(cwd.begin(), cwd.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(slnpath_f[0], L","));
 	slnpath_f[0] << cwd.back();
 	copy(slnpath.begin(), slnpath.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(slnpath_f[0], L","));
-	slnpath_f[0] << cwd.back();
+	slnpath_f[0] << slnpath.back();
 
 	copy(cwd.begin(), cwd.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airpath_f[0], L","));
 	airpath_f[0] << cwd.back();
@@ -75,28 +75,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		copy(cgbinpath.begin(), cgbinpath.end()-1, std::ostream_iterator<std::wstring, wchar_t>(cginstunblock[0], L","));
 		cgbin[0] << cwd.back();
-		copy(&cginst.begin(), &cginst[0].end()-1, std::ostream_iterator<std::wstring, wchar_t>(cginstunblock[0], L","));
-		cgbin[0] << cginst[0].back();
-
-
-		// Now add the last element with no delimiter
-		oss << vec.back();
+		copy(cginst[0].str().begin(), cginst[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cginstunblock[0], L","));
+		cgbin[0] << cginst[0].str().back();
 
 		URLDownloadToFileW(
 			nullptr,
 			L"https://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			&cginst[0].c_str(),
+			cginst[0].str().c_str(),
 			0,
 			nullptr
 			);
 
-		DeleteFileW(cginstunblock.c_str());
+		DeleteFileW(cginstunblock[0].str().c_str());
 		SHELLEXECUTEINFOW ShExecInfo = { 0 };
 		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ShExecInfo.hwnd = nullptr;
 		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = cginst[0].c_str();
+		ShExecInfo.lpFile = cginst[0].str().c_str();
 		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
 		ShExecInfo.lpDirectory = nullptr;
 		ShExecInfo.nShow = SW_SHOW;
@@ -112,62 +108,44 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	
 	// Gets location of latest cg dll
-	copy(cgbinpath.begin(), cgbinpath.end(), std::ostream_iterator<std::wstring, wchar_t>(cgbin[0], L","));
+	copy(cgbinpath.begin(), cgbinpath.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgbin[0], L","));
 	cgbin[0] << cgbinpath.back();
-	copy(cgfile.begin(), cgfile.end(), std::ostream_iterator<std::wstring, wchar_t>(cgbin[0], L","));
+	copy(cgfile.begin(), cgfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgbin[0], L","));
 	cgbin[0] << cgfile.back();
 
 	// Gets location of latest cgd3d9 dll
-	copy(cgbinpath.begin(), cgbinpath.end(), std::ostream_iterator<std::wstring, wchar_t>(cgd3d9bin[0], L","));
+	copy(cgbinpath.begin(), cgbinpath.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9bin[0], L","));
 	cgd3d9bin[0] << cgbinpath.back();
-	copy(cgd3d9file.begin(), cgd3d9file.end(), std::ostream_iterator<std::wstring, wchar_t>(cgd3d9bin[0], L","));
+	copy(cgd3d9file.begin(), cgd3d9file.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9bin[0], L","));
 	cgd3d9bin[0] << cgd3d9file.back();
 
 	// Gets location of latest cggl dll
-	copy(cgbinpath.begin(), cgbinpath.end(), std::ostream_iterator<std::wstring, wchar_t>(cgglbin[0], L","));
+	copy(cgbinpath.begin(), cgbinpath.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglbin[0], L","));
 	cgglbin[0] << cgbinpath.back();
-	copy(cgglfile.begin(), cgglfile.end(), std::ostream_iterator<std::wstring, wchar_t>(cgglbin[0], L","));
+	copy(cgglfile.begin(), cgglfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglbin[0], L","));
 	cgglbin[0] << cgglfile.back();
 
 
 
 	// Working Directory
-	copy(&slnpath_f.begin(), slnpath_f[0].end(), std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
-	cgglbin[0] << cgbinpath.back();
-	copy(cgglfile.begin(), cgglfile.end(), std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
-	cgglbin[0] << cgglfile.back();
+	
 
-
-	copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgpath[0].begin());
-	copy(cgfile.begin(), cgfile.end() - 1, cgpath[0].begin());
-
-	copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgglpath[0].begin());
-	copy(cgglfile.begin(), cgglfile.end() - 1, cgglpath[0].begin());
-
-	copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgd3d9path[0].begin());
-	copy(cgd3d9file.begin(), cgd3d9file.end() - 1, cgd3d9path[0].begin());
-
-	copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, tbb[0].begin());
-	copy(tbbfile.begin(), tbbfile.end() - 1, tbb[0].begin());
-
-	copy(airinst[0].begin(), airinst[0].end() - 1, airinstunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, airinstunblock[0].begin());
 
 		URLDownloadToFileW(
 			nullptr,
 			L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-			airinst[0].c_str(),
+			airinst[0].str().c_str(),
 			0,
 			nullptr
 		);
 
-		DeleteFileW(airinstunblock[0].c_str());
+		DeleteFileW(airinstunblock[0].str().c_str());
 	SHELLEXECUTEINFOW ShExecInfo = {0};
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airinst[0].c_str();
+	ShExecInfo.lpFile = airinst[0].str().c_str();
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
@@ -175,13 +153,44 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShellExecuteExW(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
+	copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglpath[0], L","));
+	cgglbin[0] << slnpath_f[0].str().back();
+	copy(cgglfile.begin(), cgglfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglpath[0], L","));
+	cgglbin[0] << cgglfile.back();
 
-	// Gets location of latest adobeair dll
-	copy(buff_c[0].begin(), buff_c[0].end() - 1, airfile[0].begin());
-	copy(air.begin(), air.end() - 1, airfile[0].begin());
 
-	copy(buff_c[0].begin(), buff_c[0].end() - 1, flashfile[0].begin());
-	copy(flash.begin(), flash.end() - 1, flashfile[0].begin());
+	copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
+	cgglbin[0] << slnpath_f[0].str().back();
+	copy(cgfile.begin(), cgfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
+	cgbin[0] << cgfile.back();
+
+	copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9path[0], L","));
+	cgd3d9bin[0] << slnpath_f[0].str().back();
+	copy(cgglfile.begin(), cgglfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9path[0], L","));
+	cgd3d9bin[0] << cgd3d9file.back();
+
+	copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+	cgd3d9bin[0] << slnpath_f[0].str().back();
+	copy(tbbfile.begin(), tbbfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+	tbb0[0] << tbbfile.back();
+
+	copy(airinst[0].str().begin(), airinst[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airinstunblock[0], L","));
+	cgd3d9bin[0] << slnpath_f[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+	tbb0[0] << unblock.back();
+
+
+	copy(buff_c[0].str().begin(), buff_c[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airfile[0], L","));
+	cgd3d9bin[0] << buff_c[0].str().back();
+	copy(air.begin(), air.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airfile[0], L","));
+	airfile[0] << air.back();
+
+	copy(buff_c[0].str().begin(), buff_c[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashfile[0], L","));
+	cgd3d9bin[0] << buff_c[0].str().back();
+	copy(flash.begin(), flash.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashfile[0], L","));
+	airfile[0] << flash.back();
+
+
 
 
 	// Check for Garena
@@ -189,60 +198,77 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
 		std::wstring slnpath(L"\\Game");
-		// Separate string-combining logic for Garena
 
-		// Gets location of latest cg dll
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgfile.begin());
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgfile.begin());
-
-		// Gets location of latest cgd3d9 dll
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgd3d9file.begin());
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgd3d9file.begin());
-
-		// Gets location of latest cggl dll
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgglfile.begin());
-		copy(cgbinpath.begin(), cgbinpath.end() - 1, cgglfile.begin());
+		copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglpath[0], L","));
+		cgglbin[0] << slnpath_f[0].str().back();
+		copy(cgglfile.begin(), cgglfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglpath[0], L","));
+		cgglbin[0] << cgglfile.back();
 
 
+		copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
+		cgglbin[0] << slnpath_f[0].str().back();
+		copy(cgfile.begin(), cgfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgpath[0], L","));
+		cgbin[0] << cgfile.back();
 
-		// Working Directory
-		copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgpath[0].begin());
-		copy(cgfile.begin(), cgfile.end() - 1, cgpath[0].begin());
+		copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9path[0], L","));
+		cgd3d9bin[0] << slnpath_f[0].str().back();
+		copy(cgglfile.begin(), cgglfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9path[0], L","));
+		cgd3d9bin[0] << cgd3d9file.back();
 
-		copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgglpath[0].begin());
-		copy(cgglfile.begin(), cgglfile.end() - 1, cgglpath[0].begin());
+		copy(slnpath_f[0].str().begin(), slnpath_f[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+		cgd3d9bin[0] << slnpath_f[0].str().back();
+		copy(tbbfile.begin(), tbbfile.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+		tbb0[0] << tbbfile.back();
 
-		copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, cgd3d9path[0].begin());
-		copy(cgd3d9file.begin(), cgd3d9file.end() - 1, cgd3d9path[0].begin());
+		copy(airinst[0].str().begin(), airinst[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airinstunblock[0], L","));
+		cgd3d9bin[0] << slnpath_f[0].str().back();
+		copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbb0[0], L","));
+		tbb0[0] << unblock.back();
 
-		copy(slnpath_f[0].begin(), slnpath_f[0].end() - 1, tbb[0].begin());
-		copy(tbbfile.begin(), tbbfile.end() - 1, tbb[0].begin());
 
-		// Gets location of latest adobeair dll
-		copy(buff_c[0].begin(), buff_c[0].end() - 1, airfile[0].begin());
-		copy(air.begin(), air.end() - 1, airfile[0].begin());
+		copy(buff_c[0].str().begin(), buff_c[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airfile[0], L","));
+		cgd3d9bin[0] << buff_c[0].str().back();
+		copy(air.begin(), air.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airfile[0], L","));
+		airfile[0] << air.back();
 
-		copy(buff_c[0].begin(), buff_c[0].end() - 1, flashfile[0].begin());
-		copy(flash.begin(), flash.end() - 1, flashfile[0].begin());
+		copy(buff_c[0].str().begin(), buff_c[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashfile[0], L","));
+		cgd3d9bin[0] << buff_c[0].str().back();
+		copy(flash.begin(), flash.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashfile[0], L","));
+		flashfile[0] << flash.back();
+		
 	}
 
-	copy(cgpath[0].begin(), cgpath[0].end() - 1, cgunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, cgunblock[0].begin());
+	copy(cgpath[0].str().begin(), cgpath[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgunblock[0], L","));
+	cgunblock[0] << cgpath[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgunblock[0], L","));
+	cgunblock[0] << unblock.back();
 
-	copy(cgglpath[0].begin(), cgglpath[0].end() - 1, cgglunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, cgglunblock[0].begin());
 
-	copy(cgd3d9path[0].begin(), cgd3d9path[0].end() - 1, cgd3d9unblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, cgd3d9unblock[0].begin());
+	copy(cgglpath[0].str().begin(), cgglpath[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9unblock[0], L","));
+	cgd3d9unblock[0] << cgglpath[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgd3d9unblock[0], L","));
+	cgd3d9unblock[0] << unblock.back();
 
-	copy(airdir[0].begin(), airdir[0].end() - 1, airunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, airunblock[0].begin());
+	copy(cgglpath[0].str().begin(), cgglpath[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglunblock[0], L","));
+	cgglunblock[0] << cgglpath[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(cgglunblock[0], L","));
+	cgglunblock[0] << unblock.back();
 
-	copy(flashdir[0].begin(), flashdir[0].end() - 1, flashunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, flashunblock[0].begin());
+	copy(airdir[0].str().begin(), airdir[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airunblock[0], L","));
+	airunblock[0] << airdir[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(airunblock[0], L","));
+	airunblock[0] << unblock.back();
 
-	copy(tbb[0].begin(), tbb[0].end() - 1, tbbunblock[0].begin());
-	copy(unblock.begin(), unblock.end() - 1, tbbunblock[0].begin());
+	copy(flashdir[0].str().begin(), flashdir[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashunblock[0], L","));
+	flashunblock[0] << airdir[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(flashunblock[0], L","));
+	flashunblock[0] << unblock.back();
+
+	copy(tbb0[0].str().begin(), tbb0[0].str().end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbbunblock[0], L","));
+	flashunblock[0] << tbb0[0].str().back();
+	copy(unblock.begin(), unblock.end() - 1, std::ostream_iterator<std::wstring, wchar_t>(tbbunblock[0], L","));
+	tbbunblock[0] << unblock.back();
+
 
 
 
@@ -250,8 +276,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	// XP
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
-			tbb[0].c_str(),
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Xp.dll",
+			tbb0[0].str().c_str(),
 			0,
 			nullptr
 			);
@@ -261,8 +287,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX2
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
-			tbb[0].c_str(),
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Avx2.dll",
+			tbb0[0].str().c_str(),
 			0,
 			nullptr
 		);
@@ -274,8 +300,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
-				tbb[0].c_str(),
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Avx.dll",
+				tbb0[0].str().c_str(),
 				0,
 				nullptr
 			);
@@ -287,8 +313,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				URLDownloadToFileW(
 					nullptr,
-					L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
-					tbb[0].c_str(),
+					L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Sse2.dll",
+					tbb0[0].str().c_str(),
 					0,
 					nullptr
 				);
@@ -300,8 +326,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
-						tbb[0].c_str(),
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Sse.dll",
+						tbb0[0].str().c_str(),
 						0,
 						nullptr
 					);
@@ -311,8 +337,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
-						tbb[0].c_str(),
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Default.dll",
+						tbb0[0].str().c_str(),
 						0,
 						nullptr
 					);
@@ -323,28 +349,28 @@ int _tmain(int argc, _TCHAR* argv[])
 
 #endif
 	CopyFileW(
-		&cgbin[0].c_str(),
-		cgpath[0].c_str(),
+		cgbin[0].str().c_str(),
+		cgpath[0].str().c_str(),
 		false
 	);
 	CopyFileW(
-		cgglbin[0].c_str(),
-		cgglpath[0].c_str(),
+		cgglbin[0].str().c_str(),
+		cgglpath[0].str().c_str(),
 		false
 	);
 	CopyFileW(
-		cgd3d9bin[0].c_str(),
-		cgd3d9path[0].c_str(),
+		cgd3d9bin[0].str().c_str(),
+		cgd3d9path[0].str().c_str(),
 		false
 	);
 	CopyFileW(
-		airfile[0].c_str(),
-		airdir[0].c_str(),
+		airfile[0].str().c_str(),
+		airdir[0].str().c_str(),
 		false
 	);
 	CopyFileW(
-		flashfile[0].c_str(),
-		flashdir[0].c_str(),
+		flashfile[0].str().c_str(),
+		flashdir[0].str().c_str(),
 		false
 	);
 	for each (std::wstring i in unblockfiles)

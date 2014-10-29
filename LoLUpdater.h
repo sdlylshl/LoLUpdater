@@ -134,7 +134,7 @@ DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
 // Buffers
 std::wstringstream buff_c[PATH_MAX];
-std::wstringstream tbb[PATH_MAX];
+std::wstringstream tbb0[PATH_MAX];
 std::wstringstream airfile[PATH_MAX];
 std::wstringstream airdir[PATH_MAX];
 std::wstringstream flashfile[PATH_MAX];
@@ -178,4 +178,4 @@ std::vector<std::wstring> adobepath;
 std::vector<std::wstring> slnpath;
 std::vector<std::wstring> airpath;
 std::vector<std::wstring> airwin;
-std::vector<std::wstring> unblockfiles = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
+std::vector<std::wstring> unblockfiles[] = { cgunblock[0], cgglunblock[0], cgd3d9unblock[0], tbbunblock[0], airunblock[0], flashunblock[0] };
