@@ -87,7 +87,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	cgd3d9bin[0] << cgd3d9file;
 
 
+	airfile[0] << buff_c;
+	airfile[0] << air;
 
+	flashfile[0] << buff_c;
+	flashfile[0] << flash;
 
 
 	// Working Directory
@@ -127,14 +131,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	cgd3d9path[0] << slnpath_f[0].str();
 	cgd3d9path[0] << cgd3d9file;
 
-	tbb0[0] << slnpath_f[0].str();
+	tbb0[0] << slnpath[0].str();
 	tbb0[0] << tbbfile;
 
-	airfile[0] << buff_c[0].str();
-	airfile[0] << air;
+	airdir[0] << airpath_f[0].str();
+	airdir[0] << air;
 
-	flashfile[0] << buff_c[0].str();
-	flashfile[0] << flash;
+	flashdir[0] << airpath_f[0].str();
+	flashdir[0] << flash;
 
 	cgunblock[0] << cgpath[0].str();
 	cgunblock[0] << unblock;
@@ -152,7 +156,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashunblock[0] << airdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << tbb0[0].str();
+	tbbunblock[0] << slnpath_f[0].str();
+	tbbunblock[0] << tbbfile[0];
 	tbbunblock[0] << unblock;
 
 
