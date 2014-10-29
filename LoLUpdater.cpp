@@ -12,34 +12,34 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Too lazy to calculate string-length myself
 #if defined(ENVIRONMENT64)
-	memcpy(&buff_c, drive.c_str(), wcslen(drive.c_str()+1));
-	memcpy(&buff_c, progx86.c_str(), wcslen(prog.c_str()+1));
-	memcpy(&buff_c, adobepath.c_str(), wcslen(adobepath.c_str()+1));
+	copy(drive.begin(), drive.end(), &buff_c);
+	copy(progx86.begin(), progx86.end(), &buff_c);
+	copy(adobepath.begin(), adobepath.end(), &buff_c);
 
 #elif defined (ENVIRONMENT32)
-	memcpy(&buff_c, drive.c_str(), wcslen(drive.c_str()+1));
-	memcpy(&buff_c, prog.c_str(), wcslen(prog.c_str() + 1));
-	memcpy(&buff_c, adobepath.c_str(), wcslen(adobepath.c_str() + 1));
+	copy(drive.begin(), drive.end(), &buff_c);
+	copy(prog.begin(), prog.end(), &buff_c);
+	copy(slnpath.begin(), slnpath.end(), &buff_c);
 #endif
-	memcpy(&slnpath_f, cwd.c_str(), wcslen(cwd.c_str() + 1));
-	memcpy(&slnpath_f, slnpath.c_str(), wcslen(cwd.c_str() + 1));
+	copy(cwd.begin(), cwd.end(), &slnpath_f);
+	copy(slnpath.begin(), slnpath.end(), &slnpath_f);
 
-	memcpy(&airpath_f, cwd.c_str(), wcslen(cwd.c_str() + 1));
-	memcpy(&airpath_f, airpath.c_str(), wcslen(cwd.c_str() + 1));
+	copy(cwd.begin(), cwd.end(), &slnpath_f);
+	copy(airpath.begin(), airpath.end(), &slnpath_f);
 
-	memcpy(&cginst, cwd.c_str(), wcslen(cwd.c_str() + 1));
-	memcpy(&cginst, cginstaller.c_str(), wcslen(cwd.c_str() + 1));
+	copy(cwd.begin(), cwd.end(), &cginst);
+	copy(cginstaller.begin(), cginstaller.end(), &cginst);
 
-	memcpy(&airinst, cwd.c_str(), wcslen(cwd.c_str() + 1));
-	memcpy(&airinst, airwin.c_str(), wcslen(cwd.c_str() + 1));
+	copy(cwd.begin(), cwd.end(), &airinst);
+	copy(airwin.begin(), airwin.end(), &airinst);
+
 
 	// End Path builder
 
 	if (cgbinpath.empty())
 	{
-
-		memcpy(&cginstunblock, cginst[0].c_str(), wcslen(cginst[0].c_str() + 1));
-		memcpy(&cginstunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+		copy(cwd.begin(), cwd.end(), &cginstunblock);
+		copy(cginst[0].begin(), cginst[0].end(), &cginstunblock);
 
 		URLDownloadToFileW(
 			nullptr,
@@ -66,50 +66,39 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Common Files
 
-	// Gets location of latest adobeair dll
-	memcpy(&airfile, buff_c[0].c_str(), wcslen(buff_c[0].c_str() + 1));
-	memcpy(&airfile, air.c_str(), wcslen(air.c_str() + 1));
-
-	// Gets location of latest flash dll
-	memcpy(&flashfile, buff_c[0].c_str(), wcslen(buff_c[0].c_str() + 1));
-	memcpy(&flashfile, flash.c_str(), wcslen(flash.c_str() + 1));
-
-
 	// CG_BIN_PATH
 
+
+	
 	// Gets location of latest cg dll
-	memcpy(&cgbin, cgbinpath.c_str(), wcslen(cgbinpath.c_str() + 1));
-	memcpy(&cgbin, cgfile.c_str(), wcslen(cgfile.c_str() + 1));
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgbin);
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgfile);
 
 	// Gets location of latest cgd3d9 dll
-	memcpy(&cgd3d9bin, cgbinpath.c_str(), wcslen(cgbinpath.c_str() + 1));
-	memcpy(&cgd3d9bin, cgd3d9file.c_str(), wcslen(cgd3d9file.c_str() + 1));
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgd3d9bin);
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgd3d9file);
 
 	// Gets location of latest cggl dll
-	memcpy(&cgglbin, cgbinpath.c_str(), wcslen(cgbinpath.c_str() + 1));
-	memcpy(&cgglbin, cgglfile.c_str(), wcslen(cgglfile.c_str() + 1));
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgglbin);
+	copy(cgbinpath.begin(), cgbinpath.end(), &cgglfile);
 
 
 
 	// Working Directory
-	memcpy(&cgpath, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-	memcpy(&cgpath, cgfile.c_str(), wcslen(cgfile.c_str() + 1));
+	copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgpath);
+	copy(cgfile.begin(), cgfile.end(), &cgpath);
 
-	memcpy(&cgglpath, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-	memcpy(&cgglpath, cgglfile.c_str(), wcslen(cgglfile.c_str() + 1));
+	copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgglpath);
+	copy(cgglfile.begin(), cgglfile.end(), &cgglpath);
 
-	memcpy(&cgd3d9path, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-	memcpy(&cgd3d9path, cgd3d9file.c_str(), wcslen(cgd3d9file.c_str() + 1));
+	copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgd3d9path);
+	copy(cgd3d9file.begin(), cgd3d9file.end(), &cgd3d9path);
 
-	memcpy(&tbb, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-	memcpy(&tbb, tbbfile.c_str(), wcslen(tbbfile.c_str() + 1));
+	copy(slnpath_f[0].begin(), slnpath_f[0].end(), &tbb);
+	copy(tbbfile.begin(), tbbfile.end(), &tbb);
 
-	memcpy(&airdir, airpath_f[0].c_str(), wcslen(airpath_f[0].c_str() + 1));
-	memcpy(&airdir, air.c_str(), wcslen(air.c_str() + 1));
-
-	memcpy(&flashdir, airpath_f[0].c_str(), wcslen(airpath_f[0].c_str() + 1));
-	memcpy(&flashdir, flash.c_str(), wcslen(flash.c_str() + 1));
-
+	copy(airinst[0].begin(), airinst[0].end(), &airinstunblock);
+	copy(unblock.begin(), unblock.end(), &airinstunblock);
 
 		URLDownloadToFileW(
 			nullptr,
@@ -133,6 +122,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShellExecuteExW(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
+
+	// Gets location of latest adobeair dll
+	copy(buff_c[0].begin(), buff_c[0].end(), &airfile);
+	copy(air.begin(), air.end(), &airfile);
+
+	copy(buff_c[0].begin(), buff_c[0].end(), &flashfile);
+	copy(flash.begin(), flash.end(), &flashfile);
+
+
 	// Check for Garena
 	if (file_exists(L"lol.exe"))
 	{
@@ -140,49 +138,61 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::wstring slnpath(L"\\Game");
 		// Separate string-combining logic for Garena
 
+		// Gets location of latest cg dll
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgbin);
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgfile);
+
+		// Gets location of latest cgd3d9 dll
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgd3d9bin);
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgd3d9file);
+
+		// Gets location of latest cggl dll
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgglbin);
+		copy(cgbinpath.begin(), cgbinpath.end(), &cgglfile);
+
+
+
 		// Working Directory
-		memcpy(&cgpath, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-		memcpy(&cgpath, cgfile.c_str(), wcslen(cgfile.c_str() + 1));
+		copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgpath);
+		copy(cgfile.begin(), cgfile.end(), &cgpath);
 
-		memcpy(&cgglpath, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-		memcpy(&cgglpath, cgglfile.c_str(), wcslen(cgglfile.c_str() + 1));
+		copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgglpath);
+		copy(cgglfile.begin(), cgglfile.end(), &cgglpath);
 
-		memcpy(&cgd3d9path, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-		memcpy(&cgd3d9path, cgd3d9file.c_str(), wcslen(cgd3d9file.c_str() + 1));
+		copy(slnpath_f[0].begin(), slnpath_f[0].end(), &cgd3d9path);
+		copy(cgd3d9file.begin(), cgd3d9file.end(), &cgd3d9path);
 
-		memcpy(&tbb, slnpath_f[0].c_str(), wcslen(slnpath_f[0].c_str() + 1));
-		memcpy(&tbb, tbbfile.c_str(), wcslen(tbbfile.c_str() + 1));
+		copy(slnpath_f[0].begin(), slnpath_f[0].end(), &tbb);
+		copy(tbbfile.begin(), tbbfile.end(), &tbb);
 
-		memcpy(&airdir, airpath_f[0].c_str(), wcslen(airpath_f[0].c_str() + 1));
-		memcpy(&airdir, air.c_str(), wcslen(air.c_str() + 1));
+		// Gets location of latest adobeair dll
+		copy(buff_c[0].begin(), buff_c[0].end(), &airfile);
+		copy(air.begin(), air.end(), &airfile);
 
-		memcpy(&flashdir, airpath_f[0].c_str(), wcslen(airpath_f[0].c_str() + 1));
-		memcpy(&flashdir, flash.c_str(), wcslen(flash.c_str() + 1));
+		copy(buff_c[0].begin(), buff_c[0].end(), &flashfile);
+		copy(flash.begin(), flash.end(), &flashfile);
 	}
 
-	// CG_BIN_PATH UNBLOCK
-	memcpy(&cgglunblock, cgglpath[0].c_str(), wcslen(cgglpath[0].c_str() + 1));
-	memcpy(&cgglunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(cgpath[0].begin(), cgpath[0].end(), &cgunblock);
+	copy(unblock.begin(), unblock.end(), &cgunblock);
 
-	memcpy(&cgunblock, cgpath[0].c_str(), wcslen(cgpath[0].c_str() + 1));
-	memcpy(&cgunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(cgglpath[0].begin(), cgglpath[0].end(), &cgglunblock);
+	copy(unblock.begin(), unblock.end(), &cgglunblock);
 
-	memcpy(&cgd3d9unblock, cgd3d9path[0].c_str(), wcslen(cgd3d9path[0].c_str() + 1));
-	memcpy(&cgd3d9unblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(cgd3d9path[0].begin(), cgd3d9path[0].end(), &cgd3d9unblock);
+	copy(unblock.begin(), unblock.end(), &cgd3d9unblock);
 
-	// Common Files UNBLOCK
-	memcpy(&airunblock, airdir[0].c_str(), wcslen(airdir[0].c_str() + 1));
-	memcpy(&airunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(airdir[0].begin(), airdir[0].end(), &airunblock);
+	copy(unblock.begin(), unblock.end(), &airunblock);
 
-	memcpy(&flashunblock, flashdir[0].c_str(), wcslen(flashdir[0].c_str() + 1));
-	memcpy(&flashunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(flashdir[0].begin(), flashdir[0].end(), &flashunblock);
+	copy(unblock.begin(), unblock.end(), &flashunblock);
 
-	// Misc UNBLOCK
-	memcpy(&tbbunblock, tbb[0].c_str(), wcslen(tbb[0].c_str() + 1));
-	memcpy(&tbbunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+	copy(tbb[0].begin(), tbb[0].end(), &tbbunblock);
+	copy(unblock.begin(), unblock.end(), &tbbunblock);
 
-	memcpy(&airinstunblock, airinst[0].c_str(), wcslen(airinst[0].c_str() + 1));
-	memcpy(&airinstunblock, unblock.c_str(), wcslen(unblock.c_str() + 1));
+
+
 #if _XP
 	// XP
 		URLDownloadToFileW(
