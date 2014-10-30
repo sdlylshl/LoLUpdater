@@ -3,8 +3,6 @@
 #include <direct.h>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
-#include <atlconv.h>
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -184,11 +182,11 @@ std::wstring cgglfile(L"\\CgGL.dll");
 std::wstring cgd3d9file(L"\\CgD3D9.dll");
 std::wstring prog(L":\\Program Files (x86)");
 std::wstring progx86(L":\\Program Files");
-std::wstring cginstaller(L"\\Cg-3.1_April2012_Setup.exe");
+std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 std::wstring tbbfile(L"\\tbb.dll");
 std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
 std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
 std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
-std::wstring airwin(L"\\air15_win.exe");
+std::wstring airwin(L"air15_win.exe");
 
 std::wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };

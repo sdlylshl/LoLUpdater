@@ -42,12 +42,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	airinstunblock[0] << cwd;
+	airinstunblock[0] << L"\\";
 	airinstunblock[0] << airwin;
 	airinstunblock[0] << unblock;
 
 	// End Path builder
 
 	    cginstunblock[0] << cwd;
+		cginstunblock[0] << L"\\";
 		cginstunblock[0] << cginstaller;
 		cginstunblock[0] << unblock;
 		if (cgbinpath == 0)
