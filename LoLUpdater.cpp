@@ -281,7 +281,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		DeleteFileW(&i[0]);
 	}
 	std::wcout << buff_c[0].str().c_str();
-	std::wcout << &cwd[0];
+	std::wcout << cwd;
 	std::cout << "LoLUpdater finished!" << std::endl << "";
 	system("pause");
 
