@@ -136,14 +136,6 @@ inline std::string GetExePath()
 	return f.substr(0, f.find_last_of("\\/"));
 }
 
-inline std::wstring GetEnvironmentVariableW(const std::wstring& name)
-{
-	DWORD size = GetEnvironmentVariableW(name.c_str(), nullptr, 0);
-	std::vector<wchar_t> value;
-	value.resize(size);
-	size = GetEnvironmentVariableW(name.c_str(), &* value.begin(), value.size());
-	return std::wstring(&* value.begin(), value.size() - 1);
-}
 
 // Not sure of how to remove C-Style cast here
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
