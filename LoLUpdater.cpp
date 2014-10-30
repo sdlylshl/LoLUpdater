@@ -17,13 +17,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff_c[0] << adobepath;
 	// Check for Garena
 
-	slnpath_f[0] << cwd;
-	slnpath_f[0] << slnpath;
 
-	airpath_f[0] << cwd;
-	airpath_f[0] << airpath;
 
-	if (file_exists(L"lol.exe"))
+	if (file_exists(L"lol.launcher.exe"))
 	{
 		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
 		std::wstring slnpath(L"\\Game");
@@ -35,21 +31,23 @@ int _tmain(int argc, _TCHAR* argv[])
 		airpath_f[0] << airpath;
 
 	}
+	else
+	{
+		slnpath_f[0] << cwd;
+		slnpath_f[0] << slnpath;
 
-	cginst[0] << cwd;
-	cginst[0] << cginstaller;
+		airpath_f[0] << cwd;
+		airpath_f[0] << airpath;
+	}
 
-	airinst[0] << cwd;
-	airinst[0] << airwin;
 
+	airinstunblock[0] << cwd;
 	airinstunblock[0] << airwin;
-	airinst[0] << unblock;
+	airinstunblock[0] << unblock;
 
 	// End Path builder
 
-		cginst[0] << cwd;
-		cginst[0] << cginstaller;
-
+	    cginstunblock[0] << cwd;
 		cginstunblock[0] << cginstaller;
 		cginstunblock[0] << unblock;
 		if (cgbinpath == 0)
@@ -57,18 +55,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileW(
 				nullptr,
 				L"https://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-				cginst[0].str().c_str(),
+				&cginstaller[0],
 				0,
 				nullptr
 				);
 
-			DeleteFileW(cginstunblock[0].str().c_str());
+			DeleteFileW(&cginstaller[0]);
 			SHELLEXECUTEINFOW ShExecInfo = { 0 };
 			ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 			ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 			ShExecInfo.hwnd = nullptr;
 			ShExecInfo.lpVerb = nullptr;
-			ShExecInfo.lpFile = cginst[0].str().c_str();
+			ShExecInfo.lpFile = &cginstaller[0];
 			ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
 			ShExecInfo.lpDirectory = nullptr;
 			ShExecInfo.nShow = SW_SHOW;
@@ -106,7 +104,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		URLDownloadToFileW(
 			nullptr,
 			L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-			airinst[0].str().c_str(),
+			&airwin[0],
 			0,
 			nullptr
 		);
@@ -117,13 +115,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airinst[0].str().c_str();
+	ShExecInfo.lpFile = &airwin[0];
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
 	ShExecInfo.hInstApp = nullptr;
 	ShellExecuteExW(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+
+
 	cgpath[0] << slnpath_f[0].str();
 	cgpath[0] << cgfile;
 
@@ -136,7 +136,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cgd3d9path[0] << slnpath_f[0].str();
 	cgd3d9path[0] << cgd3d9file;
 
-	tbb0[0] << slnpath[0];
+	tbb0[0] << slnpath_f[0].str();
 	tbb0[0] << tbbfile;
 
 	airdir[0] << airpath_f[0].str();
@@ -148,21 +148,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	cgunblock[0] << cgpath[0].str();
 	cgunblock[0] << unblock;
 
+	cgglunblock[0] << cgglpath[0].str();
+	cgglunblock[0] << unblock;
 
 	cgd3d9unblock[0] << cgd3d9path[0].str();
 	cgd3d9unblock[0] << unblock;
 
-	cgglunblock[0] << cgglpath[0].str();
-	cgglunblock[0] << unblock;
+
 
 	airunblock[0] << airdir[0].str();
 	airunblock[0] << unblock;
 
-	flashunblock[0] << airdir[0].str();
+	flashunblock[0] << flashdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << slnpath_f[0].str();
-	tbbunblock[0] << tbbfile[0];
+	tbbunblock[0] << cwd[0].str();
+	tbbunblock[0] << tbb0[0].str();
 	tbbunblock[0] << unblock;
 
 
@@ -173,7 +174,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// XP
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Xp.dll",
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Xp.dll",
 			tbb0[0].str().c_str(),
 			0,
 			nullptr
@@ -184,7 +185,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX2
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Avx2.dll",
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Avx2.dll",
 			tbb0[0].str().c_str(),
 			0,
 			nullptr
@@ -197,7 +198,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Avx.dll",
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Avx.dll",
 				tbb0[0].str().c_str(),
 				0,
 				nullptr
@@ -210,7 +211,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				URLDownloadToFileW(
 					nullptr,
-					L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Sse2.dll",
+					L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Sse2.dll",
 					tbb0[0].str().c_str(),
 					0,
 					nullptr
@@ -223,7 +224,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Sse.dll",
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Sse.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
@@ -234,7 +235,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb0/Default.dll",
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Default.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
@@ -275,7 +276,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		DeleteFileW(&i[0]);
 	}
 	std::wcout << buff_c[0].str().c_str();
-	std::wcout << cwd.c_str();
+	std::wcout << &cwd[0];
 	std::cout << "LoLUpdater finished!" << std::endl << "";
 	system("pause");
 
