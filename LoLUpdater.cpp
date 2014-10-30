@@ -167,7 +167,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashunblock[0] << flashdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << cwd[0].str();
+	tbbunblock[0] << cwd[0];
 	tbbunblock[0] << tbb0[0].str();
 	tbbunblock[0] << unblock;
 
