@@ -21,8 +21,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (file_exists(L"lol.launcher.exe"))
 	{
-		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
-		std::wstring slnpath(L"\\Game");
+		std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
+		std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
 		slnpath_f[0] << cwd;
 		slnpath_f[0] << slnpath;
@@ -33,6 +33,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	else
 	{
+		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
+		std::wstring slnpath(L"\\Game");
+
 		slnpath_f[0] << cwd;
 		slnpath_f[0] << slnpath;
 

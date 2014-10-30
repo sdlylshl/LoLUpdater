@@ -102,8 +102,6 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #endif
-// Redefinition of MAX_PATH
-#define PATH_MAX (MAX_PATH+1)
 
 
 #undef CONTEXT_XSTATE
@@ -130,63 +128,56 @@ PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATUR
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
 
-
+// 261 = Max_PATH without null delimiter (260+1)
 // Buffers
-std::wstringstream buff_c[PATH_MAX];
-std::wstringstream tbb0[PATH_MAX];
-std::wstringstream airfile[PATH_MAX];
-std::wstringstream airdir[PATH_MAX];
-std::wstringstream flashfile[PATH_MAX];
-std::wstringstream flashdir[PATH_MAX];
-std::wstringstream cgbin[PATH_MAX];
-std::wstringstream cginstunblock[PATH_MAX];
-std::wstringstream airinstunblock[PATH_MAX];
-std::wstringstream strair[PATH_MAX];
-std::wstringstream airunblock[PATH_MAX];
-std::wstringstream cgd3d9bin[PATH_MAX];
-std::wstringstream cgglbin[PATH_MAX];
-std::wstringstream cgpath[PATH_MAX];
-std::wstringstream cgglpath[PATH_MAX];
-std::wstringstream tbbunblock[PATH_MAX];
-std::wstringstream flashunblock[PATH_MAX];
-std::wstringstream cgd3d9path[PATH_MAX];
-std::wstringstream cgglunblock[PATH_MAX];
-std::wstringstream cgunblock[PATH_MAX];
-std::wstringstream cgd3d9unblock[PATH_MAX];
-std::wstringstream airpath_f[PATH_MAX];
-std::wstringstream slnpath_f[PATH_MAX];
-std::wstringstream cwd[PATH_MAX];
-std::wstringstream cgbinpath[PATH_MAX];
-
-
-
-
+std::wstringstream buff_c[261];
+std::wstringstream tbb0[261];
+std::wstringstream airfile[261];
+std::wstringstream airdir[261];
+std::wstringstream flashfile[261];
+std::wstringstream flashdir[261];
+std::wstringstream cgbin[261];
+std::wstringstream cginstunblock[261];
+std::wstringstream airinstunblock[261];
+std::wstringstream strair[261];
+std::wstringstream airunblock[261];
+std::wstringstream cgd3d9bin[261];
+std::wstringstream cgglbin[261];
+std::wstringstream cgpath[261];
+std::wstringstream cgglpath[261];
+std::wstringstream tbbunblock[261];
+std::wstringstream flashunblock[261];
+std::wstringstream cgd3d9path[261];
+std::wstringstream cgglunblock[261];
+std::wstringstream cgunblock[261];
+std::wstringstream cgd3d9unblock[261];
+std::wstringstream airpath_f[261];
+std::wstringstream slnpath_f[261];
+std::wstringstream cwd[261];
+std::wstringstream cgbinpath[261];
 
 // Constants
-std::wstring cwdbuff(std::to_wstring(GetCurrentDirectoryW(PATH_MAX,
+std::wstring cwdbuff(std::to_wstring(GetCurrentDirectoryW(261,
 	const_cast<LPWSTR>(cwd[0].str().c_str()))));
 
 std::wstring drive(cwd[0].str());
 
-;
 std::wstring envget(std::to_wstring(GetEnvironmentVariableW(
 	L"CG_BIN_PATH",
 	const_cast<LPWSTR>(cgbinpath[0].str().c_str()),
-	PATH_MAX
+	261
 	)));
 std::wstring unblock(L":Zone.Identifier");
 std::wstring air(L"Adobe AIR.dll");
 std::wstring flash(L"Resources\\NPSWF32.dll");
-std::wstring cgfile(L"\\Cg.dll");
-std::wstring cgglfile(L"\\CgGL.dll");
-std::wstring cgd3d9file(L"\\CgD3D9.dll");
+std::wstring cgfile(L"Cg.dll");
+std::wstring cgglfile(L"CgGL.dll");
+std::wstring cgd3d9file(L"CgD3D9.dll");
 std::wstring prog(L":\\Program Files (x86)");
 std::wstring progx86(L":\\Program Files");
 std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
-std::wstring tbbfile(L"\\tbb.dll");
+std::wstring tbbfile(L"tbb.dll");
 std::wstring adobepath(L"\\Common Files\\Adobe AIR\\Versions\\1.0\\");
-std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
-std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 std::wstring airwin(L"air15_win.exe");
 
 std::wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
