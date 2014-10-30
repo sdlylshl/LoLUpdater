@@ -159,7 +159,7 @@ std::wstringstream cgunblock[PATH_MAX];
 std::wstringstream cgd3d9unblock[PATH_MAX];
 std::wstringstream airpath_f[PATH_MAX];
 std::wstringstream slnpath_f[PATH_MAX];
-std::wstringstream lwWorkingDirectory[PATH_MAX];
+std::wstringstream cwd[PATH_MAX];
 std::wstringstream cgbinpath[PATH_MAX];
 
 
@@ -167,16 +167,15 @@ std::wstringstream cgbinpath[PATH_MAX];
 
 
 // Constants
+std::wstring cwdbuff(std::to_wstring(GetCurrentDirectoryW(PATH_MAX,
+	const_cast<LPWSTR>(cwd[0].str().c_str()))));
 
-std::wstring cwd(std::to_wstring(GetCurrentDirectory(PATH_MAX,
-	lwWorkingDirectory.str().c_str())));
-
-std::wstring drive(&cwd[0]);
+std::wstring drive(cwd[0].str());
 
 ;
 std::wstring envget(std::to_wstring(GetEnvironmentVariableW(
 	L"CG_BIN_PATH",
-	cgbinpath[0],
+	const_cast<LPWSTR>(cgbinpath[0].str().c_str()),
 	PATH_MAX
 	)));
 std::wstring unblock(L":Zone.Identifier");

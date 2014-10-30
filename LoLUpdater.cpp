@@ -7,7 +7,6 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	std::cout << "LoLUpdater Alpha 1 Build 8" << std::endl << "Patching..." << std::endl;
 	// Path builder
-
 	buff_c[0] << drive;
 
 #if defined(ENVIRONMENT64)
