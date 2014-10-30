@@ -123,6 +123,28 @@ inline bool file_exists(std::wstring(fileName))
 	return infile.good();
 }
 
+inline std::string GetExeFileName()
+{
+	char buffer[261];
+	GetModuleFileNameA(nullptr, buffer, 261);
+	return std::string(buffer);
+}
+
+inline std::string GetExePath()
+{
+	std::string f = GetExeFileName();
+	return f.substr(0, f.find_last_of("\\/"));
+}
+
+inline std::wstring GetEnvironmentVariableW(const std::wstring& name)
+{
+	DWORD size = GetEnvironmentVariableW(name.c_str(), nullptr, 0);
+	std::vector<wchar_t> value;
+	value.resize(size);
+	size = GetEnvironmentVariableW(name.c_str(), &* value.begin(), value.size());
+	return std::wstring(&* value.begin(), value.size() - 1);
+}
+
 // Not sure of how to remove C-Style cast here
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
@@ -153,20 +175,17 @@ std::wstringstream cgunblock[261];
 std::wstringstream cgd3d9unblock[261];
 std::wstringstream airpath_f[261];
 std::wstringstream slnpath_f[261];
-std::wstringstream cwd[261];
-std::wstringstream cgbinpath[261];
+std::vector<std::wstring, wchar_t> cgbinpath[261];
 
 // Constants
-std::wstring cwdbuff(std::to_wstring(GetCurrentDirectoryW(261,
-	const_cast<LPWSTR>(cwd[0].str().c_str()))));
+std::wstring cwd(std::to_wstring(GetExePath()[0]));
 
-std::wstring drive(cwd[0].str());
+std::wstring drive(&cwd[0]);
 
-std::wstring envget(std::to_wstring(GetEnvironmentVariableW(
-	L"CG_BIN_PATH",
-	const_cast<LPWSTR>(cgbinpath[0].str().c_str()),
-	261
-	)));
+std::wstring envget(L"CG_BIN_PATH",
+	&*cgbinpath[0].begin(),
+260);
+
 std::wstring unblock(L":Zone.Identifier");
 std::wstring air(L"Adobe AIR.dll");
 std::wstring flash(L"Resources\\NPSWF32.dll");
