@@ -167,16 +167,16 @@ std::wstringstream cgunblock[261];
 std::wstringstream cgd3d9unblock[261];
 std::wstringstream airpath_f[261];
 std::wstringstream slnpath_f[261];
-std::vector<std::wstring, wchar_t> cgbinpath[261];
+std::vector<wchar_t> cgbinpath[261];
 
 // Constants
 std::wstring cwd(std::to_wstring(GetExePath()[0]));
 
 std::wstring drive(&cwd[0]);
 
-std::wstring envget(L"CG_BIN_PATH",
+std::wstring envget(std::to_wstring(GetEnvironmentVariableW(L"CG_BIN_PATH",
 	&*cgbinpath[0].begin(),
-260);
+260)));
 
 std::wstring unblock(L":Zone.Identifier");
 std::wstring air(L"Adobe AIR.dll");
