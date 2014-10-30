@@ -5,7 +5,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 7" << std::endl << "Patching..." << std::endl;
+	std::cout << "LoLUpdater Alpha 1 Build 8" << std::endl << "Patching..." << std::endl;
 	// Path builder
 
 	buff_c[0] << drive;
@@ -43,35 +43,41 @@ int _tmain(int argc, _TCHAR* argv[])
 	airinst[0] << cwd;
 	airinst[0] << airwin;
 
+	airinstunblock[0] << airwin;
+	airinst[0] << unblock;
+
 	// End Path builder
 
-	if (cgbinpath.empty())
-	{
 		cginst[0] << cwd;
 		cginst[0] << cginstaller;
 
-		URLDownloadToFileW(
-			nullptr,
-			L"https://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			cginst[0].str().c_str(),
-			0,
-			nullptr
-			);
+		cginstunblock[0] << cginstaller;
+		cginstunblock[0] << unblock;
+		if (cgbinpath == 0)
+		{
+			URLDownloadToFileW(
+				nullptr,
+				L"https://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+				cginst[0].str().c_str(),
+				0,
+				nullptr
+				);
 
-		DeleteFileW(cginstunblock[0].str().c_str());
-		SHELLEXECUTEINFOW ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-		ShExecInfo.hwnd = nullptr;
-		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = cginst[0].str().c_str();
-		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
-		ShExecInfo.lpDirectory = nullptr;
-		ShExecInfo.nShow = SW_SHOW;
-		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExW(&ShExecInfo);
-		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-	}
+			DeleteFileW(cginstunblock[0].str().c_str());
+			SHELLEXECUTEINFOW ShExecInfo = { 0 };
+			ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+			ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+			ShExecInfo.hwnd = nullptr;
+			ShExecInfo.lpVerb = nullptr;
+			ShExecInfo.lpFile = cginst[0].str().c_str();
+			ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
+			ShExecInfo.lpDirectory = nullptr;
+			ShExecInfo.nShow = SW_SHOW;
+			ShExecInfo.hInstApp = nullptr;
+			ShellExecuteExW(&ShExecInfo);
+			WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+		}
+		
 
 	
 	// Gets location of latest cg dll
@@ -131,7 +137,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cgd3d9path[0] << slnpath_f[0].str();
 	cgd3d9path[0] << cgd3d9file;
 
-	tbb0[0] << slnpath[0].str();
+	tbb0[0] << slnpath[0];
 	tbb0[0] << tbbfile;
 
 	airdir[0] << airpath_f[0].str();
@@ -269,7 +275,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		DeleteFileW(&i[0]);
 	}
-	std::wcout << cgd3d9bin[0].str().c_str();
+	std::wcout << buff_c[0].str().c_str();
+	std::wcout << cwd.c_str();
 	std::cout << "LoLUpdater finished!" << std::endl << "";
 	system("pause");
 

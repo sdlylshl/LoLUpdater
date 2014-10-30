@@ -4,8 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <iterator>
-#include <locale>
+#include <atlconv.h>
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -105,12 +104,9 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #endif
+// Redefinition of MAX_PATH
+#define PATH_MAX (MAX_PATH+1)
 
-inline bool file_exists(std::wstring(fileName))
-{
-	std::ifstream infile(fileName);
-	return infile.good();
-}
 
 #undef CONTEXT_XSTATE
 
@@ -125,12 +121,17 @@ inline bool file_exists(std::wstring(fileName))
 
 typedef DWORD64(WINAPI * PGETENABLEDXSTATEFEATURES)();
 
+inline bool file_exists(std::wstring(fileName))
+{
+	std::ifstream infile(fileName);
+	return infile.good();
+}
+
 // Not sure of how to remove C-Style cast here
 PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
 DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
 
-// Redefinition of PATH_MAX
-#define PATH_MAX (MAX_PATH+1)
+
 
 // Buffers
 std::wstringstream buff_c[PATH_MAX];
@@ -158,14 +159,26 @@ std::wstringstream cgunblock[PATH_MAX];
 std::wstringstream cgd3d9unblock[PATH_MAX];
 std::wstringstream airpath_f[PATH_MAX];
 std::wstringstream slnpath_f[PATH_MAX];
+std::wstringstream lwWorkingDirectory[PATH_MAX];
+std::wstringstream cgbinpath[PATH_MAX];
+
+
+
+
 
 // Constants
-std::wstring cwd(_wgetcwd(
-	nullptr,
-	0
-	));
+
+std::wstring cwd(std::to_wstring(GetCurrentDirectory(PATH_MAX,
+	lwWorkingDirectory.str().c_str())));
+
 std::wstring drive(&cwd[0]);
-std::wstring cgbinpath(_wgetenv(L"CG_BIN_PATH"));
+
+;
+std::wstring envget(std::to_wstring(GetEnvironmentVariableW(
+	L"CG_BIN_PATH",
+	cgbinpath[0],
+	PATH_MAX
+	)));
 std::wstring unblock(L":Zone.Identifier");
 std::wstring air(L"Adobe AIR.dll");
 std::wstring flash(L"Resources\\NPSWF32.dll");
