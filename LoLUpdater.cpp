@@ -6,8 +6,16 @@
 int _tmain(int argc, _TCHAR* argv[])
 {
 	std::cout << "LoLUpdater Alpha 1 Build 8" << std::endl << "Patching..." << std::endl;
+	GetCurrentDirectoryW(
+		261,
+		&*cwd[0].str().begin()
+		);
+
+	GetEnvironmentVariableW(L"CG_BIN_PATH",
+		&*cgbinpath[0].str().begin(),
+		261);
 	// Path builder
-	buff_c[0] << drive;
+	buff_c[0] << cwd[0].str();
 
 #if defined(ENVIRONMENT64)
 	buff_c[0] << progx86;
@@ -83,7 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	
 	// Gets location of latest cg dll
-	cgbin[0] << cgbinpath;
+	cgbin[0] << &cgbinpath[0];
 	cgbin[0] << cgfile;
 
 	// Gets location of latest cggl dll
@@ -167,7 +175,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashunblock[0] << flashdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << cwd[0];
+	tbbunblock[0] << cwd[0].str();
 	tbbunblock[0] << tbb0[0].str();
 	tbbunblock[0] << unblock;
 
@@ -281,7 +289,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		DeleteFileW(&i[0]);
 	}
 	std::wcout << buff_c[0].str().c_str();
-	std::wcout << cwd;
+	std::wcout << &cgbinpath[0];
 	std::cout << "LoLUpdater finished!" << std::endl << "";
 	system("pause");
 
