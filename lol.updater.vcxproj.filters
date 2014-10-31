@@ -37,4 +37,12 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpuid64.asm">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="cpuid32.asm">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

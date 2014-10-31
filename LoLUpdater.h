@@ -5,6 +5,16 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
+	int isAvxSupported();
+
+#if defined(__cplusplus)
+}
+#endif 
 #if XP == FALSE
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
