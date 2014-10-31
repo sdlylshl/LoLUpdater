@@ -6,7 +6,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 9";
+	std::cout << "LoLUpdater Alpha 1 Build 10";
 	std::cout << std::endl;
 	std::cout << "Patching..." << std::endl;
 
@@ -15,6 +15,35 @@ int _tmain(int argc, _TCHAR* argv[])
 	GetEnvironmentVariableW(L"CG_BIN_PATH",
 		&cgbinpath[0],
 		MAX_PATH + 1);
+	if (&cgbinpath[0] == NULL)
+	{
+		URLDownloadToFileW(
+			nullptr,
+			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+			cginst[0].str().c_str(),
+			0,
+			nullptr
+			);
+
+
+		DeleteFileW(cginstunblock[0].str().c_str());
+		SHELLEXECUTEINFOW ShExecInfo = { 0 };
+		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ShExecInfo.hwnd = nullptr;
+		ShExecInfo.lpVerb = nullptr;
+		ShExecInfo.lpFile = cginst[0].str().c_str();
+		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
+		ShExecInfo.lpDirectory = nullptr;
+		ShExecInfo.nShow = SW_SHOW;
+		ShExecInfo.hInstApp = nullptr;
+		ShellExecuteExW(&ShExecInfo);
+		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+
+		GetEnvironmentVariableW(L"CG_BIN_PATH",
+			&cgbinpath[0],
+			MAX_PATH + 1);
+	}
 	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 
 	// Pathbuilder
@@ -58,28 +87,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// End Pathbuilder
 
-	URLDownloadToFileW(
-		nullptr,
-		L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-		cginst[0].str().c_str(),
-		0,
-		nullptr
-		);
-
-
-	DeleteFileW(cginstunblock[0].str().c_str());
-	SHELLEXECUTEINFOW ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo.hwnd = nullptr;
-	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = cginst[0].str().c_str();
-	ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
-	ShExecInfo.lpDirectory = nullptr;
-	ShExecInfo.nShow = SW_SHOW;
-	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteExW(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	
 
 	// Gets location of latest cg dll
 	cgbin[0] << &cgbinpath[0];
@@ -110,18 +118,18 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 
 	DeleteFileW(airinstunblock[0].str().c_str());
-	SHELLEXECUTEINFOW ShExecInfo1 = { 0 };
-	ShExecInfo1.cbSize = sizeof(SHELLEXECUTEINFOW);
-	ShExecInfo1.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo1.hwnd = nullptr;
-	ShExecInfo1.lpVerb = nullptr;
-	ShExecInfo1.lpFile = airinst[0].str().c_str();
-	ShExecInfo1.lpParameters = L"-silent";
-	ShExecInfo1.lpDirectory = nullptr;
-	ShExecInfo1.nShow = SW_SHOW;
-	ShExecInfo1.hInstApp = nullptr;
-	ShellExecuteExW(&ShExecInfo1);
-	WaitForSingleObject(ShExecInfo1.hProcess, INFINITE);
+	SHELLEXECUTEINFOW ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = nullptr;
+	ShExecInfo.lpFile = airinst[0].str().c_str();
+	ShExecInfo.lpParameters = L"-silent";
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteExW(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 	// Working Directory
 	cgpath[0] << slnpath_f[0].str();
