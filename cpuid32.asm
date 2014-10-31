@@ -1,4 +1,4 @@
-[shell].686p
+.686p
 .xmm
 .model FLAT
 
@@ -27,4 +27,4 @@ not_supported:
 xor eax, eax
 ret
 _isAvxSupported endp
-END[/shell]
+END

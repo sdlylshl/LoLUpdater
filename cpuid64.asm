@@ -1,4 +1,4 @@
-[shell]; CPUID Win64
+; CPUID Win64
 .code
 
 ; int isAvxSupported();
@@ -23,4 +23,4 @@ not_supported:
 xor eax, eax
 ret
 isAvxSupported endp
-END[/shell]
+END
