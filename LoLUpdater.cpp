@@ -21,7 +21,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff_c[0] << cwd[0];
 #if defined(ENVIRONMENT64)
 	buff_c[0] << L":\\Program Files (x86)";
-#elif defined (ENVIRONMENT32)
+#elif defined(ENVIRONMENT32)
 	buff_c[0] << L":\\Program Files";
 #endif
 	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";

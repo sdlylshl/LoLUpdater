@@ -38,11 +38,11 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpuid64.asm">
+    <MASM Include="cpuid32.asm">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="cpuid32.asm">
+    </MASM>
+    <MASM Include="cpuid64.asm">
       <Filter>Source Files</Filter>
-    </None>
+    </MASM>
   </ItemGroup>
 </Project>
