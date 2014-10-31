@@ -3,26 +3,26 @@
 #include <direct.h>
 #include <iostream>
 #include <sstream>
-#include <atlstr.h>
+#include <fstream>
+#include <vector>
+#if XP == FALSE
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
 
 int check_4th_gen_intel_core_features()
 {
-	const int the_4th_gen_features =
+	const int the_4th_gen_features = 
 		(_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
-	return _may_i_use_cpu_feature(the_4th_gen_features);
+	return _may_i_use_cpu_feature( the_4th_gen_features );
 }
 
-#else
+#else /* non-Intel compiler */
 
 #include <stdint.h>
 #if defined(_MSC_VER)
 # include <intrin.h>
 #endif
-#include <fstream>
-#include <vector>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -31,15 +31,13 @@ inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 #else
 	uint32_t ebx, edx;
 # if defined( __i386__ ) && defined ( __PIC__ )
+	/* in case of PIC under 32-bit EBX cannot be clobbered */
 	__asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
 # else
 	__asm__("cpuid" : "+b" (ebx),
 # endif
 		"+a" (eax), "+c" (ecx), "=d" (edx));
-	abcd[0] = eax;
-	abcd[1] = ebx;
-	abcd[2] = ecx;
-	abcd[3] = edx;
+	abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
 #endif
 }
 
@@ -47,29 +45,38 @@ inline int check_xcr0_ymm()
 {
 	uint32_t xcr0;
 #if defined(_MSC_VER)
-	//Todo: Find conversion-method for long to uint to remove C-style cast.  
-	xcr0 = (uint32_t)_xgetbv(0);
+	xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
 #else
 	__asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
 #endif
-	return ((xcr0 & 6) == 6);
+	return ((xcr0 & 6) == 6); /* checking if xmm and ymm state are enabled in XCR0 */
 }
+
 
 inline int check_4th_gen_intel_core_features()
 {
 	int abcd[4];
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
+
+	/* CPUID.(EAX=01H, ECX=0H):ECX.FMA[bit 12]==1   &&
+	CPUID.(EAX=01H, ECX=0H):ECX.MOVBE[bit 22]==1 &&
+	CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
 	run_cpuid(1, 0, abcd);
 	if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
 		return 0;
+
 	if (!check_xcr0_ymm())
 		return 0;
 
+	/*  CPUID.(EAX=07H, ECX=0H):EBX.AVX2[bit 5]==1  &&
+	CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
+	CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
 	run_cpuid(7, 0, abcd);
 	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
 		return 0;
 
+	/* CPUID.(EAX=80000001H):ECX.LZCNT[bit 5]==1 */
 	run_cpuid(0x80000001, 0, abcd);
 	if ((abcd[2] & (1 << 5)) == 0)
 		return 0;
@@ -77,18 +84,19 @@ inline int check_4th_gen_intel_core_features()
 	return 1;
 }
 
-#endif
+#endif /* non-Intel compiler */
 
 
 static int can_use_intel_core_4th_gen_features()
 {
 	static int the_4th_gen_features_available = -1;
+	/* test is performed once */
 	if (the_4th_gen_features_available < 0)
 		the_4th_gen_features_available = check_4th_gen_intel_core_features();
 
 	return the_4th_gen_features_available;
 }
-
+#endif
 
 #if _WIN32 || _WIN64
 #if _WIN64
@@ -97,26 +105,14 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #else
+// Not Windows build
 #if __x86_64__ || __ppc64__
 #define ENVIRONMENT64
 #else
 #define ENVIRONMENT32
 #endif
 #endif
-
-
-#undef CONTEXT_XSTATE
-
-#if defined(_M_X64)
-#define CONTEXT_XSTATE                      (0x00100040)
-#else
-#define CONTEXT_XSTATE                      (0x00010040)
-#endif
-
-
-#define XSTATE_MASK_AVX                     (XSTATE_MASK_GSSE)
-
-typedef DWORD64(WINAPI * PGETENABLEDXSTATEFEATURES)();
+//End not windows build
 
 inline bool file_exists(std::wstring(fileName))
 {
@@ -124,35 +120,30 @@ inline bool file_exists(std::wstring(fileName))
 	return infile.good();
 }
 
-// Not sure of how to remove C-Style cast here
-PGETENABLEDXSTATEFEATURES pfnGetEnabledXStateFeatures = (PGETENABLEDXSTATEFEATURES)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "GetEnabledXStateFeatures");
-DWORD64 FeatureMask = pfnGetEnabledXStateFeatures();
-
-
 // Buffers
-std::wstringstream buff_c[MAX_PATH+1];
-std::wstringstream tbb0[MAX_PATH+1];
-std::wstringstream airfile[MAX_PATH+1];
-std::wstringstream airdir[MAX_PATH+1];
-std::wstringstream flashfile[MAX_PATH+1];
-std::wstringstream flashdir[MAX_PATH+1];
-std::wstringstream cgbin[MAX_PATH+1];
-std::wstringstream cginstunblock[MAX_PATH+1];
-std::wstringstream airinstunblock[MAX_PATH+1];
-std::wstringstream strair[MAX_PATH+1];
-std::wstringstream airunblock[MAX_PATH+1];
-std::wstringstream cgd3d9bin[MAX_PATH+1];
-std::wstringstream cgglbin[MAX_PATH+1];
-std::wstringstream cgpath[MAX_PATH+1];
-std::wstringstream cgglpath[MAX_PATH+1];
-std::wstringstream tbbunblock[MAX_PATH+1];
-std::wstringstream flashunblock[MAX_PATH+1];
-std::wstringstream cgd3d9path[MAX_PATH+1];
-std::wstringstream cgglunblock[MAX_PATH+1];
-std::wstringstream cgunblock[MAX_PATH+1];
-std::wstringstream cgd3d9unblock[MAX_PATH+1];
-std::wstringstream airpath_f[MAX_PATH+1];
-std::wstringstream slnpath_f[MAX_PATH+1];
+std::wstringstream buff_c[MAX_PATH + 1];
+std::wstringstream tbb0[MAX_PATH + 1];
+std::wstringstream airfile[MAX_PATH + 1];
+std::wstringstream airdir[MAX_PATH + 1];
+std::wstringstream flashfile[MAX_PATH + 1];
+std::wstringstream flashdir[MAX_PATH + 1];
+std::wstringstream cgbin[MAX_PATH + 1];
+std::wstringstream cginstunblock[MAX_PATH + 1];
+std::wstringstream airinstunblock[MAX_PATH + 1];
+std::wstringstream strair[MAX_PATH + 1];
+std::wstringstream airunblock[MAX_PATH + 1];
+std::wstringstream cgd3d9bin[MAX_PATH + 1];
+std::wstringstream cgglbin[MAX_PATH + 1];
+std::wstringstream cgpath[MAX_PATH + 1];
+std::wstringstream cgglpath[MAX_PATH + 1];
+std::wstringstream tbbunblock[MAX_PATH + 1];
+std::wstringstream flashunblock[MAX_PATH + 1];
+std::wstringstream cgd3d9path[MAX_PATH + 1];
+std::wstringstream cgglunblock[MAX_PATH + 1];
+std::wstringstream cgunblock[MAX_PATH + 1];
+std::wstringstream cgd3d9unblock[MAX_PATH + 1];
+std::wstringstream airpath_f[MAX_PATH + 1];
+std::wstringstream slnpath_f[MAX_PATH + 1];
 std::wstringstream airinst[MAX_PATH + 1];
 std::wstringstream cginst[MAX_PATH + 1];
 std::vector<wchar_t> cwd(MAX_PATH + 1, 0);
