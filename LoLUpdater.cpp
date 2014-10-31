@@ -1,10 +1,13 @@
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
-
-#include <windows.h>
-#include <iostream>
-#include <vector>
 #include <tchar.h>
+#include "ShlObj.h"
+#include <direct.h>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <string>
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #if XP == FALSE
 bool avxSupported = false;
@@ -114,61 +117,62 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #endif
-
 bool file_exists(wstring(fileName))
 {
 	ifstream infile(fileName);
 	return infile.good();
 }
 
-// Buffers
-wstringstream buff_c[MAX_PATH + 1];
-wstringstream tbb0[MAX_PATH + 1];
-wstringstream airfile[MAX_PATH + 1];
-wstringstream airdir[MAX_PATH + 1];
-wstringstream flashfile[MAX_PATH + 1];
-wstringstream flashdir[MAX_PATH + 1];
-wstringstream cgbin[MAX_PATH + 1];
-wstringstream cginstunblock[MAX_PATH + 1];
-wstringstream airinstunblock[MAX_PATH + 1];
-wstringstream strair[MAX_PATH + 1];
-wstringstream airunblock[MAX_PATH + 1];
-wstringstream cgd3d9bin[MAX_PATH + 1];
-wstringstream cgglbin[MAX_PATH + 1];
-wstringstream cgpath[MAX_PATH + 1];
-wstringstream cgglpath[MAX_PATH + 1];
-wstringstream tbbunblock[MAX_PATH + 1];
-wstringstream flashunblock[MAX_PATH + 1];
-wstringstream cgd3d9path[MAX_PATH + 1];
-wstringstream cgglunblock[MAX_PATH + 1];
-wstringstream cgunblock[MAX_PATH + 1];
-wstringstream cgd3d9unblock[MAX_PATH + 1];
-wstringstream airpath_f[MAX_PATH + 1];
-wstringstream slnpath_f[MAX_PATH + 1];
-wstringstream airinst[MAX_PATH + 1];
-wstringstream cginst[MAX_PATH + 1];
-vector<wchar_t> cwd(MAX_PATH + 1, 0);
-vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 
-// Constants
-wstring unblock(L":Zone.Identifier");
-wstring air(L"Adobe AIR.dll");
-wstring flash(L"Resources\\NPSWF32.dll");
-wstring cgfile(L"Cg.dll");
-wstring cgglfile(L"CgGL.dll");
-wstring cgd3d9file(L"CgD3D9.dll");
-wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
-wstring tbbfile(L"tbb.dll");
-wstring airwin(L"air15_win.exe");
-wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
 
-using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	wcout << L"LoLUpdater Alpha 1 Build 11";
+	std::wcout << L"LoLUpdater Alpha 1 Build 11";
 	wcout << endl;
 	wcout << L"Patching..." << endl;
+
+	// Buffers
+	std::wstringstream buff_c[MAX_PATH + 1];
+	wstringstream tbb0[MAX_PATH + 1];
+	wstringstream airfile[MAX_PATH + 1];
+	wstringstream airdir[MAX_PATH + 1];
+	wstringstream flashfile[MAX_PATH + 1];
+	wstringstream flashdir[MAX_PATH + 1];
+	wstringstream cgbin[MAX_PATH + 1];
+	wstringstream cginstunblock[MAX_PATH + 1];
+	wstringstream airinstunblock[MAX_PATH + 1];
+	wstringstream strair[MAX_PATH + 1];
+	wstringstream airunblock[MAX_PATH + 1];
+	wstringstream cgd3d9bin[MAX_PATH + 1];
+	wstringstream cgglbin[MAX_PATH + 1];
+	wstringstream cgpath[MAX_PATH + 1];
+	wstringstream cgglpath[MAX_PATH + 1];
+	wstringstream tbbunblock[MAX_PATH + 1];
+	wstringstream flashunblock[MAX_PATH + 1];
+	wstringstream cgd3d9path[MAX_PATH + 1];
+	wstringstream cgglunblock[MAX_PATH + 1];
+	wstringstream cgunblock[MAX_PATH + 1];
+	wstringstream cgd3d9unblock[MAX_PATH + 1];
+	wstringstream airpath_f[MAX_PATH + 1];
+	wstringstream slnpath_f[MAX_PATH + 1];
+	wstringstream airinst[MAX_PATH + 1];
+	wstringstream cginst[MAX_PATH + 1];
+	vector<wchar_t> cwd(MAX_PATH + 1, 0);
+	vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
+
+	// Constants
+	wstring unblock(L":Zone.Identifier");
+	wstring air(L"Adobe AIR.dll");
+	wstring flash(L"Resources\\NPSWF32.dll");
+	wstring cgfile(L"Cg.dll");
+	wstring cgglfile(L"CgGL.dll");
+	wstring cgd3d9file(L"CgD3D9.dll");
+	wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+	wstring tbbfile(L"tbb.dll");
+	wstring airwin(L"air15_win.exe");
+	wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
+
 
 // Gets the executable path without filename
 	GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1);
