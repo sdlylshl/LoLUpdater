@@ -9,13 +9,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "LoLUpdater Alpha 1 Build 11";
 	std::cout << std::endl;
 	std::cout << "Patching..." << std::endl;
+
+// Gets the executable path without filename
 GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1)
+
+// appends a backslash to the path for later processing.
 	wcsncat(&cwd[0], L"\\", MAX_PATH + 1);
+
+// Attemts to get the CG_BIN_PATH Env-varible
 	GetEnvironmentVariableW(L"CG_BIN_PATH",
 		&cgbinpath[0],
 		MAX_PATH + 1);
+
+// If above attempt failed then install Nvidia CG to populate the variable.
 	if (&cgbinpath[0] == L"")
 	{
+// Downloads Nvidia-CG
 		URLDownloadToFileW(
 			nullptr,
 			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
@@ -23,7 +32,10 @@ GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1)
 			0,
 			nullptr
 			);
+// Unblocks the installer
 		DeleteFileW(cginstunblock[0].str().c_str());
+
+// Starts the executable with some arguments
 		SHELLEXECUTEINFOW ShExecInfo = { 0 };
 		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -35,8 +47,10 @@ GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1)
 		ShExecInfo.nShow = SW_SHOW;
 		ShExecInfo.hInstApp = nullptr;
 		ShellExecuteExW(&ShExecInfo);
+// Wait for process to finish before continuing.
 		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
+// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
 		GetEnvironmentVariableW(L"CG_BIN_PATH",
 			&cgbinpath[0],
 			MAX_PATH + 1);
@@ -57,6 +71,7 @@ GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1)
 
 	if (file_exists(L"lol.exe"))
 	{
+// Overload if it is Garena
 		std::wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
 		std::wstring slnpath(L"Game\\");
 	}
