@@ -62,9 +62,6 @@ wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 
 	// End Path builder
 
-
-	if (std::to_wstring(cgbinpath[0]).c_str() != L"\\")
-		{
 			URLDownloadToFileW(
 				nullptr,
 				L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
@@ -87,10 +84,7 @@ wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 			ShExecInfo.hInstApp = nullptr;
 			ShellExecuteExW(&ShExecInfo);
 			WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-		}
-		
-
-	
+			
 	// Gets location of latest cg dll
 	cgbin[0] << &cgbinpath[0];
 	cgbin[0] << cgfile;
@@ -124,18 +118,18 @@ wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 		);
 
 		DeleteFileW(airinstunblock[0].str().c_str());
-	SHELLEXECUTEINFOW ShExecInfo = {0};
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
-	ShExecInfo.hwnd = nullptr;
-	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airinst[0].str().c_str();
-	ShExecInfo.lpParameters = L"-silent";
-	ShExecInfo.lpDirectory = nullptr;
-	ShExecInfo.nShow = SW_SHOW;
-	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteExW(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	SHELLEXECUTEINFOW ShExecInfo1 = {0};
+	ShExecInfo1.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfo1.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo1.hwnd = nullptr;
+	ShExecInfo1.lpVerb = nullptr;
+	ShExecInfo1.lpFile = airinst[0].str().c_str();
+	ShExecInfo1.lpParameters = L"-silent";
+	ShExecInfo1.lpDirectory = nullptr;
+	ShExecInfo1.nShow = SW_SHOW;
+	ShExecInfo1.hInstApp = nullptr;
+	ShellExecuteExW(&ShExecInfo1);
+	WaitForSingleObject(ShExecInfo1.hProcess, INFINITE);
 
 
 	cgpath[0] << slnpath_f[0].str();
