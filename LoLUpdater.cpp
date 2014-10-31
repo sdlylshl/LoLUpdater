@@ -19,61 +19,81 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	buff_c[0] << cwd[0];
 
 #if defined(ENVIRONMENT64)
-	buff_c[0] << progx86;
+	buff_c[0] << L":\\Program Files (x86)";
 #elif defined (ENVIRONMENT32)
-	buff_c[0] << prog;
+	buff_c[0] << L":\\Program Files";
 #endif
-	buff_c[0] << adobepath;
+	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0";
 
+	std::wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
+	std::wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0");
 
 	// Check for Garena
 	if (file_exists(L"lol.launcher.exe"))
 	{
-		std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
-		std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
-
-		slnpath_f[0] << &cwd;
+		slnpath_f[0] << &cwd[0];
+		slnpath_f[0] << L"\\";
 		slnpath_f[0] << slnpath;
+		slnpath_f[0] << L"\\";
 
-		airpath_f[0] << &cwd;
+		airpath_f[0] << &cwd[0];
+		airpath_f[0] << L"\\";
 		airpath_f[0] << airpath;
+		airpath_f[0] << L"\\";
+
+		tbb0[0] << slnpath_f[0].str();
+		tbb0[0] << L"\\";
+		tbb0[0] << tbbfile;
 
 	}
 	if (file_exists(L"lol.exe"))
 	{
-		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
-		std::wstring slnpath(L"\\Game\\");
+		std::wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0");
+		std::wstring slnpath(L"Game");
 
-		slnpath_f[0] << &cwd;
+		slnpath_f[0] << &cwd[0];
+		slnpath_f[0] << L"\\";
 		slnpath_f[0] << slnpath;
 
-		airpath_f[0] << &cwd;
+		airpath_f[0] << &cwd[0];
+		airpath_f[0] << L"\\";
 		airpath_f[0] << airpath;
+
+		tbb0[0] << slnpath_f[0].str();
+		tbb0[0] << L"\\";
+		tbb0[0] << tbbfile;
 	}
 
+	airinst[0] << &cwd[0];
+	airinst[0] << L"\\";
+	airinst[0] << airwin;
 
-	airinstunblock[0] << &cwd;
-	airinstunblock[0] << L"\\";
-	airinstunblock[0] << airwin;
+	cginst[0] << &cwd[0];
+	cginst[0] << L"\\";
+	cginst[0] << airwin;
+
+
+	airinstunblock[0] << airinst;
 	airinstunblock[0] << unblock;
+
+	cginstunblock[0] << cginst;
+	cginstunblock[0] << unblock;
 
 	// End Path builder
 
-	cginstunblock[0] << &cwd;
-		cginstunblock[0] << L"\\";
-		cginstunblock[0] << cginstaller;
-		cginstunblock[0] << unblock;
-		if (&cgbinpath[0] == L"")
+
+		if (&cgbinpath[0] == 0)
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"https://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+				L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
 				&cginstaller[0],
 				0,
 				nullptr
 				);
 
-			DeleteFileW(&cginstaller[0]);
+
+			DeleteFileW(cginstunblock[0].str().c_str());
 			SHELLEXECUTEINFOW ShExecInfo = { 0 };
 			ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 			ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -91,22 +111,27 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 
 	
 	// Gets location of latest cg dll
-		cgbin[0] << &cgbinpath;
+		cgbin[0] << &cgbinpath[0];
+		cgbin[0] << L"\\";
 	cgbin[0] << cgfile;
 
 	// Gets location of latest cggl dll
-	cgglbin[0] << &cgbinpath;
+	cgglbin[0] << &cgbinpath[0];
+	cgglbin[0] << L"\\";
 	cgglbin[0] << cgglfile;
 
 	// Gets location of latest cgd3d9 dll
-	cgd3d9bin[0] << &cgbinpath;
+	cgd3d9bin[0] << &cgbinpath[0];
+	cgd3d9bin[0] << L"\\";
 	cgd3d9bin[0] << cgd3d9file;
 
 
 	airfile[0] << buff_c[0].str().c_str();
+	airfile[0] << L"\\";
 	airfile[0] << air;
 
 	flashfile[0] << buff_c[0].str().c_str();
+	flashfile[0] << L"\\";
 	flashfile[0] << flash;
 
 
@@ -143,14 +168,8 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	cgglpath[0] << slnpath_f[0].str();
 	cgglpath[0] << cgglfile;
 
-
-
-
 	cgd3d9path[0] << slnpath_f[0].str();
 	cgd3d9path[0] << cgd3d9file;
-
-	tbb0[0] << slnpath_f[0].str();
-	tbb0[0] << tbbfile;
 
 	airdir[0] << airpath_f[0].str();
 	airdir[0] << air;
@@ -167,15 +186,12 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	cgd3d9unblock[0] << cgd3d9path[0].str();
 	cgd3d9unblock[0] << unblock;
 
-
-
 	airunblock[0] << airdir[0].str();
 	airunblock[0] << unblock;
 
 	flashunblock[0] << flashdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << cwd[0];
 	tbbunblock[0] << tbb0[0].str();
 	tbbunblock[0] << unblock;
 
@@ -293,7 +309,8 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	std::wcout << cgbin[0].str().c_str();
 	std::wcout << cgpath[0].str().c_str();
 	std::wcout << airfile[0].str().c_str();
-	std::wcout << flashdir[0].str().c_str();
+	std::wcout << airdir[0].str().c_str();
+	std::wcout << tbb0[0].str().c_str();
 	system("pause");
 
 	return 0;
