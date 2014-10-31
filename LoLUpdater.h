@@ -1,3 +1,4 @@
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #include <tchar.h>
 #include "ShlObj.h"
 #include <direct.h>
@@ -5,23 +6,35 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-
+#include <stdio.h>
+#include <intrin.h>
 #if XP == FALSE
-#if defined(__cplusplus)
-extern "C"
-{
+bool avxSupported = false;
+
+// If Visual Studio 2010 SP1 or later
+#if (_MSC_FULL_VER >= 160040219)
+// Checking for AVX requires 3 things:
+// 1) CPUID indicates that the OS uses XSAVE and XRSTORE
+//     instructions (allowing saving YMM registers on context
+//     switch)
+// 2) CPUID indicates support for AVX
+// 3) XGETBV indicates the AVX registers will be saved and
+//     restored on context switch
+//
+// Note that XGETBV is only available on 686 or later CPUs, so
+// the instruction needs to be conditionally run.
+int cpuInfo[4];
+__cpuid(cpuInfo, 1);
+
+bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
+bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
+
 #endif
-
-	int isAvxSupported();
-
-#if defined(__cplusplus)
-}
-#endif 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
 
-int check_4th_gen_intel_core_features()
+inline int check_4th_gen_intel_core_features()
 {
 	const int the_4th_gen_features = 
 		(_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);

@@ -6,16 +6,15 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 10";
+	std::cout << "LoLUpdater Alpha 1 Build 11";
 	std::cout << std::endl;
 	std::cout << "Patching..." << std::endl;
-
-	GetCurrentDirectoryW(MAX_PATH + 1, &cwd[0]);
+GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1)
 	wcsncat(&cwd[0], L"\\", MAX_PATH + 1);
 	GetEnvironmentVariableW(L"CG_BIN_PATH",
 		&cgbinpath[0],
 		MAX_PATH + 1);
-	if (&cgbinpath[0] == NULL)
+	if (&cgbinpath[0] == L"")
 	{
 		URLDownloadToFileW(
 			nullptr,
@@ -24,8 +23,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-
-
 		DeleteFileW(cginstunblock[0].str().c_str());
 		SHELLEXECUTEINFOW ShExecInfo = { 0 };
 		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
@@ -86,8 +83,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	cginstunblock[0] << &unblock[0];
 
 	// End Pathbuilder
-
-	
 
 	// Gets location of latest cg dll
 	cgbin[0] << &cgbinpath[0];
@@ -187,19 +182,26 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 			);
 	}
-else
+	else
+	{
+		if (osUsesXSAVE_XRSTORE && cpuAVXSuport)
 		{
-		 // AVX
-	if (isAvxSupported() == 1)
-		 {
-		 URLDownloadToFileW(
-		 	nullptr,
-		 	L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
-		 	tbb0[0].str().c_str(),
-		 	0,
-		 	nullptr
-		 );
-		 }
+			// Check if the OS will save the YMM registers
+			unsigned long long xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
+			avxSupported = (xcrFeatureMask & 0x6) || false;
+		}
+
+		// AVX
+		if (avxSupported)
+		{
+			URLDownloadToFileW(
+				nullptr,
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
+				tbb0[0].str().c_str(),
+				0,
+				nullptr
+				);
+		}
 		else
 		{
 			//SSE2
