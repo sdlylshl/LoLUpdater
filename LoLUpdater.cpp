@@ -5,17 +5,18 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::cout << "LoLUpdater Alpha 1 Build 8" << std::endl << "Patching..." << std::endl;
-	GetCurrentDirectoryW(
-		261,
-		&*cwd[0].str().begin()
-		);
+	std::cout << "LoLUpdater Alpha 1 Build 8";
+	std::cout << std::endl;
+	std::cout << "Patching..." << std::endl;
 
-	GetEnvironmentVariableW(L"CG_BIN_PATH",
-		&*cgbinpath[0].str().begin(),
-		261);
+
+	GetCurrentDirectoryW(MAX_PATH+1, &cwd[0]);
+GetEnvironmentVariableW(L"CG_BIN_PATH",
+		&cgbinpath[0],
+		MAX_PATH);
+
 	// Path builder
-	buff_c[0] << cwd[0].str();
+	buff_c[0] << cwd[0];
 
 #if defined(ENVIRONMENT64)
 	buff_c[0] << progx86;
@@ -23,47 +24,46 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff_c[0] << prog;
 #endif
 	buff_c[0] << adobepath;
+
+
 	// Check for Garena
-
-
-
 	if (file_exists(L"lol.launcher.exe"))
 	{
 		std::wstring slnpath(L"\\RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
 		std::wstring airpath(L"\\RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
-		slnpath_f[0] << cwd;
+		slnpath_f[0] << &cwd;
 		slnpath_f[0] << slnpath;
 
-		airpath_f[0] << cwd;
+		airpath_f[0] << &cwd;
 		airpath_f[0] << airpath;
 
 	}
-	else
+	if (file_exists(L"lol.exe"))
 	{
 		std::wstring airpath(L"\\Air\\Adobe AIR\\Versions\\1.0\\");
-		std::wstring slnpath(L"\\Game");
+		std::wstring slnpath(L"\\Game\\");
 
-		slnpath_f[0] << cwd;
+		slnpath_f[0] << &cwd;
 		slnpath_f[0] << slnpath;
 
-		airpath_f[0] << cwd;
+		airpath_f[0] << &cwd;
 		airpath_f[0] << airpath;
 	}
 
 
-	airinstunblock[0] << cwd;
+	airinstunblock[0] << &cwd;
 	airinstunblock[0] << L"\\";
 	airinstunblock[0] << airwin;
 	airinstunblock[0] << unblock;
 
 	// End Path builder
 
-	    cginstunblock[0] << cwd;
+	cginstunblock[0] << &cwd;
 		cginstunblock[0] << L"\\";
 		cginstunblock[0] << cginstaller;
 		cginstunblock[0] << unblock;
-		if (cgbinpath == 0)
+		if (&cgbinpath[0] == L"")
 		{
 			URLDownloadToFileW(
 				nullptr,
@@ -91,22 +91,22 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	
 	// Gets location of latest cg dll
-	cgbin[0] << &cgbinpath[0];
+		cgbin[0] << &cgbinpath;
 	cgbin[0] << cgfile;
 
 	// Gets location of latest cggl dll
-	cgglbin[0] << cgbinpath;
+	cgglbin[0] << &cgbinpath;
 	cgglbin[0] << cgglfile;
 
 	// Gets location of latest cgd3d9 dll
-	cgd3d9bin[0] << cgbinpath;
+	cgd3d9bin[0] << &cgbinpath;
 	cgd3d9bin[0] << cgd3d9file;
 
 
-	airfile[0] << buff_c;
+	airfile[0] << buff_c[0].str().c_str();
 	airfile[0] << air;
 
-	flashfile[0] << buff_c;
+	flashfile[0] << buff_c[0].str().c_str();
 	flashfile[0] << flash;
 
 
@@ -175,7 +175,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashunblock[0] << flashdir[0].str();
 	flashunblock[0] << unblock;
 
-	tbbunblock[0] << cwd[0].str();
+	tbbunblock[0] << cwd[0];
 	tbbunblock[0] << tbb0[0].str();
 	tbbunblock[0] << unblock;
 
@@ -288,9 +288,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		DeleteFileW(&i[0]);
 	}
-	std::wcout << buff_c[0].str().c_str();
-	std::wcout << &cgbinpath[0];
-	std::cout << "LoLUpdater finished!" << std::endl << "";
+	std::wcout << "LoLUpdater finished!";
+	std::wcout << std::endl;
+	std::wcout << cgbin[0].str().c_str();
+	std::wcout << cgpath[0].str().c_str();
+	std::wcout << airfile[0].str().c_str();
+	std::wcout << flashdir[0].str().c_str();
 	system("pause");
 
 	return 0;
