@@ -1,3 +1,5 @@
 *.aps
 *.user
 *.suo
+*.sdf
+*.opensdf
