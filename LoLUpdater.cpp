@@ -5,18 +5,11 @@
 #include <direct.h>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <string>
-
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #if XP == FALSE
-bool avxSupported = false;
-
-int cpuInfo[4];
-__cpuid(cpuInfo, 1);
-
-bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
-bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
@@ -36,7 +29,7 @@ int check_4th_gen_intel_core_features()
 # include <intrin.h>
 #endif
 
-void run_cpuid(uint32_t eax, uint32_t ecx, uint32_t* abcd)
+void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
 #if defined(_MSC_VER)
 	__cpuidex(abcd, eax, ecx);
@@ -67,7 +60,7 @@ int check_xcr0_ymm()
 
 int check_4th_gen_intel_core_features()
 {
-	uint32_t abcd[4];
+	int abcd[4];
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 
@@ -117,6 +110,7 @@ static int can_use_intel_core_4th_gen_features()
 #define ENVIRONMENT32
 #endif
 #endif
+using namespace std;
 bool file_exists(wstring(fileName))
 {
 	ifstream infile(fileName);
@@ -128,12 +122,33 @@ bool file_exists(wstring(fileName))
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::wcout << L"LoLUpdater Alpha 1 Build 11";
+	wcout << L"LoLUpdater Alpha 1 Build 11";
 	wcout << endl;
 	wcout << L"Patching..." << endl;
 
+	bool avxSupported = false;
+
+	// If Visual Studio 2010 SP1 or later
+#if (_MSC_FULL_VER >= 160040219)
+	// Checking for AVX requires 3 things:
+	// 1) CPUID indicates that the OS uses XSAVE and XRSTORE
+	//     instructions (allowing saving YMM registers on context
+	//     switch)
+	// 2) CPUID indicates support for AVX
+	// 3) XGETBV indicates the AVX registers will be saved and
+	//     restored on context switch
+	//
+	// Note that XGETBV is only available on 686 or later CPUs, so
+	// the instruction needs to be conditionally run.
+	int cpuInfo[4];
+	__cpuid(cpuInfo, 1);
+
+	bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
+	bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
+#endif
+
 	// Buffers
-	std::wstringstream buff_c[MAX_PATH + 1];
+	wstringstream buff_c[MAX_PATH + 1];
 	wstringstream tbb0[MAX_PATH + 1];
 	wstringstream airfile[MAX_PATH + 1];
 	wstringstream airdir[MAX_PATH + 1];
