@@ -3,7 +3,6 @@
 
 #include "LoLUpdater.h"
 
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	std::cout << "LoLUpdater Alpha 1 Build 11";

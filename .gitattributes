@@ -1,5 +1,8 @@
 *.cpp    text=auto
+*.h    text=auto
+*.rc    text=auto
 *.sln    text=auto
 *.vcxproj text=auto
+*.filters text=auto
 *.ico   binary
 *.md text=auto

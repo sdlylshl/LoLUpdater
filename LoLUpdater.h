@@ -1,13 +1,4 @@
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#include <tchar.h>
-#include "ShlObj.h"
-#include <direct.h>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <vector>
-#include <stdio.h>
-#include <intrin.h>
+
 #if XP == FALSE
 bool avxSupported = false;
 
