@@ -11,10 +11,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	GetCurrentDirectoryW(MAX_PATH+1, &cwd[0]);
+	wcsncat(&cwd[0], L"\\", MAX_PATH + 1);
 GetEnvironmentVariableW(L"CG_BIN_PATH",
 		&cgbinpath[0],
-		MAX_PATH);
-
+		MAX_PATH+1);
+wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 	// Path builder
 	buff_c[0] << cwd[0];
 
@@ -23,71 +24,51 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 #elif defined (ENVIRONMENT32)
 	buff_c[0] << L":\\Program Files";
 #endif
-	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0";
+	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-	std::wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy");
-	std::wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0");
+	std::wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
+	std::wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
 	// Check for Garena
-	if (file_exists(L"lol.launcher.exe"))
-	{
-		slnpath_f[0] << &cwd[0];
-		slnpath_f[0] << L"\\";
-		slnpath_f[0] << slnpath;
-		slnpath_f[0] << L"\\";
-
-		airpath_f[0] << &cwd[0];
-		airpath_f[0] << L"\\";
-		airpath_f[0] << airpath;
-		airpath_f[0] << L"\\";
-
-		tbb0[0] << slnpath_f[0].str();
-		tbb0[0] << L"\\";
-		tbb0[0] << tbbfile;
-
-	}
 	if (file_exists(L"lol.exe"))
 	{
-		std::wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0");
-		std::wstring slnpath(L"Game");
-
-		slnpath_f[0] << &cwd[0];
-		slnpath_f[0] << L"\\";
-		slnpath_f[0] << slnpath;
-
-		airpath_f[0] << &cwd[0];
-		airpath_f[0] << L"\\";
-		airpath_f[0] << airpath;
-
-		tbb0[0] << slnpath_f[0].str();
-		tbb0[0] << L"\\";
-		tbb0[0] << tbbfile;
+		std::wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
+		std::wstring slnpath(L"Game\\");
 	}
 
+	slnpath_f[0] << &cwd[0];
+	slnpath_f[0] << &slnpath[0];
+
+	airpath_f[0] << &cwd[0];
+	airpath_f[0] << &airpath[0];
+
+	tbb0[0] << slnpath_f[0].str();
+	tbb0[0] << tbbfile;
+
+
+
 	airinst[0] << &cwd[0];
-	airinst[0] << L"\\";
 	airinst[0] << airwin;
 
 	cginst[0] << &cwd[0];
-	cginst[0] << L"\\";
-	cginst[0] << airwin;
+	cginst[0] << cginstaller;
 
 
-	airinstunblock[0] << airinst;
-	airinstunblock[0] << unblock;
+	airinstunblock[0] << &airinst[0];
+	airinstunblock[0] << &unblock[0];
 
-	cginstunblock[0] << cginst;
-	cginstunblock[0] << unblock;
+	cginstunblock[0] << &cginst[0];
+	cginstunblock[0] << &unblock[0];
 
 	// End Path builder
 
 
-		if (&cgbinpath[0] == 0)
+	if (std::to_wstring(cgbinpath[0]).c_str() != L"\\")
 		{
 			URLDownloadToFileW(
 				nullptr,
 				L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-				&cginstaller[0],
+				cginst[0].str().c_str(),
 				0,
 				nullptr
 				);
@@ -99,7 +80,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 			ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 			ShExecInfo.hwnd = nullptr;
 			ShExecInfo.lpVerb = nullptr;
-			ShExecInfo.lpFile = &cginstaller[0];
+			ShExecInfo.lpFile = cginst[0].str().c_str();
 			ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
 			ShExecInfo.lpDirectory = nullptr;
 			ShExecInfo.nShow = SW_SHOW;
@@ -111,27 +92,22 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 
 	
 	// Gets location of latest cg dll
-		cgbin[0] << &cgbinpath[0];
-		cgbin[0] << L"\\";
+	cgbin[0] << &cgbinpath[0];
 	cgbin[0] << cgfile;
 
 	// Gets location of latest cggl dll
 	cgglbin[0] << &cgbinpath[0];
-	cgglbin[0] << L"\\";
 	cgglbin[0] << cgglfile;
 
 	// Gets location of latest cgd3d9 dll
 	cgd3d9bin[0] << &cgbinpath[0];
-	cgd3d9bin[0] << L"\\";
 	cgd3d9bin[0] << cgd3d9file;
 
 
 	airfile[0] << buff_c[0].str().c_str();
-	airfile[0] << L"\\";
 	airfile[0] << air;
 
 	flashfile[0] << buff_c[0].str().c_str();
-	flashfile[0] << L"\\";
 	flashfile[0] << flash;
 
 
@@ -142,7 +118,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 		URLDownloadToFileW(
 			nullptr,
 			L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-			&airwin[0],
+			airinst[0].str().c_str(),
 			0,
 			nullptr
 		);
@@ -153,7 +129,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = &airwin[0];
+	ShExecInfo.lpFile = airinst[0].str().c_str();
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
@@ -178,22 +154,22 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	flashdir[0] << flash;
 
 	cgunblock[0] << cgpath[0].str();
-	cgunblock[0] << unblock;
+	cgunblock[0] << &unblock[0];
 
 	cgglunblock[0] << cgglpath[0].str();
-	cgglunblock[0] << unblock;
+	cgglunblock[0] << &unblock[0];
 
 	cgd3d9unblock[0] << cgd3d9path[0].str();
-	cgd3d9unblock[0] << unblock;
+	cgd3d9unblock[0] << &unblock[0];
 
 	airunblock[0] << airdir[0].str();
-	airunblock[0] << unblock;
+	airunblock[0] << &unblock[0];
 
 	flashunblock[0] << flashdir[0].str();
-	flashunblock[0] << unblock;
+	flashunblock[0] << &unblock[0];
 
 	tbbunblock[0] << tbb0[0].str();
-	tbbunblock[0] << unblock;
+	tbbunblock[0] << &unblock[0];
 
 
 
@@ -203,7 +179,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	// XP
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Xp.dll",
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
 			tbb0[0].str().c_str(),
 			0,
 			nullptr
@@ -214,7 +190,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 		// AVX2
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Avx2.dll",
+			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
 			tbb0[0].str().c_str(),
 			0,
 			nullptr
@@ -227,7 +203,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Avx.dll",
+				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
 				tbb0[0].str().c_str(),
 				0,
 				nullptr
@@ -240,7 +216,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 			{
 				URLDownloadToFileW(
 					nullptr,
-					L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Sse2.dll",
+					L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
 					tbb0[0].str().c_str(),
 					0,
 					nullptr
@@ -253,7 +229,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Sse.dll",
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
@@ -264,7 +240,7 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/tbb/Default.dll",
+						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
@@ -306,11 +282,6 @@ GetEnvironmentVariableW(L"CG_BIN_PATH",
 	}
 	std::wcout << "LoLUpdater finished!";
 	std::wcout << std::endl;
-	std::wcout << cgbin[0].str().c_str();
-	std::wcout << cgpath[0].str().c_str();
-	std::wcout << airfile[0].str().c_str();
-	std::wcout << airdir[0].str().c_str();
-	std::wcout << tbb0[0].str().c_str();
 	system("pause");
 
 	return 0;
