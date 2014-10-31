@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#if XP == FALSE
 #if defined(__cplusplus)
 extern "C"
 {
@@ -15,7 +16,6 @@ extern "C"
 #if defined(__cplusplus)
 }
 #endif 
-#if XP == FALSE
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
