@@ -123,7 +123,7 @@ inline bool file_exists(wstring(fileName))
 // Get current directory
 inline wstring cwd1() {
 	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
-	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH);
+	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH+1);
 	wstring::size_type pos = wstring(&cwd0[0]).find_last_of(L"\\/");
 	return wstring(&cwd0[0]).substr(0, pos);
 }
