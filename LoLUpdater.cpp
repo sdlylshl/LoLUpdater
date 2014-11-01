@@ -52,6 +52,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	wcout << L"Patching...";
 	wcout << endl;
 
+	// append backslash to the working-dir buffer.
 	cwd[0] << cwd1().c_str();
 	cwd[0] << L"\\";
 
@@ -108,15 +109,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// paths to where files should be copied
-	wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
-	wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
+	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
+	const wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
 	// garena installations have lol.exe in the main directory
 	if (file_exists(L"lol.exe"))
 	{
 		// Overload if it is Garena
-		wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
-		wstring slnpath(L"Game\\");
+		const wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
+		const wstring slnpath(L"Game\\");
 	}
 
 	// finalize variables for use in the copy functions
@@ -179,7 +180,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Waits for program to finish
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
-	// Finalize full copy paths (long list)
+	// Finalize full copy paths
 	cgpath[0] << slnpath_f[0].str();
 	cgpath[0] << cgfile;
 
@@ -195,6 +196,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashdir[0] << airpath_f[0].str();
 	flashdir[0] << flash;
 
+	// Finalize paths with the unblock tag
 	cgunblock[0] << cgpath[0].str();
 	cgunblock[0] << &unblock[0];
 
@@ -352,7 +354,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		DeleteFileW(&i[0]);
 	}
-	// End unblock
 
 	wcout << "LoLUpdater finished!";
 	wcout << endl;
