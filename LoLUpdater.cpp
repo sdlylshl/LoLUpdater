@@ -3,7 +3,7 @@
 
 // Include all the stuff that didn't make it into the main method
 #include "LoLUpdater.h"
-
+using namespace std;
 // Buffers
 // holds the adobe air installation directory
 wstringstream buff_c;
@@ -81,7 +81,7 @@ const wstring unblockfiles[] = { cgunblock.str(), cgglunblock.str(), cgd3d9unblo
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// basic command line output
-	wcout << L"LoLUpdater Alpha 1 Build 15";
+	wcout << L"LoLUpdater Alpha 1 Build 16";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
@@ -150,8 +150,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
 	const wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
+	ifstream infile(L"lol.exe");
 	// garena installations have lol.exe in the main directory
-	if (file_exists(L"lol.exe"))
+	if (infile.good())
 	{
 		// Overload if it is Garena
 		const wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
