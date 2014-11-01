@@ -2,6 +2,7 @@
 //
 
 #include "LoLUpdater.h"
+
 using namespace std;
 // 0 = holds the adobe air installation directory
 // 1 = holds the path to where tbb.dll will be downloaded
@@ -27,6 +28,16 @@ using namespace std;
 // 21 = holds the full path to where all game files will be copied to.
 // 22 = holds the path to the current working directory (where the executable was ran from)
 wstringstream wbuffer[23];
+
+// Function to reduce amount of lines
+void LoLCopy(int x1, int x2)
+{
+	CopyFileW(
+		wbuffer[x1].str().c_str(),
+		wbuffer[x2].str().c_str(),
+		false
+		);
+}
 
 // holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
@@ -143,7 +154,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	wbuffer[20] << wbuffer[22].str().c_str();
 	wbuffer[20] << airpath;
 
-	wbuffer[1] << wbuffer[21].str();
+	wbuffer[1] << wbuffer[21].str().c_str();
 	wbuffer[1] << tbbfile;
 
 	// Gets location of latest cg dll
@@ -336,33 +347,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 #endif
-
+	// Todo, use vectors and a foreach here
 	// Copy all files
-	CopyFileW(
-		wbuffer[6].str().c_str(),
-		wbuffer[12].str().c_str(),
-		false
-		);
-	CopyFileW(
-		wbuffer[11].str().c_str(),
-		wbuffer[13].str().c_str(),
-		false
-		);
-	CopyFileW(
-		wbuffer[10].str().c_str(),
-		wbuffer[16].str().c_str(),
-		false
-		);
-	CopyFileW(
-		wbuffer[2].str().c_str(),
-		wbuffer[3].str().c_str(),
-		false
-		);
-	CopyFileW(
-		wbuffer[4].str().c_str(),
-		wbuffer[5].str().c_str(),
-		false
-		);
+	LoLCopy(6, 12);
+	LoLCopy(11, 13);
+	LoLCopy(10, 16);
+	LoLCopy(2, 3);
+	LoLCopy(4, 5);
 	// End copy all files
 
 	// Unblock all patched files
