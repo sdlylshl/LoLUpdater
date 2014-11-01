@@ -28,7 +28,7 @@ using namespace std;
 // 20 = holds the full path to where all adobe files will be copied to.
 // 21 = holds the full path to where all game files will be copied to.
 // 22 = holds the path to the current working directory (where the executable was ran from)
-wstringstream wbuffer[22];
+wstringstream wbuffer[23];
 
 // holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
