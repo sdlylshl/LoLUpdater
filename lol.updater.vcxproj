@@ -283,6 +283,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <AssemblyDebug>false</AssemblyDebug>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <Version>5.01</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-XP|Win32'">
@@ -323,6 +324,7 @@
       <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <AssemblyDebug>false</AssemblyDebug>
+      <Version>5.01</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|Win32'">
@@ -402,6 +404,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <AssemblyDebug>false</AssemblyDebug>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
+      <Version>5.02</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-XP|x64'">
@@ -442,6 +445,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <AssemblyDebug>false</AssemblyDebug>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
+      <Version>5.02</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|x64'">
