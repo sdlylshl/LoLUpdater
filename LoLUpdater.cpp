@@ -4,7 +4,46 @@
 // Include all the stuff that didn't make it into the main method
 #include "LoLUpdater.h"
 
+// Buffers
+wstringstream buff_c[MAX_PATH + 1];
+wstringstream tbb0[MAX_PATH + 1];
+wstringstream airfile[MAX_PATH + 1];
+wstringstream airdir[MAX_PATH + 1];
+wstringstream flashfile[MAX_PATH + 1];
+wstringstream flashdir[MAX_PATH + 1];
+wstringstream cgbin[MAX_PATH + 1];
+wstringstream cginstunblock[MAX_PATH + 1];
+wstringstream airinstunblock[MAX_PATH + 1];
+wstringstream strair[MAX_PATH + 1];
+wstringstream airunblock[MAX_PATH + 1];
+wstringstream cgd3d9bin[MAX_PATH + 1];
+wstringstream cgglbin[MAX_PATH + 1];
+wstringstream cgpath[MAX_PATH + 1];
+wstringstream cgglpath[MAX_PATH + 1];
+wstringstream tbbunblock[MAX_PATH + 1];
+wstringstream flashunblock[MAX_PATH + 1];
+wstringstream cgd3d9path[MAX_PATH + 1];
+wstringstream cgglunblock[MAX_PATH + 1];
+wstringstream cgunblock[MAX_PATH + 1];
+wstringstream cgd3d9unblock[MAX_PATH + 1];
+wstringstream airpath_f[MAX_PATH + 1];
+wstringstream slnpath_f[MAX_PATH + 1];
+wstringstream airinst[MAX_PATH + 1];
+wstringstream cginst[MAX_PATH + 1];
+wstringstream cwd[MAX_PATH + 1];
+vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 
+// Constants
+const wstring unblock(L":Zone.Identifier");
+const wstring air(L"Adobe AIR.dll");
+const wstring flash(L"Resources\\NPSWF32.dll");
+const wstring cgfile(L"Cg.dll");
+const wstring cgglfile(L"CgGL.dll");
+const wstring cgd3d9file(L"CgD3D9.dll");
+const wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+const wstring tbbfile(L"tbb.dll");
+const wstring airwin(L"air15_win.exe");
+const wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -317,7 +356,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	wcout << "LoLUpdater finished!";
 	wcout << endl;
-	system("pause");
+	wait_on_enter();
 
 	return 0;
 }
