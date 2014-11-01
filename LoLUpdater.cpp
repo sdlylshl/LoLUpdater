@@ -8,36 +8,25 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	wcout << L"LoLUpdater Alpha 1 Build 11";
+	wcout << L"LoLUpdater Alpha 1 Build 12";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
 
-	// Gets the executable path without filename
-	GetModuleFileNameW((HINSTANCE)&__ImageBase, &cwd[0], MAX_PATH + 1);
+	cwd[0] << cwd1().c_str();
+	cwd[0] << L"\\";
 
-	// appends a backslash to the path for later processing.
-	wcsncat(&cwd[0], L"\\", MAX_PATH + 1);
 
-	// Attemts to get the CG_BIN_PATH Env-varible
-	GetEnvironmentVariableW(L"CG_BIN_PATH",
-		&cgbinpath[0],
-		MAX_PATH + 1);
-
-	// If above attempt failed then install Nvidia CG to populate the variable.
-	if (&cgbinpath[0] == NULL)
-	{
 		// string-builder for the cginstaller
-		cginst[0] << &cwd[0];
-		cginst[0] << cginstaller;
-		cginstunblock[0] << &cginst[0];
+		cginstunblock[0] << cwd[0].str().c_str();
+		cginstunblock[0] << cginstaller;
 		cginstunblock[0] << &unblock[0];
 
 		// Downloads Nvidia-CG
 		URLDownloadToFileW(
 			nullptr,
 			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			cginst[0].str().c_str(),
+			cginstaller.c_str(),
 			0,
 			nullptr
 			);
@@ -45,32 +34,31 @@ int _tmain(int argc, _TCHAR* argv[])
 		DeleteFileW(cginstunblock[0].str().c_str());
 
 		// Starts the executable with some arguments
-		SHELLEXECUTEINFOW ShExecInfo = { 0 };
-		ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-		ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-		ShExecInfo.hwnd = nullptr;
-		ShExecInfo.lpVerb = nullptr;
-		ShExecInfo.lpFile = cginst[0].str().c_str();
+		SHELLEXECUTEINFOW ShExecInfocg = { 0 };
+		ShExecInfocg.cbSize = sizeof(SHELLEXECUTEINFOW);
+		ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ShExecInfocg.hwnd = nullptr;
+		ShExecInfocg.lpVerb = nullptr;
+		ShExecInfocg.lpFile = cginstaller.c_str();
 		// silent and minimal install
-		ShExecInfo.lpParameters = L"/verysilent /TYPE=compact";
-		ShExecInfo.lpDirectory = nullptr;
-		ShExecInfo.nShow = SW_SHOW;
-		ShExecInfo.hInstApp = nullptr;
-		ShellExecuteExW(&ShExecInfo);
+		ShExecInfocg.lpParameters = L"/verysilent /TYPE=compact";
+		ShExecInfocg.lpDirectory = nullptr;
+		ShExecInfocg.nShow = SW_SHOW;
+		ShExecInfocg.hInstApp = nullptr;
+		ShellExecuteExW(&ShExecInfocg);
 		// Wait for process to finish before continuing.
-		WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+		WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
 
 		// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
 		GetEnvironmentVariableW(L"CG_BIN_PATH",
 			&cgbinpath[0],
 			MAX_PATH + 1);
-	}
 
 	// appends a backslash to the path for later processing.
 	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 
 	// add drive letter to the variable
-	buff_c[0] << cwd[0];
+	buff_c[0] << cwd[0].str().c_str()[0];
 
 	// basic stringbuilding
 #if defined(ENVIRONMENT64)
@@ -93,10 +81,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// finalize variables for use in the copy functions
-	slnpath_f[0] << &cwd[0];
+	slnpath_f[0] << cwd[0].str().c_str();
 	slnpath_f[0] << &slnpath[0];
 
-	airpath_f[0] << &cwd[0];
+	airpath_f[0] << cwd[0].str().c_str();
 	airpath_f[0] << &airpath[0];
 
 	tbb0[0] << slnpath_f[0].str();
@@ -123,16 +111,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	flashfile[0] << flash;
 
 	// string-builder for adobe air installer
-	airinst[0] << &cwd[0];
-	airinst[0] << airwin;
-	airinstunblock[0] << &airinst[0];
+	airinstunblock[0] << cwd[0].str().c_str();
+	airinstunblock[0] << airwin;
 	airinstunblock[0] << &unblock[0];
 
 	// Downloads adobe-air
 	URLDownloadToFileW(
 		nullptr,
 		L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-		airinst[0].str().c_str(),
+		airwin.c_str(),
 		0,
 		nullptr
 		);
@@ -144,7 +131,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airinst[0].str().c_str();
+	ShExecInfo.lpFile = airwin.c_str();
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
@@ -210,6 +197,26 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	else
 	{
+		// If Visual Studio 2010 SP1 or later
+#if (_MSC_FULL_VER >= 160040219)
+		// Checking for AVX requires 3 things:
+		// 1) CPUID indicates that the OS uses XSAVE and XRSTORE
+		//     instructions (allowing saving YMM registers on context
+		//     switch)
+		// 2) CPUID indicates support for AVX
+		// 3) XGETBV indicates the AVX registers will be saved and
+		//     restored on context switch
+		//
+		// Note that XGETBV is only available on 686 or later CPUs, so
+		// the instruction needs to be conditionally run.
+		int cpuInfo[4];
+		__cpuid(cpuInfo, 1);
+
+		bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
+		bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
+#endif
+
+
 		if (osUsesXSAVE_XRSTORE && cpuAVXSuport)
 		{
 			// Check if the OS will save the YMM registers (basically final check for AVX support)

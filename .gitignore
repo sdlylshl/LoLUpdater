@@ -3,6 +3,6 @@
 *.suo
 *.sdf
 *.opensdf
+*.exe
 Release
 Release-XP
-x64
