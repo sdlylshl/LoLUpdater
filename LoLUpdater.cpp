@@ -87,10 +87,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	// get working directory
 	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
-	wstring::size_type pos = wstring(&cwd0[0]).find_last_of(L"\\/");
 
 	// append backslash to the working-dir buffer.
-	cwd << wstring(&cwd0[0]).substr(0, pos);
+	cwd << wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/"));
 	cwd << L"\\";
 
 
