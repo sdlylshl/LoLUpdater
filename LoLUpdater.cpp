@@ -134,9 +134,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// basic stringbuilding
 	// different paths depending if it is a 64 or 32bit system
-#if defined(ENVIRONMENT64)
+#ifdef ENVIRONMENT64
 	buff_c[0] << L":\\Program Files (x86)";
-#elif defined(ENVIRONMENT32)
+#elifdef ENVIRONMENT32
 	buff_c[0] << L":\\Program Files";
 #endif
 	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";

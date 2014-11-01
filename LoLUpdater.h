@@ -104,11 +104,11 @@ static int can_use_intel_core_4th_gen_features()
 }
 #endif
 
-#if _WIN32 || _WIN64
+#ifdef _WIN32 || _WIN64
 #if _WIN64
-#define ENVIRONMENT64
+#def ENVIRONMENT64
 #else
-#define ENVIRONMENT32
+#def ENVIRONMENT32
 #endif
 #endif
 using namespace std;
