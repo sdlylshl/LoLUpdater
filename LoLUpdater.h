@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+// used to get the working directory without the app.exe extension
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #if XP == FALSE
 
@@ -112,6 +113,7 @@ static int can_use_intel_core_4th_gen_features()
 #endif
 using namespace std;
 
+// test if a file exists
 inline bool file_exists(wstring(fileName))
 {
 	ifstream infile(fileName);

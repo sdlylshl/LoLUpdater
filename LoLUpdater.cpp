@@ -5,48 +5,80 @@
 #include "LoLUpdater.h"
 
 // Buffers
+// holds the adobe air installation directory
 wstringstream buff_c[MAX_PATH + 1];
+// holds the path to where tbb.dll will be downloaded
 wstringstream tbb0[MAX_PATH + 1];
+// holds the path to the latest adobe air.dll
 wstringstream airfile[MAX_PATH + 1];
+// holds the path to where adobe air.dll will be copied to
 wstringstream airdir[MAX_PATH + 1];
+// holds the path to the latest "flash" dll.
 wstringstream flashfile[MAX_PATH + 1];
+// holds the path to where the flash dll will be copied to
 wstringstream flashdir[MAX_PATH + 1];
+// holds the path to where the updated cg.dll is.
 wstringstream cgbin[MAX_PATH + 1];
+// holds the path to the cginstaller that is downloaded together with the unblock tag
 wstringstream cginstunblock[MAX_PATH + 1];
+// holds the path to the adobe air installer that is downloaded together with the unblock tag
 wstringstream airinstunblock[MAX_PATH + 1];
-wstringstream strair[MAX_PATH + 1];
+// holds the path together with the unblock tag to where the adobe air.dll is in the LoL installation.
 wstringstream airunblock[MAX_PATH + 1];
+// holds the path to where the updated cgd3d9.dll is.
 wstringstream cgd3d9bin[MAX_PATH + 1];
+// holds the path to where the updated cggl.dll is.
 wstringstream cgglbin[MAX_PATH + 1];
+// holds the path to the final destination of the updated cg.dll
 wstringstream cgpath[MAX_PATH + 1];
+// holds the path to the final destination of the updated cggl.dll
 wstringstream cgglpath[MAX_PATH + 1];
+// holds the path to the tbb dll together with the unblock tag
 wstringstream tbbunblock[MAX_PATH + 1];
+// holds the path to the "flash" dll together with the unblock tag
 wstringstream flashunblock[MAX_PATH + 1];
+// holds the path to the final destination of the updated cgd3d9.dll
 wstringstream cgd3d9path[MAX_PATH + 1];
+// holds the path to the final destination of the updated cggl.dll together with the unblock tag
 wstringstream cgglunblock[MAX_PATH + 1];
+// holds the path to the final destination of the updated cg.dll together with the unblock tag
 wstringstream cgunblock[MAX_PATH + 1];
+// holds the path to the final destination of the updated cgd3d9.dll together with the unblock tag
 wstringstream cgd3d9unblock[MAX_PATH + 1];
+// holds the full path to where all adobe files will be copied to.
 wstringstream airpath_f[MAX_PATH + 1];
+// holds the full path to where all game files will be copied to.
 wstringstream slnpath_f[MAX_PATH + 1];
-wstringstream airinst[MAX_PATH + 1];
-wstringstream cginst[MAX_PATH + 1];
+// holds the path to the current working directory (where the executable was ran from)
 wstringstream cwd[MAX_PATH + 1];
+// holds the environmental variable for CG_BIN_PATH (todo: use wstring instead of wchar_t)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 
 // Constants
+// unblock tag
 const wstring unblock(L":Zone.Identifier");
+// name of the adobe air dll
 const wstring air(L"Adobe AIR.dll");
+// relative path to the flash dll from where the adobe air dll is
 const wstring flash(L"Resources\\NPSWF32.dll");
+// cg dll name
 const wstring cgfile(L"Cg.dll");
+// cggl dll name
 const wstring cgglfile(L"CgGL.dll");
+// cgd3d9 dll name
 const wstring cgd3d9file(L"CgD3D9.dll");
+// name of the downloaded cg installer
 const wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+// tbb dll name
 const wstring tbbfile(L"tbb.dll");
+// name of the downloaded adobe air installer
 const wstring airwin(L"air15_win.exe");
+// collection of all files that will be unblocked at the end
 const wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	// basic command line output
 	wcout << L"LoLUpdater Alpha 1 Build 14";
 	wcout << endl;
 	wcout << L"Patching...";
@@ -101,6 +133,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff_c[0] << cwd[0].str().c_str()[0];
 
 	// basic stringbuilding
+	// different paths depending if it is a 64 or 32bit system
 #if defined(ENVIRONMENT64)
 	buff_c[0] << L":\\Program Files (x86)";
 #elif defined(ENVIRONMENT32)
@@ -120,7 +153,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		const wstring slnpath(L"Game\\");
 	}
 
-	// finalize variables for use in the copy functions
+	// finalize variables for use in later stringbuilding
 	slnpath_f[0] << cwd[0].str().c_str();
 	slnpath_f[0] << &slnpath[0];
 
