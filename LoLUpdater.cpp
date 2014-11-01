@@ -30,14 +30,16 @@ using namespace std;
 wstringstream wbuffer[23];
 
 // Function to reduce amount of lines
-void LoLCopy(int x1, int x2)
+void LoLCopy(int x, int y)
 {
 	CopyFileW(
-		wbuffer[x1].str().c_str(),
-		wbuffer[x2].str().c_str(),
+		wbuffer[x].str().c_str(),
+		wbuffer[y].str().c_str(),
 		false
 		);
 }
+
+
 
 // holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
@@ -64,6 +66,20 @@ const wstring tbbfile(L"tbb.dll");
 const wstring airwin(L"air15_win.exe");
 // collection of all files that will be unblocked at the end
 const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str()};
+
+void ublk(int x, int y)
+{
+	wbuffer[x] << wbuffer[y].str().c_str();
+	wbuffer[x] << unblock;
+}
+
+void wstrbld(int x, int y, wstring z)
+{
+	wbuffer[x] << wbuffer[y].str().c_str();
+	wbuffer[x] << z;
+}
+
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -147,16 +163,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		const wstring slnpath(L"Game\\");
 	}
 
-	// finalize variables for use in later stringbuilding
-	wbuffer[21] << wbuffer[22].str().c_str();
-	wbuffer[21] << slnpath;
-
-	wbuffer[20] << wbuffer[22].str().c_str();
-	wbuffer[20] << airpath;
-
-	wbuffer[1] << wbuffer[21].str().c_str();
-	wbuffer[1] << tbbfile;
-
 	// Gets location of latest cg dll
 	wbuffer[6] << &cgbinpath[0];
 	wbuffer[6] << cgfile;
@@ -169,13 +175,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	wbuffer[10] << &cgbinpath[0];
 	wbuffer[10] << cgd3d9file;
 
-	// Gets location of latest adobe air dll
-	wbuffer[2] << wbuffer[0].str().c_str();
-	wbuffer[2] << air;
-
-	// Gets location of latest "flash" dll
-	wbuffer[4] << wbuffer[0].str().c_str();
-	wbuffer[4] << flash;
+	
 
 	// string-builder for adobe air installer
 	wbuffer[8] << wbuffer[22].str().c_str();
@@ -207,40 +207,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Waits for air-installer to finish
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
-	// Finalize full copy paths
-	wbuffer[12] << wbuffer[21].str();
-	wbuffer[12] << cgfile;
-
-	wbuffer[13] << wbuffer[21].str();
-	wbuffer[13] << cgglfile;
-
-	wbuffer[16] << wbuffer[21].str();
-	wbuffer[16] << cgd3d9file;
-
-	wbuffer[3] << wbuffer[20].str();
-	wbuffer[3] << air;
-
-	wbuffer[5] << wbuffer[20].str();
-	wbuffer[5] << flash;
-
-	// Finalize paths with the unblock tag
-	wbuffer[18] << wbuffer[12].str();
-	wbuffer[18] << unblock;
-
-	wbuffer[17] << wbuffer[13].str();
-	wbuffer[17] << unblock;
-
-	wbuffer[19] << wbuffer[16].str();
-	wbuffer[19] << unblock;
-
-	wbuffer[9] << wbuffer[3].str();
-	wbuffer[9] << unblock;
-
-	wbuffer[15] << wbuffer[5].str();
-	wbuffer[15] << unblock;
-
-	wbuffer[14] << wbuffer[1].str();
-	wbuffer[14] << unblock;
+	// Todo: use vectors and foreach here.
+	// string building
+	wstrbld(21, 22, slnpath);
+	wstrbld(20, 22, airpath);
+	wstrbld(1, 21, tbbfile);
+	wstrbld(2, 0, air);
+	wstrbld(4, 0, flash);
+	wstrbld(12, 21, cgfile);
+	wstrbld(13, 21, cgglfile);
+	wstrbld(16, 21, cgd3d9file);
+	wstrbld(3, 20, air);
+	wstrbld(3, 20, flash);
+	ublk(18, 12);
+	ublk(17, 13);
+	ublk(19, 16);
+	ublk(9, 3);
+	ublk(15, 5);
+	ublk(14, 1);
 
 #if XP
 	// XP tbb download
