@@ -195,10 +195,11 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 			);
 	}
+#if (_MSC_FULL_VER >= 160040219)
 	else
 	{
 		// If Visual Studio 2010 SP1 or later
-#if (_MSC_FULL_VER >= 160040219)
+
 		// Checking for AVX requires 3 things:
 		// 1) CPUID indicates that the OS uses XSAVE and XRSTORE
 		//     instructions (allowing saving YMM registers on context
@@ -214,7 +215,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		bool osUsesXSAVE_XRSTORE = cpuInfo[2] & (1 << 27) || false;
 		bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
-#endif
+
 
 
 		if (osUsesXSAVE_XRSTORE && cpuAVXSuport)
@@ -235,6 +236,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				nullptr
 				);
 		}
+#endif
 		else
 		{
 			//SSE2  tbb download
