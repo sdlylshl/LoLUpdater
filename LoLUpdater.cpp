@@ -1,10 +1,8 @@
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
 
-// Include all the stuff that didn't make it into the main method
 #include "LoLUpdater.h"
 using namespace std;
-// Buffer
 // 0 = holds the adobe air installation directory
 // 1 = holds the path to where tbb.dll will be downloaded
 // 2 = holds the path to the latest adobe air.dll
@@ -35,45 +33,44 @@ vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 // holds the full path  (incl file.ext) to the program (todo make into wstringstream)
 vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
-// Constants
-// unblock tag
+// Unblock tag
 const wstring unblock(L":Zone.Identifier");
-// name of the adobe air dll
+// Full name of the adobe air dll
 const wstring air(L"Adobe AIR.dll");
 // relative path to the flash dll from where the adobe air dll is
 const wstring flash(L"Resources\\NPSWF32.dll");
-// cg dll name
+//  Full cg dll name
 const wstring cgfile(L"Cg.dll");
-// cggl dll name
+//  Full cggl dll name
 const wstring cgglfile(L"CgGL.dll");
-// cgd3d9 dll name
+//  Full cgd3d9 dll name
 const wstring cgd3d9file(L"CgD3D9.dll");
-// name of the downloaded cg installer
+//  Full name of the downloaded cg installer
 const wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
-// tbb dll name
+//  Full tbb dll name
 const wstring tbbfile(L"tbb.dll");
-// name of the downloaded adobe air installer
+//  Full name of the downloaded adobe air installer
 const wstring airwin(L"air15_win.exe");
 // collection of all files that will be unblocked at the end
 const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str()};
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	// basic command line output
+	// Version + progress indication
 	wcout << L"LoLUpdater Alpha 1 Build 16";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
 
-	// get working directory
+	// gets working directory with app.ext
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
 
-	// append backslash to the working-dir buffer.
+	// remove app.ext and append backslash to the working-dir buffer.
 	wbuffer[22] << wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/"));
 	wbuffer[22] << L"\\";
 
 
-		// string-builder for the cginstaller
+	// string-builder for the cginstaller
 	wbuffer[7] << wbuffer[22].str().c_str();
 	wbuffer[7] << cginstaller;
 	wbuffer[7] << unblock;
@@ -86,10 +83,11 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-		// Unblocks the installer
+
+		// Unblocks the cg-installer
 		DeleteFileW(wbuffer[7].str().c_str());
 
-		// Starts the executable with some arguments
+		// Starts the cg-executable
 		SHELLEXECUTEINFOW ShExecInfocg = { 0 };
 		ShExecInfocg.cbSize = sizeof(SHELLEXECUTEINFOW);
 		ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -116,24 +114,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	// add drive letter to the variable
 		wbuffer[0] << wbuffer[22].str().c_str()[0];
 
-	// basic stringbuilding
 	// different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
 		wbuffer[0] << L":\\Program Files (x86)";
 #else
 		wbuffer[0] << L":\\Program Files";
 #endif
+		// finish with the default install directory from %Programfiles%
 		wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// paths to where files should be copied
 	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
 	const wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 
+	// Check if lol.exe exists in work-dir
 	ifstream infile(L"lol.exe");
-	// garena installations have lol.exe in the main directory
 	if (infile.good())
 	{
-		// Overload if it is Garena
+		// Overload variables if it is Garena
 		const wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
 		const wstring slnpath(L"Game\\");
 	}
@@ -195,7 +193,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShExecInfo.nShow = SW_SHOW;
 	ShExecInfo.hInstApp = nullptr;
 	ShellExecuteExW(&ShExecInfo);
-	// Waits for program to finish
+	// Waits for air-installer to finish
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 	// Finalize full copy paths
@@ -367,17 +365,19 @@ int _tmain(int argc, _TCHAR* argv[])
 		);
 	// End copy all files
 
-	// Unblock _all_ files just to be safe
+	// Unblock all patched files
 	for each (wstring i in unblockfiles)
 	{
 		DeleteFileW(&i[0]);
 	}
 
+	// progress-indicator end
 	wcout << "LoLUpdater finished!";
 	wcout << endl;
 	wstring dummy;
 	wcout << "Enter to continue..." << endl;
 	getline(wcin, dummy);
 
+	// exit program
 	return 0;
 }
