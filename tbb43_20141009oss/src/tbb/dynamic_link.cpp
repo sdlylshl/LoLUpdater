@@ -17,9 +17,9 @@
     by the GNU General Public License. This exception does not however invalidate any other
     reasons why the executable file might be covered by the GNU General Public License.
 */
-
+#include <wchar.h>
 #include "dynamic_link.h"
-#include "..\..\include\tbb/tbb_config.h"
+#include "..\..\include\tbb\tbb_config.h"
 
 /*
     This file is used by both TBB and OpenMP RTL. Do not use __TBB_ASSERT() macro
@@ -64,6 +64,9 @@
 #if !__USE_TBB_ATOMICS
 #include <pthread.h>
 #endif
+#include "../../include/tbb/atomic.h"
+#include <libloaderapi.h>
+#include <winbase.h>
 
 /*
 dynamic_link is a common interface for searching for required symbols in an
@@ -193,7 +196,7 @@ OPEN_INTERNAL_NAMESPACE
 
     struct handle_storage {
     #if __USE_TBB_ATOMICS
-        ::tbb::atomic<size_t> my_size;
+        atomic<size_t> my_size;
     #else
         size_t my_size;
         pthread_spinlock_t my_lock;
@@ -246,9 +249,9 @@ OPEN_INTERNAL_NAMESPACE
     #if _WIN32
         // Get handle of our DLL first.
         HMODULE handle;
-        BOOL brc = GetModuleHandleEx(
+        BOOL brc = GetModuleHandleExW(
             GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-            (LPCSTR)( & dynamic_link ), // any function inside the library can be used for the address
+            (LPCWSTR)( & dynamic_link ), // any function inside the library can be used for the address
             & handle
             );
         if ( !brc ) { // Error occurred.
@@ -257,7 +260,7 @@ OPEN_INTERNAL_NAMESPACE
             return;
         }
         // Now get path to our DLL.
-        DWORD drc = GetModuleFileName( handle, ap_data._path, static_cast< DWORD >( PATH_MAX ) );
+		DWORD drc = GetModuleFileNameW(handle, (LPWSTR)ap_data._path, static_cast< DWORD >(PATH_MAX));
         if ( drc == 0 ) { // Error occurred.
             int err = GetLastError();
             DYNAMIC_LINK_WARNING( dl_sys_fail, "GetModuleFileName", err );
@@ -423,7 +426,7 @@ OPEN_INTERNAL_NAMESPACE
     #if _WIN32
     static dynamic_link_handle global_symbols_link( const char* library, const dynamic_link_descriptor descriptors[], size_t required ) {
         dynamic_link_handle library_handle;
-        if ( GetModuleHandleEx( 0, library, &library_handle ) ) {
+        if ( GetModuleHandleExW( 0, (LPCWSTR)library, &library_handle ) ) {
             if ( resolve_symbols( library_handle, descriptors, required ) )
                 return library_handle;
             else
@@ -507,7 +510,7 @@ OPEN_INTERNAL_NAMESPACE
     #if __TBB_WEAK_SYMBOLS_PRESENT
         if ( !dlopen ) return 0;
     #endif /* __TBB_WEAK_SYMBOLS_PRESENT */
-            dynamic_link_handle library_handle = dlopen( path, RTLD_LAZY );
+            dynamic_link_handle library_handle = dlopen( (LPCWSTR)path, RTLD_LAZY );
     #if _WIN32
             SetErrorMode (prev_mode);
     #endif /* _WIN32 */
@@ -520,9 +523,10 @@ OPEN_INTERNAL_NAMESPACE
             } else
                 DYNAMIC_LINK_WARNING( dl_lib_not_found, path, dlerror() );
             return library_handle;
-        } else if ( rc>=len )
-                DYNAMIC_LINK_WARNING( dl_buff_too_small );
-                // rc == 0 means failing of init_ap_data so the warning has already been issued.
+        }
+	    if ( rc>=len )
+	    DYNAMIC_LINK_WARNING( dl_buff_too_small );
+	    // rc == 0 means failing of init_ap_data so the warning has already been issued.
     #endif /* _XBOX */
     #endif /* __TBB_DYNAMIC_LOAD_ENABLED */
         return 0;

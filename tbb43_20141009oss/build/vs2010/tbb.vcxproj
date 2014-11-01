@@ -89,7 +89,7 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|x64'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
-    <TargetName>testnuild</TargetName>
+    <TargetName>Default</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
@@ -140,11 +140,11 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <CompileAs>CompileAsCpp</CompileAs>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <AdditionalOptions>/nologo /DLL /MAP /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>
-      <OutputFile>$(OutDir)SSE2.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -157,6 +157,9 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <AssemblyDebug>false</AssemblyDebug>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <Version>5.01</Version>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
@@ -171,6 +174,8 @@
       <WarningLevel>0</WarningLevel>
       <CallingConvention>0</CallingConvention>
       <ErrorReporting>3</ErrorReporting>
+      <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
+      <AdditionalOptions>/safeseh:NO</AdditionalOptions>
     </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|x64'">
@@ -221,6 +226,8 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <AssemblyDebug>false</AssemblyDebug>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
@@ -235,6 +242,7 @@
       <WarningLevel>0</WarningLevel>
       <CallingConvention>0</CallingConvention>
       <ErrorReporting>3</ErrorReporting>
+      <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
     </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|Win32'">
@@ -271,7 +279,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/nologo /DLL /MAP /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>
-      <OutputFile>$(OutDir)Default.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -284,6 +292,7 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <AssemblyDebug>false</AssemblyDebug>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
@@ -298,6 +307,8 @@
       <WarningLevel>0</WarningLevel>
       <CallingConvention>0</CallingConvention>
       <ErrorReporting>3</ErrorReporting>
+      <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
+      <AdditionalOptions>/safeseh:NO</AdditionalOptions>
     </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|x64'">
@@ -346,6 +357,8 @@
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <AssemblyDebug>false</AssemblyDebug>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
@@ -360,6 +373,7 @@
       <WarningLevel>0</WarningLevel>
       <CallingConvention>0</CallingConvention>
       <ErrorReporting>3</ErrorReporting>
+      <UseSafeExceptionHandlers>false</UseSafeExceptionHandlers>
     </MASM>
   </ItemDefinitionGroup>
   <ItemGroup>
