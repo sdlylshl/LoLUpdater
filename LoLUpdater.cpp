@@ -356,7 +356,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	wcout << "LoLUpdater finished!";
 	wcout << endl;
-	wait_on_enter();
+	wstring dummy;
+	wcout << "Enter to continue..." << endl;
+	getline(wcin, dummy);
 
 	return 0;
 }

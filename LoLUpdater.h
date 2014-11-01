@@ -118,13 +118,6 @@ inline bool file_exists(wstring(fileName))
 	return infile.good();
 }
 
-inline void wait_on_enter()
-{
-	string dummy;
-	wcout << "Enter to continue..." << endl;
-	getline(cin, dummy);
-}
-
 // Get current directory
 inline wstring cwd1() {
 	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
