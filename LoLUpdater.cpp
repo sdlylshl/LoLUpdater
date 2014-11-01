@@ -51,9 +51,9 @@ wstringstream airpath_f;
 wstringstream slnpath_f;
 // holds the path to the current working directory (where the executable was ran from)
 wstringstream cwd;
-// holds the environmental variable for CG_BIN_PATH
+// holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
-// holds the full path  (incl file.ext) to the program
+// holds the full path  (incl file.ext) to the program (todo make into wstringstream)
 vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Constants
