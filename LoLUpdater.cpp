@@ -53,6 +53,8 @@ wstringstream slnpath_f;
 wstringstream cwd;
 // holds the environmental variable for CG_BIN_PATH
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
+// holds the full path  (incl file.ext) to the program
+vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Constants
 // unblock tag
@@ -85,7 +87,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	wcout << endl;
 
 	// get working directory
-	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
 
 	// append backslash to the working-dir buffer.
