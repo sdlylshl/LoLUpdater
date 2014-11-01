@@ -106,9 +106,9 @@ static int can_use_intel_core_4th_gen_features()
 
 #ifdef _WIN32 || _WIN64
 #if _WIN64
-#def ENVIRONMENT64
+#define ENVIRONMENT64
 #else
-#def ENVIRONMENT32
+#define ENVIRONMENT32
 #endif
 #endif
 using namespace std;
@@ -118,13 +118,5 @@ inline bool file_exists(wstring(fileName))
 {
 	ifstream infile(fileName);
 	return infile.good();
-}
-
-// Get current directory
-inline wstring cwd1() {
-	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
-	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH+1);
-	wstring::size_type pos = wstring(&cwd0[0]).find_last_of(L"\\/");
-	return wstring(&cwd0[0]).substr(0, pos);
 }
 

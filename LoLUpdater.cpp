@@ -6,52 +6,52 @@
 
 // Buffers
 // holds the adobe air installation directory
-wstringstream buff_c[MAX_PATH + 1];
+wstringstream buff_c;
 // holds the path to where tbb.dll will be downloaded
-wstringstream tbb0[MAX_PATH + 1];
+wstringstream tbb0;
 // holds the path to the latest adobe air.dll
-wstringstream airfile[MAX_PATH + 1];
+wstringstream airfile;
 // holds the path to where adobe air.dll will be copied to
-wstringstream airdir[MAX_PATH + 1];
+wstringstream airdir;
 // holds the path to the latest "flash" dll.
-wstringstream flashfile[MAX_PATH + 1];
+wstringstream flashfile;
 // holds the path to where the flash dll will be copied to
-wstringstream flashdir[MAX_PATH + 1];
+wstringstream flashdir;
 // holds the path to where the updated cg.dll is.
-wstringstream cgbin[MAX_PATH + 1];
+wstringstream cgbin;
 // holds the path to the cginstaller that is downloaded together with the unblock tag
-wstringstream cginstunblock[MAX_PATH + 1];
+wstringstream cginstunblock;
 // holds the path to the adobe air installer that is downloaded together with the unblock tag
-wstringstream airinstunblock[MAX_PATH + 1];
+wstringstream airinstunblock;
 // holds the path together with the unblock tag to where the adobe air.dll is in the LoL installation.
-wstringstream airunblock[MAX_PATH + 1];
+wstringstream airunblock;
 // holds the path to where the updated cgd3d9.dll is.
-wstringstream cgd3d9bin[MAX_PATH + 1];
+wstringstream cgd3d9bin;
 // holds the path to where the updated cggl.dll is.
-wstringstream cgglbin[MAX_PATH + 1];
+wstringstream cgglbin;
 // holds the path to the final destination of the updated cg.dll
-wstringstream cgpath[MAX_PATH + 1];
+wstringstream cgpath;
 // holds the path to the final destination of the updated cggl.dll
-wstringstream cgglpath[MAX_PATH + 1];
+wstringstream cgglpath;
 // holds the path to the tbb dll together with the unblock tag
-wstringstream tbbunblock[MAX_PATH + 1];
+wstringstream tbbunblock;
 // holds the path to the "flash" dll together with the unblock tag
-wstringstream flashunblock[MAX_PATH + 1];
+wstringstream flashunblock;
 // holds the path to the final destination of the updated cgd3d9.dll
-wstringstream cgd3d9path[MAX_PATH + 1];
+wstringstream cgd3d9path;
 // holds the path to the final destination of the updated cggl.dll together with the unblock tag
-wstringstream cgglunblock[MAX_PATH + 1];
+wstringstream cgglunblock;
 // holds the path to the final destination of the updated cg.dll together with the unblock tag
-wstringstream cgunblock[MAX_PATH + 1];
+wstringstream cgunblock;
 // holds the path to the final destination of the updated cgd3d9.dll together with the unblock tag
-wstringstream cgd3d9unblock[MAX_PATH + 1];
+wstringstream cgd3d9unblock;
 // holds the full path to where all adobe files will be copied to.
-wstringstream airpath_f[MAX_PATH + 1];
+wstringstream airpath_f;
 // holds the full path to where all game files will be copied to.
-wstringstream slnpath_f[MAX_PATH + 1];
+wstringstream slnpath_f;
 // holds the path to the current working directory (where the executable was ran from)
-wstringstream cwd[MAX_PATH + 1];
-// holds the environmental variable for CG_BIN_PATH (todo: use wstring instead of wchar_t)
+wstringstream cwd;
+// holds the environmental variable for CG_BIN_PATH
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 
 // Constants
@@ -74,7 +74,7 @@ const wstring tbbfile(L"tbb.dll");
 // name of the downloaded adobe air installer
 const wstring airwin(L"air15_win.exe");
 // collection of all files that will be unblocked at the end
-const wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d9unblock[0].str(), tbbunblock[0].str(), airunblock[0].str(), flashunblock[0].str() };
+const wstring unblockfiles[] = { cgunblock.str(), cgglunblock.str(), cgd3d9unblock.str(), tbbunblock.str(), airunblock.str(), flashunblock.str() };
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -84,15 +84,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	wcout << L"Patching...";
 	wcout << endl;
 
+	// get working directory
+	vector<wchar_t> cwd0(MAX_PATH + 1, 0);
+	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
+	wstring::size_type pos = wstring(&cwd0[0]).find_last_of(L"\\/");
+
 	// append backslash to the working-dir buffer.
-	cwd[0] << cwd1().c_str();
-	cwd[0] << L"\\";
+	cwd << wstring(&cwd0[0]).substr(0, pos);
+	cwd << L"\\";
 
 
 		// string-builder for the cginstaller
-		cginstunblock[0] << cwd[0].str().c_str();
-		cginstunblock[0] << cginstaller;
-		cginstunblock[0] << &unblock[0];
+		cginstunblock << cwd.str().c_str();
+		cginstunblock << cginstaller;
+		cginstunblock << &unblock;
 
 		// Downloads Nvidia-CG
 		URLDownloadToFileW(
@@ -103,7 +108,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			nullptr
 			);
 		// Unblocks the installer
-		DeleteFileW(cginstunblock[0].str().c_str());
+		DeleteFileW(cginstunblock.str().c_str());
 
 		// Starts the executable with some arguments
 		SHELLEXECUTEINFOW ShExecInfocg = { 0 };
@@ -127,19 +132,19 @@ int _tmain(int argc, _TCHAR* argv[])
 			MAX_PATH + 1);
 
 	// appends a backslash to the path for later processing.
-	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
+		wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 
 	// add drive letter to the variable
-	buff_c[0] << cwd[0].str().c_str()[0];
+	buff_c << cwd.str().c_str()[0];
 
 	// basic stringbuilding
 	// different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
-	buff_c[0] << L":\\Program Files (x86)";
-#elifdef ENVIRONMENT32
-	buff_c[0] << L":\\Program Files";
+	buff_c << L":\\Program Files (x86)";
+#else ENVIRONMENT32
+	buff_c << L":\\Program Files";
 #endif
-	buff_c[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	buff_c << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// paths to where files should be copied
 	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
@@ -154,39 +159,39 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// finalize variables for use in later stringbuilding
-	slnpath_f[0] << cwd[0].str().c_str();
-	slnpath_f[0] << &slnpath[0];
+	slnpath_f << cwd.str().c_str();
+	slnpath_f << &slnpath;
 
-	airpath_f[0] << cwd[0].str().c_str();
-	airpath_f[0] << &airpath[0];
+	airpath_f << cwd.str().c_str();
+	airpath_f << &airpath;
 
-	tbb0[0] << slnpath_f[0].str();
-	tbb0[0] << tbbfile;
+	tbb0 << slnpath_f.str();
+	tbb0 << tbbfile;
 
 	// Gets location of latest cg dll
-	cgbin[0] << &cgbinpath[0];
-	cgbin[0] << cgfile;
+	cgbin << &cgbinpath;
+	cgbin << cgfile;
 
 	// Gets location of latest cggl dll
-	cgglbin[0] << &cgbinpath[0];
-	cgglbin[0] << cgglfile;
+	cgglbin << &cgbinpath;
+	cgglbin << cgglfile;
 
 	// Gets location of latest cgd3d9 dll
-	cgd3d9bin[0] << &cgbinpath[0];
-	cgd3d9bin[0] << cgd3d9file;
+	cgd3d9bin << &cgbinpath;
+	cgd3d9bin << cgd3d9file;
 
 	// Gets location of latest adobe air dll
-	airfile[0] << buff_c[0].str().c_str();
-	airfile[0] << air;
+	airfile << buff_c.str().c_str();
+	airfile << air;
 
 	// Gets location of latest "flash" dll
-	flashfile[0] << buff_c[0].str().c_str();
-	flashfile[0] << flash;
+	flashfile << buff_c.str().c_str();
+	flashfile << flash;
 
 	// string-builder for adobe air installer
-	airinstunblock[0] << cwd[0].str().c_str();
-	airinstunblock[0] << airwin;
-	airinstunblock[0] << &unblock[0];
+	airinstunblock << cwd.str().c_str();
+	airinstunblock << airwin;
+	airinstunblock << &unblock;
 
 	// Downloads adobe-air
 	URLDownloadToFileW(
@@ -197,7 +202,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		nullptr
 		);
 	// Unblocks the adobe air installer
-	DeleteFileW(airinstunblock[0].str().c_str());
+	DeleteFileW(airinstunblock.str().c_str());
 
 	SHELLEXECUTEINFOW ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
@@ -214,46 +219,46 @@ int _tmain(int argc, _TCHAR* argv[])
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 
 	// Finalize full copy paths
-	cgpath[0] << slnpath_f[0].str();
-	cgpath[0] << cgfile;
+	cgpath << slnpath_f.str();
+	cgpath << cgfile;
 
-	cgglpath[0] << slnpath_f[0].str();
-	cgglpath[0] << cgglfile;
+	cgglpath << slnpath_f.str();
+	cgglpath << cgglfile;
 
-	cgd3d9path[0] << slnpath_f[0].str();
-	cgd3d9path[0] << cgd3d9file;
+	cgd3d9path << slnpath_f.str();
+	cgd3d9path << cgd3d9file;
 
-	airdir[0] << airpath_f[0].str();
-	airdir[0] << air;
+	airdir << airpath_f.str();
+	airdir << air;
 
-	flashdir[0] << airpath_f[0].str();
-	flashdir[0] << flash;
+	flashdir << airpath_f.str();
+	flashdir << flash;
 
 	// Finalize paths with the unblock tag
-	cgunblock[0] << cgpath[0].str();
-	cgunblock[0] << &unblock[0];
+	cgunblock << cgpath.str();
+	cgunblock << &unblock;
 
-	cgglunblock[0] << cgglpath[0].str();
-	cgglunblock[0] << &unblock[0];
+	cgglunblock << cgglpath.str();
+	cgglunblock << &unblock;
 
-	cgd3d9unblock[0] << cgd3d9path[0].str();
-	cgd3d9unblock[0] << &unblock[0];
+	cgd3d9unblock << cgd3d9path.str();
+	cgd3d9unblock << &unblock;
 
-	airunblock[0] << airdir[0].str();
-	airunblock[0] << &unblock[0];
+	airunblock << airdir.str();
+	airunblock << &unblock;
 
-	flashunblock[0] << flashdir[0].str();
-	flashunblock[0] << &unblock[0];
+	flashunblock << flashdir.str();
+	flashunblock << &unblock;
 
-	tbbunblock[0] << tbb0[0].str();
-	tbbunblock[0] << &unblock[0];
+	tbbunblock << tbb0.str();
+	tbbunblock << &unblock;
 
 #if XP
 	// XP tbb download
 	URLDownloadToFileW(
 		nullptr,
 		L" http://lol.jdhpro.com/Xp.dll",
-		tbb0[0].str().c_str(),
+		tbb0.str().c_str(),
 		0,
 		nullptr
 		);
@@ -264,7 +269,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		URLDownloadToFileW(
 			nullptr,
 			L"http://lol.jdhpro.com/Avx2.dll",
-			tbb0[0].str().c_str(),
+			tbb0.str().c_str(),
 			0,
 			nullptr
 			);
@@ -305,7 +310,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			URLDownloadToFileW(
 				nullptr,
 				L"http://lol.jdhpro.com/Avx.dll",
-				tbb0[0].str().c_str(),
+				tbb0.str().c_str(),
 				0,
 				nullptr
 				);
@@ -319,7 +324,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				URLDownloadToFileW(
 					nullptr,
 					L"http://lol.jdhpro.com/Sse2.dll",
-					tbb0[0].str().c_str(),
+					tbb0.str().c_str(),
 					0,
 					nullptr
 					);
@@ -332,7 +337,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					URLDownloadToFileW(
 						nullptr,
 						L"http://lol.jdhpro.com/Sse.dll",
-						tbb0[0].str().c_str(),
+						tbb0.str().c_str(),
 						0,
 						nullptr
 						);
@@ -343,7 +348,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					URLDownloadToFileW(
 						nullptr,
 						L"http://lol.jdhpro.com/Default.dll",
-						tbb0[0].str().c_str(),
+						tbb0.str().c_str(),
 						0,
 						nullptr
 						);
@@ -356,28 +361,28 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Copy all files
 	CopyFileW(
-		cgbin[0].str().c_str(),
-		cgpath[0].str().c_str(),
+		cgbin.str().c_str(),
+		cgpath.str().c_str(),
 		false
 		);
 	CopyFileW(
-		cgglbin[0].str().c_str(),
-		cgglpath[0].str().c_str(),
+		cgglbin.str().c_str(),
+		cgglpath.str().c_str(),
 		false
 		);
 	CopyFileW(
-		cgd3d9bin[0].str().c_str(),
-		cgd3d9path[0].str().c_str(),
+		cgd3d9bin.str().c_str(),
+		cgd3d9path.str().c_str(),
 		false
 		);
 	CopyFileW(
-		airfile[0].str().c_str(),
-		airdir[0].str().c_str(),
+		airfile.str().c_str(),
+		airdir.str().c_str(),
 		false
 		);
 	CopyFileW(
-		flashfile[0].str().c_str(),
-		flashdir[0].str().c_str(),
+		flashfile.str().c_str(),
+		flashdir.str().c_str(),
 		false
 		);
 	// End copy all files
