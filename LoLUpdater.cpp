@@ -81,7 +81,7 @@ const wstring unblockfiles[] = { cgunblock.str(), cgglunblock.str(), cgd3d9unblo
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// basic command line output
-	wcout << L"LoLUpdater Alpha 1 Build 14";
+	wcout << L"LoLUpdater Alpha 1 Build 15";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
@@ -97,7 +97,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// string-builder for the cginstaller
 		cginstunblock << cwd.str().c_str();
 		cginstunblock << cginstaller;
-		cginstunblock << &unblock;
+		cginstunblock << unblock;
 
 		// Downloads Nvidia-CG
 		URLDownloadToFileW(
@@ -141,7 +141,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
 	buff_c << L":\\Program Files (x86)";
-#else ENVIRONMENT32
+#else
 	buff_c << L":\\Program Files";
 #endif
 	buff_c << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
@@ -160,24 +160,24 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// finalize variables for use in later stringbuilding
 	slnpath_f << cwd.str().c_str();
-	slnpath_f << &slnpath;
+	slnpath_f << slnpath;
 
 	airpath_f << cwd.str().c_str();
-	airpath_f << &airpath;
+	airpath_f << airpath;
 
 	tbb0 << slnpath_f.str();
 	tbb0 << tbbfile;
 
 	// Gets location of latest cg dll
-	cgbin << &cgbinpath;
+	cgbin << &cgbinpath[0];
 	cgbin << cgfile;
 
 	// Gets location of latest cggl dll
-	cgglbin << &cgbinpath;
+	cgglbin << &cgbinpath[0];
 	cgglbin << cgglfile;
 
 	// Gets location of latest cgd3d9 dll
-	cgd3d9bin << &cgbinpath;
+	cgd3d9bin << &cgbinpath[0];
 	cgd3d9bin << cgd3d9file;
 
 	// Gets location of latest adobe air dll
@@ -191,7 +191,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// string-builder for adobe air installer
 	airinstunblock << cwd.str().c_str();
 	airinstunblock << airwin;
-	airinstunblock << &unblock;
+	airinstunblock << unblock;
 
 	// Downloads adobe-air
 	URLDownloadToFileW(
@@ -236,22 +236,22 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Finalize paths with the unblock tag
 	cgunblock << cgpath.str();
-	cgunblock << &unblock;
+	cgunblock << unblock;
 
 	cgglunblock << cgglpath.str();
-	cgglunblock << &unblock;
+	cgglunblock << unblock;
 
 	cgd3d9unblock << cgd3d9path.str();
-	cgd3d9unblock << &unblock;
+	cgd3d9unblock << unblock;
 
 	airunblock << airdir.str();
-	airunblock << &unblock;
+	airunblock << unblock;
 
 	flashunblock << flashdir.str();
-	flashunblock << &unblock;
+	flashunblock << unblock;
 
 	tbbunblock << tbb0.str();
-	tbbunblock << &unblock;
+	tbbunblock << unblock;
 
 #if XP
 	// XP tbb download
