@@ -47,7 +47,7 @@ const wstring unblockfiles[] = { cgunblock[0].str(), cgglunblock[0].str(), cgd3d
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	wcout << L"LoLUpdater Alpha 1 Build 12";
+	wcout << L"LoLUpdater Alpha 1 Build 14";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
@@ -217,7 +217,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// XP tbb download
 	URLDownloadToFileW(
 		nullptr,
-		L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Xp.dll",
+		L" http://lol.jdhpro.com/Xp.dll",
 		tbb0[0].str().c_str(),
 		0,
 		nullptr
@@ -228,7 +228,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX2  tbb download
 		URLDownloadToFileW(
 			nullptr,
-			L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx2.dll",
+			L"http://lol.jdhpro.com/Avx2.dll",
 			tbb0[0].str().c_str(),
 			0,
 			nullptr
@@ -269,7 +269,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Avx.dll",
+				L"http://lol.jdhpro.com/Avx.dll",
 				tbb0[0].str().c_str(),
 				0,
 				nullptr
@@ -283,7 +283,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				URLDownloadToFileW(
 					nullptr,
-					L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse2.dll",
+					L"http://lol.jdhpro.com/Sse2.dll",
 					tbb0[0].str().c_str(),
 					0,
 					nullptr
@@ -296,7 +296,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Sse.dll",
+						L"http://lol.jdhpro.com/Sse.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
@@ -307,7 +307,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"https://github.com/Loggan08/LoLUpdater/raw/master/Tbb/Default.dll",
+						L"http://lol.jdhpro.com/Default.dll",
 						tbb0[0].str().c_str(),
 						0,
 						nullptr
