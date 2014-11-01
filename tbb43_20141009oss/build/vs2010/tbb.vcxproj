@@ -89,7 +89,7 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release-MT-XP|x64'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MT|Win32'">
-    <TargetName>Default</TargetName>
+    <TargetName>SSE</TargetName>
     <GenerateManifest>false</GenerateManifest>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
@@ -140,7 +140,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <CompileAs>CompileAsCpp</CompileAs>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <AdditionalOptions>/nologo /DLL /MAP /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>
