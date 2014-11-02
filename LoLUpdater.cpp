@@ -24,26 +24,26 @@
 #include "LoLUpdater.h"
 
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
-// 0 = holds the adobe air installation directory
-// 1 = holds the path to where tbb.dll will be downloaded
-// 2 = holds the path to the latest adobe air.dll
-// 3 = holds the path to where adobe air.dll will be copied to
-// 4 = holds the path to the latest "flash" dll
-// 5 = holds the path to where the flash dll will be copied to
-// 6 = holds the path to where the updated cg.dll is.
-// 7 = holds the path to the cginstaller that is downloaded together with the unblock tag
-// 8 = holds the path to the adobe air installer that is downloaded together with the unblock tag
-// 9 = holds the path together with the unblock tag to where the adobe air.dll is in the LoL installation.
-// 10 = holds the path to where the updated cgd3d9.dll is.
-// 11 = holds the path to where the updated cggl.dll is.
-// 12 = holds the path to the final destination of the updated cg.dll
-// 13 = holds the path to the final destination of the updated cggl.dll
-// 14 = holds the path to the tbb dll together with the unblock tag
-// 15 = holds the path to the "flash" dll together with the unblock tag
-// 16 = holds the path to the final destination of the updated cgd3d9.dll
-// 17 = holds the full path to where all adobe files will be copied to.
-// 18 = holds the full path to where all game files will be copied to.
-// 19 = holds the path to the current working directory (where the executable was ran from)
+// 0 = adobe air installation directory
+// 1 = path to where tbb.dll will be downloaded
+// 2 = path to the latest adobe air.dll
+// 3 = path to where adobe air.dll will be copied to
+// 4 = path to the latest "flash" dll
+// 5 = path to where the flash dll will be copied to
+// 6 = path to where the updated cg.dll is.
+// 7 = path to the cginstaller that is downloaded together with the unblock tag
+// 8 = path to the adobe air installer that is downloaded together with the unblock tag
+// 9 = path together with the unblock tag to where the adobe air.dll is in the LoL installation.
+// 10 = path to where the updated cgd3d9.dll is.
+// 11 = path to where the updated cggl.dll is.
+// 12 = path to the final destination of the updated cg.dll
+// 13 = path to the final destination of the updated cggl.dll
+// 14 = path to the tbb dll together with the unblock tag
+// 15 = path to the "flash" dll together with the unblock tag
+// 16 = path to the final destination of the updated cgd3d9.dll
+// 17 = full path to where all adobe files will be copied to.
+// 18 = full path to where all game files will be copied to.
+// 19 = path to the current working directory (where the executable was ran from)
 std::wstringstream pathcontainer[20];
 
 // function to reduce amount of lines in source-code, improves readability (questionable)
@@ -62,9 +62,9 @@ void charreduction(int dest, int path1, std::wstring path2)
 	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
 
-// holds the environmental variable for CG_BIN_PATH (todo: make into wstringstream)
+// environmental variable for CG_BIN_PATH (todo: make into wstringstream)
 std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
-// holds the full path  (incl file.ext) to the program (todo: make into wstringstream)
+// full path  (incl file.ext) to the program (todo: make into wstringstream)
 std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Unblock tag
