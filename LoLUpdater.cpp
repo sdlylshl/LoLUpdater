@@ -68,18 +68,21 @@ const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15
 // Garena executable
 const wstring garena(L"lol.exe");
 
+// function to simplify string building for the unblock strings
 void ublk(int x, int y)
 {
 	wbuffer[x] << wbuffer[y].str().c_str();
 	wbuffer[x] << unblock;
 }
 
+// function to simplify string building for the paths
 void wstrbld(int x, int y, wstring z)
 {
 	wbuffer[x] << wbuffer[y].str().c_str();
 	wbuffer[x] << z;
 }
 
+// Game version test
 wstring aair()
 {
 	if (ifstream(garena).good())
@@ -89,6 +92,7 @@ wstring aair()
 	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 }
 
+// Game version test
 wstring game()
 {
 	if (ifstream(garena).good())
