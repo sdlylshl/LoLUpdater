@@ -27,97 +27,107 @@ using namespace std;
 // 20 = holds the full path to where all adobe files will be copied to.
 // 21 = holds the full path to where all game files will be copied to.
 // 22 = holds the path to the current working directory (where the executable was ran from)
-wstringstream wbuffer[23];
+stringstream pathkeeper[23];
+
+// convert string to "Windows unicode" string
+const wchar_t *GetWC(const char *c)
+{
+	const size_t cSize = strlen(c) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	mbstowcs(wc, c, cSize);
+
+	return wc;
+}
 
 // Function to reduce amount of lines
 void Copy(int x, int y)
 {
 	CopyFileW(
-		wbuffer[x].str().c_str(),
-		wbuffer[y].str().c_str(),
+		GetWC(pathkeeper[x].str().c_str()),
+		GetWC(pathkeeper[y].str().c_str()),
 		false
 		);
 }
 
 
-// holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
-vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
-// holds the full path  (incl file.ext) to the program (todo make into wstringstream)
-vector<wchar_t> cwd0(MAX_PATH + 1, 0);
+// holds the environmental variable for CG_BIN_PATH (todo make into stringstream)
+vector<char> cgbinpath(MAX_PATH + 1, 0);
+// holds the full path  (incl file.ext) to the program (todo make into stringstream)
+vector<char> cwd0(MAX_PATH + 1, 0);
 
 // Unblock tag
-const wstring unblock(L":Zone.Identifier");
+const string unblock(":Zone.Identifier");
 // Full name of the adobe air dll
-const wstring air(L"Adobe AIR.dll");
+const string air("Adobe AIR.dll");
 // relative path to the flash dll from where the adobe air dll is
-const wstring flash(L"Resources\\NPSWF32.dll");
+const string flash("Resources\\NPSWF32.dll");
 //  Full cg dll name
-const wstring cgfile(L"Cg.dll");
+const string cgfile("Cg.dll");
 //  Full cggl dll name
-const wstring cgglfile(L"CgGL.dll");
+const string cgglfile("CgGL.dll");
 //  Full cgd3d9 dll name
-const wstring cgd3d9file(L"CgD3D9.dll");
+const string cgd3d9file("CgD3D9.dll");
 //  Full name of the downloaded cg installer
-const wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+const string cginstaller("Cg-3.1_April2012_Setup.exe");
 //  Full tbb dll name
-const wstring tbbfile(L"tbb.dll");
+const string tbbfile("tbb.dll");
 //  Full name of the downloaded adobe air installer
-const wstring airwin(L"air15_win.exe");
+const string airwin("air15_win.exe");
 // collection of all files that will be unblocked at the end
-const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str() };
+const string unblockfiles[] = { pathkeeper[9].str(), pathkeeper[14].str(), pathkeeper[15].str(), pathkeeper[17].str(), pathkeeper[18].str(), pathkeeper[19].str() };
 // Garena executable
-const wstring garena(L"lol.exe");
+const string garena("lol.exe");
 
 
 // Game version test
-wstring aair()
+string aair()
 {
 	if (ifstream(garena).good())
 	{
-		return L"Air\\Adobe AIR\\Versions\\1.0\\";
+		return "Air\\Adobe AIR\\Versions\\1.0\\";
 	}
-	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+	return "RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 }
 
 // Game version test
-wstring game()
+string game()
 {
 	if (ifstream(garena).good())
 	{
-		return L"Game\\";
+		return "Game\\";
 	}
-	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
+	return "RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
 }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	wcout << L"LoLUpdater Alpha 1 Build 18";
-	wcout << endl;
-	wcout << L"Patching...";
-	wcout << endl;
+	cout << "LoLUpdater Alpha 1 Build 18";
+	cout << endl;
+	cout << "Patching...";
+	cout << endl;
 
 
 	// gets working directory with app.ext
-	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
+	GetModuleFileNameW(nullptr, const_cast<wchar_t *>(GetWC(&cwd0[0])), MAX_PATH + 1);
 
 	// remove app.ext and append backslash to the working-dir buffer.
-	wbuffer[22] << wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\";
+	pathkeeper[22] << (string(&cwd0[0]).substr(0, string(&cwd0[0]).find_last_of("\\/")) + "\\");
 
 
 	// string-builder for the cginstaller
-	wbuffer[7] << wbuffer[22].str().c_str() + cginstaller + unblock;
+	pathkeeper[7] << (pathkeeper[22].str().c_str() + cginstaller + unblock);
 	// Downloads Nvidia-CG
 	URLDownloadToFileW(
 		nullptr,
-		L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-		cginstaller.c_str(),
+		GetWC("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"),
+		GetWC(cginstaller.c_str()),
 		0,
 		nullptr
 		);
 
 	// Unblocks the cg-installer
-	DeleteFileW(wbuffer[7].str().c_str());
+	DeleteFileW(GetWC(pathkeeper[7].str().c_str()));
 
 	// Starts the cg-executable
 	SHELLEXECUTEINFOW ShExecInfocg = { 0 };
@@ -125,9 +135,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfocg.hwnd = nullptr;
 	ShExecInfocg.lpVerb = nullptr;
-	ShExecInfocg.lpFile = cginstaller.c_str();
+	ShExecInfocg.lpFile = GetWC(cginstaller.c_str());
 	// silent and minimal install
-	ShExecInfocg.lpParameters = L"/verysilent /TYPE=compact";
+	ShExecInfocg.lpParameters = GetWC("/verysilent /TYPE=compact");
 	ShExecInfocg.lpDirectory = nullptr;
 	ShExecInfocg.nShow = SW_SHOW;
 	ShExecInfocg.hInstApp = nullptr;
@@ -136,55 +146,55 @@ int _tmain(int argc, _TCHAR* argv[])
 	WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
 
 	// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
-	GetEnvironmentVariableW(L"CG_BIN_PATH",
-		&cgbinpath[0],
+	GetEnvironmentVariableW(GetWC("CG_BIN_PATH"),
+		const_cast<wchar_t *>(GetWC(&cgbinpath[0])),
 		MAX_PATH + 1);
 
 	// appends a backslash to the path for later processing.
-	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
+	strncat(&cgbinpath[0], "\\", MAX_PATH + 1);
 
 	// add drive letter to the variable
-	wbuffer[0] << wbuffer[22].str().c_str()[0];
+	pathkeeper[0] << pathkeeper[22].str().c_str()[0];
 
 	// different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
-	wbuffer[0] << L":\\Program Files (x86)";
+	pathkeeper[0] << ":\\Program Files (x86)";
 #else
-	wbuffer[0] << L":\\Program Files";
+	pathkeeper[0] << ":\\Program Files";
 #endif
 	// finish with the default install directory from %Programfiles%
-	wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	pathkeeper[0] << "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// Gets location of latest cg dll
-	wbuffer[6] << &cgbinpath[0] + cgfile;
+	pathkeeper[6] << (&cgbinpath[0] + cgfile);
 
 	// Gets location of latest cggl dll
-	wbuffer[11] << &cgbinpath[0] + cgglfile;
+	pathkeeper[11] << (&cgbinpath[0] + cgglfile);
 
 	// Gets location of latest cgd3d9 dll
-	wbuffer[10] << &cgbinpath[0] + cgd3d9file;
+	pathkeeper[10] << (&cgbinpath[0] + cgd3d9file);
 
 
 	// string-builder for adobe air installer
-	wbuffer[8] << wbuffer[22].str().c_str() + airwin + unblock;
+	pathkeeper[8] << (pathkeeper[22].str().c_str() + airwin + unblock);
 
 	// Downloads adobe-air
 	URLDownloadToFileW(
 		nullptr,
-		L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe",
-		airwin.c_str(),
+		GetWC("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"),
+		GetWC(airwin.c_str()),
 		0,
 		nullptr
 		);
 	// Unblocks the adobe air installer
-	DeleteFileW(wbuffer[8].str().c_str());
+	DeleteFileW(GetWC(pathkeeper[8].str().c_str()));
 
 	SHELLEXECUTEINFOW ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = airwin.c_str();
+	ShExecInfo.lpFile = GetWC(airwin.c_str());
 	ShExecInfo.lpParameters = L"-silent";
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
@@ -195,29 +205,29 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Todo: use vectors and foreach here.
 	// string building
-	wbuffer[21] << wbuffer[22].str().c_str() + game();
-	wbuffer[20] << wbuffer[22].str().c_str() + aair();
-	wbuffer[1] << wbuffer[21].str().c_str() + tbbfile;
-	wbuffer[2] << wbuffer[0].str().c_str() + air;
-	wbuffer[4] << wbuffer[0].str().c_str() + flash;
-	wbuffer[12] << wbuffer[21].str().c_str() + cgfile;
-	wbuffer[13] << wbuffer[21].str().c_str() + cgglfile;
-	wbuffer[16] << wbuffer[21].str().c_str() + cgd3d9file;
-	wbuffer[3] << wbuffer[20].str().c_str() + air;
-	wbuffer[5] << wbuffer[20].str().c_str() + flash;
-	wbuffer[18] << wbuffer[12].str().c_str() + unblock;
-	wbuffer[17] << wbuffer[13].str().c_str() + unblock;
-	wbuffer[19] << wbuffer[16].str().c_str() + unblock;
-	wbuffer[9] << wbuffer[3].str().c_str() + unblock;
-	wbuffer[15] << wbuffer[5].str().c_str() + unblock;
-	wbuffer[14] << wbuffer[1].str().c_str() + unblock;
+	pathkeeper[21] << (pathkeeper[22].str().c_str() + game());
+	pathkeeper[20] << (pathkeeper[22].str().c_str() + aair());
+	pathkeeper[1] << (pathkeeper[21].str().c_str() + tbbfile);
+	pathkeeper[2] << (pathkeeper[0].str().c_str() + air);
+	pathkeeper[4] << (pathkeeper[0].str().c_str() + flash);
+	pathkeeper[12] << (pathkeeper[21].str().c_str() + cgfile);
+	pathkeeper[13] << (pathkeeper[21].str().c_str() + cgglfile);
+	pathkeeper[16] << (pathkeeper[21].str().c_str() + cgd3d9file);
+	pathkeeper[3] << (pathkeeper[20].str().c_str() + air);
+	pathkeeper[5] << (pathkeeper[20].str().c_str() + flash);
+	pathkeeper[18] << (pathkeeper[12].str().c_str() + unblock);
+	pathkeeper[17] << (pathkeeper[13].str().c_str() + unblock);
+	pathkeeper[19] << (pathkeeper[16].str().c_str() + unblock);
+	pathkeeper[9] << (pathkeeper[3].str().c_str() + unblock);
+	pathkeeper[15] << (pathkeeper[5].str().c_str() + unblock);
+	pathkeeper[14] << (pathkeeper[1].str().c_str() + unblock);
 
 #ifdef XP
 	// XP tbb download
 	URLDownloadToFileW(
 		nullptr,
-		L" http://lol.jdhpro.com/Xp.dll",
-		wbuffer[1].str().c_str(),
+		GetWC(" http://lol.jdhpro.com/Xp.dll"),
+		GetWC(pathkeeper[1].str().c_str()),
 		0,
 		nullptr
 		);
@@ -227,8 +237,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		// AVX2  tbb download
 		URLDownloadToFileW(
 			nullptr,
-			L"Avx2.dll",
-			wbuffer[1].str().c_str(),
+			GetWC("Avx2.dll"),
+			GetWC(pathkeeper[1].str().c_str()),
 			0,
 			nullptr
 			);
@@ -267,8 +277,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			URLDownloadToFileW(
 				nullptr,
-				L"http://lol.jdhpro.com/Avx.dll",
-				wbuffer[1].str().c_str(),
+				GetWC("http://lol.jdhpro.com/Avx.dll"),
+				GetWC(pathkeeper[1].str().c_str()),
 				0,
 				nullptr
 				);
@@ -281,8 +291,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				URLDownloadToFileW(
 					nullptr,
-					L"http://lol.jdhpro.com/Sse2.dll",
-					wbuffer[1].str().c_str(),
+					GetWC("http://lol.jdhpro.com/Sse2.dll"),
+					GetWC(pathkeeper[1].str().c_str()),
 					0,
 					nullptr
 					);
@@ -294,8 +304,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"http://lol.jdhpro.com/Sse.dll",
-						wbuffer[1].str().c_str(),
+						GetWC("http://lol.jdhpro.com/Sse.dll"),
+						GetWC(pathkeeper[1].str().c_str()),
 						0,
 						nullptr
 						);
@@ -305,8 +315,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 					URLDownloadToFileW(
 						nullptr,
-						L"http://lol.jdhpro.com/Default.dll",
-						wbuffer[1].str().c_str(),
+						GetWC("http://lol.jdhpro.com/Default.dll"),
+						GetWC(pathkeeper[1].str().c_str()),
 						0,
 						nullptr
 						);
@@ -326,17 +336,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	// End copy all files
 
 	// Unblock all patched files
-	for (wstring i : unblockfiles)
+	for (string i : unblockfiles)
 	{
-		DeleteFileW(&i[0]);
+		DeleteFileW(GetWC(&i[0]));
 	}
 
 	// progress-indicator end
-	wcout << "LoLUpdater finished!";
-	wcout << endl;
-	wstring dummy;
-	wcout << "Enter to continue..." << endl;
-	getline(wcin, dummy);
+	cout << "LoLUpdater finished!";
+	cout << endl;
+	string dummy;
+	cout << "Enter to continue..." << endl;
+	getline(cin, dummy);
 
 	// exit program
 	return 0;
