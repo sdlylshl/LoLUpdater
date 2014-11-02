@@ -30,7 +30,7 @@ using namespace std;
 wstringstream wbuffer[23];
 
 // Function to reduce amount of lines
-void LoLCopy(int x, int y)
+void Copy(int x, int y)
 {
 	CopyFileW(
 		wbuffer[x].str().c_str(),
@@ -68,19 +68,6 @@ const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15
 // Garena executable
 const wstring garena(L"lol.exe");
 
-// function to simplify string building for the unblock strings
-void ublk(int x, int y)
-{
-	wbuffer[x] << wbuffer[y].str().c_str();
-	wbuffer[x] << unblock;
-}
-
-// function to simplify string building for the paths
-void wstrbld(int x, int y, wstring z)
-{
-	wbuffer[x] << wbuffer[y].str().c_str();
-	wbuffer[x] << z;
-}
 
 // Game version test
 wstring aair()
@@ -111,21 +98,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	wcout << endl;
 
 
-
-
 	// gets working directory with app.ext
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
 
 	// remove app.ext and append backslash to the working-dir buffer.
-	wbuffer[22] << wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/"));
-	wbuffer[22] << L"\\";
+	wbuffer[22] << wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\";
 
 
 	// string-builder for the cginstaller
-	wbuffer[7] << wbuffer[22].str().c_str();
-	wbuffer[7] << cginstaller;
-	wbuffer[7] << unblock;
-
+	wbuffer[7] << wbuffer[22].str().c_str() + cginstaller + unblock;
 	// Downloads Nvidia-CG
 	URLDownloadToFileW(
 		nullptr,
@@ -175,22 +156,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// Gets location of latest cg dll
-	wbuffer[6] << &cgbinpath[0];
-	wbuffer[6] << cgfile;
+	wbuffer[6] << &cgbinpath[0] + cgfile;
 
 	// Gets location of latest cggl dll
-	wbuffer[11] << &cgbinpath[0];
-	wbuffer[11] << cgglfile;
+	wbuffer[11] << &cgbinpath[0] + cgglfile;
 
 	// Gets location of latest cgd3d9 dll
-	wbuffer[10] << &cgbinpath[0];
-	wbuffer[10] << cgd3d9file;
+	wbuffer[10] << &cgbinpath[0] + cgd3d9file;
 
 
 	// string-builder for adobe air installer
-	wbuffer[8] << wbuffer[22].str().c_str();
-	wbuffer[8] << airwin;
-	wbuffer[8] << unblock;
+	wbuffer[8] << wbuffer[22].str().c_str() + airwin + unblock;
 
 	// Downloads adobe-air
 	URLDownloadToFileW(
@@ -219,22 +195,22 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Todo: use vectors and foreach here.
 	// string building
-	wstrbld(21, 22, game());
-	wstrbld(20, 22, aair());
-	wstrbld(1, 21, tbbfile);
-	wstrbld(2, 0, air);
-	wstrbld(4, 0, flash);
-	wstrbld(12, 21, cgfile);
-	wstrbld(13, 21, cgglfile);
-	wstrbld(16, 21, cgd3d9file);
-	wstrbld(3, 20, air);
-	wstrbld(3, 20, flash);
-	ublk(18, 12);
-	ublk(17, 13);
-	ublk(19, 16);
-	ublk(9, 3);
-	ublk(15, 5);
-	ublk(14, 1);
+	wbuffer[21] << wbuffer[22].str().c_str() + game();
+	wbuffer[20] << wbuffer[22].str().c_str() + aair();
+	wbuffer[1] << wbuffer[21].str().c_str() + tbbfile;
+	wbuffer[2] << wbuffer[0].str().c_str() + air;
+	wbuffer[4] << wbuffer[0].str().c_str() + flash;
+	wbuffer[12] << wbuffer[21].str().c_str() + cgfile;
+	wbuffer[13] << wbuffer[21].str().c_str() + cgglfile;
+	wbuffer[16] << wbuffer[21].str().c_str() + cgd3d9file;
+	wbuffer[3] << wbuffer[20].str().c_str() + air;
+	wbuffer[5] << wbuffer[20].str().c_str() + flash;
+	wbuffer[18] << wbuffer[12].str().c_str() + unblock;
+	wbuffer[17] << wbuffer[13].str().c_str() + unblock;
+	wbuffer[19] << wbuffer[16].str().c_str() + unblock;
+	wbuffer[9] << wbuffer[3].str().c_str() + unblock;
+	wbuffer[15] << wbuffer[5].str().c_str() + unblock;
+	wbuffer[14] << wbuffer[1].str().c_str() + unblock;
 
 #ifdef XP
 	// XP tbb download
@@ -342,11 +318,11 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 	// Todo: use vectors and a foreach here
 	// Copy all files
-	LoLCopy(6, 12);
-	LoLCopy(11, 13);
-	LoLCopy(10, 16);
-	LoLCopy(2, 3);
-	LoLCopy(4, 5);
+	Copy(6, 12);
+	Copy(11, 13);
+	Copy(10, 16);
+	Copy(2, 3);
+	Copy(4, 5);
 	// End copy all files
 
 	// Unblock all patched files
