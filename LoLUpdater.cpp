@@ -40,7 +40,6 @@ void LoLCopy(int x, int y)
 }
 
 
-
 // holds the environmental variable for CG_BIN_PATH (todo make into wstringstream)
 vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 // holds the full path  (incl file.ext) to the program (todo make into wstringstream)
@@ -65,7 +64,7 @@ const wstring tbbfile(L"tbb.dll");
 //  Full name of the downloaded adobe air installer
 const wstring airwin(L"air15_win.exe");
 // collection of all files that will be unblocked at the end
-const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str()};
+const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str() };
 
 void ublk(int x, int y)
 {
@@ -78,8 +77,6 @@ void wstrbld(int x, int y, wstring z)
 	wbuffer[x] << wbuffer[y].str().c_str();
 	wbuffer[x] << z;
 }
-
-
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -102,53 +99,53 @@ int _tmain(int argc, _TCHAR* argv[])
 	wbuffer[7] << cginstaller;
 	wbuffer[7] << unblock;
 
-		// Downloads Nvidia-CG
-		URLDownloadToFileW(
-			nullptr,
-			L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
-			cginstaller.c_str(),
-			0,
-			nullptr
-			);
+	// Downloads Nvidia-CG
+	URLDownloadToFileW(
+		nullptr,
+		L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe",
+		cginstaller.c_str(),
+		0,
+		nullptr
+		);
 
-		// Unblocks the cg-installer
-		DeleteFileW(wbuffer[7].str().c_str());
+	// Unblocks the cg-installer
+	DeleteFileW(wbuffer[7].str().c_str());
 
-		// Starts the cg-executable
-		SHELLEXECUTEINFOW ShExecInfocg = { 0 };
-		ShExecInfocg.cbSize = sizeof(SHELLEXECUTEINFOW);
-		ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
-		ShExecInfocg.hwnd = nullptr;
-		ShExecInfocg.lpVerb = nullptr;
-		ShExecInfocg.lpFile = cginstaller.c_str();
-		// silent and minimal install
-		ShExecInfocg.lpParameters = L"/verysilent /TYPE=compact";
-		ShExecInfocg.lpDirectory = nullptr;
-		ShExecInfocg.nShow = SW_SHOW;
-		ShExecInfocg.hInstApp = nullptr;
-		ShellExecuteExW(&ShExecInfocg);
-		// Wait for process to finish before continuing.
-		WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
+	// Starts the cg-executable
+	SHELLEXECUTEINFOW ShExecInfocg = { 0 };
+	ShExecInfocg.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfocg.hwnd = nullptr;
+	ShExecInfocg.lpVerb = nullptr;
+	ShExecInfocg.lpFile = cginstaller.c_str();
+	// silent and minimal install
+	ShExecInfocg.lpParameters = L"/verysilent /TYPE=compact";
+	ShExecInfocg.lpDirectory = nullptr;
+	ShExecInfocg.nShow = SW_SHOW;
+	ShExecInfocg.hInstApp = nullptr;
+	ShellExecuteExW(&ShExecInfocg);
+	// Wait for process to finish before continuing.
+	WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
 
-		// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
-		GetEnvironmentVariableW(L"CG_BIN_PATH",
-			&cgbinpath[0],
-			MAX_PATH + 1);
+	// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
+	GetEnvironmentVariableW(L"CG_BIN_PATH",
+		&cgbinpath[0],
+		MAX_PATH + 1);
 
 	// appends a backslash to the path for later processing.
-		wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
+	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
 
 	// add drive letter to the variable
-		wbuffer[0] << wbuffer[22].str().c_str()[0];
+	wbuffer[0] << wbuffer[22].str().c_str()[0];
 
 	// different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
-		wbuffer[0] << L":\\Program Files (x86)";
+	wbuffer[0] << L":\\Program Files (x86)";
 #else
-		wbuffer[0] << L":\\Program Files";
+	wbuffer[0] << L":\\Program Files";
 #endif
-		// finish with the default install directory from %Programfiles%
-		wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	// finish with the default install directory from %Programfiles%
+	wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
 	// paths to where files should be copied
 	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
@@ -175,7 +172,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	wbuffer[10] << &cgbinpath[0];
 	wbuffer[10] << cgd3d9file;
 
-	
 
 	// string-builder for adobe air installer
 	wbuffer[8] << wbuffer[22].str().c_str();
@@ -269,7 +265,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		bool cpuAVXSuport = cpuInfo[2] & (1 << 28) || false;
 
 
-
 		if (osUsesXSAVE_XRSTORE && cpuAVXSuport)
 		{
 			// Check if the OS will save the YMM registers (basically final check for AVX support)
@@ -331,7 +326,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 #endif
-	// Todo, use vectors and a foreach here
+	// Todo: use vectors and a foreach here
 	// Copy all files
 	LoLCopy(6, 12);
 	LoLCopy(11, 13);
@@ -341,7 +336,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// End copy all files
 
 	// Unblock all patched files
-	for each (wstring i in unblockfiles)
+	for (wstring i : unblockfiles)
 	{
 		DeleteFileW(&i[0]);
 	}
