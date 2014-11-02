@@ -4,6 +4,7 @@
 // Removes the "Zone.Identifier" tag that comes with files downloaded from the internet through a Windows OS to prevent corruption and intended functionality (Normally refered as "Unblocking" files).
 
 // Website: http://lolupdater.com
+// Source-code (Github): https://github.com/Loggan08/LoLUpdater
 // IRC: #LoLUpdater @ Quakenet , IRCWebchat: http://webchat.quakenet.org/?channels=LoLUpdater
 
 // Copyright 2014: Elias Sollander
