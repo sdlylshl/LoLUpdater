@@ -23,9 +23,6 @@
 // Contains AVX2 check from intel described below, some defines as well as the includes for this project.
 #include "LoLUpdater.h"
 
-// So we dont have to write std:: before the standard functions
-using namespace std;
-
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
 // 0 = holds the adobe air installation directory
 // 1 = holds the path to where tbb.dll will be downloaded
@@ -47,7 +44,7 @@ using namespace std;
 // 17 = holds the full path to where all adobe files will be copied to.
 // 18 = holds the full path to where all game files will be copied to.
 // 19 = holds the path to the current working directory (where the executable was ran from)
-wstringstream pathcontainer[20];
+std::wstringstream pathcontainer[20];
 
 // function to reduce amount of lines in source-code, improves readability (questionable)
 void Copy(int from, int to)
@@ -60,42 +57,42 @@ void Copy(int from, int to)
 }
 
 // function to reduce length of lines, improves readability (questionable)
-void charreduction(int dest, int path1, wstring path2)
+void charreduction(int dest, int path1, std::wstring path2)
 {
 	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
 
 // holds the environmental variable for CG_BIN_PATH (todo: make into wstringstream)
-vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
+std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 // holds the full path  (incl file.ext) to the program (todo: make into wstringstream)
-vector<wchar_t> cwd0(MAX_PATH + 1, 0);
+std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Unblock tag
-const wstring unblock(L":Zone.Identifier");
+const std::wstring unblock(L":Zone.Identifier");
 // Full name of the adobe air dll
-const wstring air(L"Adobe AIR.dll");
+const std::wstring air(L"Adobe AIR.dll");
 // relative path to the flash dll from where the adobe air dll is
-const wstring flash(L"Resources\\NPSWF32.dll");
+const std::wstring flash(L"Resources\\NPSWF32.dll");
 //  Full cg dll name
-const wstring cgfile(L"Cg.dll");
+const std::wstring cgfile(L"Cg.dll");
 //  Full cggl dll name
-const wstring cgglfile(L"CgGL.dll");
+const std::wstring cgglfile(L"CgGL.dll");
 //  Full cgd3d9 dll name
-const wstring cgd3d9file(L"CgD3D9.dll");
+const std::wstring cgd3d9file(L"CgD3D9.dll");
 //  Full name of the downloaded cg installer
-const wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 //  Full tbb dll name
-const wstring tbbfile(L"tbb.dll");
+const std::wstring tbbfile(L"tbb.dll");
 //  Full name of the downloaded adobe air installer
-const wstring airwin(L"air15_win.exe");
+const std::wstring airwin(L"air15_win.exe");
 // Garena executable
-const wstring garena(L"lol.exe");
+const std::wstring garena(L"lol.exe");
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
-wstring aair()
+std::wstring aair()
 {
-	if (ifstream(garena).good())
+	if (std::ifstream(garena).good())
 	{
 		return L"Air\\Adobe AIR\\Versions\\1.0\\";
 	}
@@ -104,9 +101,9 @@ wstring aair()
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
-wstring game()
+std::wstring game()
 {
-	if (ifstream(garena).good())
+	if (std::ifstream(garena).good())
 	{
 		return L"Game\\";
 	}
@@ -114,7 +111,7 @@ wstring game()
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
-void download(wstring fromurl, wstring topath, int pathcont, int frompathcont, wstring args)
+void download(std::wstring fromurl, std::wstring topath, int pathcont, int frompathcont, std::wstring args)
 {
 	// Downloads file
 	URLDownloadToFileW(
@@ -147,7 +144,7 @@ void download(wstring fromurl, wstring topath, int pathcont, int frompathcont, w
 	WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
 }
 
-void tbbdownload(wstring url)
+void tbbdownload(std::wstring url)
 {
 	URLDownloadToFileW(
 		nullptr,
@@ -161,16 +158,16 @@ void tbbdownload(wstring url)
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	wcout << L"LoLUpdater Alpha 1 Build 20";
-	wcout << endl;
-	wcout << L"Patching...";
-	wcout << endl;
+	std::wcout << L"LoLUpdater Alpha 1 Build 20";
+	std::wcout << std::endl;
+	std::wcout << L"Patching...";
+	std::wcout << std::endl;
 
 	// gets working directory with app.ext
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
 
 	// remove app.ext and append backslash to the working-dir buffer.
-	pathcontainer[19] << (wstring(&cwd0[0]).substr(0, wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
+	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE=compact");
 
@@ -276,11 +273,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	Copy(4, 5);
 
 	// progress-indicator end
-	wcout << L"LoLUpdater finished!";
-	wcout << endl;
-	wstring dummy;
-	wcout << L"Enter to continue..." << endl;
-	getline(wcin, dummy);
+	std::wcout << L"LoLUpdater finished!";
+	std::wcout << std::endl;
+	std::wstring dummy;
+	std::wcout << L"Enter to continue...";
+	std::wcout << std::endl;
+	getline(std::wcin, dummy);
 
 	// exit program
 	return 0;
