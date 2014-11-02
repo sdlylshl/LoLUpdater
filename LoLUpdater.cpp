@@ -81,7 +81,7 @@ void wstrbld(int x, int y, wstring z)
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	wcout << L"LoLUpdater Alpha 1 Build 16";
+	wcout << L"LoLUpdater Alpha 1 Build 17";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
