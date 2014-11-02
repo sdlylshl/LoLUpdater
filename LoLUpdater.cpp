@@ -116,7 +116,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	// string-builder for the cginstaller
-	pathkeeper[7] << (pathkeeper[22].str().c_str() + cginstaller + unblock);
+	pathkeeper[7] << (pathkeeper[22].str() + cginstaller + unblock);
 	// Downloads Nvidia-CG
 	URLDownloadToFileW(
 		nullptr,
