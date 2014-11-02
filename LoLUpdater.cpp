@@ -65,6 +65,8 @@ const wstring tbbfile(L"tbb.dll");
 const wstring airwin(L"air15_win.exe");
 // collection of all files that will be unblocked at the end
 const wstring unblockfiles[] = { wbuffer[9].str(), wbuffer[14].str(), wbuffer[15].str(), wbuffer[17].str(), wbuffer[18].str(), wbuffer[19].str() };
+// Garena executable
+const wstring garena(L"lol.exe");
 
 void ublk(int x, int y)
 {
@@ -78,13 +80,34 @@ void wstrbld(int x, int y, wstring z)
 	wbuffer[x] << z;
 }
 
+wstring aair()
+{
+	if (ifstream(garena).good())
+	{
+		return L"Air\\Adobe AIR\\Versions\\1.0\\";
+	}
+	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+}
+
+wstring game()
+{
+	if (ifstream(garena).good())
+	{
+		return L"Game\\";
+	}
+	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	wcout << L"LoLUpdater Alpha 1 Build 17";
+	wcout << L"LoLUpdater Alpha 1 Build 18";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
+
+
+
 
 	// gets working directory with app.ext
 	GetModuleFileNameW(nullptr, &cwd0[0], MAX_PATH + 1);
@@ -147,19 +170,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	// finish with the default install directory from %Programfiles%
 	wbuffer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-	// paths to where files should be copied
-	const wstring slnpath(L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
-	const wstring airpath(L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
-
-	// Check if lol.exe exists in work-dir
-	ifstream infile(L"lol.exe");
-	if (infile.good())
-	{
-		// Overload variables if it is Garena
-		const wstring airpath(L"Air\\Adobe AIR\\Versions\\1.0\\");
-		const wstring slnpath(L"Game\\");
-	}
-
 	// Gets location of latest cg dll
 	wbuffer[6] << &cgbinpath[0];
 	wbuffer[6] << cgfile;
@@ -205,8 +215,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Todo: use vectors and foreach here.
 	// string building
-	wstrbld(21, 22, slnpath);
-	wstrbld(20, 22, airpath);
+	wstrbld(21, 22, game());
+	wstrbld(20, 22, aair());
 	wstrbld(1, 21, tbbfile);
 	wstrbld(2, 0, air);
 	wstrbld(4, 0, flash);
@@ -222,7 +232,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ublk(15, 5);
 	ublk(14, 1);
 
-#if XP
+#ifdef XP
 	// XP tbb download
 	URLDownloadToFileW(
 		nullptr,
@@ -242,7 +252,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			0,
 			nullptr
 			);
-	}
+}
 #if (_MSC_FULL_VER >= 160040219)
 	else
 	{
