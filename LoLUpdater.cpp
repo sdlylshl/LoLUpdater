@@ -111,20 +111,20 @@ std::wstring game()
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
-void download(std::wstring fromurl, std::wstring topath, int pathcont, int frompathcont, std::wstring args)
+void download(const wchar_t* fromurl, const wchar_t* topath, int pathcont, int frompathcont, const wchar_t* args)
 {
 	// Downloads file
 	URLDownloadToFileW(
 		nullptr,
-		fromurl.c_str(),
-		topath.c_str(),
+		fromurl,
+		topath,
 		0,
 		nullptr
 		);
 
 	// Unblocks the installer
-	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath.c_str() + unblock);
-	DeleteFileW(pathcontainer[7].str().c_str());
+	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + unblock);
+	DeleteFileW(pathcontainer[pathcont].str().c_str());
 
 	// Starts the executable
 	SHELLEXECUTEINFOW ShExecInfocg = { 0 };
@@ -132,10 +132,10 @@ void download(std::wstring fromurl, std::wstring topath, int pathcont, int fromp
 	ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfocg.hwnd = nullptr;
 	ShExecInfocg.lpVerb = nullptr;
-	ShExecInfocg.lpFile = cginstaller.c_str();
+	ShExecInfocg.lpFile = topath;
 
 	// arguments
-	ShExecInfocg.lpParameters = args.c_str();
+	ShExecInfocg.lpParameters = args;
 	ShExecInfocg.lpDirectory = nullptr;
 	ShExecInfocg.nShow = SW_SHOW;
 	ShExecInfocg.hInstApp = nullptr;
@@ -158,7 +158,7 @@ void tbbdownload(std::wstring url)
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	std::wcout << L"LoLUpdater Alpha 1 Build 20";
+	std::wcout << L"LoLUpdater Alpha 1 Build 21";
 	std::wcout << std::endl;
 	std::wcout << L"Patching...";
 	std::wcout << std::endl;
