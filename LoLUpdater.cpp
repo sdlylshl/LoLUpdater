@@ -1,4 +1,4 @@
-// A custom C++ installer (For Windows XP and up) for copying files to the League of Legends directory (Standard LoL, PBE or Garena) which replaces outdated DLL files with "newer" (and/or modified) DLL files in an attempt to increase FPS and the Pvp.net client (pre-game client).
+// A custom C++ installer (For Windows XP and up) for copying files to the League of Legends directory (Standard LoL, PBE or Garena) which replaces outdated DLL files with "newer" (and/or modified) DLL files in an attempt to increase FPS and the Pvp.net client (pre-game client) responsiveness.
 // Custom files are downloaded from an FTP of choice.
 // Supports detection of various SMID-instructions (AVX2, AVX, SSE2 and SSE)
 // Removes the "Zone.Identifier" tag that comes with files downloaded from the internet through a Windows OS to prevent corruption and intended functionality (Normally refered as "Unblocking" files).
@@ -15,7 +15,6 @@
 // #C++ @ Quakenet http://webchat.quakenet.org/?channels=#C++
 
 // Other credits are mentioned in the code
-
 
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
@@ -56,7 +55,7 @@ void Copy(int from, int to)
 		pathcontainer[from].str().c_str(),
 		pathcontainer[to].str().c_str(),
 		false
-	);
+		);
 }
 
 // function to reduce length of lines, improves readability (questionable)
@@ -91,7 +90,6 @@ const wstring airwin(L"air15_win.exe");
 // Garena executable
 const wstring garena(L"lol.exe");
 
-
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
 wstring aair()
@@ -125,7 +123,6 @@ void download(wstring fromurl, wstring topath, int pathcont, int frompathcont, w
 		0,
 		nullptr
 		);
-
 
 	// Unblocks the installer
 	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath.c_str() + unblock);
@@ -163,7 +160,7 @@ void tbbdownload(wstring url)
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Version + progress indication
-	wcout << L"LoLUpdater Alpha 1 Build 19";
+	wcout << L"LoLUpdater Alpha 1 Build 20";
 	wcout << endl;
 	wcout << L"Patching...";
 	wcout << endl;
@@ -178,8 +175,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
 	GetEnvironmentVariableW(L"CG_BIN_PATH",
-	                       &cgbinpath[0],
-	                       MAX_PATH + 1);
+		&cgbinpath[0],
+		MAX_PATH + 1);
 
 	// appends a backslash to the path for later processing.
 	wcsncat(&cgbinpath[0], L"\\", MAX_PATH + 1);
@@ -193,7 +190,6 @@ int _tmain(int argc, _TCHAR* argv[])
 #else
 	pathcontainer[0] << L":\\Program Files";
 #endif
-
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
 
