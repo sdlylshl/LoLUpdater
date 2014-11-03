@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace lol.updater2d
 {
@@ -23,36 +14,44 @@ namespace lol.updater2d
         public MainWindow()
         {
             InitializeComponent();
-            Execute()
-            }
+        }
 
-        // using async to learn C# 6
-        private void Execute()
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Rect
+        {
+            private readonly int Left;        // x position of upper-left corner
+            private readonly int Top;         // y position of upper-left corner
+            private readonly int Right;       // x position of lower-right corner
+            private readonly int Bottom;      // y position of lower-right corner
+        }
+
+        // use async to learn C# 6?
+        private static void Main()
         {
 
+            var init = Process.GetProcessesByName("lol.updater");
+                var proc = init[0];
+                while (proc.MainWindowHandle == IntPtr.Zero)
+                {
+                    // Discard cached information about the process
+                    // because MainWindowHandle might be cached.
+                    proc.Refresh();
 
-            // add code if process not found (should not happen though)
-            Process[] initial = GetProcessesByName("lol.updater");
-            var proc = inital[0];
+                    Thread.Sleep(10);
+                }
 
-            while (proc.MainWindowHandle == IntPtr.Zero)
-            {
-                // Discard cached information about the process
-                // because MainWindowHandle might be cached.
-                proc.Refresh();
+                var handle = proc.MainWindowHandle;
+                var r = new Rect();
+                GetWindowRect(handle, ref r);
 
-                Thread.Sleep(10);
-            }
 
-            var handle = proc.MainWindowHandle;
-            Rect r = new Rect();
-            GetWindowRect(handle, ref r);
+           
 
 
         }
 
-        [DllImport("user32.dll", Charset = Unicode)]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
 
 
     }
