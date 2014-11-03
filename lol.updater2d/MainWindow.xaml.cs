@@ -23,6 +23,37 @@ namespace lol.updater2d
         public MainWindow()
         {
             InitializeComponent();
+            Execute()
+            }
+
+        // using async to learn C# 6
+        private void Execute()
+        {
+
+
+            // add code if process not found (should not happen though)
+            Process[] initial = GetProcessesByName("lol.updater");
+            var proc = inital[0];
+
+            while (proc.MainWindowHandle == IntPtr.Zero)
+            {
+                // Discard cached information about the process
+                // because MainWindowHandle might be cached.
+                proc.Refresh();
+
+                Thread.Sleep(10);
+            }
+
+            var handle = proc.MainWindowHandle;
+            Rect r = new Rect();
+            GetWindowRect(handle, ref r);
+
+
         }
+
+        [DllImport("user32.dll", Charset = Unicode)]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+
+
     }
 }
