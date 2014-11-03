@@ -5,8 +5,14 @@
     WindowStyle="None"
     ShowInTaskbar="False"
     AllowsTransparency="True"
-    Background="Transparent">
+    Background="Transparent" KeyDown="Window_KeyDown">
     <Grid>
-        
+        <Canvas Name="MyCanvas"  >
+            <Ellipse Name="ball" Fill="Red" Canvas.Top="130" Canvas.Bottom="160" Canvas.Left="310" Canvas.Right="340"  HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="30"/>
+            <Label Name="raket"  Background="Black" Content=""  Canvas.Right="334" Canvas.Bottom="433" Canvas.Left="314" Canvas.Top="403" Width="170" Height="30"/>
+            <Label Name="lbl_score" Content="0" Canvas.Left="37" Canvas.Top="26"/>
+
+        </Canvas>
+
     </Grid>
 </Window>
