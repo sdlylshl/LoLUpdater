@@ -5,7 +5,7 @@
     WindowStyle="None"
     ShowInTaskbar="False"
     AllowsTransparency="True"
-    Background="Transparent" KeyDown="Window_KeyDown">
+     KeyDown="Window_KeyDown">
     <Grid>
         <Canvas Name="MyCanvas"  >
             <Ellipse Name="ball" Fill="Red" Canvas.Top="130" Canvas.Bottom="160" Canvas.Left="310" Canvas.Right="340"  HorizontalAlignment="Left" Height="30" Stroke="Black" VerticalAlignment="Top" Width="30"/>

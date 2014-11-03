@@ -98,7 +98,7 @@ namespace lol.updater2d
         }
 
         // use async to learn C# 6?
-        private static void Main()
+        private static void NotMain()
         {
             var init = Process.GetProcessesByName("lol.updater");
             var proc = init[0];
