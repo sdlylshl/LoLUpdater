@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lol.updater", "lol.updater.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tbb", "tbb43_20141009oss\build\vs2010\tbb.vcxproj", "{F62787DD-1327-448B-9818-030062BCFAA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lol.updater2d", "lol.updater2d.csproj", "{85DE4696-052C-4358-ABC0-421349F805F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lol.updater2d", "lol.updater2d\lol.updater2d.csproj", "{85DE4696-052C-4358-ABC0-421349F805F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
