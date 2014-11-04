@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+// Contains AVX2 check from intel described below, some defines as well as the includes for this project.
+#ifndef XP
+
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -94,16 +97,17 @@ static int can_use_intel_core_4th_gen_features()
 
     return the_4th_gen_features_available;
 }
-
-#ifndef UNICODE
-#define UNICODE
 #endif
 
-#ifndef _UNICODE
-#define _UNICODE
+// Macros
+#ifdef _WIN32 || _WIN64
+#if _WIN64
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
 #endif
 
-// Contains AVX2 check from intel described below, some defines as well as the includes for this project.
 #include <tchar.h>
 #include <ShlObj.h>
 #include <direct.h>
@@ -286,9 +290,9 @@ void MainWindow::on_pushButton_clicked()
         pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 
         // different paths depending if it is a 64 or 32bit system
-    #if _WIN64
+    #ifdef ENVIRONMENT64
         pathcontainer[0] << ":\\Program Files (x86)";
-    #elif _WIN32
+    #else
         pathcontainer[0] << ":\\Program Files";
     #endif
 

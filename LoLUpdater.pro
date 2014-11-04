@@ -13,7 +13,6 @@ SOURCES += main.cpp\
         mainwindow.cpp
 
 HEADERS  += mainwindow.h \
-    ../LoLUpdater.h \
     resource.h
 
 FORMS    += mainwindow.ui
@@ -22,7 +21,6 @@ RC_FILE = resource.rc
 
 OTHER_FILES += \
     icon1.ico \
-    LoLUpdater.exe.manifest
 
 LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x86\
 -lUrlmon\
