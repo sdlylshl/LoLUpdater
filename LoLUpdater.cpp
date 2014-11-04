@@ -19,6 +19,11 @@
 
 // LoLUpdater.cpp : Defines the entry point for the console application.
 //
+
+// Notes to self (for bottom-up programming)
+// Only use the includes used in the cpp file.
+// 
+
 #include "LoLUpdater.h"
 #ifdef _WINDOWS
 #ifndef UNICODE
