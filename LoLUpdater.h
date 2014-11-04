@@ -1,7 +1,3 @@
-
-
-// used to get the working directory without the app.exe extension
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #ifndef XP
 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
@@ -100,18 +96,10 @@ static int can_use_intel_core_4th_gen_features()
 #endif
 
 // Macros
-#ifdef _WINDOWS
 #ifdef _WIN32 || _WIN64
 #if _WIN64
 #define ENVIRONMENT64
 #else
 #define ENVIRONMENT32
-#endif
-#endif
-#ifndef UNICODE
-#define UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
 #endif
 #endif
