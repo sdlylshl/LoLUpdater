@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -220,21 +221,21 @@ void download(std::wstring fromurl, std::wstring topath, int pathcont, int fromp
     DeleteFile(pathcontainer[pathcont].str().c_str());
 
     // Starts the executable
-    SHELLEXECUTEINFO ShExecInfocg = { 0 };
-    ShExecInfocg.cbSize = sizeof(SHELLEXECUTEINFO);
-    ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
-    ShExecInfocg.hwnd = nullptr;
-    ShExecInfocg.lpVerb = nullptr;
-    ShExecInfocg.lpFile = topath.c_str();
+    SHELLEXECUTEINFO ShExecInfo = { 0 };
+    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    ShExecInfo.hwnd = nullptr;
+    ShExecInfo.lpVerb = nullptr;
+    ShExecInfo.lpFile = topath.c_str();
 
     // arguments
-    ShExecInfocg.lpParameters = args.c_str();
-    ShExecInfocg.lpDirectory = nullptr;
-    ShExecInfocg.nShow = SW_SHOW;
-    ShExecInfocg.hInstApp = nullptr;
-    ShellExecuteEx(&ShExecInfocg);
+    ShExecInfo.lpParameters = args.c_str();
+    ShExecInfo.lpDirectory = nullptr;
+    ShExecInfo.nShow = SW_SHOW;
+    ShExecInfo.hInstApp = nullptr;
+    ShellExecuteEx(&ShExecInfo);
     // Wait for process to finish before continuing.
-    WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
+    WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
 // Download the intel threading building blocks dll (as a function due to multiple statement checks)
@@ -380,12 +381,12 @@ void MainWindow::on_checkBox_clicked()
 {
     if ( ui->checkBox->isChecked())
     {
-       ui->checkBox_2->setCheckable(false);
-    ui->pushButton->setEnabled(true);
+        ui->pushButton->setEnabled(true);
+        ui->checkBox_2->setChecked(false);
     }
     else
     {
-        ui->pushButton->setEnabled(false);
+     ui->pushButton->setEnabled(false);
     }
 
 }
@@ -394,6 +395,7 @@ void MainWindow::on_checkBox_2_clicked()
 {
     if (ui->checkBox_2->isChecked())
     {
-       ui->checkBox->setCheckable(false);
+       ui->checkBox->setChecked(false);
+       ui->pushButton->setEnabled(false);
     }
 }
