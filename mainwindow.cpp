@@ -11,7 +11,7 @@
 int check_4th_gen_intel_core_features()
 {
     const int the_4th_gen_features =
-        (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
+    (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
     return _may_i_use_cpu_feature(the_4th_gen_features);
 }
 
@@ -37,7 +37,7 @@ inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 # else
     __asm__("cpuid" : "+b" (ebx),
 # endif
-        "+a" (eax), "+c" (ecx), "=d" (edx));
+    "+a" (eax), "+c" (ecx), "=d" (edx));
     abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
 #endif
 }
@@ -46,7 +46,7 @@ inline int check_xcr0_ymm()
 {
     uint32_t xcr0;
 #if defined(_MSC_VER)
-    xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
+    xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
 #else
     __asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
 #endif
@@ -65,22 +65,22 @@ inline int check_4th_gen_intel_core_features()
     CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
     run_cpuid(1, 0, abcd);
     if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
-        return 0;
+    return 0;
 
     if (!check_xcr0_ymm())
-        return 0;
+    return 0;
 
     /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX2[bit 5]==1  &&
     CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
     CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
     run_cpuid(7, 0, abcd);
     if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
-        return 0;
+    return 0;
 
     /* CPUID.(EAX=80000001H):ECX.LZCNT[bit 5]==1 */
     run_cpuid(0x80000001, 0, abcd);
     if ((abcd[2] & (1 << 5)) == 0)
-        return 0;
+    return 0;
 
     return 1;
 }
@@ -93,19 +93,25 @@ static int can_use_intel_core_4th_gen_features()
     static int the_4th_gen_features_available = -1;
     /* test is performed once */
     if (the_4th_gen_features_available < 0)
-        the_4th_gen_features_available = check_4th_gen_intel_core_features();
+    the_4th_gen_features_available = check_4th_gen_intel_core_features();
 
     return the_4th_gen_features_available;
 }
 #endif
 
-// Macros
-#ifdef _WIN32 || _WIN64
-#if _WIN64
-#define ENVIRONMENT64
-#else
-#define ENVIRONMENT32
+#ifndef UNICODE
+#define UNICODE
 #endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
+#ifdef _WIN64
+#define ENVIRONMENT64
+#endif
+#ifdef _WIN32
+#define ENVIRONMENT32
 #endif
 
 #include <tchar.h>
@@ -147,9 +153,9 @@ void Copy(int from, int to)
 {
     CopyFile(
         pathcontainer[from].str().c_str(),
-        pathcontainer[to].str().c_str(),
-        false
-        );
+    pathcontainer[to].str().c_str(),
+    false
+    );
 }
 
 // function to reduce length of lines, improves readability (questionable)
@@ -192,8 +198,8 @@ std::wstring aair()
     if (garena)
     {
         return _T("Air\\Adobe AIR\\Versions\\1.0\\");
-    }
-    return _T("RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
+}
+return _T("RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
 }
 
 // Game version test
@@ -204,8 +210,8 @@ std::wstring game()
     if (garena)
     {
         return _T("Game\\");
-    }
-    return _T("RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
+}
+return _T("RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
@@ -215,10 +221,10 @@ void download(std::wstring fromurl, std::wstring topath, int pathcont, int fromp
     URLDownloadToFile(
         nullptr,
         fromurl.c_str(),
-        topath.c_str(),
-        0,
-        nullptr
-        );
+    topath.c_str(),
+    0,
+    nullptr
+    );
 
     // Unblocks the installer
     pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + unblock);
@@ -226,20 +232,20 @@ void download(std::wstring fromurl, std::wstring topath, int pathcont, int fromp
 
     // Starts the executable
     SHELLEXECUTEINFO ShExecInfo = { 0 };
-    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-    ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    ShExecInfo.hwnd = nullptr;
-    ShExecInfo.lpVerb = nullptr;
-    ShExecInfo.lpFile = topath.c_str();
+ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+ShExecInfo.hwnd = nullptr;
+ShExecInfo.lpVerb = nullptr;
+ShExecInfo.lpFile = topath.c_str();
 
-    // arguments
-    ShExecInfo.lpParameters = args.c_str();
-    ShExecInfo.lpDirectory = nullptr;
-    ShExecInfo.nShow = SW_SHOW;
-    ShExecInfo.hInstApp = nullptr;
-    ShellExecuteEx(&ShExecInfo);
-    // Wait for process to finish before continuing.
-    WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+// arguments
+ShExecInfo.lpParameters = args.c_str();
+ShExecInfo.lpDirectory = nullptr;
+ShExecInfo.nShow = SW_SHOW;
+ShExecInfo.hInstApp = nullptr;
+ShellExecuteEx(&ShExecInfo);
+// Wait for process to finish before continuing.
+WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
 // Download the intel threading building blocks dll (as a function due to multiple statement checks)
@@ -248,15 +254,15 @@ void tbbdownload(const std::wstring url)
     URLDownloadToFile(
         nullptr,
         url.c_str(),
-        pathcontainer[1].str().c_str(),
-        0,
-        nullptr
-        );
+    pathcontainer[1].str().c_str(),
+    0,
+    nullptr
+    );
 }
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+QMainWindow(parent),
+ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 }
@@ -271,114 +277,114 @@ void MainWindow::on_pushButton_clicked()
     ui->pushButton->setEnabled(false);
     ui->pushButton->setText("Working...");
     // gets working directory with app.ext
-        GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
+    GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 
-        // remove app.ext and append backslash to the working-dir buffer.
-        pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(_T("\\/"))) + _T("\\"));
+    // remove app.ext and append backslash to the working-dir buffer.
+    pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(_T("\\/"))) + _T("\\"));
 
-        download(_T("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cginstaller.c_str(), 7, 19, _T("/verysilent / TYPE = compact"));
+    download(_T("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cginstaller.c_str(), 7, 19, _T("/verysilent / TYPE = compact"));
 
-        // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
-        GetEnvironmentVariable(_T("CG_BIN_PATH"),
-            &cgbinpath[0],
-            MAX_PATH + 1);
+    // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
+    GetEnvironmentVariable(_T("CG_BIN_PATH"),
+    &cgbinpath[0],
+    MAX_PATH + 1);
 #define _CRT_SECURE_NO_WARNINGS
-        // appends a backslash to the path for later processing.
-        wcsncat(&cgbinpath[0], _T("\\"), MAX_PATH + 1);
+    // appends a backslash to the path for later processing.
+    wcsncat(&cgbinpath[0], _T("\\"), MAX_PATH + 1);
 
-        // add drive letter to the variable
-        pathcontainer[0] << pathcontainer[19].str().c_str()[0];
+    // add drive letter to the variable
+    pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 
-        // different paths depending if it is a 64 or 32bit system
-    #ifdef ENVIRONMENT64
-        pathcontainer[0] << ":\\Program Files (x86)";
-    #else
-        pathcontainer[0] << ":\\Program Files";
-    #endif
+    // different paths depending if it is a 64 or 32bit system
+#ifdef ENVIRONMENT64
+    pathcontainer[0] << ":\\Program Files (x86)";
+#else
+    pathcontainer[0] << ":\\Program Files";
+#endif
 
-        download(_T("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), airwin.c_str(), 8, 19, _T("-silent"));
+    download(_T("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), airwin.c_str(), 8, 19, _T("-silent"));
 
-        // Todo: use vectors and foreach here to compress it some more.
-        // std::wstring building
-        // finish with the default install directory from %Programfiles%
-        pathcontainer[0] << "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+    // Todo: use vectors and foreach here to compress it some more.
+    // std::wstring building
+    // finish with the default install directory from %Programfiles%
+    pathcontainer[0] << "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-        pathcontainer[6] << (&cgbinpath[0] + cgfile);
-        pathcontainer[11] << (&cgbinpath[0] + cgglfile);
-        pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
+    pathcontainer[6] << (&cgbinpath[0] + cgfile);
+    pathcontainer[11] << (&cgbinpath[0] + cgglfile);
+    pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
 
-        // *Not a good way to do this
-        charreduction(18, 19, game());
-        charreduction(17, 19, aair());
-        charreduction(1, 18, tbbfile);
-        charreduction(2, 0, air);
-        charreduction(4, 0, flash);
-        charreduction(12, 18, cgfile);
-        charreduction(13, 18, cgglfile);
-        charreduction(16, 18, cgd3d9file);
-        charreduction(3, 17, air);
-        charreduction(5, 17, flash);
-        charreduction(9, 3, unblock);
-        charreduction(15, 5, unblock);
-        charreduction(14, 1, unblock);
+    // *Not a good way to do this
+    charreduction(18, 19, game());
+    charreduction(17, 19, aair());
+    charreduction(1, 18, tbbfile);
+    charreduction(2, 0, air);
+    charreduction(4, 0, flash);
+    charreduction(12, 18, cgfile);
+    charreduction(13, 18, cgglfile);
+    charreduction(16, 18, cgd3d9file);
+    charreduction(3, 17, air);
+    charreduction(5, 17, flash);
+    charreduction(9, 3, unblock);
+    charreduction(15, 5, unblock);
+    charreduction(14, 1, unblock);
 
-        // Each variant of tbb is built with support for certain SMID instructions (or none)
-    #ifdef XP
-        // Is built without any support for any SMID instructions.
-        tbbdownload(_T("http://lol.jdhpro.com/Xp.dl"));
-    #else
-        // Test for AVX2 (code in header file taken from: https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family)
-        if (can_use_intel_core_4th_gen_features())
-        {
-            tbbdownload(_T("http://lol.jdhpro.com/Avx2.dl"));
-        }
-    #if (_MSC_FULL_VER >= 160040219)
-        else
-        {
-            int cpuInfo[4];
-            __cpuid(cpuInfo, 1);
+    // Each variant of tbb is built with support for certain SMID instructions (or none)
+#ifdef XP
+    // Is built without any support for any SMID instructions.
+    tbbdownload(_T("http://lol.jdhpro.com/Xp.dl"));
+#else
+    // Test for AVX2 (code in header file taken from: https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family)
+    if (can_use_intel_core_4th_gen_features())
+    {
+        tbbdownload(_T("http://lol.jdhpro.com/Avx2.dl"));
+}
+#if (_MSC_FULL_VER >= 160040219)
+else
+{
+    int cpuInfo[4];
+    __cpuid(cpuInfo, 1);
 
-            // Test for AVX (condensed function from: http://insufficientlycomplicated.wordpress.com/2011/11/07/detecting-intel-advanced-vector-extensions-avx-in-visual-studio/)
+    // Test for AVX (condensed function from: http://insufficientlycomplicated.wordpress.com/2011/11/07/detecting-intel-advanced-vector-extensions-avx-in-visual-studio/)
 
-            if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
-            {
-                tbbdownload(_T("http://lol.jdhpro.com/Avx.dl"));
-            }
-    #endif
-            else
-            {
-                //SSE2  tbb download
-                if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
-                {
-                    tbbdownload(_T("http://lol.jdhpro.com/Sse2.dl"));
-                }
-                else
-                {
-                    //SSE  tbb download
-                    if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-                    {
-                        tbbdownload(_T("http://lol.jdhpro.com/Sse.dl"));
-                    }
-                    //download tbb without any extra SMID instructions if SSE is not supported.
-                    else
-                    {
-                        tbbdownload(_T("http://lol.jdhpro.com/Default.dl"));
-                    }
-                }
-            }
-        }
-        // Unblocks the downloaded tbb file.
-        DeleteFile(pathcontainer[14].str().c_str());
+    if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
+    {
+        tbbdownload(_T("http://lol.jdhpro.com/Avx.dl"));
+}
+#endif
+else
+{
+    //SSE2  tbb download
+    if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+    {
+        tbbdownload(_T("http://lol.jdhpro.com/Sse2.dl"));
+}
+else
+{
+    //SSE  tbb download
+    if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+    {
+        tbbdownload(_T("http://lol.jdhpro.com/Sse.dl"));
+}
+//download tbb without any extra SMID instructions if SSE is not supported.
+else
+{
+    tbbdownload(_T("http://lol.jdhpro.com/Default.dl"));
+}
+}
+}
+}
+// Unblocks the downloaded tbb file.
+DeleteFile(pathcontainer[14].str().c_str());
 
-    #endif
-        // Todo: use vectors and a for (c++11 loop) here
-        // Copy all files
-        Copy(6, 12);
-        Copy(11, 13);
-        Copy(10, 16);
-        Copy(2, 3);
-        Copy(4, 5);
-        ui->pushButton->setText("Finished");
+#endif
+// Todo: use vectors and a for (c++11 loop) here
+// Copy all files
+Copy(6, 12);
+Copy(11, 13);
+Copy(10, 16);
+Copy(2, 3);
+Copy(4, 5);
+ui->pushButton->setText("Finished");
 }
 
 void MainWindow::on_checkBox_clicked()
@@ -387,11 +393,11 @@ void MainWindow::on_checkBox_clicked()
     {
         ui->pushButton->setEnabled(true);
         ui->checkBox_2->setChecked(false);
-    }
-    else
-    {
-     ui->pushButton->setEnabled(false);
-    }
+}
+else
+{
+    ui->pushButton->setEnabled(false);
+}
 
 }
 
@@ -399,7 +405,7 @@ void MainWindow::on_checkBox_2_clicked()
 {
     if (ui->checkBox_2->isChecked())
     {
-       ui->checkBox->setChecked(false);
-       ui->pushButton->setEnabled(false);
-    }
+        ui->checkBox->setChecked(false);
+        ui->pushButton->setEnabled(false);
+}
 }

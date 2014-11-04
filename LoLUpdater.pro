@@ -22,7 +22,7 @@ RC_FILE = resource.rc
 OTHER_FILES += \
     icon1.ico \
 
-LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x86\
+LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x64\
 -lUrlmon\
 -lshell32\
 
