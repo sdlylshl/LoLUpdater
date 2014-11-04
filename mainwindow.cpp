@@ -10,5 +10,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+
     delete ui;
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+
+}
+
+void MainWindow::on_checkBox_clicked()
+{
+    if (checkbox.checkState())
+    {
+       pushButton.Enabled;
+    }
+    else
+    {
+        pushButton.Disabled;
+    }
+
 }

@@ -15,6 +15,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_pushButton_clicked();
+
+    void on_checkBox_clicked();
+
+    void on_checkBox_toggled(bool checked);
+
+    void on_checkBox_pressed();
+
 private:
     Ui::MainWindow *ui;
 };
