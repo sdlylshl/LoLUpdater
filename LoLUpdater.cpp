@@ -92,15 +92,15 @@ const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 const std::wstring tbbfile(L"tbb.dll");
 //  Full name of the downloaded adobe air installer
 const std::wstring airwin(L"air15_win.exe");
-// Garena executable
-const std::wstring garena(L"lol.exe");
+// garena stream
+std::ifstream garena(L"lol.exe");
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
 // returns installation path depending on game version (Regular or Garena)
 std::wstring aair()
 {
-	if (std::ifstream(garena).good())
+	if (garena.good())
 	{
 		return L"Air\\Adobe AIR\\Versions\\1.0\\";
 	}
@@ -112,7 +112,7 @@ std::wstring aair()
 // returns installation path depending on game version (Regular or Garena)
 std::wstring game()
 {
-	if (std::ifstream(garena).good())
+	if (garena.good())
 	{
 		return L"Game\\";
 	}
