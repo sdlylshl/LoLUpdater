@@ -19,3 +19,8 @@ HEADERS  += mainwindow.h \
     ../LoLUpdater.h
 
 FORMS    += mainwindow.ui
+
+RC_FILE = resource.rc
+
+OTHER_FILES += \
+    icon1.ico

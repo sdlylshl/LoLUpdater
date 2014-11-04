@@ -1,10 +1,8 @@
 *.aps
 *.user
 *.suo
-*.sdf
-*.opensdf
 *.exe
-Release
-Release-XP
+build*
 ia32
 Tbb
+release
