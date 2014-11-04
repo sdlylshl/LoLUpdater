@@ -24,7 +24,7 @@ OTHER_FILES += \
     icon1.ico \
     LoLUpdater.exe.manifest
 
-LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x64\
+LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x86\
 -lUrlmon\
 -lshell32\
 
