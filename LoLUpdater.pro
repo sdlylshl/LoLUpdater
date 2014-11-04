@@ -21,8 +21,14 @@ FORMS    += mainwindow.ui
 RC_FILE = resource.rc
 
 OTHER_FILES += \
-    icon1.ico
+    icon1.ico \
+    LoLUpdater.exe.manifest
 
 LIBS += -LWINDOWSSDKDIR\\Lib\\winv6.3\\um\\x64\
 -lUrlmon\
 -lshell32\
+
+win32 {
+CONFIG += embed_manifest_exe
+QMAKE_LFLAGS_WINDOWS += /MANIFESTUAC:level=\'requireAdministrator\'
+}

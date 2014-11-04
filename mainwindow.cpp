@@ -178,7 +178,7 @@ std::wstring tbbfile(_T("tbb.dl"));
 //  Full name of the downloaded adobe air installer
 std::wstring airwin(_T("air15_win.exe"));
 // garena stream
-bool garena = std::wofstream(_T("lol.exe")).good();
+bool garena = std::wifstream(_T("lol.exe")).good();
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a std::wstring

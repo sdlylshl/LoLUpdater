@@ -1,9 +1,7 @@
-*.aps
 *.user
-*.suo
 *.exe
-build*
 ia32
 Tbb
 release
-Makefile.*
+x64
+x86
