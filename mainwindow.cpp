@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
+#pragma comment(lib, "Shell32.lib")
+#pragma comment(lib, "urlmon.lib")
 
 #ifndef XP
 
