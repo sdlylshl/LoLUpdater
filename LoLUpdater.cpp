@@ -22,6 +22,13 @@
 
 // Contains AVX2 check from intel described below, some defines as well as the includes for this project.
 #include "LoLUpdater.h"
+#include <tchar.h>
+#include "ShlObj.h"
+#include <direct.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
 // 0 = adobe air installation directory
@@ -57,7 +64,7 @@ void Copy(int from, int to)
 }
 
 // function to reduce length of lines, improves readability (questionable)
-void charreduction(int dest, int path1, std::wstring path2)
+void charreduction(int dest, int path1, const std::wstring path2)
 {
 	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
@@ -90,6 +97,7 @@ const std::wstring garena(L"lol.exe");
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
+// returns installation path depending on game version (Regular or Garena)
 std::wstring aair()
 {
 	if (std::ifstream(garena).good())
@@ -101,6 +109,7 @@ std::wstring aair()
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a wstring
+// returns installation path depending on game version (Regular or Garena)
 std::wstring game()
 {
 	if (std::ifstream(garena).good())
@@ -111,13 +120,13 @@ std::wstring game()
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
-void download(const wchar_t* fromurl, const wchar_t* topath, int pathcont, int frompathcont, const wchar_t* args)
+void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
 	// Downloads file
 	URLDownloadToFileW(
 		nullptr,
-		fromurl,
-		topath,
+		fromurl.c_str(),
+		topath.c_str(),
 		0,
 		nullptr
 		);
@@ -132,10 +141,10 @@ void download(const wchar_t* fromurl, const wchar_t* topath, int pathcont, int f
 	ShExecInfocg.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfocg.hwnd = nullptr;
 	ShExecInfocg.lpVerb = nullptr;
-	ShExecInfocg.lpFile = topath;
+	ShExecInfocg.lpFile = topath.c_str();
 
 	// arguments
-	ShExecInfocg.lpParameters = args;
+	ShExecInfocg.lpParameters = args.c_str();
 	ShExecInfocg.lpDirectory = nullptr;
 	ShExecInfocg.nShow = SW_SHOW;
 	ShExecInfocg.hInstApp = nullptr;
@@ -144,7 +153,8 @@ void download(const wchar_t* fromurl, const wchar_t* topath, int pathcont, int f
 	WaitForSingleObject(ShExecInfocg.hProcess, INFINITE);
 }
 
-void tbbdownload(std::wstring url)
+// Download the intel threading building blocks dll (as a function due to multiple statement checks)
+void tbbdownload(const std::wstring url)
 {
 	URLDownloadToFileW(
 		nullptr,
@@ -264,7 +274,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	DeleteFileW(pathcontainer[14].str().c_str());
 
 #endif
-	// Todo: use vectors and a foreach here
+	// Todo: use vectors and a for (c++11 loop) here
 	// Copy all files
 	Copy(6, 12);
 	Copy(11, 13);

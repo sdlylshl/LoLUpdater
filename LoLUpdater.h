@@ -1,11 +1,5 @@
-#include <tchar.h>
-#include "ShlObj.h"
-#include <direct.h>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <array>
+
+
 // used to get the working directory without the app.exe extension
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #ifndef XP
