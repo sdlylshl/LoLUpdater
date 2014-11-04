@@ -145,7 +145,7 @@ void download(std::wstring fromurl, std::wstring topath, int pathcont, int fromp
 
 	// Unblocks the installer
 	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + unblock);
-	DeleteFileW(pathcontainer[pathcont].str().c_str());
+	DeleteFile(pathcontainer[pathcont].str().c_str());
 
 	// Starts the executable
 	SHELLEXECUTEINFO ShExecInfocg = { 0 };
