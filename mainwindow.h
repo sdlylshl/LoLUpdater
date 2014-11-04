@@ -20,9 +20,7 @@ private slots:
 
     void on_checkBox_clicked();
 
-    void on_checkBox_toggled(bool checked);
-
-    void on_checkBox_pressed();
+    void on_checkBox_2_clicked();
 
 private:
     Ui::MainWindow *ui;

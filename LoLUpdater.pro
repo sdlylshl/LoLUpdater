@@ -16,7 +16,8 @@ SOURCES += main.cpp\
         mainwindow.cpp
 
 HEADERS  += mainwindow.h \
-    ../LoLUpdater.h
+    ../LoLUpdater.h \
+    resource.h
 
 FORMS    += mainwindow.ui
 

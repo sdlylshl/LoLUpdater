@@ -269,8 +269,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    pushButton.Disabled;
-    pushButton.Text = "Working...";
+    ui->pushButton->setEnabled(false);
+    ui->pushButton->setText("Working...");
     // gets working directory with app.ext
         GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 
@@ -379,28 +379,27 @@ void MainWindow::on_pushButton_clicked()
         Copy(10, 16);
         Copy(2, 3);
         Copy(4, 5);
-        pushButton.Text = "Finished";
+        ui->pushButton->setText("Finished");
 }
 
 void MainWindow::on_checkBox_clicked()
 {
-    if (checkbox.checkState())
+    if ( ui->checkBox->isChecked())
     {
-       CheckBox::checkbox_2.setChecked(false);
-       pushButton.Enabled;
+       ui->checkBox_2->setCheckable(false);
+    ui->pushButton->setEnabled(true);
     }
     else
     {
-        pushButton.Disabled;
+        ui->pushButton->setEnabled(false);
     }
 
 }
 
 void MainWindow::on_checkBox_2_clicked()
 {
-    if (checkbox_2.checkState())
+    if (ui->checkBox_2->isChecked())
     {
-       CheckBox::checkbox.setChecked(false);
+       ui->checkBox->setCheckable(false);
     }
-
 }
