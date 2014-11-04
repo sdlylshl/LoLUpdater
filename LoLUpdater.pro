@@ -22,3 +22,6 @@ RC_FILE = resource.rc
 
 OTHER_FILES += \
     icon1.ico
+
+LIBS += "C:\\Program Files (x86)\\Windows Kits\\8.1\\Lib\\winv6.3\\um\\x86\\Urlmon.Lib"
+LIBS += "C:\\Program Files (x86)\\Windows Kits\\8.1\\Lib\\winv6.3\\um\\x86\\shell32.lib"
