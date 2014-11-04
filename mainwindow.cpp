@@ -1,11 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#pragma comment(lib, "Shell32.lib")
-#pragma comment(lib, "urlmon.lib")
-
-#ifndef XP
-
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
 #include <immintrin.h>
@@ -99,7 +93,6 @@ static int can_use_intel_core_4th_gen_features()
 
     return the_4th_gen_features_available;
 }
-#endif
 
 #ifndef UNICODE
 #define UNICODE
@@ -111,12 +104,14 @@ static int can_use_intel_core_4th_gen_features()
 
 // Contains AVX2 check from intel described below, some defines as well as the includes for this project.
 #include <tchar.h>
-#include "ShlObj.h"
+#include <ShlObj.h>
 #include <direct.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <shellapi.h>
+#include <urlmon.h>
 // used to get the working directory without the app.exe extension
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -284,7 +279,7 @@ void MainWindow::on_pushButton_clicked()
         GetEnvironmentVariable(_T("CG_BIN_PATH"),
             &cgbinpath[0],
             MAX_PATH + 1);
-
+#define _CRT_SECURE_NO_WARNINGS
         // appends a backslash to the path for later processing.
         wcsncat(&cgbinpath[0], _T("\\"), MAX_PATH + 1);
 
