@@ -5,6 +5,7 @@
 Build instructions
 
 [Requires Qt-Creator](http://qt-project.org/downloads)
+
 Building LoLUpdater:
 
 For x64 (in the .pro file)
