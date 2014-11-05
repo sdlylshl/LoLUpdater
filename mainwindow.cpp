@@ -302,7 +302,7 @@ void MainWindow::on_pushButton_clicked()
        &cgbinpath[0],
        MAX_PATH+1,
        _T("\\"),
-       2
+       1
     );
 
     // add drive letter to the variable
@@ -398,6 +398,10 @@ Copy(10, 16);
 Copy(2, 3);
 Copy(4, 5);
 ui->pushButton->setText("Finished");
+
+// Currently you will have to restart the app to patch again.
+ui->checkBox_2->setEnabled(false);
+ui->checkBox_2->setEnabled(true);
 }
 
 void MainWindow::on_checkBox_clicked()
