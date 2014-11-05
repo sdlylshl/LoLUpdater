@@ -177,7 +177,7 @@ void Copy(int from, int to)
 // function to reduce length of lines, improves readability (questionable)
 void charreduction(int dest, int path1, const std::wstring path2)
 {
-    pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2[0]);
+    pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
 
 // environmental variable for CG_BIN_PATH (todo: make into std::wstringstream)
@@ -186,23 +186,23 @@ std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Unblock tag
-std::wstring unblock(L":Zone.Identifier");
+const std::wstring unblock(L":Zone.Identifier");
 // Full name of the adobe air dll
-std::wstring air(L"Adobe AIR.dl");
+const std::wstring air(L"Adobe AIR.dl");
 // relative path to the flash dll from where the adobe air dll is
-std::wstring flash(L"Resources\\NPSWF32.dl");
+const std::wstring flash(L"Resources\\NPSWF32.dl");
 //  Full cg dll name
-std::wstring cgfile(L"Cg.dl");
+const std::wstring cgfile(L"Cg.dl");
 //  Full cggl dll name
-std::wstring cgglfile(L"CgGL.dl");
+const std::wstring cgglfile(L"CgGL.dl");
 //  Full cgd3d9 dll name
-std::wstring cgd3d9file(L"CgD3D9.dl");
+const std::wstring cgd3d9file(L"CgD3D9.dl");
 //  Full name of the downloaded cg installer
-std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
+const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 //  Full tbb dll name
-std::wstring tbbfile(L"tbb.dl");
+const std::wstring tbbfile(L"tbb.dl");
 //  Full name of the downloaded adobe air installer
-std::wstring airwin(L"air15_win.exe");
+const std::wstring airwin(L"air15_win.exe");
 // garena stream
 bool garena = std::wifstream(L"lol.exe").good();
 
@@ -306,13 +306,13 @@ void MainWindow::on_pushButton_clicked()
     );
 
     // add drive letter to the variable
-    pathcontainer[0] << &pathcontainer[19].str().c_str()[0];
+    pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 
     // different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
-    pathcontainer[0] << L":\\Program Files (x86)";
+    pathcontainer[0] << ":\\Program Files (x86)";
 #else
-    pathcontainer[0] << L":\\Program Files";
+    pathcontainer[0] << ":\\Program Files";
 #endif
 
     download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
@@ -322,24 +322,23 @@ void MainWindow::on_pushButton_clicked()
     // finish with the default install directory from %Programfiles%
     pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-    pathcontainer[6] << (&cgbinpath[0] + cgfile[0]);
-    pathcontainer[11] << (&cgbinpath[0] + cgglfile[0]);
-    pathcontainer[10] << (&cgbinpath[0] + cgd3d9file[0]);
-
+    pathcontainer[6] << (&cgbinpath[0] + cgfile);
+    pathcontainer[11] << (&cgbinpath[0] + cgglfile);
+    pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
     // *Not a good way to do this
-    charreduction(18, 19, &game()[0]);
-    charreduction(17, 19, &aair()[0]);
-    charreduction(1, 18, &tbbfile[0]);
-    charreduction(2, 0, &air[0]);
-    charreduction(4, 0, &flash[0]);
-    charreduction(12, 18, &cgfile[0]);
-    charreduction(13, 18, &cgglfile[0]);
-    charreduction(16, 18, &cgd3d9file[0]);
-    charreduction(3, 17, &air[0]);
-    charreduction(5, 17, &flash[0]);
-    charreduction(9, 3, &unblock[0]);
-    charreduction(15, 5, &unblock[0]);
-    charreduction(14, 1, &unblock[0]);
+    charreduction(18, 19, game());
+    charreduction(17, 19, aair());
+    charreduction(1, 18, tbbfile);
+    charreduction(2, 0, air);
+    charreduction(4, 0, flash);
+    charreduction(12, 18, cgfile);
+    charreduction(13, 18, cgglfile);
+    charreduction(16, 18, cgd3d9file);
+    charreduction(3, 17, air);
+    charreduction(5, 17, flash);
+    charreduction(9, 3, unblock);
+    charreduction(15, 5, unblock);
+    charreduction(14, 1, unblock);
 
     // Each variant of tbb is built with support for certain SMID instructions (or none)
 #ifdef _XP
@@ -397,6 +396,7 @@ Copy(11, 13);
 Copy(10, 16);
 Copy(2, 3);
 Copy(4, 5);
+ui->label->setText(QString::fromWCharArray(pathcontainer[12].str().c_str()));
 ui->pushButton->setText("Finished");
 }
 
