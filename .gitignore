@@ -3,7 +3,9 @@
 *.exe
 ia32
 Tbb
-LoLUpdater\Debug
-LoLUpdater\Release
+Debug
+Release
+x64
+XP
 *.sdf
 *.opensdf

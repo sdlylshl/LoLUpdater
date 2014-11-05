@@ -1,21 +1,18 @@
+#include "LoLUpdater.h"
+#include <tchar.h>
+#include <direct.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <vector>
+
 #ifdef _WIN64
 #define ENVIRONMENT64
-#define _WINDOWS
 #elif defined _WIN32
-#define ENVIRONMENT32
-#define _WINDOWS
-#elif defined __APPLE__
-#include <TargetConditionals.h>
-#elif defined TARGET_OS_OSX
-#define _MAC
-#elif defined __LP64__
-#define ENVIRONMENT64
-#elif defined __i386__
 #define ENVIRONMENT32
 #endif
 
 // Use windows-unicode just to skip the W defines on the winapi functions.
-#ifdef _WINDOWS
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -25,17 +22,8 @@
 
 // used to get the working directory without the app.exe extension
 #include <ShlObj.h>
-#include "LoLUpdater.h"
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-#endif
 
-#include "LoLUpdater.h"
-#include <tchar.h>
-#include <direct.h>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <vector>
 
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
 // 0 = adobe air installation directory
@@ -63,17 +51,17 @@ std::wstringstream pathcontainer[20];
 // function to reduce amount of lines in source-code, improves readability (questionable)
 void Copy(int from, int to)
 {
-    CopyFile(
-    pathcontainer[from].str().c_str(),
-    pathcontainer[to].str().c_str(),
-    false
-    );
+	CopyFile(
+		pathcontainer[from].str().c_str(),
+		pathcontainer[to].str().c_str(),
+		false
+	);
 }
 
 // function to reduce length of lines, improves readability (questionable)
 void charreduction(int dest, int path1, const std::wstring path2)
 {
-    pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
+	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
 
 // environmental variable for CG_BIN_PATH (todo: make into std::wstringstream)
@@ -107,11 +95,11 @@ bool garena = std::wifstream(L"lol.exe").good();
 // returns installation path depending on game version (Regular or Garena)
 std::wstring aair()
 {
-    if (garena)
-    {
-        return L"Air\\Adobe AIR\\Versions\\1.0\\";
-}
-return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+	if (garena)
+	{
+		return L"Air\\Adobe AIR\\Versions\\1.0\\";
+	}
+	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 }
 
 // Game version test
@@ -119,70 +107,70 @@ return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\
 // returns installation path depending on game version (Regular or Garena)
 std::wstring game()
 {
-    if (garena)
-    {
-        return L"Game\\";
-}
-return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
+	if (garena)
+	{
+		return L"Game\\";
+	}
+	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
 void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
-    // Downloads file
-    URLDownloadToFile(
-        nullptr,
-        fromurl.c_str(),
-    topath.c_str(),
-    0,
-    nullptr
-    );
+	// Downloads file
+	URLDownloadToFile(
+		nullptr,
+		fromurl.c_str(),
+		topath.c_str(),
+		0,
+		nullptr
+	);
 
-    // Unblocks the installer
-    pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
-    DeleteFile(pathcontainer[pathcont].str().c_str());
+	// Unblocks the installer
+	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
+	DeleteFile(pathcontainer[pathcont].str().c_str());
 
-    // Starts the executable
-    SHELLEXECUTEINFO ShExecInfo = { 0 };
-ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-ShExecInfo.hwnd = nullptr;
-ShExecInfo.lpVerb = nullptr;
-ShExecInfo.lpFile = topath.c_str();
+	// Starts the executable
+	SHELLEXECUTEINFO ShExecInfo = {0};
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = nullptr;
+	ShExecInfo.lpFile = topath.c_str();
 
-// arguments
-ShExecInfo.lpParameters = args.c_str();
-ShExecInfo.lpDirectory = nullptr;
-ShExecInfo.nShow = SW_SHOW;
-ShExecInfo.hInstApp = nullptr;
-ShellExecuteEx(&ShExecInfo);
-// Wait for process to finish before continuing.
-WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	// arguments
+	ShExecInfo.lpParameters = args.c_str();
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteEx(&ShExecInfo);
+	// Wait for process to finish before continuing.
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
 // Download the intel threading building blocks dll (as a function due to multiple statement checks)
 void tbbdownload(const std::wstring url)
 {
-    URLDownloadToFile(
-        nullptr,
-        url.c_str(),
-    pathcontainer[1].str().c_str(),
-    0,
-    nullptr
-    );
+	URLDownloadToFile(
+		nullptr,
+		url.c_str(),
+		pathcontainer[1].str().c_str(),
+		0,
+		nullptr
+	);
 }
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd,
-	UINT message,
-	WPARAM wParam,
-	LPARAM lParam);
+                            UINT message,
+                            WPARAM wParam,
+                            LPARAM lParam);
 
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow)
+                   HINSTANCE hPrevInstance,
+                   LPSTR lpCmdLine,
+                   int nCmdShow)
 {
 	// the handle for the window, filled by a function
 	HWND hWnd;
@@ -206,17 +194,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// create the window and use the result as the handle
 	hWnd = CreateWindowEx(NULL,
-		L"WindowClass1",    // name of the window class
-		L"LoLUpdater",   // title of the window
-		WS_OVERLAPPEDWINDOW,    // window style
-		300,    // x-position of the window
-		300,    // y-position of the window
-		500,    // width of the window
-		400,    // height of the window
-		nullptr,    // we have no parent window, NULL
-		nullptr,    // we aren't using menus, NULL
-		hInstance,    // application handle
-		nullptr);    // used with multiple windows, NULL
+	                          L"WindowClass1", // name of the window class
+	                          L"LoLUpdater", // title of the window
+	                          WS_OVERLAPPEDWINDOW, // window style
+	                          300, // x-position of the window
+	                          300, // y-position of the window
+	                          500, // width of the window
+	                          400, // height of the window
+	                          nullptr, // we have no parent window, NULL
+	                          nullptr, // we aren't using menus, NULL
+	                          hInstance, // application handle
+	                          nullptr); // used with multiple windows, NULL
 
 	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
@@ -246,8 +234,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
 	GetEnvironmentVariable(L"CG_BIN_PATH",
-		&cgbinpath[0],
-		MAX_PATH + 1);
+	                       &cgbinpath[0],
+	                       MAX_PATH + 1);
 
 	// appends a backslash to the path for later processing.
 	wcsncat_s(
@@ -255,7 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
-		);
+	);
 
 	// add drive letter to the variable
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
@@ -363,11 +351,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		// this message is read when the window is closed
 	case WM_DESTROY:
-	{
-		// close the application entirely
-		PostQuitMessage(0);
-		return 0;
-	}
+		{
+			// close the application entirely
+			PostQuitMessage(0);
+			return 0;
+		}
 	}
 
 	// Handle any messages the switch statement didn't

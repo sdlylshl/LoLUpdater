@@ -1,51 +1,17 @@
-// Header file contains C AVX2 stuff from Intel
-
-#if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
-
-#include <immintrin.h>
-
-int check_4th_gen_intel_core_features()
-{
-	const int the_4th_gen_features =
-		(_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
-	return _may_i_use_cpu_feature(the_4th_gen_features);
-}
-
-#else /* non-Intel compiler */
-
 #include <stdint.h>
-#if defined(_MSC_VER)
-# include <intrin.h>
-#endif
+#include <intrin.h>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
-#if defined(_MSC_VER)
 	__cpuidex(abcd, eax, ecx);
-#else
-	uint32_t ebx, edx;
-# if defined( __i386__ ) && defined ( __PIC__ )
-	/* in case of PIC under 32-bit EBX cannot be clobbered */
-	__asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
-# else
-	__asm__("cpuid" : "+b" (ebx),
-# endif
-		"+a" (eax), "+c" (ecx), "=d" (edx));
-	abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
-#endif
 }
 
 inline int check_xcr0_ymm()
 {
 	uint32_t xcr0;
-#if defined(_MSC_VER)
-	xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
-#else
-	__asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
-#endif
+	xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
 	return ((xcr0 & 6) == 6); /* checking if xmm and ymm state are enabled in XCR0 */
 }
-
 
 inline int check_4th_gen_intel_core_features()
 {
@@ -77,8 +43,6 @@ inline int check_4th_gen_intel_core_features()
 
 	return 1;
 }
-
-#endif /* non-Intel compiler */
 
 
 static int can_use_intel_core_4th_gen_features()
