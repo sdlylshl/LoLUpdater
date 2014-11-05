@@ -1,3 +1,4 @@
+#define VC_EXTRALEAN
 #include <stdint.h>
 #include <intrin.h>
 
@@ -8,6 +9,8 @@
 #include <iostream>
 #include <vector>
 #include <ShlObj.h>
+
+#include <D3D9.h>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {

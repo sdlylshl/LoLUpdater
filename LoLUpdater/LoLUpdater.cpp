@@ -183,6 +183,22 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		// send the message to the WindowProc function
 		DispatchMessage(&msg);
 	}
+
+	HRESULT D3DXCreateFont(
+		_In_   LPDIRECT3DDEVICE9 pDevice,
+		_In_   INT Height,
+		_In_   UINT Width,
+		_In_   UINT Weight,
+		_In_   UINT MipLevels,
+		_In_   BOOL Italic,
+		_In_   DWORD CharSet,
+		_In_   DWORD OutputPrecision,
+		_In_   DWORD Quality,
+		_In_   DWORD PitchAndFamily,
+		_In_   LPCTSTR pFacename,
+		_Out_  LPD3DXFONT *ppFont
+		);
+
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
