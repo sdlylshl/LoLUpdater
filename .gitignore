@@ -1,7 +1,8 @@
 *.user
+*.suo
 *.exe
 ia32
 Tbb
-release
-x64
-x86
+LoLUpdater\Debug
+LoLUpdater\Release
+*.sdf
