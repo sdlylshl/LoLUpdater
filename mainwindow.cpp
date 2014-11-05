@@ -188,19 +188,19 @@ std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 // Unblock tag
 const std::wstring unblock(L":Zone.Identifier");
 // Full name of the adobe air dll
-const std::wstring air(L"Adobe AIR.dl");
+const std::wstring air(L"Adobe AIR.dll");
 // relative path to the flash dll from where the adobe air dll is
-const std::wstring flash(L"Resources\\NPSWF32.dl");
+const std::wstring flash(L"Resources\\NPSWF32.dll");
 //  Full cg dll name
-const std::wstring cgfile(L"Cg.dl");
+const std::wstring cgfile(L"Cg.dll");
 //  Full cggl dll name
-const std::wstring cgglfile(L"CgGL.dl");
+const std::wstring cgglfile(L"CgGL.dll");
 //  Full cgd3d9 dll name
-const std::wstring cgd3d9file(L"CgD3D9.dl");
+const std::wstring cgd3d9file(L"CgD3D9.dll");
 //  Full name of the downloaded cg installer
 const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 //  Full tbb dll name
-const std::wstring tbbfile(L"tbb.dl");
+const std::wstring tbbfile(L"tbb.dll");
 //  Full name of the downloaded adobe air installer
 const std::wstring airwin(L"air15_win.exe");
 // garena stream
@@ -290,7 +290,7 @@ void MainWindow::on_pushButton_clicked()
     // remove app.ext and append backslash to the working-dir buffer.
     pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 
-    download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent / TYPE = compact");
+    download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
 
     // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
     GetEnvironmentVariable(L"CG_BIN_PATH",
@@ -343,14 +343,13 @@ void MainWindow::on_pushButton_clicked()
     // Each variant of tbb is built with support for certain SMID instructions (or none)
 #ifdef _XP
     // Is built without any support for any SMID instructions.
-    tbbdownload(L"http://lol.jdhpro.com/Xp.dl");
+    tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
 #else
     // Test for AVX2 (code in header file taken from: https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family)
     if (can_use_intel_core_4th_gen_features())
     {
-        tbbdownload(L"http://lol.jdhpro.com/Avx2.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
 }
-#if (_MSC_FULL_VER >= 160040219)
 else
 {
     int cpuInfo[4];
@@ -360,27 +359,26 @@ else
 
     if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
     {
-        tbbdownload(L"http://lol.jdhpro.com/Avx.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
 }
-#endif
 else
 {
     //SSE2  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload(L"http://lol.jdhpro.com/Sse2.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
 }
 else
 {
     //SSE  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload(L"http://lol.jdhpro.com/Sse.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
 }
 //download tbb without any extra SMID instructions if SSE is not supported.
 else
 {
-    tbbdownload(L"http://lol.jdhpro.com/Default.dl");
+    tbbdownload(L"http://lol.jdhpro.com/Default.dll");
 }
 }
 }
@@ -396,7 +394,6 @@ Copy(11, 13);
 Copy(10, 16);
 Copy(2, 3);
 Copy(4, 5);
-ui->label->setText(QString::fromWCharArray(pathcontainer[12].str().c_str()));
 ui->pushButton->setText("Finished");
 }
 
