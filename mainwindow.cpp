@@ -168,7 +168,7 @@ std::wstringstream pathcontainer[20];
 void Copy(int from, int to)
 {
     CopyFile(
-        pathcontainer[from].str().c_str(),
+    pathcontainer[from].str().c_str(),
     pathcontainer[to].str().c_str(),
     false
     );
@@ -177,7 +177,7 @@ void Copy(int from, int to)
 // function to reduce length of lines, improves readability (questionable)
 void charreduction(int dest, int path1, const std::wstring path2)
 {
-    pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
+    pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2[0]);
 }
 
 // environmental variable for CG_BIN_PATH (todo: make into std::wstringstream)
@@ -243,7 +243,7 @@ void download(const std::wstring fromurl, const std::wstring topath, int pathcon
     );
 
     // Unblocks the installer
-    pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + unblock);
+    pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
     DeleteFile(pathcontainer[pathcont].str().c_str());
 
     // Starts the executable
@@ -302,11 +302,11 @@ void MainWindow::on_pushButton_clicked()
        &cgbinpath[0],
        MAX_PATH+1,
        L"\\",
-       1
+       _TRUNCATE
     );
 
     // add drive letter to the variable
-    pathcontainer[0] << pathcontainer[19].str().c_str()[0];
+    pathcontainer[0] << &pathcontainer[19].str().c_str()[0];
 
     // different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
@@ -322,9 +322,9 @@ void MainWindow::on_pushButton_clicked()
     // finish with the default install directory from %Programfiles%
     pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-    pathcontainer[6] << (&cgbinpath[0] + &cgfile[0]);
-    pathcontainer[11] << (&cgbinpath[0] + &cgglfile[0]);
-    pathcontainer[10] << (&cgbinpath[0] + &cgd3d9file[0]);
+    pathcontainer[6] << (&cgbinpath[0] + cgfile[0]);
+    pathcontainer[11] << (&cgbinpath[0] + cgglfile[0]);
+    pathcontainer[10] << (&cgbinpath[0] + cgd3d9file[0]);
 
     // *Not a good way to do this
     charreduction(18, 19, &game()[0]);
