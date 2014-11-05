@@ -1,8 +1,47 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-// Contains AVX2 check from intel described below, some defines as well as the includes for this project.
-#ifndef XP
+MainWindow::MainWindow(QWidget *parent) :
+QMainWindow(parent),
+ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+#ifdef _WIN64
+#define ENVIRONMENT64
+#define _WINDOWS
+#elif defined _WIN32
+#define ENVIRONMENT32
+#define _WINDOWS
+#elif defined __APPLE__
+#include <TargetConditionals.h>
+#elif defined TARGET_OS_OSX
+#define _MAC
+#elif defined __LP64__
+#define ENVIRONMENT64
+#elif defined __i386__
+#define ENVIRONMENT32
+#endif
+
+
+#ifdef _WINDOWS
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+#include <ShlObj.h>
+// used to get the working directory without the app.exe extension
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#endif
 
 #if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1300)
 
@@ -11,8 +50,8 @@
 int check_4th_gen_intel_core_features()
 {
     const int the_4th_gen_features =
-    (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
-    return _may_i_use_cpu_feature(the_4th_gen_features);
+        (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT | _FEATURE_MOVBE);
+    return _may_i_use_cpu_feature( the_4th_gen_features );
 }
 
 #else /* non-Intel compiler */
@@ -22,65 +61,62 @@ int check_4th_gen_intel_core_features()
 # include <intrin.h>
 #endif
 
-bool avxSupported = false;
-
-
-inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
+void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
 #if defined(_MSC_VER)
     __cpuidex(abcd, eax, ecx);
 #else
     uint32_t ebx, edx;
 # if defined( __i386__ ) && defined ( __PIC__ )
-    /* in case of PIC under 32-bit EBX cannot be clobbered */
-    __asm__("movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
+     /* in case of PIC under 32-bit EBX cannot be clobbered */
+    __asm__ ( "movl %%ebx, %%edi \n\t cpuid \n\t xchgl %%ebx, %%edi" : "=D" (ebx),
 # else
-    __asm__("cpuid" : "+b" (ebx),
+    __asm__ ( "cpuid" : "+b" (ebx),
 # endif
-    "+a" (eax), "+c" (ecx), "=d" (edx));
+              "+a" (eax), "+c" (ecx), "=d" (edx) );
     abcd[0] = eax; abcd[1] = ebx; abcd[2] = ecx; abcd[3] = edx;
 #endif
 }
 
-inline int check_xcr0_ymm()
+int check_xcr0_ymm()
 {
     uint32_t xcr0;
 #if defined(_MSC_VER)
-    xcr0 = (uint32_t)_xgetbv(0); /* min VS2010 SP1 compiler is required */
+    xcr0 = (uint32_t)_xgetbv(0);  /* min VS2010 SP1 compiler is required */
 #else
-    __asm__("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx");
+    __asm__ ("xgetbv" : "=a" (xcr0) : "c" (0) : "%edx" );
 #endif
     return ((xcr0 & 6) == 6); /* checking if xmm and ymm state are enabled in XCR0 */
 }
 
 
-inline int check_4th_gen_intel_core_features()
+int check_4th_gen_intel_core_features()
 {
     int abcd[4];
     uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
     uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 
     /* CPUID.(EAX=01H, ECX=0H):ECX.FMA[bit 12]==1   &&
-    CPUID.(EAX=01H, ECX=0H):ECX.MOVBE[bit 22]==1 &&
-    CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
-    run_cpuid(1, 0, abcd);
-    if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
-    return 0;
+       CPUID.(EAX=01H, ECX=0H):ECX.MOVBE[bit 22]==1 &&
+       CPUID.(EAX=01H, ECX=0H):ECX.OSXSAVE[bit 27]==1 */
+    run_cpuid( 1, 0, abcd );
+    if ( (abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask )
+        return 0;
 
-    if (!check_xcr0_ymm())
-    return 0;
+    if ( ! check_xcr0_ymm() )
+        return 0;
 
     /*  CPUID.(EAX=07H, ECX=0H):EBX.AVX2[bit 5]==1  &&
-    CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
-    CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
-    run_cpuid(7, 0, abcd);
-    if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
-    return 0;
+        CPUID.(EAX=07H, ECX=0H):EBX.BMI1[bit 3]==1  &&
+        CPUID.(EAX=07H, ECX=0H):EBX.BMI2[bit 8]==1  */
+    run_cpuid( 7, 0, abcd );
+    if ( (abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask )
+        return 0;
 
     /* CPUID.(EAX=80000001H):ECX.LZCNT[bit 5]==1 */
-    run_cpuid(0x80000001, 0, abcd);
-    if ((abcd[2] & (1 << 5)) == 0)
-    return 0;
+    run_cpuid( 0x80000001, 0, abcd );
+    if ( (abcd[2] & (1 << 5)) == 0)
+        return 0;
 
     return 1;
 }
@@ -92,37 +128,21 @@ static int can_use_intel_core_4th_gen_features()
 {
     static int the_4th_gen_features_available = -1;
     /* test is performed once */
-    if (the_4th_gen_features_available < 0)
-    the_4th_gen_features_available = check_4th_gen_intel_core_features();
+    if (the_4th_gen_features_available < 0 )
+        the_4th_gen_features_available = check_4th_gen_intel_core_features();
 
     return the_4th_gen_features_available;
 }
-#endif
 
-#ifndef UNICODE
-#define UNICODE
-#endif
 
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-
-#ifdef _WIN64
-#define ENVIRONMENT64
-#endif
-#ifdef _WIN32
-#define ENVIRONMENT32
-#endif
 
 #include <tchar.h>
-#include <ShlObj.h>
 #include <direct.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <vector>
-// used to get the working directory without the app.exe extension
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 
 
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
@@ -260,18 +280,6 @@ void tbbdownload(const std::wstring url)
     );
 }
 
-MainWindow::MainWindow(QWidget *parent) :
-QMainWindow(parent),
-ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     ui->pushButton->setEnabled(false);
@@ -288,9 +296,14 @@ void MainWindow::on_pushButton_clicked()
     GetEnvironmentVariable(_T("CG_BIN_PATH"),
     &cgbinpath[0],
     MAX_PATH + 1);
-#define _CRT_SECURE_NO_WARNINGS
+
     // appends a backslash to the path for later processing.
-    wcsncat(&cgbinpath[0], _T("\\"), MAX_PATH + 1);
+    wcsncat_s(
+       &cgbinpath[0],
+       MAX_PATH+1,
+       _T("\\"),
+       2
+    );
 
     // add drive letter to the variable
     pathcontainer[0] << pathcontainer[19].str().c_str()[0];
