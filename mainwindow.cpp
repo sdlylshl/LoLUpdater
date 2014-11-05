@@ -278,6 +278,10 @@ void tbbdownload(const std::wstring url)
 
 void MainWindow::on_pushButton_clicked()
 {
+    // Currently you will have to restart the app to patch again.
+    ui->checkBox_2->setEnabled(false);
+    ui->checkBox->setEnabled(false);
+
     ui->pushButton->setEnabled(false);
     ui->pushButton->setText("Working...");
     // gets working directory with app.ext
@@ -286,7 +290,7 @@ void MainWindow::on_pushButton_clicked()
     // remove app.ext and append backslash to the working-dir buffer.
     pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 
-    download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent / TYPE = compact";
+    download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent / TYPE = compact");
 
     // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
     GetEnvironmentVariable(L"CG_BIN_PATH",
@@ -297,7 +301,7 @@ void MainWindow::on_pushButton_clicked()
     wcsncat_s(
        &cgbinpath[0],
        MAX_PATH+1,
-       _T("\\"),
+       L"\\",
        1
     );
 
@@ -311,31 +315,31 @@ void MainWindow::on_pushButton_clicked()
     pathcontainer[0] << L":\\Program Files";
 #endif
 
-    download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, "-silent");
+    download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
 
     // Todo: use vectors and foreach here to compress it some more.
     // std::wstring building
     // finish with the default install directory from %Programfiles%
     pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
-    pathcontainer[6] << (&cgbinpath[0] + cgfile);
-    pathcontainer[11] << (&cgbinpath[0] + cgglfile);
-    pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
+    pathcontainer[6] << (&cgbinpath[0] + &cgfile[0]);
+    pathcontainer[11] << (&cgbinpath[0] + &cgglfile[0]);
+    pathcontainer[10] << (&cgbinpath[0] + &cgd3d9file[0]);
 
     // *Not a good way to do this
-    charreduction(18, 19, game());
-    charreduction(17, 19, aair());
-    charreduction(1, 18, tbbfile);
-    charreduction(2, 0, air);
-    charreduction(4, 0, flash);
-    charreduction(12, 18, cgfile);
-    charreduction(13, 18, cgglfile);
-    charreduction(16, 18, cgd3d9file);
-    charreduction(3, 17, air);
-    charreduction(5, 17, flash);
-    charreduction(9, 3, unblock);
-    charreduction(15, 5, unblock);
-    charreduction(14, 1, unblock);
+    charreduction(18, 19, &game()[0]);
+    charreduction(17, 19, &aair()[0]);
+    charreduction(1, 18, &tbbfile[0]);
+    charreduction(2, 0, &air[0]);
+    charreduction(4, 0, &flash[0]);
+    charreduction(12, 18, &cgfile[0]);
+    charreduction(13, 18, &cgglfile[0]);
+    charreduction(16, 18, &cgd3d9file[0]);
+    charreduction(3, 17, &air[0]);
+    charreduction(5, 17, &flash[0]);
+    charreduction(9, 3, &unblock[0]);
+    charreduction(15, 5, &unblock[0]);
+    charreduction(14, 1, &unblock[0]);
 
     // Each variant of tbb is built with support for certain SMID instructions (or none)
 #ifdef _XP
@@ -394,10 +398,6 @@ Copy(10, 16);
 Copy(2, 3);
 Copy(4, 5);
 ui->pushButton->setText("Finished");
-
-// Currently you will have to restart the app to patch again.
-ui->checkBox_2->setEnabled(false);
-ui->checkBox_2->setEnabled(true);
 }
 
 void MainWindow::on_checkBox_clicked()
