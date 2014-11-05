@@ -29,15 +29,15 @@ MainWindow::~MainWindow()
 #define ENVIRONMENT32
 #endif
 
-
+// Use windows-unicode just to skip the W defines on the winapi functions.
 #ifdef _WINDOWS
 #ifndef UNICODE
 #define UNICODE
 #endif
-
 #ifndef _UNICODE
 #define _UNICODE
 #endif
+
 // used to get the working directory without the app.exe extension
 #include <ShlObj.h>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -284,12 +284,12 @@ void MainWindow::on_pushButton_clicked()
     GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 
     // remove app.ext and append backslash to the working-dir buffer.
-    pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(_T("\\/"))) + _T("\\"));
+    pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 
-    download("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cginstaller.c_str(), 7, 19, "/verysilent / TYPE = compact";
+    download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent / TYPE = compact";
 
     // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
-    GetEnvironmentVariable("CG_BIN_PATH",
+    GetEnvironmentVariable(L"CG_BIN_PATH",
     &cgbinpath[0],
     MAX_PATH + 1);
 
@@ -306,17 +306,17 @@ void MainWindow::on_pushButton_clicked()
 
     // different paths depending if it is a 64 or 32bit system
 #ifdef ENVIRONMENT64
-    pathcontainer[0] << ":\\Program Files (x86)";
+    pathcontainer[0] << L":\\Program Files (x86)";
 #else
-    pathcontainer[0] << ":\\Program Files";
+    pathcontainer[0] << L":\\Program Files";
 #endif
 
-    download("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, "-silent");
+    download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, "-silent");
 
     // Todo: use vectors and foreach here to compress it some more.
     // std::wstring building
     // finish with the default install directory from %Programfiles%
-    pathcontainer[0] << "\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+    pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
 
     pathcontainer[6] << (&cgbinpath[0] + cgfile);
     pathcontainer[11] << (&cgbinpath[0] + cgglfile);
@@ -338,14 +338,14 @@ void MainWindow::on_pushButton_clicked()
     charreduction(14, 1, unblock);
 
     // Each variant of tbb is built with support for certain SMID instructions (or none)
-#ifdef XP
+#ifdef _XP
     // Is built without any support for any SMID instructions.
-    tbbdownload("http://lol.jdhpro.com/Xp.dl");
+    tbbdownload(L"http://lol.jdhpro.com/Xp.dl");
 #else
     // Test for AVX2 (code in header file taken from: https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family)
     if (can_use_intel_core_4th_gen_features())
     {
-        tbbdownload("http://lol.jdhpro.com/Avx2.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Avx2.dl");
 }
 #if (_MSC_FULL_VER >= 160040219)
 else
@@ -357,7 +357,7 @@ else
 
     if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
     {
-        tbbdownload("http://lol.jdhpro.com/Avx.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Avx.dl");
 }
 #endif
 else
@@ -365,19 +365,19 @@ else
     //SSE2  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload("http://lol.jdhpro.com/Sse2.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Sse2.dl");
 }
 else
 {
     //SSE  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload("http://lol.jdhpro.com/Sse.dl");
+        tbbdownload(L"http://lol.jdhpro.com/Sse.dl");
 }
 //download tbb without any extra SMID instructions if SSE is not supported.
 else
 {
-    tbbdownload("http://lol.jdhpro.com/Default.dl");
+    tbbdownload(L"http://lol.jdhpro.com/Default.dl");
 }
 }
 }
