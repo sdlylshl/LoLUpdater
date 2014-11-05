@@ -38,8 +38,8 @@ MainWindow::~MainWindow()
 #ifndef _UNICODE
 #define _UNICODE
 #endif
-#include <ShlObj.h>
 // used to get the working directory without the app.exe extension
+#include <ShlObj.h>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
@@ -134,16 +134,12 @@ static int can_use_intel_core_4th_gen_features()
     return the_4th_gen_features_available;
 }
 
-
-
 #include <tchar.h>
 #include <direct.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-
 
 // Just for reference (Todo: make the "magic numbers" less magical (for now))
 // 0 = adobe air installation directory
@@ -190,25 +186,25 @@ std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 // Unblock tag
-std::wstring unblock(_T(":Zone.Identifier"));
+std::wstring unblock(L":Zone.Identifier");
 // Full name of the adobe air dll
-std::wstring air(_T("Adobe AIR.dl"));
+std::wstring air(L"Adobe AIR.dl");
 // relative path to the flash dll from where the adobe air dll is
-std::wstring flash(_T("Resources\\NPSWF32.dl"));
+std::wstring flash(L"Resources\\NPSWF32.dl");
 //  Full cg dll name
-std::wstring cgfile(_T("Cg.dl"));
+std::wstring cgfile(L"Cg.dl");
 //  Full cggl dll name
-std::wstring cgglfile(_T("CgGL.dl"));
+std::wstring cgglfile(L"CgGL.dl");
 //  Full cgd3d9 dll name
-std::wstring cgd3d9file(_T("CgD3D9.dl"));
+std::wstring cgd3d9file(L"CgD3D9.dl");
 //  Full name of the downloaded cg installer
-std::wstring cginstaller(_T("Cg-3.1_April2012_Setup.exe"));
+std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 //  Full tbb dll name
-std::wstring tbbfile(_T("tbb.dl"));
+std::wstring tbbfile(L"tbb.dl");
 //  Full name of the downloaded adobe air installer
-std::wstring airwin(_T("air15_win.exe"));
+std::wstring airwin(L"air15_win.exe");
 // garena stream
-bool garena = std::wifstream(_T("lol.exe")).good();
+bool garena = std::wifstream(L"lol.exe").good();
 
 // Game version test
 // Todo: Automatically get "version" (x.x.x.x) folder as a std::wstring
@@ -217,9 +213,9 @@ std::wstring aair()
 {
     if (garena)
     {
-        return _T("Air\\Adobe AIR\\Versions\\1.0\\");
+        return L"Air\\Adobe AIR\\Versions\\1.0\\";
 }
-return _T("RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\");
+return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
 }
 
 // Game version test
@@ -229,13 +225,13 @@ std::wstring game()
 {
     if (garena)
     {
-        return _T("Game\\");
+        return L"Game\\";
 }
-return _T("RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\");
+return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
 }
 
 // Todo: Make files download simultaneously to decrease "patching" time (does my logic make sence?)
-void download(std::wstring fromurl, std::wstring topath, int pathcont, int frompathcont, std::wstring args)
+void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
     // Downloads file
     URLDownloadToFile(
@@ -290,10 +286,10 @@ void MainWindow::on_pushButton_clicked()
     // remove app.ext and append backslash to the working-dir buffer.
     pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(_T("\\/"))) + _T("\\"));
 
-    download(_T("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cginstaller.c_str(), 7, 19, _T("/verysilent / TYPE = compact"));
+    download("http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), cginstaller.c_str(), 7, 19, "/verysilent / TYPE = compact";
 
     // Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
-    GetEnvironmentVariable(_T("CG_BIN_PATH"),
+    GetEnvironmentVariable("CG_BIN_PATH",
     &cgbinpath[0],
     MAX_PATH + 1);
 
@@ -315,7 +311,7 @@ void MainWindow::on_pushButton_clicked()
     pathcontainer[0] << ":\\Program Files";
 #endif
 
-    download(_T("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), airwin.c_str(), 8, 19, _T("-silent"));
+    download("https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, "-silent");
 
     // Todo: use vectors and foreach here to compress it some more.
     // std::wstring building
@@ -344,12 +340,12 @@ void MainWindow::on_pushButton_clicked()
     // Each variant of tbb is built with support for certain SMID instructions (or none)
 #ifdef XP
     // Is built without any support for any SMID instructions.
-    tbbdownload(_T("http://lol.jdhpro.com/Xp.dl"));
+    tbbdownload("http://lol.jdhpro.com/Xp.dl");
 #else
     // Test for AVX2 (code in header file taken from: https://software.intel.com/en-us/articles/how-to-detect-new-instruction-support-in-the-4th-generation-intel-core-processor-family)
     if (can_use_intel_core_4th_gen_features())
     {
-        tbbdownload(_T("http://lol.jdhpro.com/Avx2.dl"));
+        tbbdownload("http://lol.jdhpro.com/Avx2.dl");
 }
 #if (_MSC_FULL_VER >= 160040219)
 else
@@ -361,7 +357,7 @@ else
 
     if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
     {
-        tbbdownload(_T("http://lol.jdhpro.com/Avx.dl"));
+        tbbdownload("http://lol.jdhpro.com/Avx.dl");
 }
 #endif
 else
@@ -369,19 +365,19 @@ else
     //SSE2  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload(_T("http://lol.jdhpro.com/Sse2.dl"));
+        tbbdownload("http://lol.jdhpro.com/Sse2.dl");
 }
 else
 {
     //SSE  tbb download
     if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
     {
-        tbbdownload(_T("http://lol.jdhpro.com/Sse.dl"));
+        tbbdownload("http://lol.jdhpro.com/Sse.dl");
 }
 //download tbb without any extra SMID instructions if SSE is not supported.
 else
 {
-    tbbdownload(_T("http://lol.jdhpro.com/Default.dl"));
+    tbbdownload("http://lol.jdhpro.com/Default.dl");
 }
 }
 }
