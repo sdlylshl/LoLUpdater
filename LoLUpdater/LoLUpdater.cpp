@@ -322,8 +322,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 
-	localLabel.bottom = 130;
-	DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
+	RECT endlabel;
+	endlabel.left = 0;
+	endlabel.top = 0;
+	endlabel.right = 100;
+	endlabel.bottom = 130;
+	DrawText(hdc, L"Done", -1, &endlabel, DT_CENTER);
 	EndPaint(hwnd, &ps);
 	// Step 3: The Message Loop
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
