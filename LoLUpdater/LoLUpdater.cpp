@@ -12,12 +12,6 @@
 #include <stdint.h>
 #include <intrin.h>
 
-#include <d3dx9core.h>
-
-// globals
-LPDIRECT3D9 g_pDirect3D = nullptr;
-LPDIRECT3DDEVICE9 g_pDirect3D_Device = nullptr;
-
 int s_width = 640;
 int s_height = 400;
 #define CENTERX (GetSystemMetrics(SM_CXSCREEN)/2)-(s_width/2)
@@ -185,8 +179,6 @@ void tbbdownload(const std::wstring url)
 }
 
 
-
-
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -204,11 +196,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 const std::wstring g_szClassName(L"myWindowClass");
+HWND hwnd;
+PAINTSTRUCT ps;
+void PainString(std::wstring text, int x)
+{
+	RECT localLabel;
+	localLabel.left = 0;
+	localLabel.top = 0;
+	localLabel.right = 20;
+	localLabel.bottom =  100 + x;
+	HDC hdc = BeginPaint(hwnd, &ps);
+	DrawText(hdc, text.c_str(), -1, &localLabel, DT_CENTER);
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
 	WNDCLASSEX wc;
-	HWND hwnd;
 	MSG Msg;
 
 	//Step 1: Registering the Window Class
@@ -238,7 +241,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		g_szClassName.c_str(),
 		L"LoLUpdater",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 240, 120,
+		CW_USEDEFAULT, CW_USEDEFAULT, 120, 60,
 		nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == NULL)
@@ -249,8 +252,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	ShowWindow(hwnd, nCmdShow);
+	
+	PainString(L"Patching..", 0);
+	UpdateWindow(hwnd);
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
-
 	// remove app.ext and append backslash to the working-dir buffer.
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 
@@ -344,8 +349,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Copy(10, 16);
 	Copy(2, 3);
 	Copy(4, 5);
-	UpdateWindow(hwnd);
 
+	PainString(L"Done...", 20);
+	EndPaint(hwnd, &ps);
 	// Step 3: The Message Loop
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
