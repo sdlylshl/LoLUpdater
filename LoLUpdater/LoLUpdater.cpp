@@ -108,7 +108,7 @@ const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 const std::wstring tbbfile(L"tbb.dll");
 const std::wstring airwin(L"air15_win.exe");
 int bit = sizeof(void*);
-
+bool done = false;
 bool garena = std::wifstream(L"lol.exe").good();
 
 std::wstring airdir()
@@ -166,6 +166,8 @@ void tbbdownload(const std::wstring url)
 		);
 }
 
+HWND hwnd;
+const std::wstring g_szClassName(L"myWindowClass");
 
 // Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -178,14 +180,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_PAINT:
+		PAINTSTRUCT ps;
+		HDC hdc;
+		RECT localLabel;
+		localLabel.left = 0;
+		localLabel.top = 0;
+		localLabel.right = 100;
+		localLabel.bottom = 20;
+		hdc = BeginPaint(hwnd, &ps);
+		DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
+		if (done == true)
+		{
+			localLabel.left = 0;
+			localLabel.top = 100;
+			localLabel.right = 100;
+			localLabel.bottom = 120;
+			DrawText(hdc, L"Done..", -1, &localLabel, DT_CENTER);
+		}
+		EndPaint(hwnd, &ps);
+		break;
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	return 0;
 }
-const std::wstring g_szClassName(L"myWindowClass");
-HWND hwnd;
-PAINTSTRUCT ps;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -230,13 +250,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	ShowWindow(hwnd, nCmdShow);
-	RECT localLabel;
-	localLabel.left = 0;
-	localLabel.top = 0;
-	localLabel.right = 100;
-	localLabel.bottom = 100;
-	HDC hdc = BeginPaint(hwnd, &ps);
-	DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
@@ -321,14 +334,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Copy(10, 16);
 	Copy(2, 3);
 	Copy(4, 5);
+	done = true;
+	UpdateWindow(hwnd);
 
-	RECT endlabel;
-	endlabel.left = 0;
-	endlabel.top = 0;
-	endlabel.right = 100;
-	endlabel.bottom = 130;
-	DrawText(hdc, L"Done", -1, &endlabel, DT_CENTER);
-	EndPaint(hwnd, &ps);
+
 	// Step 3: The Message Loop
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
