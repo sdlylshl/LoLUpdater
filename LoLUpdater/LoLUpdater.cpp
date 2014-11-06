@@ -13,19 +13,15 @@
 #include <intrin.h>
 
 #include <d3dx9core.h>
-#include <d3d9.h>
-#include <Dwmapi.h> 
-#include <TlHelp32.h>
+
+// globals
+LPDIRECT3D9       g_pDirect3D = NULL;
+LPDIRECT3DDEVICE9 g_pDirect3D_Device = NULL;
 
 int s_width = 800;
 int s_height = 600;
 #define CENTERX (GetSystemMetrics(SM_CXSCREEN)/2)-(s_width/2)
 #define CENTERY (GetSystemMetrics(SM_CYSCREEN)/2)-(s_height/2)
-LPDIRECT3D9 d3d; // the pointer to our Direct3D interface
-LPDIRECT3DDEVICE9 d3ddev;
-HWND hWnd;
-const MARGINS margin = {0, 0, s_width, s_height};
-LPD3DXFONT pFont;
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -188,240 +184,184 @@ void tbbdownload(const std::wstring url)
 	);
 }
 
+
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd,
-                            UINT message,
-                            WPARAM wParam,
-                            LPARAM lParam);
+	UINT message,
+	WPARAM wParam,
+	LPARAM lParam);
 
-
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-void initD3D(HWND hWnd)
-{
-	d3d = Direct3DCreate9(D3D_SDK_VERSION); // create the Direct3D interface
-
-	D3DPRESENT_PARAMETERS d3dpp; // create a struct to hold various device information
-
-	ZeroMemory(&d3dpp, sizeof(d3dpp)); // clear out the struct for use
-	d3dpp.Windowed = TRUE; // program windowed, not fullscreen
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD; // discard old frames
-	d3dpp.hDeviceWindow = hWnd; // set the window to be used by Direct3D
-	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8; // set the back buffer format to 32-bit
-	d3dpp.BackBufferWidth = s_width; // set the width of the buffer
-	d3dpp.BackBufferHeight = s_height; // set the height of the buffer
-
-	d3dpp.EnableAutoDepthStencil = TRUE;
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-
-	// create a device class using this information and the info from the d3dpp stuct
-	d3d->CreateDevice(D3DADAPTER_DEFAULT,
-	                                    D3DDEVTYPE_HAL,
-	                                    hWnd,
-	                                    D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-	                                    &d3dpp,
-	                                    &d3ddev);
-
-	D3DXCreateFont(d3ddev, 50, 0, FW_BOLD, 1, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial", &pFont);
-}
-
-void DrawString(int x, int y, DWORD color, LPD3DXFONT g_pFont, std::wstring fmt)
-{
-	RECT FontPos = {x, y, x + 120, y + 16};
-	std::wstring buf[1024] = {'\0'};
-	va_list va_alist;
-	
-	va_start(va_alist, fmt.c_str());
-	wprintf_s(std::wstring(buf[0].begin(), buf[0].end()).c_str(), fmt, va_alist);
-	va_end(va_alist);
-	g_pFont->DrawText(NULL, std::wstring(buf[0].begin(), buf[0].end()).c_str(), -1, &FontPos, DT_NOCLIP, color);
-}
-
-void render()
-{
-	// clear the window alpha
-	d3ddev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
-
-	d3ddev->BeginScene(); // begins the 3D scene
-
-	DrawString(10, 50, D3DCOLOR_ARGB(255, 255, 0, 0), pFont, L"Patching...");
-
-	d3ddev->EndScene(); // ends the 3D scene
-
-	d3ddev->Present(NULL, NULL, NULL, NULL); // displays the created frame on the screen
-}
-
-
+// the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	int nCmdShow)
 {
-	std::wstring value = L"LoLUpdater";
-
-
-	RECT rc;
-
-
-	HWND newhwnd = FindWindow(nullptr, value.c_str());
-	if (newhwnd != NULL)
-	{
-		GetWindowRect(newhwnd, &rc);
-		s_width = rc.right - rc.left;
-		s_height = rc.bottom - rc.top;
-	}
-	else
-	{
-		ExitProcess(0);
-	}
+	// the handle for the window, filled by a function
+	HWND hWnd;
+	// this struct holds information for the window class
 	WNDCLASSEX wc;
 
+	// clear out the window class for use
 	ZeroMemory(&wc, sizeof(WNDCLASSEX));
 
+	// fill in the struct with the needed information
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = static_cast<HBRUSH>(RGB(0, 0, 0));
-	wc.lpszClassName = L"WindowClass";
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW);
+	wc.lpszClassName = L"WindowClass1";
 
+	// register the window class
 	RegisterClassEx(&wc);
 
-	hWnd = CreateWindowEx(0,
-	                      L"WindowClass",
-	                      L"",
-	                      WS_EX_TOPMOST | WS_POPUP,
-	                      rc.left, rc.top,
-	                      s_width, s_height,
-	                      nullptr,
-	                      nullptr,
-	                      hInstance,
-	                      nullptr);
+	// create the window and use the result as the handle
+	hWnd = CreateWindowEx(NULL,
+		L"WindowClass1",    // name of the window class
+		L"LoLUpdater",   // title of the window
+		WS_OVERLAPPEDWINDOW,    // window style
+		CENTERX,    // x-position of the window
+		CENTERY,    // y-position of the window
+		s_width,    // width of the window
+		s_height,    // height of the window
+		nullptr,    // we have no parent window, NULL
+		nullptr,    // we aren't using menus, NULL
+		hInstance,    // application handle
+		nullptr);    // used with multiple windows, NULL
 
-	SetWindowLong(hWnd, GWL_EXSTYLE, static_cast<int>(GetWindowLong(hWnd, GWL_EXSTYLE)) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
-	SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 255, ULW_COLORKEY | LWA_ALPHA);
+	g_pDirect3D = Direct3DCreate9(D3D_SDK_VERSION);
 
+	D3DPRESENT_PARAMETERS PresentParams;
+	memset(&PresentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
+
+	PresentParams.Windowed = TRUE;
+	PresentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+
+	g_pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING, &PresentParams,
+
+		&g_pDirect3D_Device);
+
+
+
+	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
 
+	// enter the main loop:
 
-	initD3D(hWnd);
+	// this struct holds Windows event messages
 	MSG msg;
-	SetWindowPos(FindWindow(nullptr, value.c_str()), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	while (TRUE)
+
+	// wait for the next message in the queue, store the result in 'msg'
+	while (GetMessage(&msg, nullptr, 0, 0))
 	{
-		SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		// translate keystroke messages into the right format
+		TranslateMessage(&msg);
 
-		if (!FindWindow(nullptr, value.c_str()))
-			ExitProcess(0);
-		render();
-
-		GetModuleFileName(nullptr, const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str()), MAX_PATH + 1);
-		pathcontainer[19] << (std::wstring(const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str())).substr(0, std::wstring(const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str())).find_last_of(L"\\/")) + L"\\");
-		download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
-		GetEnvironmentVariableW(L"CG_BIN_PATH",
-			const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()),
-		                        MAX_PATH + 1);
-		wcsncat_s(
-			const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()),
-			MAX_PATH + 1,
-			L"\\",
-			_TRUNCATE
+		// send the message to the WindowProc function
+		DispatchMessage(&msg);
+	}
+	GetModuleFileName(nullptr, const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str()), MAX_PATH + 1);
+	pathcontainer[19] << (std::wstring(const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str())).substr(0, std::wstring(const_cast< wchar_t* >(std::wstring(cwd0[0].begin(), cwd0[0].end()).c_str())).find_last_of(L"\\/")) + L"\\");
+	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
+	GetEnvironmentVariableW(L"CG_BIN_PATH",
+		const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()),
+		MAX_PATH + 1);
+	wcsncat_s(
+		const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()),
+		MAX_PATH + 1,
+		L"\\",
+		_TRUNCATE
 		);
-		pathcontainer[0] << pathcontainer[19].str().c_str()[0];
+	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 #ifdef ENVIRONMENT64
-		pathcontainer[0] << ":\\Program Files (x86)";
+	pathcontainer[0] << ":\\Program Files (x86)";
 #else
-		pathcontainer[0] << ":\\Program Files";
+	pathcontainer[0] << ":\\Program Files";
 #endif
-		download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
-		pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-		pathcontainer[6] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgfile);
-		pathcontainer[11] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgglfile);
-		pathcontainer[10] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgd3d9file);
-		charreduction(18, 19, gamedir());
-		charreduction(17, 19, airdir());
-		charreduction(1, 18, tbbfile);
-		charreduction(2, 0, air);
-		charreduction(4, 0, flash);
-		charreduction(12, 18, cgfile);
-		charreduction(13, 18, cgglfile);
-		charreduction(16, 18, cgd3d9file);
-		charreduction(3, 17, air);
-		charreduction(5, 17, flash);
-		charreduction(9, 3, unblock);
-		charreduction(15, 5, unblock);
-		charreduction(14, 1, unblock);
+	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
+	pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	pathcontainer[6] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgfile);
+	pathcontainer[11] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgglfile);
+	pathcontainer[10] << (const_cast< wchar_t* >(std::wstring(cgbinpath[0].begin(), cgbinpath[0].end()).c_str()) + cgd3d9file);
+	charreduction(18, 19, gamedir());
+	charreduction(17, 19, airdir());
+	charreduction(1, 18, tbbfile);
+	charreduction(2, 0, air);
+	charreduction(4, 0, flash);
+	charreduction(12, 18, cgfile);
+	charreduction(13, 18, cgglfile);
+	charreduction(16, 18, cgd3d9file);
+	charreduction(3, 17, air);
+	charreduction(5, 17, flash);
+	charreduction(9, 3, unblock);
+	charreduction(15, 5, unblock);
+	charreduction(14, 1, unblock);
 
-		if (IsWindowsXPSP3OrGreater() && !IsWindowsVistaOrGreater())
+	if (IsWindowsXPSP3OrGreater() && !IsWindowsVistaOrGreater())
+	{
+		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
+	}
+	if (can_use_intel_core_4th_gen_features())
+	{
+		tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
+	}
+	else
+	{
+		int cpuInfo[4];
+		__cpuid(cpuInfo, 1);
+		if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 		{
-			tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
-		}
-		if (can_use_intel_core_4th_gen_features())
-		{
-			tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
+			tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
 		}
 		else
 		{
-			int cpuInfo[4];
-			__cpuid(cpuInfo, 1);
-			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
+			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 			{
-				tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
+				tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
 			}
 			else
 			{
-				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
+					tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
 				}
 				else
 				{
-					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-					{
-						tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
-					}
-					else
-					{
-						tbbdownload(L"http://lol.jdhpro.com/Default.dll");
-					}
+					tbbdownload(L"http://lol.jdhpro.com/Default.dll");
 				}
 			}
 		}
-		DeleteFile(pathcontainer[14].str().c_str());
-		Copy(6, 12);
-		Copy(11, 13);
-		Copy(10, 16);
-		Copy(2, 3);
-		Copy(4, 5);
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		if (msg.message == WM_QUIT)
-			exit(0);
 	}
+	DeleteFile(pathcontainer[14].str().c_str());
+	Copy(6, 12);
+	Copy(11, 13);
+	Copy(10, 16);
+	Copy(2, 3);
+	Copy(4, 5);
+
+	// return this part of the WM_QUIT message to Windows
+	return msg.wParam;
 }
 
-
+// this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	// sort through and find what code to run for the message given
 	switch (message)
 	{
-	case WM_PAINT:
-		{
-			DwmExtendFrameIntoClientArea(hWnd, &margin);
-		}
-		break;
-
+		// this message is read when the window is closed
 	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
+	{
+		// close the application entirely
+		PostQuitMessage(0);
+		return 0;
+	}
 	}
 
+	// Handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
