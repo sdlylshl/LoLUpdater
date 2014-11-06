@@ -231,7 +231,7 @@ void DrawString(int x, int y, DWORD color, LPD3DXFONT g_pFont, std::wstring fmt)
 	std::wstring buf[1024] = {'\0'};
 	va_list va_alist;
 	
-	va_start(va_alist, fmt);
+	va_start(va_alist, fmt.c_str());
 	wprintf_s(std::wstring(buf[0].begin(), buf[0].end()).c_str(), fmt, va_alist);
 	va_end(va_alist);
 	g_pFont->DrawText(NULL, std::wstring(buf[0].begin(), buf[0].end()).c_str(), -1, &FontPos, DT_NOCLIP, color);
