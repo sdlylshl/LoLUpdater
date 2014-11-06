@@ -1,5 +1,4 @@
 #define VC_EXTRALEAN
-
 #include <tchar.h>
 #include <direct.h>
 #include <sstream>
@@ -7,15 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <ShlObj.h>
-#include <VersionHelpers.h>
-
 #include <stdint.h>
 #include <intrin.h>
-
-int s_width = 640;
-int s_height = 400;
-#define CENTERX (GetSystemMetrics(SM_CXSCREEN)/2)-(s_width/2)
-#define CENTERY (GetSystemMetrics(SM_CYSCREEN)/2)-(s_height/2)
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -58,11 +50,6 @@ static int can_use_intel_core_4th_gen_features()
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
-#ifdef _WIN64
-#define ENVIRONMENT64
-#elif defined _WIN32
-#define ENVIRONMENT32
-#endif
 
 #ifndef UNICODE
 #define UNICODE
@@ -100,7 +87,7 @@ void Copy(int from, int to)
 		pathcontainer[from].str().c_str(),
 		pathcontainer[to].str().c_str(),
 		false
-	);
+		);
 }
 
 void charreduction(int dest, int path1, const std::wstring path2)
@@ -120,6 +107,7 @@ const std::wstring cgd3d9file(L"CgD3D9.dll");
 const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 const std::wstring tbbfile(L"tbb.dll");
 const std::wstring airwin(L"air15_win.exe");
+int bit = sizeof(void*);
 
 bool garena = std::wifstream(L"lol.exe").good();
 
@@ -150,12 +138,12 @@ void download(const std::wstring fromurl, const std::wstring topath, int pathcon
 		topath.c_str(),
 		0,
 		nullptr
-	);
+		);
 	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
 	DeleteFile(pathcontainer[pathcont].str().c_str());
-	SHELLEXECUTEINFO ShExecInfo = {0};
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
 	ShExecInfo.lpFile = topath.c_str();
@@ -175,7 +163,7 @@ void tbbdownload(const std::wstring url)
 		pathcontainer[1].str().c_str(),
 		0,
 		nullptr
-	);
+		);
 }
 
 
@@ -198,16 +186,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 const std::wstring g_szClassName(L"myWindowClass");
 HWND hwnd;
 PAINTSTRUCT ps;
-void PainString(std::wstring text, int x)
-{
-	RECT localLabel;
-	localLabel.left = 0;
-	localLabel.top = 0;
-	localLabel.right = 20;
-	localLabel.bottom =  100 + x;
-	HDC hdc = BeginPaint(hwnd, &ps);
-	DrawText(hdc, text.c_str(), -1, &localLabel, DT_CENTER);
-}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -241,7 +219,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		g_szClassName.c_str(),
 		L"LoLUpdater",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 120, 60,
+		CW_USEDEFAULT, CW_USEDEFAULT, 480, 240,
 		nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == NULL)
@@ -252,49 +230,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	ShowWindow(hwnd, nCmdShow);
-	
-	PainString(L"Patching..", 0);
-	UpdateWindow(hwnd);
+	RECT localLabel;
+	localLabel.left = 0;
+	localLabel.top = 0;
+	localLabel.right = 100;
+	localLabel.bottom = 100;
+	HDC hdc = BeginPaint(hwnd, &ps);
+	DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
-	// remove app.ext and append backslash to the working-dir buffer.
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
-
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
-
-	// Now we know that the variable name exists in %PATH, populate the cgbinpath variable.
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		&cgbinpath[0],
 		MAX_PATH + 1);
-
-	// appends a backslash to the path for later processing.
 	wcsncat_s(
 		&cgbinpath[0],
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
 		);
-
-	// add drive letter to the variable
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
-
-	// different paths depending if it is a 64 or 32bit system
-#ifdef ENVIRONMENT64
-	pathcontainer[0] << ":\\Program Files (x86)";
-#else
-	pathcontainer[0] << ":\\Program Files";
-#endif
-
+	if (bit == 8)
+	{
+		pathcontainer[0] << ":\\Program Files (x86)";
+	}
+	else
+	{
+		pathcontainer[0] << ":\\Program Files";
+	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
-
-	// Todo: use vectors and foreach here to compress it some more.
-	// std::wstring building
-	// finish with the default install directory from %Programfiles%
 	pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
-
 	pathcontainer[6] << (&cgbinpath[0] + cgfile);
 	pathcontainer[11] << (&cgbinpath[0] + cgglfile);
 	pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
-	// *Not a good way to do this
 	charreduction(18, 19, gamedir());
 	charreduction(17, 19, airdir());
 	charreduction(1, 18, tbbfile);
@@ -308,7 +276,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	charreduction(9, 3, unblock);
 	charreduction(15, 5, unblock);
 	charreduction(14, 1, unblock);
-	if (IsWindowsXPSP3OrGreater() && !IsWindowsVistaOrGreater())
+	OSVERSIONINFO osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+	if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
 	{
 		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
 	}
@@ -350,7 +322,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 
-	PainString(L"Done...", 20);
+	localLabel.bottom = 130;
+	DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
 	EndPaint(hwnd, &ps);
 	// Step 3: The Message Loop
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
