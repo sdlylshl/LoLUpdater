@@ -10,7 +10,7 @@
 #include <vector>
 #include <ShlObj.h>
 
-#include <D3D9.h>
+#include <D3dx9core.h>
 
 inline void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
