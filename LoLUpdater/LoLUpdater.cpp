@@ -84,6 +84,8 @@ std::wstring gamedir()
 	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
 }
 
+
+
 void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
 	URLDownloadToFile(
@@ -126,15 +128,16 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
                             WPARAM wParam,
                             LPARAM lParam);
 
+const int clientWidth = 640;
+const int clientHeight = 480;
+ID3DXFont *font = nullptr;
+IDirect3DDevice9 *gD3dDevice = nullptr;
+RECT r = { 0, 0, clientWidth, clientHeight };
+// Create a colour for the text - in this case black
 
-IDirect3DDevice9 *g_d3d_device = nullptr;
-RECT lineRect;
-ID3DXFont * pDefaultFont;
-D3DCOLOR defaultFontColor;
-const int g_width = 500;
-const int g_height = 400;
 
-
+int width = r.right - r.left;  //correct width based on requested client size
+int height = r.bottom - r.top;  //correct height based on requested client size
 
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -142,17 +145,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    LPSTR lpCmdLine,
                    int nCmdShow)
 {
-
-	// initialize the line and font heights
-
-	D3DXCreateFont(g_d3d_device, 30/*fontHeight*/,
-		0, FW_BOLD, 0, FALSE,
-		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-		DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		TEXT("Calibri"), &pDefaultFont);
-
-	defaultFontColor = D3DCOLOR_ARGB(255, 255, 255, 255);
-
 
 	// the handle for the window, filled by a function
 	HWND hWnd;
@@ -173,15 +165,18 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// register the window class
 	RegisterClassEx(&wc);
+
+	AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, false);
+
 	// create the window and use the result as the handle
 	hWnd = CreateWindowEx(NULL,
 	                          L"WindowClass1", // name of the window class
 	                          L"LoLUpdater", // title of the window
 	                          WS_OVERLAPPEDWINDOW, // window style
-	                          300, // x-position of the window
-	                          300, // y-position of the window
-							  g_width, // width of the window
-							  g_height, // height of the window
+							  GetSystemMetrics(SM_CXSCREEN) / 2 - height / 2, // x-position of the window
+							  GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2, // y-position of the window
+							  width, // width of the window
+							  height, // height of the window
 	                          nullptr, // we have no parent window, NULL
 	                          nullptr, // we aren't using menus, NULL
 	                          hInstance, // application handle
@@ -189,6 +184,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
+
 
 	// enter the main loop:
 
@@ -204,9 +200,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		// send the message to the WindowProc function
 		DispatchMessage(&msg);
 	}
-
-	SetRect(&lineRect, 0, 0, g_width, g_height);
-	pDefaultFont->DrawTextA(nullptr, "Patching...", -1, &lineRect, DT_RIGHT, defaultFontColor);
 
 
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
@@ -287,10 +280,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 
-	SetRect(&lineRect, 0, 0, g_width, g_height);
-	pDefaultFont->DrawTextA(nullptr, "Patching...", -1, &lineRect, DT_RIGHT, defaultFontColor);
+	return msg.wParam;
+}
 
-	return 0;
+
+
+
+void Create(std::wstring &name, INT height, UINT width)
+{
+	D3DXFONT_DESC fontDesc;
+	fontDesc.Height = height;
+	fontDesc.Width = width;
+	fontDesc.Weight = 0;
+	fontDesc.MipLevels = 1;
+	fontDesc.Italic = false;
+	fontDesc.CharSet = DEFAULT_CHARSET;
+	fontDesc.OutputPrecision = OUT_DEFAULT_PRECIS;
+	fontDesc.Quality = DEFAULT_QUALITY;
+	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	_tcscpy_s(fontDesc.FaceName, _T("Times New Roman"));
+	D3DXCreateFontIndirect(gD3dDevice, &fontDesc, &font);
 }
 
 // this is the main message handler for the program
@@ -304,10 +313,24 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			// close the application entirely
 			PostQuitMessage(0);
+			if (font != NULL)
+			{
+				font->Release();
+				font = nullptr;
+			}
 			return 0;
 		}
 	}
 
 	// Handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+
+// Render black text
+void Render(LPCTSTR lpString, int x, int y)
+{
+	RECT R = { x, y, 0, 0 };
+	font->DrawText(nullptr, lpString, -1, &R, DT_NOCLIP, D3DCOLOR_ARGB(0, 0, 0, 0));
 }
