@@ -125,14 +125,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <AdditionalDependencies>Urlmon.Lib;$(DXSDK_DIR)Lib\x64\d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.Lib;$(DXSDK_DIR)Lib\x64\d3dx9.lib;$(DXSDK_DIR)Lib\x64\d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LoLUpdater.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="LoLUpdater.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

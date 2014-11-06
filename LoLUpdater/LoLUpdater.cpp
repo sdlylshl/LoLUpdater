@@ -1,4 +1,56 @@
-#include "LoLUpdater.h"
+#define VC_EXTRALEAN
+
+#include <tchar.h>
+#include <direct.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <ShlObj.h>
+#include <VersionHelpers.h>
+
+#include <stdint.h>
+#include <intrin.h>
+
+void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
+{
+	__cpuidex(abcd, eax, ecx);
+}
+
+int check_xcr0_ymm()
+{
+	uint32_t xcr0;
+	xcr0 = (uint32_t)_xgetbv(0);
+	return ((xcr0 & 6) == 6);
+}
+
+int check_4th_gen_intel_core_features()
+{
+	int abcd[4];
+	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
+	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
+	run_cpuid(1, 0, abcd);
+	if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
+		return 0;
+	if (!check_xcr0_ymm())
+		return 0;
+	run_cpuid(7, 0, abcd);
+	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
+		return 0;
+	run_cpuid(0x80000001, 0, abcd);
+	if ((abcd[2] & (1 << 5)) == 0)
+		return 0;
+	return 1;
+}
+
+static int can_use_intel_core_4th_gen_features()
+{
+	static int the_4th_gen_features_available = -1;
+	if (the_4th_gen_features_available < 0)
+		the_4th_gen_features_available = check_4th_gen_intel_core_features();
+	return the_4th_gen_features_available;
+}
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 #ifdef _WIN64
@@ -43,7 +95,7 @@ void Copy(int from, int to)
 		pathcontainer[from].str().c_str(),
 		pathcontainer[to].str().c_str(),
 		false
-	);
+		);
 }
 
 void charreduction(int dest, int path1, const std::wstring path2)
@@ -85,7 +137,6 @@ std::wstring gamedir()
 }
 
 
-
 void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
 	URLDownloadToFile(
@@ -94,12 +145,12 @@ void download(const std::wstring fromurl, const std::wstring topath, int pathcon
 		topath.c_str(),
 		0,
 		nullptr
-	);
+		);
 	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
 	DeleteFile(pathcontainer[pathcont].str().c_str());
-	SHELLEXECUTEINFO ShExecInfo = {0};
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
 	ShExecInfo.lpFile = topath.c_str();
@@ -119,50 +170,53 @@ void tbbdownload(const std::wstring url)
 		pathcontainer[1].str().c_str(),
 		0,
 		nullptr
-	);
+		);
 }
+
+#include <d3dx9core.h>
+
+ID3DXFont *g_font = nullptr;
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd,
-                            UINT message,
-                            WPARAM wParam,
-                            LPARAM lParam);
+	UINT message,
+	WPARAM wParam,
+	LPARAM lParam);
 
-const int clientWidth = 640;
-const int clientHeight = 480;
-ID3DXFont *font = nullptr;
-IDirect3DDevice9 *gD3dDevice = nullptr;
-RECT r = { 0, 0, clientWidth, clientHeight };
-// Create a colour for the text - in this case black
-// Render black text
 
-bool InitScene()
+IDirect3DDevice9 *g_d3d_device = nullptr;
+
+void render(std::wstring text)
 {
-	D3DXFONT_DESC fd;
-	fd.Height = 175;
-	fd.Width = 0;
-	fd.Weight = 0;
-	fd.MipLevels = 1;
-	fd.Italic = false;
-	fd.CharSet = OUT_DEFAULT_PRECIS;
-	fd.Quality = DEFAULT_QUALITY;
-	fd.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-	wcscpy_s(fd.FaceName, L"Impact");
-	D3DXCreateFontIndirect(gD3dDevice, &fd, &font);
+	D3DXCreateFont(g_d3d_device,     //D3D Device
+		22,               //Font height
+		0,                //Font width
+		FW_NORMAL,        //Font Weight
+		1,                //MipLevels
+		false,            //Italic
+		DEFAULT_CHARSET,  //CharSet
+		OUT_DEFAULT_PRECIS, //OutputPrecision
+		ANTIALIASED_QUALITY, //Quality
+		DEFAULT_PITCH | FF_DONTCARE,//PitchAndFamily
+		L"Arial",          //pFacename,
+		&g_font);         //ppFont
+	RECT font_rect = { 0, 0, 500, 400 };
+	SetRect(&font_rect, 0, 0, 500, 400);
+	g_font->DrawText(nullptr,        //pSprite
+		text.c_str(),  //pString
+		-1,          //Count
+		&font_rect,  //pRect
+		DT_LEFT | DT_NOCLIP,//Format,
+		0xFFFFFFFF); //Color
 
-	return true;
 }
-
-int width = r.right - r.left;  //correct width based on requested client size
-int height = r.bottom - r.top;  //correct height based on requested client size
 
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	int nCmdShow)
 {
-
 	// the handle for the window, filled by a function
 	HWND hWnd;
 	// this struct holds information for the window class
@@ -176,32 +230,29 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW);
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	wc.lpszClassName = L"WindowClass1";
 
 	// register the window class
 	RegisterClassEx(&wc);
 
-	AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, false);
-
 	// create the window and use the result as the handle
 	hWnd = CreateWindowEx(NULL,
-	                          L"WindowClass1", // name of the window class
-	                          L"LoLUpdater", // title of the window
-	                          WS_OVERLAPPEDWINDOW, // window style
-							  GetSystemMetrics(SM_CXSCREEN) / 2 - height / 2, // x-position of the window
-							  GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2, // y-position of the window
-							  width, // width of the window
-							  height, // height of the window
-	                          nullptr, // we have no parent window, NULL
-	                          nullptr, // we aren't using menus, NULL
-	                          hInstance, // application handle
-	                          nullptr); // used with multiple windows, NULL
+		L"WindowClass1",    // name of the window class
+		L"LoLUpdater",   // title of the window
+		WS_OVERLAPPEDWINDOW,    // window style
+		300,    // x-position of the window
+		300,    // y-position of the window
+		500,    // width of the window
+		400,    // height of the window
+		nullptr,    // we have no parent window, NULL
+		nullptr,    // we aren't using menus, NULL
+		hInstance,    // application handle
+		nullptr);    // used with multiple windows, NULL
 
 	// display the window on the screen
 	ShowWindow(hWnd, nCmdShow);
-
 
 	// enter the main loop:
 
@@ -218,24 +269,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 
-	D3DXCOLOR fontColor(0.0f, 0.0f, 0.0f, 1.0f);
-	RECT rectangle = { 35, 50, 0, 0 };
-
-	font->DrawText(nullptr, L"Patching...", -1, &rectangle, DT_NOCLIP, fontColor);
-
+	render(L"Patching...");
 
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
-	GetEnvironmentVariable(L"CG_BIN_PATH",
-	                       &cgbinpath[0],
-	                       MAX_PATH + 1);
+	GetEnvironmentVariableW(L"CG_BIN_PATH",
+		&cgbinpath[0],
+		MAX_PATH + 1);
 	wcsncat_s(
 		&cgbinpath[0],
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
-	);
+		);
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 #ifdef ENVIRONMENT64
 	pathcontainer[0] << ":\\Program Files (x86)";
@@ -261,7 +308,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	charreduction(15, 5, unblock);
 	charreduction(14, 1, unblock);
 
-	if (IsWindowsXPSP3OrGreater && !IsWindowsVistaOrGreater)
+	if (IsWindowsXPSP3OrGreater() && !IsWindowsVistaOrGreater())
 	{
 		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
 	}
@@ -303,9 +350,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 
+	render(L"Finished!");
+
+	// return this part of the WM_QUIT message to Windows
 	return msg.wParam;
 }
-
 
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -315,16 +364,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		// this message is read when the window is closed
 	case WM_DESTROY:
-		{
-			// close the application entirely
-			PostQuitMessage(0);
-			if (font != NULL)
-			{
-				font->Release();
-				font = nullptr;
-			}
-			return 0;
+	{
+		if (g_font){
+			g_font->Release();
+			g_font = nullptr;
 		}
+		// close the application entirely
+		PostQuitMessage(0);
+		return 0;
+	}
 	}
 
 	// Handle any messages the switch statement didn't
