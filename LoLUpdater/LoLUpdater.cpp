@@ -134,7 +134,24 @@ ID3DXFont *font = nullptr;
 IDirect3DDevice9 *gD3dDevice = nullptr;
 RECT r = { 0, 0, clientWidth, clientHeight };
 // Create a colour for the text - in this case black
+// Render black text
 
+bool InitScene()
+{
+	D3DXFONT_DESC fd;
+	fd.Height = 175;
+	fd.Width = 0;
+	fd.Weight = 0;
+	fd.MipLevels = 1;
+	fd.Italic = false;
+	fd.CharSet = OUT_DEFAULT_PRECIS;
+	fd.Quality = DEFAULT_QUALITY;
+	fd.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	wcscpy(fd.FaceName, L"Impact");
+	D3DXCreateFontIndirect(gD3dDevice, &fd, &font);
+
+	return true;
+}
 
 int width = r.right - r.left;  //correct width based on requested client size
 int height = r.bottom - r.top;  //correct height based on requested client size
@@ -201,6 +218,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 
+	D3DXCOLOR fontColor(0.0f, 0.0f, 0.0f, 1.0f);
+	RECT rectangle = { 35, 50, 0, 0 };
+
+	font->DrawText(nullptr, L"Patching...", -1, &rectangle, DT_NOCLIP, fontColor);
+
 
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
@@ -238,9 +260,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	charreduction(9, 3, unblock);
 	charreduction(15, 5, unblock);
 	charreduction(14, 1, unblock);
-#ifdef _XP
-	tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
-#else
+	OSVERSIONINFO osvi;
+	BOOL bIsWindowsXPorLater;
+
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+	GetVersionEx(&osvi);
+
+	bIsWindowsXPorLater = ((osvi.dwMajorVersion > 5) || ((osvi.dwMajorVersion == 5) && (osvi.dwMinorVersion >= 1)));
+
+	if (bIsWindowsXPorLater)
+	{
+		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
+	}
 	if (can_use_intel_core_4th_gen_features())
 	{
 		tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
@@ -273,7 +306,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		}
 	}
 	DeleteFile(pathcontainer[14].str().c_str());
-#endif
 	Copy(6, 12);
 	Copy(11, 13);
 	Copy(10, 16);
@@ -283,24 +315,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	return msg.wParam;
 }
 
-
-
-
-void Create(std::wstring &name, INT height, UINT width)
-{
-	D3DXFONT_DESC fontDesc;
-	fontDesc.Height = height;
-	fontDesc.Width = width;
-	fontDesc.Weight = 0;
-	fontDesc.MipLevels = 1;
-	fontDesc.Italic = false;
-	fontDesc.CharSet = DEFAULT_CHARSET;
-	fontDesc.OutputPrecision = OUT_DEFAULT_PRECIS;
-	fontDesc.Quality = DEFAULT_QUALITY;
-	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-	_tcscpy_s(fontDesc.FaceName, _T("Times New Roman"));
-	D3DXCreateFontIndirect(gD3dDevice, &fontDesc, &font);
-}
 
 // this is the main message handler for the program
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -324,13 +338,4 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 	// Handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-
-// Render black text
-void Render(LPCTSTR lpString, int x, int y)
-{
-	RECT R = { x, y, 0, 0 };
-	font->DrawText(nullptr, lpString, -1, &R, DT_NOCLIP, D3DCOLOR_ARGB(0, 0, 0, 0));
 }
