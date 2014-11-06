@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <intrin.h>
 
+// AVX2 code taken from intels website with c++ casts instead of C-style casts.
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
 	__cpuidex(abcd, eax, ecx);
@@ -47,16 +48,7 @@ static int can_use_intel_core_4th_gen_features()
 		the_4th_gen_features_available = check_4th_gen_intel_core_features();
 	return the_4th_gen_features_available;
 }
-
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-
-
-#ifndef UNICODE
-#define UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
 
 // Keep magical numbers
 // 0 = adobe air installation directory
@@ -96,7 +88,7 @@ void charreduction(int dest, int path1, const std::wstring path2)
 }
 
 std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
-std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
+std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
 
 const std::wstring unblock(L":Zone.Identifier");
 const std::wstring air(L"Adobe AIR.dll");
@@ -167,9 +159,10 @@ void tbbdownload(const std::wstring url)
 }
 
 HWND hwnd;
-const std::wstring g_szClassName(L"myWindowClass");
+const std::wstring g_szClassName(L"mainwindow1");
+RECT start = { 0, 0, 100, 20 };
+RECT end = { 0, 100, 100, 120 };
 
-// Step 4: the Window Procedure
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -183,22 +176,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		PAINTSTRUCT ps;
 		HDC hdc;
-		RECT localLabel;
-		localLabel.left = 0;
-		localLabel.top = 0;
-		localLabel.right = 100;
-		localLabel.bottom = 20;
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"Patching..", -1, &localLabel, DT_CENTER);
+		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
 		{
-			localLabel.left = 0;
-			localLabel.top = 100;
-			localLabel.right = 100;
-			localLabel.bottom = 120;
-			DrawText(hdc, L"Done..", -1, &localLabel, DT_CENTER);
+			DrawText(hdc, L"Done..", -1, &end, DT_CENTER);
+			EndPaint(hwnd, &ps);
 		}
-		EndPaint(hwnd, &ps);
 		break;
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -212,7 +196,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WNDCLASSEX wc;
 	MSG Msg;
 
-	//Step 1: Registering the Window Class
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
@@ -225,15 +208,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+	RegisterClassEx(&wc);
 
-	if (!RegisterClassEx(&wc))
-	{
-		MessageBox(nullptr, L"Window Registration Failed!", L"Error!",
-			MB_ICONEXCLAMATION | MB_OK);
-		return 0;
-	}
-
-	// Step 2: Creating the Window
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
 		g_szClassName.c_str(),
@@ -242,16 +218,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		CW_USEDEFAULT, CW_USEDEFAULT, 480, 240,
 		nullptr, nullptr, hInstance, nullptr);
 
-	if (hwnd == NULL)
-	{
-		MessageBox(nullptr, L"Window Creation Failed!", L"Error!",
-			MB_ICONEXCLAMATION | MB_OK);
-		return 0;
-	}
-
 	ShowWindow(hwnd, nCmdShow);
-	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
-	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
+	GetModuleFileName(nullptr, &currentdirectorybuffer[0], MAX_PATH + 1);
+	pathcontainer[19] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		&cgbinpath[0],
@@ -297,37 +266,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	{
 		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
 	}
-	if (can_use_intel_core_4th_gen_features())
-	{
-		tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
-	}
 	else
 	{
-		int cpuInfo[4];
-		__cpuid(cpuInfo, 1);
-		if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
+		if (can_use_intel_core_4th_gen_features())
 		{
-			tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
+			tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
 		}
 		else
 		{
-			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+			int cpuInfo[4];
+			__cpuid(cpuInfo, 1);
+			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
-				tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
+				tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
 			}
 			else
 			{
-				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
+					tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
 				}
 				else
 				{
-					tbbdownload(L"http://lol.jdhpro.com/Default.dll");
+					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+					{
+						tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
+					}
+					else
+					{
+						tbbdownload(L"http://lol.jdhpro.com/Default.dll");
+					}
 				}
 			}
 		}
 	}
+	 
 	DeleteFile(pathcontainer[14].str().c_str());
 	Copy(6, 12);
 	Copy(11, 13);
@@ -335,10 +308,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 	done = true;
-	UpdateWindow(hwnd);
-
-
-	// Step 3: The Message Loop
+	InvalidateRect(hwnd, &end, false);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
