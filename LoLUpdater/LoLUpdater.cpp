@@ -126,12 +126,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
                             WPARAM wParam,
                             LPARAM lParam);
 
+
+IDirect3DDevice9 *g_d3d_device = nullptr;
+RECT lineRect;
+ID3DXFont * pDefaultFont;
+D3DCOLOR defaultFontColor;
+const int g_width = 500;
+const int g_height = 400;
+
+
+
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
                    int nCmdShow)
 {
+
+	// initialize the line and font heights
+
+	D3DXCreateFont(g_d3d_device, 30/*fontHeight*/,
+		0, FW_BOLD, 0, FALSE,
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+		DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+		TEXT("Calibri"), &pDefaultFont);
+
+	defaultFontColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+
+
 	// the handle for the window, filled by a function
 	HWND hWnd;
 	// this struct holds information for the window class
@@ -151,7 +173,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	// register the window class
 	RegisterClassEx(&wc);
-
 	// create the window and use the result as the handle
 	hWnd = CreateWindowEx(NULL,
 	                          L"WindowClass1", // name of the window class
@@ -159,8 +180,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	                          WS_OVERLAPPEDWINDOW, // window style
 	                          300, // x-position of the window
 	                          300, // y-position of the window
-	                          500, // width of the window
-	                          400, // height of the window
+							  g_width, // width of the window
+							  g_height, // height of the window
 	                          nullptr, // we have no parent window, NULL
 	                          nullptr, // we aren't using menus, NULL
 	                          hInstance, // application handle
@@ -183,52 +204,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		// send the message to the WindowProc function
 		DispatchMessage(&msg);
 	}
-	const int g_width = 640;
-	const int g_height = 480;
-	const int g_depth = 16; //16-bit colour
-	RECT font_rect = { 0, 0, g_width, g_height };
-	int font_height;
-	IDirect3DDevice9 *g_d3d_device = nullptr;
-	ID3DXFont *g_font = nullptr;
 
-	D3DXCreateFont(g_d3d_device,     //D3D Device
-
-		22,               //Font height
-
-		0,                //Font width
-
-		FW_NORMAL,        //Font Weight
-
-		1,                //MipLevels
-
-		false,            //Italic
-
-		DEFAULT_CHARSET,  //CharSet
-
-		OUT_DEFAULT_PRECIS, //OutputPrecision
-
-		ANTIALIASED_QUALITY, //Quality
-
-		DEFAULT_PITCH | FF_DONTCARE,//PitchAndFamily
-
-		L"Arial",          //pFacename,
-
-		&g_font);         //ppFont
-
-
-	SetRect(&font_rect, 0, 0, g_width, g_height);
-
-	g_font->DrawText(nullptr,        //pSprite
-
-		L"Patching, please wait",  //pString
-
-		-1,          //Count
-
-		&font_rect,  //pRect
-
-		DT_LEFT | DT_NOCLIP,//Format,
-
-		0xff000000); //Color
+	SetRect(&lineRect, 0, 0, g_width, g_height);
+	pDefaultFont->DrawTextA(nullptr, "Patching...", -1, &lineRect, DT_RIGHT, defaultFontColor);
 
 
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
@@ -309,28 +287,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Copy(2, 3);
 	Copy(4, 5);
 
-	SetRect(&font_rect, 0, -22, g_width, g_height);
+	SetRect(&lineRect, 0, 0, g_width, g_height);
+	pDefaultFont->DrawTextA(nullptr, "Patching...", -1, &lineRect, DT_RIGHT, defaultFontColor);
 
-	g_font->DrawText(nullptr,        //pSprite
-
-		L"Done patching",  //pString
-
-		-1,          //Count
-
-		&font_rect,  //pRect
-
-		DT_LEFT | DT_NOCLIP,//Format,
-
-		0xff000000); //Color
-
-
-	if (g_font){
-		g_font->Release();
-		g_font = nullptr;
-	}
-
-	// return this part of the WM_QUIT message to Windows
-	return msg.wParam;
+	return 0;
 }
 
 // this is the main message handler for the program
