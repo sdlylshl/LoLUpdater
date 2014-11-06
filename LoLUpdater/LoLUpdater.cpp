@@ -183,21 +183,53 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		// send the message to the WindowProc function
 		DispatchMessage(&msg);
 	}
+	const int g_width = 640;
+	const int g_height = 480;
+	const int g_depth = 16; //16-bit colour
+	RECT font_rect = { 0, 0, g_width, g_height };
+	int font_height;
+	IDirect3DDevice9 *g_d3d_device = nullptr;
+	ID3DXFont *g_font = nullptr;
 
-	HRESULT D3DXCreateFont(
-		_In_   LPDIRECT3DDEVICE9 pDevice,
-		_In_   INT Height,
-		_In_   UINT Width,
-		_In_   UINT Weight,
-		_In_   UINT MipLevels,
-		_In_   BOOL Italic,
-		_In_   DWORD CharSet,
-		_In_   DWORD OutputPrecision,
-		_In_   DWORD Quality,
-		_In_   DWORD PitchAndFamily,
-		_In_   LPCTSTR pFacename,
-		_Out_  LPD3DXFONT *ppFont
-		);
+	D3DXCreateFont(g_d3d_device,     //D3D Device
+
+		22,               //Font height
+
+		0,                //Font width
+
+		FW_NORMAL,        //Font Weight
+
+		1,                //MipLevels
+
+		false,            //Italic
+
+		DEFAULT_CHARSET,  //CharSet
+
+		OUT_DEFAULT_PRECIS, //OutputPrecision
+
+		ANTIALIASED_QUALITY, //Quality
+
+		DEFAULT_PITCH | FF_DONTCARE,//PitchAndFamily
+
+		L"Arial",          //pFacename,
+
+		&g_font);         //ppFont
+
+
+	SetRect(&font_rect, 0, 0, g_width, g_height);
+
+	g_font->DrawText(nullptr,        //pSprite
+
+		L"Patching, please wait",  //pString
+
+		-1,          //Count
+
+		&font_rect,  //pRect
+
+		DT_LEFT | DT_NOCLIP,//Format,
+
+		0xff000000); //Color
+
 
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&cwd0[0]).substr(0, std::wstring(&cwd0[0]).find_last_of(L"\\/")) + L"\\");
@@ -276,6 +308,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Copy(10, 16);
 	Copy(2, 3);
 	Copy(4, 5);
+
+	SetRect(&font_rect, 0, -22, g_width, g_height);
+
+	g_font->DrawText(nullptr,        //pSprite
+
+		L"Done patching",  //pString
+
+		-1,          //Count
+
+		&font_rect,  //pRect
+
+		DT_LEFT | DT_NOCLIP,//Format,
+
+		0xff000000); //Color
+
+
+	if (g_font){
+		g_font->Release();
+		g_font = nullptr;
+	}
 
 	// return this part of the WM_QUIT message to Windows
 	return msg.wParam;
