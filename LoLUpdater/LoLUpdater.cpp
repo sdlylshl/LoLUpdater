@@ -15,11 +15,11 @@
 #include <d3dx9core.h>
 
 // globals
-LPDIRECT3D9       g_pDirect3D = nullptr;
+LPDIRECT3D9 g_pDirect3D = nullptr;
 LPDIRECT3DDEVICE9 g_pDirect3D_Device = nullptr;
 
-int s_width = 800;
-int s_height = 600;
+int s_width = 640;
+int s_height = 400;
 #define CENTERX (GetSystemMetrics(SM_CXSCREEN)/2)-(s_width/2)
 #define CENTERY (GetSystemMetrics(SM_CYSCREEN)/2)-(s_height/2)
 
@@ -106,7 +106,7 @@ void Copy(int from, int to)
 		pathcontainer[from].str().c_str(),
 		pathcontainer[to].str().c_str(),
 		false
-		);
+	);
 }
 
 void charreduction(int dest, int path1, const std::wstring path2)
@@ -115,7 +115,7 @@ void charreduction(int dest, int path1, const std::wstring path2)
 }
 
 std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
-std::vector<wchar_t> cwd0(MAX_PATH+1, 0);
+std::vector<wchar_t> cwd0(MAX_PATH + 1, 0);
 
 const std::wstring unblock(L":Zone.Identifier");
 const std::wstring air(L"Adobe AIR.dll");
@@ -156,12 +156,12 @@ void download(const std::wstring fromurl, const std::wstring topath, int pathcon
 		topath.c_str(),
 		0,
 		nullptr
-		);
+	);
 	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + &unblock[0]);
 	DeleteFile(pathcontainer[pathcont].str().c_str());
-	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	SHELLEXECUTEINFO ShExecInfo = {0};
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
 	ShExecInfo.lpFile = topath.c_str();
@@ -181,90 +181,74 @@ void tbbdownload(const std::wstring url)
 		pathcontainer[1].str().c_str(),
 		0,
 		nullptr
-		);
+	);
 }
 
 
-// the WindowProc function prototype
-LRESULT CALLBACK WindowProc(HWND hWnd,
-	UINT message,
-	WPARAM wParam,
-	LPARAM lParam);
 
-// the entry point for any Windows program
-int WINAPI WinMain(HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow)
+
+// Step 4: the Window Procedure
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	// the handle for the window, filled by a function
-	HWND hWnd;
-	// this struct holds information for the window class
-	WNDCLASSEX wc;
-
-	// clear out the window class for use
-	ZeroMemory(&wc, sizeof(WNDCLASSEX));
-
-	// fill in the struct with the needed information
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WindowProc;
-	wc.hInstance = hInstance;
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW);
-	wc.lpszClassName = L"WindowClass1";
-
-	// register the window class
-	RegisterClassEx(&wc);
-
-	// create the window and use the result as the handle
-	hWnd = CreateWindowEx(NULL,
-		L"WindowClass1",    // name of the window class
-		L"LoLUpdater",   // title of the window
-		WS_OVERLAPPEDWINDOW,    // window style
-		CENTERX,    // x-position of the window
-		CENTERY,    // y-position of the window
-		s_width,    // width of the window
-		s_height,    // height of the window
-		nullptr,    // we have no parent window, NULL
-		nullptr,    // we aren't using menus, NULL
-		hInstance,    // application handle
-		nullptr);    // used with multiple windows, NULL
-
-	g_pDirect3D = Direct3DCreate9(D3D_SDK_VERSION);
-
-	D3DPRESENT_PARAMETERS PresentParams;
-	memset(&PresentParams, 0, sizeof(D3DPRESENT_PARAMETERS));
-
-	PresentParams.Windowed = TRUE;
-	PresentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-
-	g_pDirect3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
-
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING, &PresentParams,
-
-		&g_pDirect3D_Device);
-
-
-
-	// display the window on the screen
-	ShowWindow(hWnd, nCmdShow);
-
-	// enter the main loop:
-
-	// this struct holds Windows event messages
-	MSG msg;
-
-	// wait for the next message in the queue, store the result in 'msg'
-	while (GetMessage(&msg, nullptr, 0, 0))
+	switch (msg)
 	{
-		// translate keystroke messages into the right format
-		TranslateMessage(&msg);
-
-		// send the message to the WindowProc function
-		DispatchMessage(&msg);
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
-	// gets working directory with app.ext
+	return 0;
+}
+const std::wstring g_szClassName(L"myWindowClass");
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine, int nCmdShow)
+{
+	WNDCLASSEX wc;
+	HWND hwnd;
+	MSG Msg;
+
+	//Step 1: Registering the Window Class
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.style = 0;
+	wc.lpfnWndProc = WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wc.lpszMenuName = nullptr;
+	wc.lpszClassName = g_szClassName.c_str();
+	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+
+	if (!RegisterClassEx(&wc))
+	{
+		MessageBox(nullptr, L"Window Registration Failed!", L"Error!",
+			MB_ICONEXCLAMATION | MB_OK);
+		return 0;
+	}
+
+	// Step 2: Creating the Window
+	hwnd = CreateWindowEx(
+		WS_EX_CLIENTEDGE,
+		g_szClassName.c_str(),
+		L"LoLUpdater",
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, 240, 120,
+		nullptr, nullptr, hInstance, nullptr);
+
+	if (hwnd == NULL)
+	{
+		MessageBox(nullptr, L"Window Creation Failed!", L"Error!",
+			MB_ICONEXCLAMATION | MB_OK);
+		return 0;
+	}
+
+	ShowWindow(hwnd, nCmdShow);
 	GetModuleFileName(nullptr, &cwd0[0], MAX_PATH + 1);
 
 	// remove app.ext and append backslash to the working-dir buffer.
@@ -360,26 +344,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	Copy(10, 16);
 	Copy(2, 3);
 	Copy(4, 5);
+	UpdateWindow(hwnd);
 
-	// return this part of the WM_QUIT message to Windows
-	return msg.wParam;
-}
-
-// this is the main message handler for the program
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// sort through and find what code to run for the message given
-	switch (message)
+	// Step 3: The Message Loop
+	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
-		// this message is read when the window is closed
-	case WM_DESTROY:
-	{
-		// close the application entirely
-		PostQuitMessage(0);
-		return 0;
+		TranslateMessage(&Msg);
+		DispatchMessage(&Msg);
 	}
-	}
-
-	// Handle any messages the switch statement didn't
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return Msg.wParam;
 }
