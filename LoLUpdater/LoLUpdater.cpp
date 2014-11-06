@@ -147,7 +147,7 @@ bool InitScene()
 	fd.CharSet = OUT_DEFAULT_PRECIS;
 	fd.Quality = DEFAULT_QUALITY;
 	fd.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-	wcscpy(fd.FaceName, L"Impact");
+	wcscpy_s(fd.FaceName, L"Impact");
 	D3DXCreateFontIndirect(gD3dDevice, &fd, &font);
 
 	return true;
@@ -260,17 +260,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	charreduction(9, 3, unblock);
 	charreduction(15, 5, unblock);
 	charreduction(14, 1, unblock);
-	OSVERSIONINFO osvi;
-	BOOL bIsWindowsXPorLater;
 
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-
-	GetVersionEx(&osvi);
-
-	bIsWindowsXPorLater = ((osvi.dwMajorVersion > 5) || ((osvi.dwMajorVersion == 5) && (osvi.dwMinorVersion >= 1)));
-
-	if (bIsWindowsXPorLater)
+	if (IsWindowsXPSP3OrGreater && !IsWindowsVistaOrGreater)
 	{
 		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
 	}

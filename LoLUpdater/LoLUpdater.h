@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <ShlObj.h>
+#include <VersionHelpers.h>
 
 #include <D3D9.h>
 #include <D3dx9core.h>
