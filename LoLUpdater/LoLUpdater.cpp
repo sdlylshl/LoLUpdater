@@ -89,7 +89,8 @@ void charreduction(int dest, int path1, const std::wstring path2)
 
 std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
-
+const std::wstring airproj(L"RADS\\projects\\lol_air_client\\releases\\");
+const std::wstring gamesln(L"RADS\\solutions\\lol_game_client_sln\\releases\\");
 const std::wstring unblock(L":Zone.Identifier");
 const std::wstring air(L"Adobe AIR.dll");
 const std::wstring flash(L"Resources\\NPSWF32.dll");
@@ -102,24 +103,6 @@ const std::wstring airwin(L"air15_win.exe");
 int bit = sizeof(void*);
 bool done = false;
 bool garena = std::wifstream(L"lol.exe").good();
-
-std::wstring airdir()
-{
-	if (garena)
-	{
-		return L"Air\\Adobe AIR\\Versions\\1.0\\";
-	}
-	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.117\\deploy\\Adobe AIR\\Versions\\1.0\\";
-}
-
-std::wstring gamedir()
-{
-	if (garena)
-	{
-		return L"Game\\";
-	}
-	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.64\\deploy\\";
-}
 
 
 void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
@@ -188,6 +171,54 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	return 0;
+}
+
+std::vector<std::wstring> MyVect;
+std::wstring airver;
+std::wstring gamever;
+
+std::wstring getlatestfolder(const std::wstring path)
+{
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	std::wstring sPath;
+	std::wstring max;
+	sPath.assign(path.c_str());
+	hFind = FindFirstFile(sPath.data(), &FindFileData);
+	do
+	{
+		if (FindFileData.dwFileAttributes == 16)
+		{
+			MyVect.push_back(FindFileData.cFileName);
+		}
+	} while (FindNextFile(hFind, &FindFileData));
+	FindClose(hFind);
+	for (int i = 0; i < MyVect.size(); i++)
+	{
+		MyVect.at(i).data(); // to array
+	}
+
+	// check max
+
+	return max;
+}
+
+std::wstring gamedir()
+{
+	if (garena)
+	{
+		return L"Game\\";
+	}
+	return (gamesln + getlatestfolder(gamesln) + L"\\deploy\\");
+}
+
+std::wstring airdir()
+{
+	if (garena)
+	{
+		return L"Air\\Adobe AIR\\Versions\\1.0\\";
+	}
+	return (airproj + getlatestfolder(airproj) + L"\\deploy\\Adobe AIR\\Versions\\1.0\\");
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
