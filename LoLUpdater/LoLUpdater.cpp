@@ -65,7 +65,11 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 // 17 = full path to where all adobe files will be copied to.
 // 18 = full path to where all game files will be copied to.
 // 19 = path to the current working directory (where the executable was ran from)
-std::wstringstream pathcontainer[20];
+// 20 = path to air client (RADS)
+// 21 = path to game client (RADS)
+// 22 = 20 + releases
+// 23 = 21 + releases
+std::wstringstream pathcontainer[24];
 
 void Copy(int from, int to)
 {
@@ -83,8 +87,6 @@ void charreduction(int dest, int path1, const std::wstring path2)
 
 std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
-const std::wstring airproj(L"RADS\\projects\\lol_air_client\\releases\\");
-const std::wstring gamesln(L"RADS\\solutions\\lol_game_client_sln\\releases\\");
 const std::wstring unblock(L":Zone.Identifier");
 const std::wstring air(L"Adobe AIR.dll");
 const std::wstring flash(L"Resources\\NPSWF32.dll");
@@ -97,6 +99,9 @@ const std::wstring airwin(L"air15_win.exe");
 const std::wstring deploy(L"\\deploy\\");
 const std::wstring airpart(L"Air\\Adobe AIR\\Versions\\1.0\\");
 const std::wstring ftp(L"http://lol.jdhpro.com/");
+const std::wstring rads(L"RADS\\");
+const std::wstring progfiles(L":\\Program Files");
+const std::wstring rel(L"\\releases\\");
 int bit = sizeof(void*);
 bool done = false;
 bool garena = std::wifstream(L"lol.exe").good();
@@ -226,7 +231,7 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return (gamesln + getlatestfolder(gamesln) + deploy);
+	return (pathcontainer[20].str().c_str() + getlatestfolder(pathcontainer[20].str().c_str()) + deploy);
 }
 
 std::wstring airdir()
@@ -235,7 +240,7 @@ std::wstring airdir()
 	{
 		return airpart;
 	}
-	return (airproj + getlatestfolder(airproj) + deploy + L"Adobe " + airpart);
+	return (pathcontainer[21].str().c_str() + getlatestfolder(pathcontainer[21].str().c_str()) + deploy + L"Adobe " + airpart);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -267,6 +272,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	pathcontainer[20] <<(rads + L"projects\\lol_air_client");
+	pathcontainer[21] << (rads + L"solutions\\lol_game_client_sln");
+	charreduction(22, 20, rel);
+	charreduction(23, 21, rel);
 	GetModuleFileName(nullptr, &currentdirectorybuffer[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", cginstaller.c_str(), 7, 19, L"/verysilent /TYPE = compact");
@@ -280,7 +289,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
-	std::wstring progfiles(L":\\Program Files");
 	if (bit == 8)
 	{
 		pathcontainer[0] << (progfiles + L" (x86)");
