@@ -179,12 +179,12 @@ std::wstring gamever;
 
 std::wstring getlatestfolder(const std::wstring path)
 {
+	std::wstringstream versionfolders[1];
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind;
 	std::wstring sPath;
 	std::wstring max;
-	sPath.assign(path.c_str());
-	hFind = FindFirstFile(sPath.data(), &FindFileData);
+	hFind = FindFirstFile(path.c_str(), &FindFileData);
 	do
 	{
 		if (FindFileData.dwFileAttributes == 16)
@@ -195,7 +195,7 @@ std::wstring getlatestfolder(const std::wstring path)
 	FindClose(hFind);
 	for (int i = 0; i < MyVect.size(); i++)
 	{
-		MyVect.at(i).data(); // to array
+		versionfolders[0] << MyVect.at(i).data(); // to array
 	}
 
 	// check max
