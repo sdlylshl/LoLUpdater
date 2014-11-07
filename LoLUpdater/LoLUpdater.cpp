@@ -195,10 +195,35 @@ std::wstring getlatestfolder(const std::wstring path)
 	FindClose(hFind);
 	for (int i = 0; i < MyVect.size(); i++)
 	{
-		versionfolders[0] << MyVect.at(i).data(); // to array
+		versionfolders[0] /*directory holder*/ << MyVect.at(i).data();
 	}
 
-	// check max
+	// C# code to convert
+	std::wstring finalDirectory = L"";
+	std::wstring version = L"";
+	uint32_t versionCompare = 0;
+	for (std::wstring i : versionfolders[0].str)
+	{
+		std::wstring compare1 = x.Substring(x.LastIndexOfAny(new wchar_t[] { L'\\', L'/' }) + 1);
+		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
+		if (!compare1.Contains(L".") || versionParts.Length != 4)
+			continue;
+		uint32_t CompareVersion;
+		try //versions have the format "x.x.x.x" where every x can be a value between 0 and 255
+		{
+			CompareVersion = Convert.ToUInt32(versionParts[0]) << 24 | Convert.ToUInt32(versionParts[1]) << 16 | Convert.ToUInt32(versionParts[2]) << 8 | Convert.ToUInt32(versionParts[3]);
+		}
+		catch (FormatException) //can happen for directories like "0.0.0.asasd"
+		{
+			continue;
+		}
+		if (CompareVersion > versionCompare)
+		{
+			versionCompare = CompareVersion;
+			version = x.Replace(path + L"\\", L"");
+			finalDirectory = x;
+		}
+	}
 
 	return max;
 }
