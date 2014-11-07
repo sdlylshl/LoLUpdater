@@ -202,16 +202,16 @@ std::wstring getlatestfolder(const std::wstring path)
 	std::wstring finalDirectory = L"";
 	std::wstring version = L"";
 	uint32_t versionCompare = 0;
-	for (std::wstring i : versionfolders[0].str)
+	for (std::wstring x : versionfolders[0].str)
 	{
-		std::wstring compare1 = x.Substring(x.LastIndexOfAny(new wchar_t[] { L'\\', L'/' }) + 1);
+		std::wstring compare1 = x.substr(x.LastIndexOfAny(new wchar_t[] { L'\\', L'/' }) + 1);
 		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
-		if (!compare1.Contains(L".") || versionParts.Length != 4)
+		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
 		try //versions have the format "x.x.x.x" where every x can be a value between 0 and 255
 		{
-			CompareVersion = Convert.ToUInt32(versionParts[0]) << 24 | Convert.ToUInt32(versionParts[1]) << 16 | Convert.ToUInt32(versionParts[2]) << 8 | Convert.ToUInt32(versionParts[3]);
+			CompareVersion = static_cast<uint32_t>(versionParts[0]) << 24 | static_cast<uint32_t>(versionParts[1]) << 16 | static_cast<uint32_t>(versionParts[2]) << 8 | static_cast<uint32_t>(versionParts[3]);
 		}
 		catch (FormatException) //can happen for directories like "0.0.0.asasd"
 		{
@@ -220,7 +220,7 @@ std::wstring getlatestfolder(const std::wstring path)
 		if (CompareVersion > versionCompare)
 		{
 			versionCompare = CompareVersion;
-			version = x.Replace(path + L"\\", L"");
+			version = x.replace(path.begin(), path.end, L"\\", L"");
 			finalDirectory = x;
 		}
 	}
