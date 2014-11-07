@@ -202,10 +202,10 @@ std::wstring getlatestfolder(const std::wstring path)
 	uint32_t versionCompare = 0;
 	for (std::wstring x : versionfolders[0].str)
 	{
-		std::wstring compare1 = x.substr(x.find_last_of(new wchar_t[] { L'\\', L'/' }) + 1);
+		std::wstring compare1 = x.substr(x.find_last_of(L"\\/") + 1);
 
 			
-		std::wstring versionParts = compare1.Split /* Todo: String.Split but in C++ */ (new wchar_t[] { L'.' });
+		std::wstring versionParts = compare1.Split /* Todo: String.Split but in C++ */ (L".");
 		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
