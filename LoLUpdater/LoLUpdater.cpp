@@ -1,54 +1,47 @@
 #define VC_EXTRALEAN
-#include <tchar.h>
-#include <direct.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <ShlObj.h>
-#include <stdint.h>
-#include <intrin.h>
+#include <regex>
+#include <memory>
+#include <Windows.h>
 
-#include <split.hpp>
-
-// AVX2 code taken from intels website with c++ casts instead of C-style casts.
-void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
-{
-	__cpuidex(abcd, eax, ecx);
-}
-
-int check_xcr0_ymm()
-{
-	uint32_t xcr0;
-	xcr0 = static_cast<uint32_t>(_xgetbv(0));
-	return ((xcr0 & 6) == 6);
-}
-
-int check_4th_gen_intel_core_features()
+int avx2()
 {
 	int abcd[4];
+	static int canuseavx2;
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
-	run_cpuid(1, 0, abcd);
+	uint32_t xcr0(static_cast<uint32_t>(_xgetbv(0)));
+	__cpuidex(abcd, 1, 0);
 	if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
-		return 0;
-	if (!check_xcr0_ymm())
-		return 0;
-	run_cpuid(7, 0, abcd);
-	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
-		return 0;
-	run_cpuid(0x80000001, 0, abcd);
-	if ((abcd[2] & (1 << 5)) == 0)
-		return 0;
-	return 1;
-}
+	{
+		canuseavx2 = -1;
+	}
 
-static int can_use_intel_core_4th_gen_features()
-{
-	static int the_4th_gen_features_available = -1;
-	if (the_4th_gen_features_available < 0)
-		the_4th_gen_features_available = check_4th_gen_intel_core_features();
-	return the_4th_gen_features_available;
+	if (!(xcr0 & 6) == 6)
+	{
+		canuseavx2 = -1;
+	}
+
+	__cpuidex(abcd, 7, 0);
+	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
+	{
+		canuseavx2 = -1;
+	}
+
+	__cpuidex(abcd, 0x80000001, 0);
+	if ((abcd[2] & (1 << 5)) == 0)
+	{
+		canuseavx2 = -1;
+	}
+	if (canuseavx2 < 0)
+	{
+		return canuseavx2;
+	}
+
+	return 1;
 }
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -207,7 +200,9 @@ std::wstring getlatestfolder(const std::wstring path)
 	for (std::wstring x : versionfolders[0].str)
 	{
 		std::wstring compare1 = x.substr(x.find_last_of(new wchar_t[] { L'\\', L'/' }) + 1);
-		std::wstring versionParts = compare1.split(new wchar_t[] { L'.' });
+
+
+		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
 		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
@@ -320,7 +315,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	else
 	{
-		if (can_use_intel_core_4th_gen_features())
+		if (avx2())
 		{
 			tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
 		}

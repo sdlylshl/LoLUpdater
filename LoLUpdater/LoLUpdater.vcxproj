@@ -77,9 +77,6 @@
   <ItemGroup>
     <ClCompile Include="LoLUpdater.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="split.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
