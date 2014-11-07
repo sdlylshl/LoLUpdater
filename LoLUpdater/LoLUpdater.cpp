@@ -94,6 +94,9 @@ const std::wstring cgd3d9file(L"CgD3D9.dll");
 const std::wstring cginstaller(L"Cg-3.1_April2012_Setup.exe");
 const std::wstring tbbfile(L"tbb.dll");
 const std::wstring airwin(L"air15_win.exe");
+const std::wstring deploy(L"\\deploy\\");
+const std::wstring airpart(L"Air\\Adobe AIR\\Versions\\1.0\\");
+const std::wstring ftp(L"http://lol.jdhpro.com/");
 int bit = sizeof(void*);
 bool done = false;
 bool garena = std::wifstream(L"lol.exe").good();
@@ -223,16 +226,16 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return (gamesln + getlatestfolder(gamesln) + L"\\deploy\\");
+	return (gamesln + getlatestfolder(gamesln) + deploy);
 }
 
 std::wstring airdir()
 {
 	if (garena)
 	{
-		return L"Air\\Adobe AIR\\Versions\\1.0\\";
+		return airpart;
 	}
-	return (airproj + getlatestfolder(airproj) + L"\\deploy\\Adobe AIR\\Versions\\1.0\\");
+	return (airproj + getlatestfolder(airproj) + deploy + L"Adobe " + airpart);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -277,16 +280,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
+	std::wstring progfiles(L":\\Program Files");
 	if (bit == 8)
 	{
-		pathcontainer[0] << ":\\Program Files (x86)";
+		pathcontainer[0] << (progfiles + L" (x86)");
 	}
 	else
 	{
-		pathcontainer[0] << ":\\Program Files";
+		pathcontainer[0] << progfiles;
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airwin.c_str(), 8, 19, L"-silent");
-	pathcontainer[0] << L"\\Common Files\\Adobe AIR\\Versions\\1.0\\";
+	pathcontainer[0] << (L"\\Common Files\\Adobe " + airpart);
 	pathcontainer[6] << (&cgbinpath[0] + cgfile);
 	pathcontainer[11] << (&cgbinpath[0] + cgglfile);
 	pathcontainer[10] << (&cgbinpath[0] + cgd3d9file);
@@ -309,13 +313,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GetVersionEx(&osvi);
 	if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
 	{
-		tbbdownload(L"http://lol.jdhpro.com/Xp.dll");
+		tbbdownload(ftp + L"Xp.dll");
 	}
 	else
 	{
 		if (avx2())
 		{
-			tbbdownload(L"http://lol.jdhpro.com/Avx2.dll");
+			tbbdownload(ftp + L"Avx2.dll");
 		}
 		else
 		{
@@ -323,23 +327,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
-				tbbdownload(L"http://lol.jdhpro.com/Avx.dll");
+				tbbdownload(ftp + L"Avx.dll");
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(L"http://lol.jdhpro.com/Sse2.dll");
+					tbbdownload(ftp + L"Sse2.dll");
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						tbbdownload(L"http://lol.jdhpro.com/Sse.dll");
+						tbbdownload(ftp + L"Sse.dll");
 					}
 					else
 					{
-						tbbdownload(L"http://lol.jdhpro.com/Default.dll");
+						tbbdownload(ftp + L"Default.dll");
 					}
 				}
 			}
