@@ -109,7 +109,7 @@ std::wstring airdir()
 	{
 		return L"Air\\Adobe AIR\\Versions\\1.0\\";
 	}
-	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.115\\deploy\\Adobe AIR\\Versions\\1.0\\";
+	return L"RADS\\projects\\lol_air_client\\releases\\0.0.1.117\\deploy\\Adobe AIR\\Versions\\1.0\\";
 }
 
 std::wstring gamedir()
@@ -118,7 +118,7 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.62\\deploy\\";
+	return L"RADS\\solutions\\lol_game_client_sln\\releases\\0.0.1.64\\deploy\\";
 }
 
 
