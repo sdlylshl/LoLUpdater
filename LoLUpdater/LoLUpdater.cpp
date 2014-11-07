@@ -204,19 +204,13 @@ std::wstring getlatestfolder(const std::wstring path)
 	uint32_t versionCompare = 0;
 	for (std::wstring x : versionfolders[0].str)
 	{
-		std::wstring compare1 = x.substr(x.LastIndexOfAny(new wchar_t[] { L'\\', L'/' }) + 1);
+		std::wstring compare1 = x.substr(x.find_last_of(new wchar_t[] { L'\\', L'/' }) + 1);
 		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
 		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
-		try //versions have the format "x.x.x.x" where every x can be a value between 0 and 255
-		{
-			CompareVersion = static_cast<uint32_t>(versionParts[0]) << 24 | static_cast<uint32_t>(versionParts[1]) << 16 | static_cast<uint32_t>(versionParts[2]) << 8 | static_cast<uint32_t>(versionParts[3]);
-		}
-		catch (FormatException) //can happen for directories like "0.0.0.asasd"
-		{
-			continue;
-		}
+		CompareVersion = static_cast<uint32_t>(versionParts[0]) << 24 | static_cast<uint32_t>(versionParts[1]) << 16 | static_cast<uint32_t>(versionParts[2]) << 8 | static_cast<uint32_t>(versionParts[3]);
+
 		if (CompareVersion > versionCompare)
 		{
 			versionCompare = CompareVersion;
@@ -356,7 +350,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 		}
 	}
-	 
+
 	DeleteFile(pathcontainer[14].str().c_str());
 	Copy(6, 12);
 	Copy(11, 13);
