@@ -228,7 +228,7 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return (pathcontainer[20].str().c_str() + getlatestfolder(pathcontainer[20].str().c_str()) + deploy);
+	return (pathcontainer[22].str().c_str() + getlatestfolder(pathcontainer[20].str().c_str()) + deploy);
 }
 
 std::wstring airdir()
@@ -237,7 +237,7 @@ std::wstring airdir()
 	{
 		return airpart;
 	}
-	return (pathcontainer[21].str().c_str() + getlatestfolder(pathcontainer[21].str().c_str()) + deploy + L"Adobe " + airpart);
+	return (pathcontainer[23].str().c_str() + getlatestfolder(pathcontainer[21].str().c_str()) + deploy + L"Adobe " + airpart);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
