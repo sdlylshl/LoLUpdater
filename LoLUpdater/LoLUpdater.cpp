@@ -189,10 +189,9 @@ std::wstring getlatestfolder(const std::wstring path)
 	FindClose(hFind);
 	for (int i = 0; i < MyVect.size(); i++)
 	{
-		versionfolders[0] /*directory holder*/ << MyVect.at(i).data();
+		versionfolders[0] << MyVect.at(i).data();
 	}
 
-	// C# code to convert
 	std::wstring finalDirectory = L"";
 	std::wstring version = L"";
 	uint32_t versionCompare = 0;
@@ -200,8 +199,8 @@ std::wstring getlatestfolder(const std::wstring path)
 	{
 		std::wstring compare1 = x.substr(x.find_last_of(new wchar_t[] { L'\\', L'/' }) + 1);
 
-
-		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
+			
+		std::wstring versionParts = compare1.Split /* Todo: String.Split but in C++ */ (new wchar_t[] { L'.' });
 		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
