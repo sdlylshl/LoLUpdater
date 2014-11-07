@@ -14,23 +14,22 @@ int avx2()
 	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 	uint32_t xcr0(static_cast<uint32_t>(_xgetbv(0)));
+
+	// part 1 of check
 	__cpuidex(abcd, 1, 0);
-	if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
+	if (((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask) || (!(xcr0 & 6) == 6))
 	{
 		canuseavx2 = -1;
 	}
 
-	if (!(xcr0 & 6) == 6)
-	{
-		canuseavx2 = -1;
-	}
-
+	// part 2 of check
 	__cpuidex(abcd, 7, 0);
 	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
 	{
 		canuseavx2 = -1;
 	}
 
+	// part 3 of check
 	__cpuidex(abcd, 0x80000001, 0);
 	if ((abcd[2] & (1 << 5)) == 0)
 	{
