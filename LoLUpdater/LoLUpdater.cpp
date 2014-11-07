@@ -172,55 +172,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-std::vector<std::wstring> MyVect;
-std::wstring airver;
-std::wstring gamever;
-
-std::wstring getlatestfolder(const std::wstring path)
-{
-	std::wstringstream versionfolders[1];
-	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind;
-	std::wstring sPath;
-	std::wstring max;
-	hFind = FindFirstFile(path.c_str(), &FindFileData);
-	do
-	{
-		if (FindFileData.dwFileAttributes == 16)
-		{
-			MyVect.push_back(FindFileData.cFileName);
-		}
-	} while (FindNextFile(hFind, &FindFileData));
-	FindClose(hFind);
-	for (int i = 0; i < MyVect.size(); i++)
-	{
-		versionfolders[0] << MyVect.at(i).data();
-	}
-
-	std::wstring finalDirectory = L"";
-	std::wstring version = L"";
-	uint32_t versionCompare = 0;
-	for (std::wstring x : versionfolders[0].str)
-	{
-		std::wstring compare1 = x.substr(x.find_last_of(L"\\/") + 1);
-
-			
-		std::wstring versionParts = compare1.Split /* Todo: String.Split but in C++ */ (L".");
-		if (!compare1.find(L".") || sizeof(versionParts) != 4)
-			continue;
-		uint32_t CompareVersion;
-		CompareVersion = static_cast<uint32_t>(versionParts[0]) << 24 | static_cast<uint32_t>(versionParts[1]) << 16 | static_cast<uint32_t>(versionParts[2]) << 8 | static_cast<uint32_t>(versionParts[3]);
-
-		if (CompareVersion > versionCompare)
-		{
-			versionCompare = CompareVersion;
-			version = x.replace(path.begin(), path.end, L"\\", L"");
-			finalDirectory = x;
-		}
-	}
-
-	return max;
-}
 
 std::wstring gamedir()
 {
@@ -228,7 +179,7 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return (pathcontainer[22].str().c_str() + getlatestfolder(pathcontainer[20].str().c_str()) + deploy);
+	return (pathcontainer[22].str() + L"0.0.1.64" + deploy);
 }
 
 std::wstring airdir()
@@ -237,7 +188,7 @@ std::wstring airdir()
 	{
 		return airpart;
 	}
-	return (pathcontainer[23].str().c_str() + getlatestfolder(pathcontainer[21].str().c_str()) + deploy + L"Adobe " + airpart);
+	return (pathcontainer[23].str() + L"0.0.1.117" + deploy + L"Adobe " + airpart);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
