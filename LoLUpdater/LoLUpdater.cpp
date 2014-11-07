@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <intrin.h>
 
+#include <split.hpp>
+
 // AVX2 code taken from intels website with c++ casts instead of C-style casts.
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -205,7 +207,7 @@ std::wstring getlatestfolder(const std::wstring path)
 	for (std::wstring x : versionfolders[0].str)
 	{
 		std::wstring compare1 = x.substr(x.find_last_of(new wchar_t[] { L'\\', L'/' }) + 1);
-		std::wstring versionParts = compare1.Split(new wchar_t[] { L'.' });
+		std::wstring versionParts = compare1.split(new wchar_t[] { L'.' });
 		if (!compare1.find(L".") || sizeof(versionParts) != 4)
 			continue;
 		uint32_t CompareVersion;
