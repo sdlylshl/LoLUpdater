@@ -301,14 +301,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		L"NPSWF32.dll"
 	);
 
-	std::wstring* flashdest = nullptr;
+	std::wstring *flashdest = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(flashdest),
 		reinterpret_cast<LPWSTR>(airclientfinal),
 		reinterpret_cast<LPWSTR>(flash)
 	);
 
-	std::wstring* flashlatest = nullptr;
+	std::wstring *flashlatest = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(flashlatest),
 		pathcontainer[2].str().c_str(),
@@ -316,21 +316,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 
-	std::wstring* cgdest = nullptr;
+	std::wstring *cgdest = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(cgdest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		cg.c_str()
 	);
 
-	std::wstring* cggldest = nullptr;
+	std::wstring *cggldest = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(cggldest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		cggl.c_str()
 	);
 
-	std::wstring* cgd3d9dest = nullptr;
+	std::wstring *cgd3d9dest = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(cgd3d9dest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
@@ -338,14 +338,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 
-	std::wstring* airunblock = nullptr;
+	std::wstring *airunblock = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(airunblock),
 		reinterpret_cast<LPWSTR>(airdest),
 		constants[0].c_str()
 	);
 
-	std::wstring* flashunblock = nullptr;
+	std::wstring *flashunblock = nullptr;
 	PathCombineW(
 		reinterpret_cast<LPWSTR>(flashunblock),
 		reinterpret_cast<LPWSTR>(flashdest),
@@ -415,7 +415,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFileW(reinterpret_cast<LPWSTR>(cgbin), reinterpret_cast<LPWSTR>(cgdest), false);
 	CopyFileW(reinterpret_cast<LPWSTR>(cgglbin), reinterpret_cast<LPWSTR>(cggldest), false);
 	CopyFileW(reinterpret_cast<LPWSTR>(cgd3d9bin), reinterpret_cast<LPWSTR>(cgd3d9dest), false);
-	const std::wstring unblocks[3] = {reinterpret_cast<LPWSTR>(tbbunblock), reinterpret_cast<LPWSTR>(airunblock), reinterpret_cast<LPWSTR>(flashunblock)};
+	const std::wstring unblocks[3] = { reinterpret_cast<LPWSTR>(tbbunblock), reinterpret_cast<LPWSTR>(airunblock), reinterpret_cast<LPWSTR>(flashunblock) };
 	for (std::wstring i : unblocks)
 	{
 		DeleteFileW(&i[0]);
