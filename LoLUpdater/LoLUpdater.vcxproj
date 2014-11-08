@@ -71,7 +71,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>Urlmon.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.Lib;Shlwapi.Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

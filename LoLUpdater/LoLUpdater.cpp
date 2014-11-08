@@ -6,42 +6,35 @@
 
 #define VC_EXTRALEAN
 #include <Windows.h>
+#include <Shlwapi.h>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 bool done = false;
+// 0 = intermediate combiner
+// 1 = currentdir
+// 2 = adobe install dir
+std::wstringstream pathcontainer[3];
+const std::wstring constants[3] = { L":Zone.Identifier", L"deploy", L"Air\\Adobe AIR\\Versions\\1.0" };
 
-std::wstringstream pathcontainer[24];
-void Copy(int from, int to)
-{
-	CopyFile(
-		pathcontainer[from].str().c_str(),
-		pathcontainer[to].str().c_str(),
-		false
-	);
-}
-
-void charreduction(int dest, int path1, const std::wstring path2)
-{
-	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
-}
-const std::wstring constants[3] = { L":Zone.Identifier", L"\\deploy\\", L"Air\\Adobe AIR\\Versions\\1.0\\" };
-
-void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
+void download(const std::wstring fromurl, const std::wstring dest, const std::wstring args)
 {
 	URLDownloadToFile(
 		nullptr,
 		fromurl.c_str(),
-		topath.c_str(),
+		dest.c_str(),
 		0,
 		nullptr
 	);
-	pathcontainer[pathcont] << (pathcontainer[frompathcont].str() + topath + constants[0]);
-	DeleteFile(pathcontainer[pathcont].str().c_str());
+	wchar_t *unblocker = nullptr;
+	PathCombine(unblocker, pathcontainer[1].str().c_str(), dest.c_str());
+	pathcontainer[0] << (pathcontainer[1].str() + unblocker + constants[0]);
+	DeleteFile(pathcontainer[0].str().c_str());
+	pathcontainer[0].str(std::wstring(nullptr));
 	SHELLEXECUTEINFO ShExecInfo = {0};
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = nullptr;
-	ShExecInfo.lpFile = topath.c_str();
+	ShExecInfo.lpFile = dest.c_str();
 	ShExecInfo.lpParameters = args.c_str();
 	ShExecInfo.lpDirectory = nullptr;
 	ShExecInfo.nShow = SW_SHOW;
@@ -49,13 +42,20 @@ void download(const std::wstring fromurl, const std::wstring topath, int pathcon
 	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
-
-void tbbdownload(const std::wstring url)
+wchar_t *tbb = nullptr;
+void tbbdownload(const std::wstring file)
 {
+	std::wstring ftp(L"http://lol.jdhpro.com/");
+	wcsncat_s(
+		&ftp[0],
+		MAX_PATH + 1,
+		file.c_str(),
+		_TRUNCATE
+		);
 	URLDownloadToFile(
 		nullptr,
-		url.c_str(),
-		pathcontainer[1].str().c_str(),
+		ftp.c_str(),
+		tbb,
 		0,
 		nullptr
 	);
@@ -93,13 +93,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 bool garena = std::wifstream(L"lol.exe").good();
+wchar_t *gameclientfinal = nullptr;
+wchar_t *airclientfinal = nullptr;
 std::wstring gamedir()
 {
 	if (garena)
 	{
-		return L"Game\\";
+		return L"Game";
 	}
-	return (pathcontainer[22].str() + L"0.0.1.64" + constants[1]);
+	wchar_t *game1 = nullptr;
+	PathCombine(game1, gameclientfinal, L"0.0.1.64");
+	wchar_t *game2 = nullptr;
+	PathCombine(game2, game1, constants[1].c_str());
+	return game2;
 }
 
 std::wstring airdir()
@@ -108,7 +114,11 @@ std::wstring airdir()
 	{
 		return constants[2];
 	}
-	return (pathcontainer[23].str() + L"0.0.1.117" + constants[1] + L"Adobe " + constants[2]);
+	wchar_t *air1 = nullptr;
+	PathCombine(air1, airclientfinal, L"0.0.1.117");
+	wchar_t *air2 = nullptr;
+	PathCombine(air2, air1, constants[2].c_str());
+	return air2;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -140,16 +150,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		                nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
-	const std::wstring rads(L"rads\\");
-	pathcontainer[20] << (rads + L"projects\\lol_air_client");
-	pathcontainer[21] << (rads + L"solutions\\lol_game_client_sln");
-	const std::wstring rel(L"\\releases\\");
-	charreduction(22, 20, rel);
-	charreduction(23, 21, rel);
+	const std::wstring rads(L"RADS");
+	wchar_t *airclient = nullptr;
+	PathCombine(
+		airclient,
+		rads.c_str(),
+		L"projects\\lol_air_client"
+		);
+	wchar_t *gameclient = nullptr;
+	PathCombine(
+		gameclient,
+		rads.c_str(),
+		L"solutions\\lol_game_client_sln"
+		);
+
+	const std::wstring rel(L"releases");
+	wchar_t *gameclientfinal = nullptr;
+	PathCombine(
+		gameclientfinal,
+		gameclient,
+		rel.c_str()
+		);
+	wchar_t *airclientfinal = nullptr;
+	PathCombine(
+		airclientfinal,
+		airclient,
+		rel.c_str()
+		);
+
 	std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
 	GetModuleFileName(nullptr, &currentdirectorybuffer[0], MAX_PATH + 1);
-	pathcontainer[19] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
-	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", 7, 19, L"/verysilent /TYPE = compact");
+	// workingdir
+	pathcontainer[1] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
+	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE = compact");
 	std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 	                       &cgbinpath[0],
@@ -160,49 +193,142 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		L"\\",
 		_TRUNCATE
 	);
-	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
+	//drive
+	pathcontainer[2] << pathcontainer[1].str().c_str()[0];
 	int bit = sizeof(void*);
 	const std::wstring progfiles(L":\\Program Files");
 	if (bit == 8)
 	{
-		pathcontainer[0] << (progfiles + L" (x86)");
+		pathcontainer[2] << (progfiles + L" (x86)");
 	}
 	else
 	{
-		pathcontainer[0] << (progfiles);
+		pathcontainer[2] << (progfiles);
 	}
-	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", 8, 19, L"-silent");
-	pathcontainer[0] << (L"\\Common Files\\Adobe " + constants[2]);
-	const std::wstring cg(L"Cg.dll");
-	const std::wstring cggl(L"CgGL.dll");
-	const std::wstring cgd3d9(L"CgD3D9.dll");
-	pathcontainer[6] << (&cgbinpath[0] + cg);
-	pathcontainer[11] << (&cgbinpath[0] + cggl);
-	pathcontainer[10] << (&cgbinpath[0] + cgd3d9);
-	pathcontainer[18] << (pathcontainer[19].str() + gamedir());
-	pathcontainer[17] << (pathcontainer[19].str() + airdir());
+	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
+	pathcontainer[3] << (L"\\Common Files\\Adobe " + constants[2]);
 
-	charreduction(1, 18, L"tbb.dll");
+	const std::wstring cg(L"Cg.dll");
+	wchar_t *cgbin = nullptr;
+	PathCombine(
+		cgbin,
+		&cgbinpath[0],
+		cg.c_str()
+		);
+	const std::wstring cggl(L"CgGL.dll");
+	wchar_t *cgglbin = nullptr;
+	PathCombine(
+		cgglbin,
+		&cgbinpath[0],
+		cggl.c_str()
+		);
+	const std::wstring cgd3d9(L"CgD3D9.dll");
+	wchar_t *cgd3d9bin = nullptr;
+	PathCombine(
+		cgd3d9bin,
+		&cgbinpath[0],
+		cgd3d9.c_str()
+		);
+
+	PathCombine(
+		gameclient,
+		pathcontainer[2].str().c_str(),
+		gamedir().c_str()
+		);
+
+	PathCombine(
+		airclient,
+		pathcontainer[2].str().c_str(),
+		airdir().c_str()
+		);
+
+
+	PathCombine(
+		tbb,
+		gameclientfinal,
+		L"tbb.dll"
+		);
+
 	const std::wstring air(L"Adobe AIR.dll");
-	charreduction(2, 0, air);
+	wchar_t *airdest= nullptr;
+	PathCombine(
+		airdest,
+		airclientfinal,
+		air.c_str()
+		);
+
+	wchar_t *airlatest = nullptr;
+	PathCombine(
+		airlatest,
+		pathcontainer[3].str().c_str(),
+		air.c_str()
+		);
+
 	const std::wstring flash(L"Resources\\NPSWF32.dll");
-	charreduction(4, 0, flash);
-	charreduction(12, 18, cg);
-	charreduction(13, 18, cggl);
-	charreduction(16, 18, cgd3d9);
-	charreduction(3, 17, air);
-	charreduction(5, 17, flash);
-	charreduction(9, 3, constants[0]);
-	charreduction(15, 5, constants[0]);
-	charreduction(14, 1, constants[0]);
+	wchar_t *flashdest = nullptr;
+	PathCombine(
+		flashdest,
+		airclientfinal,
+		flash.c_str()
+		);
+
+	wchar_t *flashlatest = nullptr;
+	PathCombine(
+		airlatest,
+		pathcontainer[3].str().c_str(),
+		flash.c_str()
+		);
+
+	wchar_t *cgdest = nullptr;
+	PathCombine(
+		cgdest,
+		gameclientfinal,
+		cg.c_str()
+		);
+
+	wchar_t *cggldest = nullptr;
+	PathCombine(
+		cggldest,
+		gameclientfinal,
+		cggl.c_str()
+		);
+
+	wchar_t *cgd3d9dest = nullptr;
+	PathCombine(
+		cgd3d9dest,
+		gameclientfinal,
+		cgd3d9.c_str()
+		);
+
+
+	wchar_t *airunblock = nullptr;
+	PathCombine(
+		airunblock,
+		airdest,
+		constants[0].c_str()
+		);
+
+	wchar_t *flashunblock = nullptr;
+	PathCombine(
+		flashunblock,
+		flashdest,
+		constants[0].c_str()
+		);
+
+	wchar_t *tbbunblock = nullptr;
+	PathCombine(
+		tbbunblock,
+		tbb,
+		constants[0].c_str()
+		);
+
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
-	const std::wstring ftp(L"http://lol.jdhpro.com/");
 	if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
 	{
-		tbbdownload(ftp + L"Xp.dll");
+		tbbdownload(L"Xp.dll");
 	}
 	else
 	{
@@ -231,7 +357,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (canuseavx2 > 0)
 		{
-			tbbdownload(ftp + L"Avx2.dll");
+			tbbdownload(L"Avx2.dll");
 		}
 		else
 		{
@@ -239,35 +365,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
-				tbbdownload(ftp + L"Avx.dll");
+				tbbdownload(L"Avx.dll");
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(ftp + L"Sse2.dll");
+					tbbdownload(L"Sse2.dll");
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						tbbdownload(ftp + L"Sse.dll");
+						tbbdownload(L"Sse.dll");
 					}
 					else
 					{
-						tbbdownload(ftp + L"Default.dll");
+						tbbdownload(L"Default.dll");
 					}
 				}
 			}
 		}
 	}
 
-	DeleteFile(pathcontainer[14].str().c_str());
-	Copy(6, 12);
-	Copy(11, 13);
-	Copy(10, 16);
-	Copy(2, 3);
-	Copy(4, 5);
+	DeleteFile(tbbunblock);
+	CopyFile(airlatest, airdest, false);
+	CopyFile(flashlatest, flashdest, false);
+	CopyFile(cgbin, cgdest, false);
+	CopyFile(cgglbin, cggldest ,false);
+	CopyFile(cgd3d9bin, cgd3d9dest, false);
 	done = true;
 	InvalidateRect(hwnd, &end, false);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
