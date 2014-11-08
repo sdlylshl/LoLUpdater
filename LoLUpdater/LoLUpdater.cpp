@@ -153,8 +153,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 	const std::wstring rel(L"releases");
-	std::wstring *gameclientfinal = nullptr;
 
+	std::wstring *gameclientfinal = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		reinterpret_cast<LPWSTR>(gameclient),
@@ -239,17 +239,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	else
 	{
 			std::wstring *game1 = nullptr;
-			PathCombine(reinterpret_cast<LPWSTR>(game1), reinterpret_cast<LPWSTR>(gameclientfinal), L"0.0.1.64");
 			std::wstring *game2 = nullptr;
-			PathCombine(reinterpret_cast<LPWSTR>(game2), reinterpret_cast<LPWSTR>(game1), constants[1].c_str());
-			version = reinterpret_cast<LPWSTR>(game2);
-
-			// Crashes here
+			std::wstring *air0 = nullptr;
 			std::wstring *air1 = nullptr;
-			PathCombine(reinterpret_cast<LPWSTR>(air1), reinterpret_cast<LPWSTR>(airclientfinal), L"0.0.1.117");
-			std::wstring *air2 = nullptr;
-			PathCombine(reinterpret_cast<LPWSTR>(air2), reinterpret_cast<LPWSTR>(air1), constants[1].c_str());
-			airversion = reinterpret_cast<LPWSTR>(air2);
+
+			PathCombine(reinterpret_cast<LPWSTR>(game1), reinterpret_cast<LPWSTR>(gameclientfinal), L"0.0.1.64");
+			PathCombine(reinterpret_cast<LPWSTR>(game2), reinterpret_cast<LPWSTR>(game1), constants[1].c_str());
+			PathCombine(reinterpret_cast<LPWSTR>(air0), reinterpret_cast<LPWSTR>(airclientfinal), L"0.0.1.117");
+			PathCombine(reinterpret_cast<LPWSTR>(air1), reinterpret_cast<LPWSTR>(air0), constants[1].c_str());
+			
+			airversion = std::wstring(reinterpret_cast<LPWSTR>(&air1));
+			version = std::wstring(reinterpret_cast<LPWSTR>(&game2));
 	}
 
 	PathCombine(
