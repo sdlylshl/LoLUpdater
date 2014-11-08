@@ -39,6 +39,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>C:\Riot Games\League of Legends</OutDir>
+    <IntDir>C:\Riot Games\League of Legends</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -60,6 +64,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>Shlwapi.Lib;Urlmon.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

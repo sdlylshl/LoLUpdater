@@ -244,7 +244,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			PathCombine(reinterpret_cast<LPWSTR>(game2), reinterpret_cast<LPWSTR>(game1), constants[1].c_str());
 			version = reinterpret_cast<LPWSTR>(game2);
 
-
+			// Crashes here
 			std::wstring *air1 = nullptr;
 			PathCombine(reinterpret_cast<LPWSTR>(air1), reinterpret_cast<LPWSTR>(airclientfinal), L"0.0.1.117");
 			std::wstring *air2 = nullptr;
