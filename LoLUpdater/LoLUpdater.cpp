@@ -83,7 +83,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
 		{
-			DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
+			// DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
+			DrawText(hdc, reinterpret_cast<LPWSTR>(tbb), -1, &end, DT_CENTER);
 			EndPaint(hwnd, &ps);
 		}
 		break;
