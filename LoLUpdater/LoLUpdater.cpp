@@ -7,13 +7,24 @@
 #define VC_EXTRALEAN
 #include <Windows.h>
 #include <Shlwapi.h>
+
+// Todo: find c++ way
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 bool done = false;
 // 0 = intermediate combiner
 // 1 = currentdir
 // 2 = adobe install dir
 std::wstringstream pathcontainer[3];
 const std::wstring constants[3] = { L":Zone.Identifier", L"deploy", L"Air\\Adobe AIR\\Versions\\1.0" };
+std::wstring *tbb = nullptr;
+HWND hwnd;
+const std::wstring g_szClassName(L"mainwindow1");
+RECT start = { 0, 0, 100, 20 };
+RECT end = { 0, 100, 100, 120 };
+bool garena = std::wifstream(L"lol.exe").good();
+std::wstring *gameclientfinal = nullptr;
+std::wstring *airclientfinal = nullptr;
 
 void download(const std::wstring fromurl, const std::wstring dest, const std::wstring args)
 {
@@ -42,7 +53,7 @@ void download(const std::wstring fromurl, const std::wstring dest, const std::ws
 	ShellExecuteEx(&ShExecInfo);
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
-wchar_t *tbb = nullptr;
+
 void tbbdownload(const std::wstring file)
 {
 	std::wstring ftp(L"http://lol.jdhpro.com/");
@@ -55,16 +66,12 @@ void tbbdownload(const std::wstring file)
 	URLDownloadToFile(
 		nullptr,
 		ftp.c_str(),
-		tbb,
+		(LPWSTR)tbb,
 		0,
 		nullptr
 	);
 }
 
-HWND hwnd;
-const std::wstring g_szClassName(L"mainwindow1");
-RECT start = {0, 0, 100, 20};
-RECT end = {0, 100, 100, 120};
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -92,10 +99,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-bool garena = std::wifstream(L"lol.exe").good();
-
-wchar_t *gameclientfinal = nullptr;
-wchar_t *airclientfinal = nullptr;
 std::wstring gamedir()
 {
 	if (garena)
@@ -103,7 +106,7 @@ std::wstring gamedir()
 		return L"Game";
 	}
 	wchar_t *game1 = nullptr;
-	PathCombine(game1, gameclientfinal, L"0.0.1.64");
+	PathCombine(game1, (LPWSTR)gameclientfinal, L"0.0.1.64");
 	wchar_t *game2 = nullptr;
 	PathCombine(game2, game1, constants[1].c_str());
 	return game2;
@@ -116,10 +119,21 @@ std::wstring airdir()
 		return constants[2];
 	}
 	wchar_t *air1 = nullptr;
-	PathCombine(air1, airclientfinal, L"0.0.1.117");
+	PathCombine(air1, (LPWSTR)airclientfinal, L"0.0.1.117");
 	wchar_t *air2 = nullptr;
 	PathCombine(air2, air1, constants[2].c_str());
 	return air2;
+}
+
+std::wstring pathcombine(wchar_t* path1, wchar_t* path2)
+{
+	wchar_t *out = nullptr;
+	PathCombine(
+		out,
+		path1,
+		path2
+		);
+	return out;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -152,30 +166,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ShowWindow(hwnd, nCmdShow);
 	const std::wstring rads(L"RADS");
-	wchar_t *airclient = nullptr;
+
+
+	std::wstring *airclient = nullptr;
+
 	PathCombine(
-		airclient,
+		(LPWSTR)airclient,
 		rads.c_str(),
-		L"projects\\lol_air_client"
+		pathcombine(L"projects", L"lol_air_client").c_str()
 		);
-	wchar_t *gameclient = nullptr;
+
+
+	std::wstring *gameclient = nullptr;
 	PathCombine(
-		gameclient,
+		(LPWSTR)gameclient,
 		rads.c_str(),
-		L"solutions\\lol_game_client_sln"
+		pathcombine(L"solutions", L"lol_game_client_sln").c_str()
 		);
 
 	const std::wstring rel(L"releases");
 
 	PathCombine(
-		gameclientfinal,
-		gameclient,
+		(LPWSTR)gameclientfinal,
+		(LPWSTR)gameclient,
 		rel.c_str()
 		);
 
 	PathCombine(
-		airclientfinal,
-		airclient,
+		(LPWSTR)airclientfinal,
+		(LPWSTR)airclient,
 		rel.c_str()
 		);
 
@@ -195,134 +214,154 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 	pathcontainer[2] << pathcontainer[1].str().c_str()[0];
 	int bit = sizeof(void*);
-	const std::wstring progfiles(L":\\Program Files");
+
+	std::wstring *progfiles = nullptr;
+
+	PathCombine(
+		(LPWSTR)progfiles,
+		L":" ,
+		L"Program Files"
+		);
+
+
 	if (bit == 8)
 	{
-		pathcontainer[2] << (progfiles + L" (x86)");
+		pathcontainer[2] << progfiles;
+		pathcontainer[2] << L" (x86)";
+
 	}
 	else
 	{
-		pathcontainer[2] << (progfiles);
+		pathcontainer[2] << progfiles;
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
-	pathcontainer[2] << (L"\\Common Files\\Adobe " + constants[2]);
+
+
+	pathcontainer[2] << pathcombine(L"Common Files", L"Adobe ");
 
 	const std::wstring cg(L"Cg.dll");
-	wchar_t *cgbin = nullptr;
+	std::wstring *cgbin = nullptr;
 	PathCombine(
-		cgbin,
+		(LPWSTR)cgbin,
 		&cgbinpath[0],
 		cg.c_str()
 		);
 	const std::wstring cggl(L"CgGL.dll");
-	wchar_t *cgglbin = nullptr;
+	std::wstring *cgglbin = nullptr;
 	PathCombine(
-		cgglbin,
+		(LPWSTR)cgglbin,
 		&cgbinpath[0],
 		cggl.c_str()
 		);
 	const std::wstring cgd3d9(L"CgD3D9.dll");
-	wchar_t *cgd3d9bin = nullptr;
+	std::wstring *cgd3d9bin = nullptr;
 	PathCombine(
-		cgd3d9bin,
+		(LPWSTR)cgd3d9bin,
 		&cgbinpath[0],
 		cgd3d9.c_str()
 		);
 
-	wchar_t *gameclientfull = nullptr;
-	wchar_t *airclientfull = nullptr;
+	std::wstring *gameclientfull = nullptr;
+
 
 	PathCombine(
-		gameclientfull,
+		(LPWSTR)gameclientfull,
 		pathcontainer[1].str().c_str(),
 		gamedir().c_str()
 		);
 
+	std::wstring *airclientfull = nullptr;
 	PathCombine(
-		airclientfull,
+		(LPWSTR)airclientfull,
 		pathcontainer[1].str().c_str(),
 		airdir().c_str()
 		);
 
 
 	PathCombine(
-		tbb,
-		gameclientfull,
+		(LPWSTR)tbb,
+		(LPWSTR)gameclientfull,
 		L"tbb.dll"
 		);
 
 	const std::wstring air(L"Adobe AIR.dll");
-	wchar_t *airdest= nullptr;
+	std::wstring *airdest = nullptr;
 	PathCombine(
-		airdest,
-		airclientfull,
+		(LPWSTR)airdest,
+		(LPWSTR)airclientfull,
 		air.c_str()
 		);
 
-	wchar_t *airlatest = nullptr;
+	std::wstring *airlatest = nullptr;
 	PathCombine(
-		airlatest,
+		(LPWSTR)airlatest,
 		pathcontainer[2].str().c_str(),
 		air.c_str()
 		);
 
 
-	const std::wstring flash(L"Resources\\NPSWF32.dll");
-	wchar_t *flashdest = nullptr;
+	std::wstring *flash = nullptr;
 	PathCombine(
-		flashdest,
-		airclientfinal,
-		flash.c_str()
+		(LPWSTR)flash,
+		L"Resources",
+		L"NPSWF32.dll"
 		);
 
-	wchar_t *flashlatest = nullptr;
+	std::wstring *flashdest = nullptr;
 	PathCombine(
-		flashlatest,
+		(LPWSTR)flashdest,
+		(LPWSTR)airclientfinal,
+		(LPWSTR)flash
+		);
+
+	std::wstring *flashlatest = nullptr;
+	PathCombine(
+		(LPWSTR)flashlatest,
 		pathcontainer[2].str().c_str(),
-		flash.c_str()
+		(LPWSTR)flash
 		);
 
 
-	wchar_t *cgdest = nullptr;
+	std::wstring *cgdest = nullptr;
 	PathCombine(
-		cgdest,
-		gameclientfinal,
+		(LPWSTR)cgdest,
+		(LPWSTR)gameclientfinal,
 		cg.c_str()
 		);
 
-	wchar_t *cggldest = nullptr;
+	std::wstring *cggldest = nullptr;
 	PathCombine(
-		cggldest,
-		gameclientfinal,
+		(LPWSTR)cggldest,
+		(LPWSTR)gameclientfinal,
 		cggl.c_str()
 		);
 
-	wchar_t *cgd3d9dest = nullptr;
+	std::wstring *cgd3d9dest = nullptr;
 	PathCombine(
-		cgd3d9dest,
-		gameclientfinal,
+		(LPWSTR)cgd3d9dest,
+		(LPWSTR)gameclientfinal,
 		cgd3d9.c_str()
 		);
 
 
-	wchar_t *airunblock = nullptr;
+	std::wstring *airunblock = nullptr;
 	PathCombine(
-		airunblock,
-		airdest,
+		(LPWSTR)airunblock,
+		(LPWSTR)airdest,
 		constants[0].c_str()
 		);
 
-	wchar_t *flashunblock = nullptr;
+	std::wstring *flashunblock = nullptr;
 	PathCombine(
-		flashunblock,
-		flashdest,
+		(LPWSTR)flashunblock,
+		(LPWSTR)flashdest,
 		constants[0].c_str()
 		);
 
-	wchar_t *tbbunblock = nullptr;
+	std::wstring *tbbunblock = nullptr;
 	PathCombine(
-		tbbunblock,
-		tbb,
+		(LPWSTR)tbbunblock,
+		(LPWSTR)tbb,
 		constants[0].c_str()
 		);
 
@@ -392,13 +431,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 	}
 
-
-	CopyFile(airlatest, airdest, false);
-	CopyFile(flashlatest, flashdest, false);
-	CopyFile(cgbin, cgdest, false);
-	CopyFile(cgglbin, cggldest ,false);
-	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	const std::wstring unblocks[3] = {tbbunblock, airunblock, flashunblock};
+	CopyFile((LPWSTR)airlatest, (LPWSTR)airdest, false);
+	CopyFile((LPWSTR)flashlatest, (LPWSTR)flashdest, false);
+	CopyFile((LPWSTR)cgbin, (LPWSTR)cgdest, false);
+	CopyFile((LPWSTR)cgglbin, (LPWSTR)cggldest, false);
+	CopyFile((LPWSTR)cgd3d9bin, (LPWSTR)cgd3d9dest, false);
+	const std::wstring unblocks[3] = { (LPWSTR)tbbunblock, (LPWSTR)airunblock, (LPWSTR)flashunblock };
 	for (std::wstring i : unblocks)
 	{
 		DeleteFile(&i[0]);
