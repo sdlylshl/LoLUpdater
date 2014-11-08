@@ -93,6 +93,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 bool garena = std::wifstream(L"lol.exe").good();
+
 wchar_t *gameclientfinal = nullptr;
 wchar_t *airclientfinal = nullptr;
 std::wstring gamedir()
@@ -165,13 +166,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	const std::wstring rel(L"releases");
-	wchar_t *gameclientfinal = nullptr;
+
 	PathCombine(
 		gameclientfinal,
 		gameclient,
 		rel.c_str()
 		);
-	wchar_t *airclientfinal = nullptr;
+
 	PathCombine(
 		airclientfinal,
 		airclient,
@@ -180,7 +181,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
 	GetModuleFileName(nullptr, &currentdirectorybuffer[0], MAX_PATH + 1);
-	// workingdir
 	pathcontainer[1] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE = compact");
 	std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
@@ -193,7 +193,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		L"\\",
 		_TRUNCATE
 	);
-	//drive
 	pathcontainer[2] << pathcontainer[1].str().c_str()[0];
 	int bit = sizeof(void*);
 	const std::wstring progfiles(L":\\Program Files");
@@ -206,7 +205,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		pathcontainer[2] << (progfiles);
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
-	pathcontainer[3] << (L"\\Common Files\\Adobe " + constants[2]);
+	pathcontainer[2] << (L"\\Common Files\\Adobe " + constants[2]);
 
 	const std::wstring cg(L"Cg.dll");
 	wchar_t *cgbin = nullptr;
@@ -230,22 +229,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9.c_str()
 		);
 
+	wchar_t *gameclientfull = nullptr;
+	wchar_t *airclientfull = nullptr;
+
 	PathCombine(
-		gameclient,
-		pathcontainer[2].str().c_str(),
+		gameclientfull,
+		pathcontainer[1].str().c_str(),
 		gamedir().c_str()
 		);
 
 	PathCombine(
-		airclient,
-		pathcontainer[2].str().c_str(),
+		airclientfull,
+		pathcontainer[1].str().c_str(),
 		airdir().c_str()
 		);
 
 
 	PathCombine(
 		tbb,
-		gameclientfinal,
+		gameclientfull,
 		L"tbb.dll"
 		);
 
@@ -253,16 +255,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *airdest= nullptr;
 	PathCombine(
 		airdest,
-		airclientfinal,
+		airclientfull,
 		air.c_str()
 		);
 
 	wchar_t *airlatest = nullptr;
 	PathCombine(
 		airlatest,
-		pathcontainer[3].str().c_str(),
+		pathcontainer[2].str().c_str(),
 		air.c_str()
 		);
+
 
 	const std::wstring flash(L"Resources\\NPSWF32.dll");
 	wchar_t *flashdest = nullptr;
@@ -274,10 +277,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	wchar_t *flashlatest = nullptr;
 	PathCombine(
-		airlatest,
-		pathcontainer[3].str().c_str(),
+		flashlatest,
+		pathcontainer[2].str().c_str(),
 		flash.c_str()
 		);
+
 
 	wchar_t *cgdest = nullptr;
 	PathCombine(
@@ -388,12 +392,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 	}
 
-	DeleteFile(tbbunblock);
+
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest ,false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
+	const std::wstring unblocks[3] = {tbbunblock, airunblock, flashunblock};
+	for (std::wstring i : unblocks)
+	{
+		DeleteFile(&i[0]);
+	}
 	done = true;
 	InvalidateRect(hwnd, &end, false);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
