@@ -83,8 +83,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
 		{
-			// DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
-			DrawText(hdc, reinterpret_cast<LPWSTR>(tbb), -1, &end, DT_CENTER);
+			DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
 			EndPaint(hwnd, &ps);
 		}
 		break;
@@ -249,8 +248,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			PathCombine(reinterpret_cast<LPWSTR>(air0), reinterpret_cast<LPWSTR>(airclientfinal), L"0.0.1.117");
 			PathCombine(reinterpret_cast<LPWSTR>(air1), reinterpret_cast<LPWSTR>(air0), constants[1].c_str());
 			
-			airversion = std::wstring(reinterpret_cast<LPWSTR>(&air1));
-			version = std::wstring(reinterpret_cast<LPWSTR>(&game2));
+			airversion = std::wstring(reinterpret_cast<LPWSTR>(air1));
+			version = std::wstring(reinterpret_cast<LPWSTR>(game2));
 	}
 
 	PathCombine(
@@ -410,7 +409,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(reinterpret_cast<LPWSTR>(cgbin), reinterpret_cast<LPWSTR>(cgdest), false);
 	CopyFile(reinterpret_cast<LPWSTR>(cgglbin), reinterpret_cast<LPWSTR>(cggldest), false);
 	CopyFile(reinterpret_cast<LPWSTR>(cgd3d9bin), reinterpret_cast<LPWSTR>(cgd3d9dest), false);
-	std::wstring unblocks[3] = { std::wstring(reinterpret_cast<LPWSTR>(&tbbunblock)), std::wstring(reinterpret_cast<LPWSTR>(&airunblock)), std::wstring(reinterpret_cast<LPWSTR>(&flashunblock)) };
+	std::wstring unblocks[3] = { std::wstring(reinterpret_cast<LPWSTR>(tbbunblock)), std::wstring(reinterpret_cast<LPWSTR>(airunblock)), std::wstring(reinterpret_cast<LPWSTR>(flashunblock)) };
 	for (std::wstring i : unblocks)
 	{
 		DeleteFile(&i[0]);
