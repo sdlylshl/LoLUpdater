@@ -19,11 +19,11 @@ void Copy(int from, int to)
 	);
 }
 
-const std::wstring constants[15] = {L":Zone.Identifier", L"Adobe AIR.dll", L"Resources\\NPSWF32.dll", L"Cg.dll", L"CgGL.dll", L"CgD3D9.dll", L"Cg-3.1_April2012_Setup.exe", L"tbb.dll", L"air15_win.exe", L"\\deploy\\", L"Air\\Adobe AIR\\Versions\\1.0\\", L"http://lol.jdhpro.com/", L"RADS\\", L":\\Program Files", L"\\releases\\"};
-void charreduction(int dest, int path1, int path2)
+void charreduction(int dest, int path1, const std::wstring path2)
 {
-	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + constants[path2]);
+	pathcontainer[dest] << (pathcontainer[path1].str().c_str() + path2);
 }
+const std::wstring constants[3] = { L":Zone.Identifier", L"\\deploy\\", L"Air\\Adobe AIR\\Versions\\1.0\\" };
 
 void download(const std::wstring fromurl, const std::wstring topath, int pathcont, int frompathcont, const std::wstring args)
 {
@@ -99,16 +99,16 @@ std::wstring gamedir()
 	{
 		return L"Game\\";
 	}
-	return (pathcontainer[22].str() + L"0.0.1.64" + constants[9]);
+	return (pathcontainer[22].str() + L"0.0.1.64" + constants[1]);
 }
 
 std::wstring airdir()
 {
 	if (garena)
 	{
-		return constants[10];
+		return constants[2];
 	}
-	return (pathcontainer[23].str() + L"0.0.1.117" + constants[9] + L"Adobe " + constants[10]);
+	return (pathcontainer[23].str() + L"0.0.1.117" + constants[1] + L"Adobe " + constants[2]);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -140,14 +140,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		                nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
-	pathcontainer[20] << (constants[12] + L"projects\\lol_air_client");
-	pathcontainer[21] << (constants[12] + L"solutions\\lol_game_client_sln");
-	charreduction(22, 20, 14);
-	charreduction(23, 21, 14);
+	const std::wstring rads(L"rads\\");
+	pathcontainer[20] << (rads + L"projects\\lol_air_client");
+	pathcontainer[21] << (rads + L"solutions\\lol_game_client_sln");
+	const std::wstring rel(L"\\releases\\");
+	charreduction(22, 20, rel);
+	charreduction(23, 21, rel);
 	std::vector<wchar_t> currentdirectorybuffer(MAX_PATH + 1, 0);
 	GetModuleFileName(nullptr, &currentdirectorybuffer[0], MAX_PATH + 1);
 	pathcontainer[19] << (std::wstring(&currentdirectorybuffer[0]).substr(0, std::wstring(&currentdirectorybuffer[0]).find_last_of(L"\\/")) + L"\\");
-	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", constants[6].c_str(), 7, 19, L"/verysilent /TYPE = compact");
+	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", 7, 19, L"/verysilent /TYPE = compact");
 	std::vector<wchar_t> cgbinpath(MAX_PATH + 1, 0);
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 	                       &cgbinpath[0],
@@ -160,40 +162,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 	pathcontainer[0] << pathcontainer[19].str().c_str()[0];
 	int bit = sizeof(void*);
+	const std::wstring progfiles(L":\\Program Files");
 	if (bit == 8)
 	{
-		pathcontainer[0] << (constants[13] + L" (x86)");
+		pathcontainer[0] << (progfiles + L" (x86)");
 	}
 	else
 	{
-		pathcontainer[0] << constants[13];
+		pathcontainer[0] << (progfiles);
 	}
-	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", constants[8].c_str(), 8, 19, L"-silent");
-	pathcontainer[0] << (L"\\Common Files\\Adobe " + constants[10]);
-	pathcontainer[6] << (&cgbinpath[0] + constants[3]);
-	pathcontainer[11] << (&cgbinpath[0] + constants[4]);
-	pathcontainer[10] << (&cgbinpath[0] + constants[5]);
+	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", 8, 19, L"-silent");
+	pathcontainer[0] << (L"\\Common Files\\Adobe " + constants[2]);
+	const std::wstring cg(L"Cg.dll");
+	const std::wstring cggl(L"CgGL.dll");
+	const std::wstring cgd3d9(L"CgD3D9.dll");
+	pathcontainer[6] << (&cgbinpath[0] + cg);
+	pathcontainer[11] << (&cgbinpath[0] + cggl);
+	pathcontainer[10] << (&cgbinpath[0] + cgd3d9);
 	pathcontainer[18] << (pathcontainer[19].str() + gamedir());
 	pathcontainer[17] << (pathcontainer[19].str() + airdir());
 
-	charreduction(1, 18, 7);
-	charreduction(2, 0, 1);
-	charreduction(4, 0, 2);
-	charreduction(12, 18, 3);
-	charreduction(13, 18, 4);
-	charreduction(16, 18, 5);
-	charreduction(3, 17, 1);
-	charreduction(5, 17, 2);
-	charreduction(9, 3, 0);
-	charreduction(15, 5, 0);
-	charreduction(14, 1, 0);
+	charreduction(1, 18, L"tbb.dll");
+	const std::wstring air(L"Adobe AIR.dll");
+	charreduction(2, 0, air);
+	const std::wstring flash(L"Resources\\NPSWF32.dll");
+	charreduction(4, 0, flash);
+	charreduction(12, 18, cg);
+	charreduction(13, 18, cggl);
+	charreduction(16, 18, cgd3d9);
+	charreduction(3, 17, air);
+	charreduction(5, 17, flash);
+	charreduction(9, 3, constants[0]);
+	charreduction(15, 5, constants[0]);
+	charreduction(14, 1, constants[0]);
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
+	const std::wstring ftp(L"http://lol.jdhpro.com/");
 	if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
 	{
-		tbbdownload(constants[11] + L"Xp.dll");
+		tbbdownload(ftp + L"Xp.dll");
 	}
 	else
 	{
@@ -222,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (canuseavx2 > 0)
 		{
-			tbbdownload(constants[11] + L"Avx2.dll");
+			tbbdownload(ftp + L"Avx2.dll");
 		}
 		else
 		{
@@ -230,23 +239,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
-				tbbdownload(constants[11] + L"Avx.dll");
+				tbbdownload(ftp + L"Avx.dll");
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(constants[11] + L"Sse2.dll");
+					tbbdownload(ftp + L"Sse2.dll");
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						tbbdownload(constants[11] + L"Sse.dll");
+						tbbdownload(ftp + L"Sse.dll");
 					}
 					else
 					{
-						tbbdownload(constants[11] + L"Default.dll");
+						tbbdownload(ftp + L"Default.dll");
 					}
 				}
 			}
