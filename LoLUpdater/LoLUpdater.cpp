@@ -157,11 +157,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	_wfreopen(L"CONOUT$", L"w", stdout);
 #endif
 	std::wstring buffer_1[MAX_PATH] = { std::wstring(L"projects") };
-	std::wstring* lpStr1;
+	std::wstring *lpStr1;
 	lpStr1 = buffer_1;
 
 	std::wstring buffer_1a[] = { std::wstring(L"lol_air_client") };
-	std::wstring* lpStr1a;
+	std::wstring *lpStr1a;
 	lpStr1a = buffer_1a;
 
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr1), reinterpret_cast<LPWSTR>(lpStr1a));
@@ -245,12 +245,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 
-	pathcontainer[0] << std::wstring(reinterpret_cast<LPWSTR>(&cwd[0]))[0] + std::wstring(L":Program Files");
+	pathcontainer[0] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd[0]))[0] + std::wstring(L":Program Files"));
 
 	if (sizeof(void*) == 4)
 	{
 		pathcontainer[0] << std::wstring(L" (x86)");
-
 	}
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
