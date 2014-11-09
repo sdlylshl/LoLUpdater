@@ -30,12 +30,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ShowWindow(hwnd, nCmdShow);
 
+#ifdef DEBUG
+	SetConsoleOutputCP(CP_UTF8);
+	AllocConsole();
+	_wfreopen(L"CONOUT$", L"w", stdout);
+#endif
+
+	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
+	GetEnvironmentVariable(L"CG_BIN_PATH",
+		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		MAX_PATH);
+
 	// base
 	wchar_t airclient1[MAX_PATH] = L"";
 	wcsncat_s(
 		airclient1,
 		MAX_PATH,
-		reinterpret_cast<LPCWSTR>(&cwd[0]),
+		cgbinpath[0].c_str(),
 		_TRUNCATE
 		);
 
@@ -45,7 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wcsncat_s(
 		gameclient1,
 		MAX_PATH,
-		reinterpret_cast<LPCWSTR>(&cwd[0]),
+		cgbinpath[0].c_str(),
 		_TRUNCATE
 		);
 	wchar_t* gameclient;
@@ -82,11 +93,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// deallocate lolgame1
 
 	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
-	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
-	GetEnvironmentVariable(L"CG_BIN_PATH",
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		MAX_PATH);
-
 	wcsncat_s(
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH,
@@ -94,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 
-	pathcontainer[0] << (std::wstring(reinterpret_cast<LPCWSTR>(&cwd[0]))[0] + std::wstring(L":Program Files"));
+	pathcontainer[0] << (std::wstring(cgbinpath[0]) + std::wstring(L":Program Files"));
 
 	if (sizeof(void*) == 4)
 	{
@@ -198,13 +204,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		gameclient = L"";
 
-		gameclient = L"Game";
+		wchar_t *garenagame = L"Game";
 
 		wchar_t airclient1[MAX_PATH] = L"";
 		wcsncat_s(
 			airclient1,
 			MAX_PATH,
-			reinterpret_cast<LPCWSTR>(cwd[0]),
+			cgbinpath[0].c_str(),
 			_TRUNCATE
 			);
 
@@ -214,12 +220,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wcsncat_s(
 			gameclient1,
 			MAX_PATH,
-			reinterpret_cast<LPCWSTR>(cwd[0]),
+			cgbinpath[0].c_str(),
 			_TRUNCATE
 			);
+
 		wchar_t* gameclient;
 		gameclient = gameclient1;
-
+		PathAppend(gameclient, garenagame);
 		wchar_t asd22[MAX_PATH] = L"";
 		wcsncat_s(
 			asd22,
@@ -229,13 +236,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			);
 		wchar_t* asd212;
 		asd212 = asd22;
-
-		wcsncat_s(
-			airclient1,
-			MAX_PATH,
-			reinterpret_cast<LPCWSTR>(cwd[0]),
-			_TRUNCATE
-			);
 
 		PathAppend(airclient, asd212);
 	}
@@ -372,7 +372,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 		}
 	}
-
+#ifdef DEBUG
+	wprintf(airlatest);
+	wprintf(airdest);
+	wprintf(flashlatest);
+	wprintf(flashdest);
+	wprintf(cgbin);
+	wprintf(cgdest);
+	wprintf(cgglbin);
+	wprintf(cggldest);
+	wprintf(cgd3d9bin);
+	wprintf(cgd3d9dest);
+#endif
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	CopyFile(cgbin, cgdest, false);
