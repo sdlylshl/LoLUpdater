@@ -8,6 +8,10 @@
 #include <Shlwapi.h>
 #include <direct.h>
 
+#ifndef VC_EXTRALEAN
+#define VC_EXTRALEAN
+#endif
+
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -210,7 +214,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr4), reinterpret_cast<LPWSTR>(lpStr4a));
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(buffer_4));
+	wprintf(reinterpret_cast<LPWSTR>(lpStr4));
 #endif
 
 	const std::wstring rel(L"releases");
