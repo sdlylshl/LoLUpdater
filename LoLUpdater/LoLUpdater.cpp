@@ -239,29 +239,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 
-	std::wstring *version = nullptr;
 
-	std::wstring *game1 = nullptr;
-	std::wstring *game2 = nullptr
+	std::wstring buffer_7[MAX_PATH] = { reinterpret_cast<LPWSTR>(gameclient) };
+	std::wstring *random7;
+	random7 = buffer_7;
+
+	PathAppend(reinterpret_cast<LPWSTR>(random7), L"0.0.1.64");
+
+	std::wstring buffer_8[MAX_PATH] = { reinterpret_cast<LPWSTR>(gameclient) };
+	std::wstring *version;
+	version = buffer_8;
+
+	PathAppend(reinterpret_cast<LPWSTR>(random7), constants[1].c_str());
 
 
+	std::wstring buffer_9[MAX_PATH] = { reinterpret_cast<LPWSTR>(airclient) };
+	std::wstring *random9;
+	random9 = buffer_9;
 
+	PathAppend(reinterpret_cast<LPWSTR>(random9), L"0.0.1.117");
 
+	std::wstring buffer_10[MAX_PATH] = { reinterpret_cast<LPWSTR>(random9) };
+	std::wstring *airversion;
+	airversion = buffer_10;
 
-
-
-
-
-	PathCombine(reinterpret_cast<LPWSTR>(game1), reinterpret_cast<LPWSTR>(gameclient), L"0.0.1.64");
-	PathCombine(reinterpret_cast<LPWSTR>(game2), reinterpret_cast<LPWSTR>(game1), constants[1].c_str());
-	version[0] = std::wstring(reinterpret_cast<LPWSTR>(game2));
-
-	std::wstring *airversion = nullptr;
-	std::wstring *air0 = nullptr;
-	std::wstring *air1 = nullptr;
-	PathCombine(reinterpret_cast<LPWSTR>(air0), reinterpret_cast<LPWSTR>(airclient), L"0.0.1.117");
-	PathCombine(reinterpret_cast<LPWSTR>(air1), reinterpret_cast<LPWSTR>(air0), constants[1].c_str());
-	airversion[0] = std::wstring(reinterpret_cast<LPWSTR>(air1));
+	PathAppend(reinterpret_cast<LPWSTR>(airversion), constants[1].c_str());
 
 
 	std::wifstream garena(L"lol.exe");
@@ -298,17 +300,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 
-	std::wstring *flash = nullptr;
-	PathCombine(
-		reinterpret_cast<LPWSTR>(flash),
-		L"Resources",
-		L"NPSWF32.dll"
-		);
+
+	std::wstring buffer_11[MAX_PATH] = { reinterpret_cast<LPWSTR>(L"Resources") };
+	std::wstring *flash;
+	flash = buffer_11;
+
+	PathAppend(reinterpret_cast<LPWSTR>(flash), L"NPSWF32.dll");
+
 
 	std::wstring *flashdest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashdest),
-		reinterpret_cast<LPWSTR>(airclient),
+		pathcontainer[4].str().c_str(),
 		reinterpret_cast<LPWSTR>(flash)
 		);
 
@@ -323,21 +326,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring *cgdest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgdest),
-		reinterpret_cast<LPWSTR>(gameclient),
+		pathcontainer[3].str().c_str(),
 		cg.c_str()
 		);
 
 	std::wstring *cggldest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cggldest),
-		reinterpret_cast<LPWSTR>(gameclient),
+		pathcontainer[3].str().c_str(),
 		cggl.c_str()
 		);
 
 	std::wstring *cgd3d9dest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9dest),
-		reinterpret_cast<LPWSTR>(gameclient),
+		pathcontainer[3].str().c_str(),
 		cgd3d9.c_str()
 		);
 
