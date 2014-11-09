@@ -8,6 +8,9 @@
 #include <Shlwapi.h>
 #include <direct.h>
 
+#ifndef UNICODE
+#define UNICODE
+#endif
 #ifndef _UNICODE
 #define _UNICODE
 #endif
@@ -32,7 +35,7 @@ const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
 RECT end = { 0, 100, 100, 120 };
 
-void download(const std::wstring url, const std::wstring file, const std::wstring args)
+void download(const std::wstring& url, const std::wstring& file, const std::wstring& args)
 {
 	HRESULT hRez = URLDownloadToFile(
 		nullptr,
@@ -72,7 +75,7 @@ void download(const std::wstring url, const std::wstring file, const std::wstrin
 	
 }
 
-void tbbdownload(const std::wstring file)
+void tbbdownload(const std::wstring& file)
 {
 	std::wstring *ftp[MAX_PATH+1];
 
@@ -156,11 +159,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	AllocConsole();
 	_wfreopen(L"CONOUT$", L"w", stdout);
 #endif
-	std::wstring buffer_1[2] = { L"projects" };
+	std::wstring buffer_1[MAX_PATH+1] = { L"projects" };
 	std::wstring *lpStr1;
 	lpStr1 = buffer_1;
 
-	std::wstring buffer_1a[2] = { L"lol_air_client" };
+	std::wstring buffer_1a[MAX_PATH+1] = { L"lol_air_client" };
 	std::wstring *lpStr1a;
 	lpStr1a = buffer_1a;
 
@@ -169,11 +172,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(lpStr1));
 #endif
 
-	std::wstring buffer_3[2] = { L"solutions" };
+	std::wstring buffer_3[MAX_PATH + 1] = { L"solutions" };
 	std::wstring *lpStr3;
 	lpStr3 = buffer_3;
 
-	std::wstring buffer_3a[2] = { L"lol_game_client_sln" };
+	std::wstring buffer_3a[MAX_PATH + 1] = { L"lol_game_client_sln" };
 	std::wstring *lpStr3a;
 	lpStr3a = buffer_3a;
 
@@ -221,7 +224,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	PathAppend(reinterpret_cast<LPWSTR>(gameclient), reinterpret_cast<LPWSTR>(lpStr5a));
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(buffer_5));
+	wprintf(reinterpret_cast<LPWSTR>(gameclient));
 #endif
 	std::wstring buffer_6[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring *airclient;
@@ -249,9 +252,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&cgbinpath[0]));
 #endif
-
-	std::wstring progfiles = std::wstring(L":") + std::wstring(L"Program Files");
-	pathcontainer[0] << std::wstring(reinterpret_cast<LPWSTR>(&cwd[0]))[0] + progfiles;
+	pathcontainer[0] << std::wstring(reinterpret_cast<LPWSTR>(&cwd[0]))[0] + std::wstring(L":Program Files");
 #ifdef DEBUG
 	wprintf(pathcontainer[0].str().c_str());
 #endif
