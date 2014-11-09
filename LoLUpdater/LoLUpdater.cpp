@@ -25,7 +25,7 @@ bool done = false;
 std::wstringstream pathcontainer[6];
 
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
-wchar_t *tbb[MAX_PATH];
+wchar_t tbb[MAX_PATH];
 
 std::wstring cwd(_wgetcwd(
 	nullptr,
@@ -453,8 +453,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 
-	wchar_t tbb1[MAX_PATH];
-	tbb = tbb1;
+	wchar_t *tbb1;
+	tbb1 = tbb;
 
 	// String for balance of path name.
 	wchar_t asdaa[MAX_PATH] = pathcontainer[1].str().c_str();
@@ -468,7 +468,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	PathCombine(
-		tbb,
+		tbb1,
 		asd1aa,
 		asd21bb
 		);
@@ -477,7 +477,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 #ifdef DEBUG
-	wprintf(tbb);
+	wprintf(tbb1);
 #endif
 	wchar_t airdest[MAX_PATH];
 	wchar_t *airdest1;
