@@ -50,21 +50,37 @@ void download(const std::wstring& url, const std::wstring& file, const std::wstr
 		wchar_t *unblocker1;
 		unblocker1 = unblocker;
 
-		std::wstring unblocker2[] =  { std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) };
-		std::wstring *unblockerq;
+		wchar_t unblocker2[MAX_PATH];
+
+		wcsncat_s(
+			unblocker2,
+			MAX_PATH,
+			reinterpret_cast<LPWSTR>(&cwd[0]),
+			_TRUNCATE
+			);
+
+		wchar_t *unblockerq;
 		unblockerq = unblocker2;
 
-		std::wstring unblocker3[] = { std::wstring(file.c_str()) };
-		std::wstring *unblockerqq;
+		wchar_t unblocker3[MAX_PATH];
+
+		wcsncat_s(
+			unblocker3,
+			MAX_PATH,
+			file.c_str(),
+			_TRUNCATE
+			);
+
+		wchar_t *unblockerqq;
 		unblockerqq = unblocker3;
 
 		PathCombine(
-			reinterpret_cast<LPWSTR>(unblocker1),
-			reinterpret_cast<LPWSTR>(unblockerq),
-			reinterpret_cast<LPWSTR>(unblockerqq)
+			unblocker1,
+			unblockerq,
+			unblockerqq
 			);
 
-		pathcontainer[0] << (std::wstring(reinterpret_cast<LPWSTR>(unblocker1)) + constants[0]);
+		pathcontainer[0] << (std::wstring(unblocker1) + constants[0]);
 
 		DeleteFile(pathcontainer[0].str().c_str());
 		pathcontainer[0].str(std::wstring());
@@ -194,12 +210,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(lpStr3);
 #endif
 
+	wchar_t* rads = L"RADS";
+	wchar_t buffer_2[MAX_PATH];
 
-	wchar_t buffer_2[MAX_PATH] = L"RADS";
+	wcsncat_s(
+		buffer_2,
+		MAX_PATH,
+		rads,
+		_TRUNCATE
+		);
+
 	wchar_t* lpStr2;
 	lpStr2 = buffer_2;
 
-	wchar_t buffer_2a[MAX_PATH] = (wchar_t)std::wstring(lpStr1);
+	wchar_t buffer_2a[MAX_PATH];
+	wcsncat_s(
+		buffer_2a,
+		MAX_PATH,
+		lpStr1,
+		_TRUNCATE
+		);
 	wchar_t* lpStr2a;
 	lpStr2a = buffer_2a;
 
@@ -207,12 +237,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(lpStr2);
 #endif
-	// game
-	wchar_t buffer_4[MAX_PATH] = L"RADS";
+
+	wchar_t buffer_4[MAX_PATH];
+	wcsncat_s(
+		buffer_4,
+		MAX_PATH,
+		rads,
+		_TRUNCATE
+		);
 	wchar_t* lpStr4;
 	lpStr4 = buffer_4;
 
-	wchar_t buffer_4a[MAX_PATH] = lpStr3;
+	wchar_t buffer_4a[MAX_PATH];
+
+	wcsncat_s(
+		buffer_4a,
+		MAX_PATH,
+		lpStr3,
+		_TRUNCATE
+		);
 	wchar_t* lpStr4a;
 	lpStr4a = buffer_4a;
 
@@ -221,11 +264,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(lpStr4);
 #endif
 
-	wchar_t buffer_5[MAX_PATH] = lpStr4;
+	wchar_t buffer_5[MAX_PATH];
+	wcsncat_s(
+		buffer_5,
+		MAX_PATH,
+		lpStr4,
+		_TRUNCATE
+		);
+
 	wchar_t* gameclient;
 	gameclient = buffer_5;
-
-	wchar_t buffer_5a[MAX_PATH] = L"releases";
+	wchar_t* rel = L"releases";
+	wchar_t buffer_5a[MAX_PATH];
+	wcsncat_s(
+		buffer_5a,
+		MAX_PATH,
+		rel,
+		_TRUNCATE
+		);
 	wchar_t* lpStr5a;
 	lpStr5a = buffer_5a;
 
@@ -233,7 +289,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(gameclient);
 #endif
-	wchar_t buffer_6[MAX_PATH] = lpStr2;
+	wchar_t buffer_6[MAX_PATH];
+
+	wcsncat_s(
+		buffer_6,
+		MAX_PATH,
+		lpStr2,
+		_TRUNCATE
+		);
+
 	wchar_t* airclient;
 	airclient = buffer_6;
 	PathAppend(airclient, lpStr5a);
@@ -270,11 +334,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *adobepath1;
 	adobepath1 = adobepath;
 
-	wchar_t asd[MAX_PATH] = pathcontainer[0].str().c_str();
+	wchar_t asd[MAX_PATH];
+
+	wcsncat_s(
+		asd,
+		MAX_PATH,
+		pathcontainer[0].str().c_str(),
+		_TRUNCATE
+		);
+
 	wchar_t *asd1;
 	asd1 = asd;
 
-	wchar_t asd2[MAX_PATH] = constants[1].c_str();
+	wchar_t asd2[MAX_PATH];
+	wcsncat_s(
+		asd2,
+		MAX_PATH,
+		constants[1].c_str(),
+		_TRUNCATE
+		);
 	wchar_t *asd21;
 	asd21 = asd2;
 
@@ -294,32 +372,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *cgbin1;
 	cgbin1 = cgbin;
 
-	wchar_t asd233[MAX_PATH] = &cgbinpath[0];
+	wchar_t asd233[MAX_PATH];
+
+	wcsncat_s(
+		asd233,
+		MAX_PATH,
+		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		_TRUNCATE
+		);
+
 	wchar_t *asd12;
 	asd12 = asd233;
+	wchar_t* cg = L"Cg.dll";
+	wchar_t asd23[MAX_PATH];
 
-	wchar_t asd23[MAX_PATH] = L"Cg.dll";
+	wcsncat_s(
+		asd23,
+		MAX_PATH,
+		cg,
+		_TRUNCATE
+		);
+
 	wchar_t *asd213;
 	asd213 = asd23;
 
 
 	PathCombine(
-	cgbin,
-	asd12,
-	asd213
+		cgbin,
+		asd12,
+		asd213
 		);
-
-
-
-
-
-
 
 	wchar_t cgglbin[MAX_PATH];
 	wchar_t *cgglbin1;
 	cgglbin1 = cgglbin;
+	wchar_t* cggl = L"CgGL.dll";
+	wchar_t asd232[MAX_PATH];
 
-	wchar_t asd232[MAX_PATH] = L"CgGL.dll";
+	wcsncat_s(
+		asd232,
+		MAX_PATH,
+		cggl,
+		_TRUNCATE
+		);
+
 	wchar_t *asd2132;
 	asd2132 = asd232;
 
@@ -334,8 +430,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t cgd3d9bin[MAX_PATH];
 	wchar_t *cgd3d9bin1;
 	cgd3d9bin1 = cgd3d9bin;
+	wchar_t* cgd3d9 = L"CgD3D9.dll";
+	wchar_t asd2322[MAX_PATH];
 
-	wchar_t asd2322[MAX_PATH] = L"CgD3D9.dll";
+	wcsncat_s(
+		asd2322,
+		MAX_PATH,
+		cgd3d9,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21321;
 	asd21321 = asd2322;
 
@@ -346,7 +450,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		asd21321
 		);
 
-	wchar_t buffer_7[MAX_PATH] = gameclient;
+	wchar_t buffer_7[MAX_PATH];
+
+
+	wcsncat_s(
+		buffer_7,
+		MAX_PATH,
+		gameclient,
+		_TRUNCATE
+		);
+
 	wchar_t* random7;
 	random7 = buffer_7;
 
@@ -359,12 +472,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(random7);
 #endif
-	wchar_t buffer_12[MAX_PATH] = random7;
+	wchar_t buffer_12[MAX_PATH];
+
+
+	wcsncat_s(
+		buffer_12,
+		MAX_PATH,
+		random7,
+		_TRUNCATE
+		);
+
 	wchar_t* version;
 	version = buffer_12;
 
+	wchar_t* dep = L"deploy";
+	wchar_t buffer_12a[MAX_PATH];
 
-	wchar_t buffer_12a[MAX_PATH] = L"deploy";
+	wcsncat_s(
+		buffer_12a,
+		MAX_PATH,
+		dep,
+		_TRUNCATE
+		);
+
 	wchar_t* lpStr12a;
 	lpStr12a = buffer_12a;
 
@@ -374,7 +504,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
 
-	wchar_t buffer_14[MAX_PATH] = airclient;
+	wchar_t buffer_14[MAX_PATH];
+
+
+	wcsncat_s(
+		buffer_14,
+		MAX_PATH,
+		airclient,
+		_TRUNCATE
+		);
+
 	wchar_t* lpStr14;
 	lpStr14 = buffer_14;
 
@@ -386,7 +525,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(lpStr14);
 #endif
-	wchar_t buffer_13[MAX_PATH] = lpStr14;
+	wchar_t buffer_13[MAX_PATH];
+
+	wcsncat_s(
+		buffer_13,
+		MAX_PATH,
+		lpStr14,
+		_TRUNCATE
+		);
+
+
 	wchar_t* lpStr13;
 	lpStr13 = buffer_13;
 	PathAppend(lpStr13, lpStr12a);
@@ -395,11 +543,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
 
-	wchar_t buffer_15[MAX_PATH] = lpStr13;
+	wchar_t buffer_15[MAX_PATH];
+
+	wcsncat_s(
+		buffer_15,
+		MAX_PATH,
+		lpStr13,
+		_TRUNCATE
+		);
+
+
 	wchar_t* airversion;
 	airversion = buffer_15;
 
-	wchar_t buffer_15a[MAX_PATH] = constants[1];
+	wchar_t buffer_15a[MAX_PATH];
+
+	wcsncat_s(
+		buffer_15a,
+		MAX_PATH,
+		constants[1].c_str(),
+		_TRUNCATE
+		);
+
 	wchar_t* lpStr15a;
 	lpStr15a = buffer_15a;
 
@@ -428,15 +593,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 		wprintf(version);
 #endif
-		wchar_t buffer_17[MAX_PATH] = constants[1];
+		wchar_t buffer_17[MAX_PATH];
+
+		wcsncat_s(
+			buffer_17,
+			MAX_PATH,
+			constants[1].c_str(),
+			_TRUNCATE
+			);
+
+
 		wchar_t* airversion;
 		airversion = buffer_17;
 
-		wchar_t buffer_17a[MAX_PATH] = constants[2];
+		wchar_t buffer_17a[MAX_PATH];
+
+		wcsncat_s(
+			buffer_17a,
+			MAX_PATH,
+			constants[2].c_str(),
+			_TRUNCATE
+			);
+
+
 		wchar_t* lpStr17a;
 		lpStr17a = buffer_17a;
 
-		PathAppend(airversion1, pStr17a);
+		PathAppend(airversion, lpStr17a);
 #ifdef DEBUG
 		wprintf(airversion);
 #endif
@@ -457,7 +640,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	tbb1 = tbb;
 
 	// String for balance of path name.
-	wchar_t asdaa[MAX_PATH] = pathcontainer[1].str().c_str();
+	wchar_t asdaa[MAX_PATH];
+
+	wcsncat_s(
+		asdaa,
+		MAX_PATH,
+		pathcontainer[1].str().c_str(),
+		_TRUNCATE
+		);
+
+
 	wchar_t *asd1aa;
 	asd1aa = asdaa;
 
@@ -483,11 +675,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *airdest1;
 	airdest1 = airdest;
 
-	wchar_t asdcc[MAX_PATH] = pathcontainer[2].str().c_str();
+	wchar_t asdcc[MAX_PATH];
+
+	wcsncat_s(
+		asdcc,
+		MAX_PATH,
+		pathcontainer[2].str().c_str(),
+		_TRUNCATE
+		);
+
+
 	wchar_t *asd1cc;
 	asd1cc = asdcc;
-
-	wchar_t asd2cc[MAX_PATH] = L"Adobe AIR.dll";
+	wchar_t* air = L"Adobe AIR.dll";
+	wchar_t asd2cc[MAX_PATH];
+	wcsncat_s(
+		asd2cc,
+		MAX_PATH,
+		air,
+		_TRUNCATE
+		);
 	wchar_t *asd21cc;
 	asd21cc = asd2cc;
 
@@ -506,11 +713,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t * airlatest1;
 	airlatest1 = airlatest;
 
-	wchar_t asdccdd[MAX_PATH] = adobepath;
+	wchar_t asdccdd[MAX_PATH];
+
+	wcsncat_s(
+		asdccdd,
+		MAX_PATH,
+		adobepath,
+		_TRUNCATE
+		);
+
+
 	wchar_t *asd1ccdd;
 	asd1ccdd = asdccdd;
 
-	wchar_t asd2ccqq[MAX_PATH] = L"Adobe AIR.dll";
+	wchar_t asd2ccqq[MAX_PATH];
+
+	wcsncat_s(
+		asd2ccqq,
+		MAX_PATH,
+		air,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21ccqq;
 	asd21ccqq = asd2ccqq;
 
@@ -543,13 +767,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t * flashdest1;
 	flashdest1 = flashdest;
 
-	// String for balance of path name.
-	wchar_t asdccddqq[MAX_PATH] = pathcontainer[2].str();
+	wchar_t asdccddqq[MAX_PATH];
+
+	wcsncat_s(
+		asdccddqq,
+		MAX_PATH,
+		pathcontainer[2].str().c_str(),
+		_TRUNCATE
+		);
+
+
 	wchar_t *asd1ccddqq;
 	asd1ccddqq = asdccddqq;
 
-	// String for directory name.
-	wchar_t asd2ccqqqq[MAX_PATH] = flash;
+	wchar_t asd2ccqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asd2ccqqqq,
+		MAX_PATH,
+		flash,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21ccqqqq;
 	asd21ccqqqq = asd2ccqqqq;
 
@@ -568,12 +807,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t * flashlatest1;
 	flashlatest1 = flashlatest;
 
-	wchar_t asdccddqqqq[MAX_PATH] = adobepath;
+	wchar_t asdccddqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asdccddqqqq,
+		MAX_PATH,
+		adobepath,
+		_TRUNCATE
+		);
+
 	wchar_t *asd1ccddqqqq;
 	asd1ccddqqqq = asdccddqqqq;
 
-	// String for directory name.
-	wchar_t asd2ccqqqqqq[MAX_PATH] = flash.c_str();
+	wchar_t asd2ccqqqqqq[MAX_PATH];
+
+
+	wcsncat_s(
+		asd2ccqqqqqq,
+		MAX_PATH,
+		flash,
+		_TRUNCATE
+		);
 	wchar_t *asd21ccqqqqqq;
 	asd21ccqqqqqq = asd2ccqqqqqq;
 
@@ -594,11 +848,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t * cgdest1;
 	cgdest1 = cgdest;
 
-	wchar_t asdccddqqqqqq[MAX_PATH] = pathcontainer[1].str().c_str();
+	wchar_t asdccddqqqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asdccddqqqqqq,
+		MAX_PATH,
+		pathcontainer[1].str().c_str(),
+		_TRUNCATE
+		);
+
 	wchar_t *asd1ccddqqqqqq;
 	asd1ccddqqqqqq = asdccddqqqqqq;
 
-	wchar_t asd2ccqqqqqqqq[MAX_PATH] = L"Cg.dll";
+	wchar_t asd2ccqqqqqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asd2ccqqqqqqqq,
+		MAX_PATH,
+		cg,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21ccqqqqqqqq;
 	asd21ccqqqqqqqq = asd2ccqqqqqqqq;
 
@@ -617,11 +887,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *cggldest1;
 	cggldest1 = cggldest;
 
-	wchar_t asdccddqqqqqqqq[MAX_PATH] = pathcontainer[1].str().c_str();
+	wchar_t asdccddqqqqqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asdccddqqqqqqqq,
+		MAX_PATH,
+		pathcontainer[1].str().c_str(),
+		_TRUNCATE
+		);
+
 	wchar_t *asd1ccddqqqqqqqq;
 	asd1ccddqqqqqqqq = asdccddqqqqqqqq;
 
-	wchar_t asd2ccqqqqqqqqqq[MAX_PATH] = L"CgGL.dll";
+	wchar_t asd2ccqqqqqqqqqq[MAX_PATH];
+
+	wcsncat_s(
+		asd2ccqqqqqqqqqq,
+		MAX_PATH,
+		cggl,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21ccqqqqqqqqqq;
 	asd21ccqqqqqqqqqq = asd2ccqqqqqqqqqq;
 
@@ -639,11 +925,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t *cgd3d9dest1;
 	cgd3d9dest1 = cgdest;
 
-	wchar_t asdccddqqqqqqqqw[MAX_PATH] = pathcontainer[1].str().c_str();
+	wchar_t asdccddqqqqqqqqw[MAX_PATH];
+
+	wcsncat_s(
+		asdccddqqqqqqqqw,
+		MAX_PATH,
+		pathcontainer[1].str().c_str(),
+		_TRUNCATE
+		);
+
 	wchar_t *asd1ccddqqqqqqqqw;
 	asd1ccddqqqqqqqqw = asdccddqqqqqqqqw;
 
-	wchar_t asd2ccqqqqqqqqqqa[MAX_PATH] = L"CgD3D9.dll";
+	wchar_t asd2ccqqqqqqqqqqa[MAX_PATH];
+
+
+	wcsncat_s(
+		asd2ccqqqqqqqqqqa,
+		MAX_PATH,
+		cgd3d9,
+		_TRUNCATE
+		);
+
 	wchar_t *asd21ccqqqqqqqqqqa;
 	asd21ccqqqqqqqqqqa = asd2ccqqqqqqqqqqa;
 
