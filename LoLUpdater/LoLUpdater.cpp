@@ -22,7 +22,7 @@ bool done = false;
 
 std::wstringstream pathcontainer[8];
 const std::wstring constants[3] = {L":Zone.Identifier", L"deploy", L"Air\\Adobe AIR\\Versions\\1.0"};
-std::wstring *tbb[MAX_PATH];
+std::wstring *tbb = nullptr;
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
 RECT start = {0, 0, 100, 20};
@@ -37,7 +37,7 @@ void download(const std::wstring fromurl, const std::wstring dest, const std::ws
 		0,
 		nullptr
 	);
-	std::wstring *unblocker[MAX_PATH];
+	std::wstring *unblocker = nullptr;
 	PathCombine(reinterpret_cast<LPWSTR>(unblocker), pathcontainer[1].str().c_str(), dest.c_str());
 	pathcontainer[0] << (reinterpret_cast<LPWSTR>(unblocker) + constants[0]);
 	DeleteFile(pathcontainer[0].str().c_str());
@@ -54,7 +54,10 @@ void download(const std::wstring fromurl, const std::wstring dest, const std::ws
 	ShExecInfo.nShow = SW_HIDE;
 	ShExecInfo.hInstApp = nullptr;
 	ShellExecuteEx(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	WaitForSingleObject(
+		ShExecInfo.hProcess,
+		INFINITE
+		);
 }
 
 void tbbdownload(const std::wstring file)
@@ -127,14 +130,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		                nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
-	std::wstring* proj[MAX_PATH];
+	std::wstring* proj = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(proj),
 		L"projects",
 		L"lol_air_client"
 	);
 
-	std::wstring *airclient[MAX_PATH];
+	std::wstring *airclient = nullptr;
 	const std::wstring rads(L"RADS");
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airclient),
@@ -142,14 +145,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(proj)
 	);
 
-	std::wstring *sol[MAX_PATH];
+	std::wstring *sol = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(sol),
 		L"solutions",
 		L"lol_game_client_sln"
 	);
 
-	std::wstring *gameclient[MAX_PATH];
+	std::wstring *gameclient = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(gameclient),
 		rads.c_str(),
@@ -158,13 +161,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	const std::wstring rel(L"releases");
 
-	std::wstring *gameclientfinal[MAX_PATH];
+	std::wstring *gameclientfinal = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		reinterpret_cast<LPWSTR>(gameclient),
 		rel.c_str()
 	);
-	std::wstring *airclientfinal[MAX_PATH];
+	std::wstring *airclientfinal = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airclientfinal),
 		reinterpret_cast<LPWSTR>(airclient),
@@ -203,7 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	std::wstring *common[MAX_PATH];
+	std::wstring *common = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(common),
 		L"Common Files",
@@ -212,21 +215,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	pathcontainer[2] << common;
 
 	const std::wstring cg(L"Cg.dll");
-	std::wstring *cgbin[MAX_PATH];
+	std::wstring *cgbin = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		cg.c_str()
 	);
 	const std::wstring cggl(L"CgGL.dll");
-	std::wstring *cgglbin[MAX_PATH];
+	std::wstring *cgglbin = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgglbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		cggl.c_str()
 	);
 	const std::wstring cgd3d9(L"CgD3D9.dll");
-	std::wstring *cgd3d9bin[MAX_PATH];
+	std::wstring *cgd3d9bin = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9bin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -237,10 +240,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring version[MAX_PATH];
 
 
-		std::wstring *game1[MAX_PATH];
-		std::wstring *game2[MAX_PATH];
-		std::wstring *air0[MAX_PATH];
-		std::wstring *air1[MAX_PATH];
+	std::wstring *game1 = nullptr;
+	std::wstring *game2 = nullptr;
+	std::wstring *air0 = nullptr;
+	std::wstring *air1 = nullptr;
 
 		PathCombine(reinterpret_cast<LPWSTR>(game1), reinterpret_cast<LPWSTR>(gameclientfinal), L"0.0.1.64");
 		PathCombine(reinterpret_cast<LPWSTR>(game2), reinterpret_cast<LPWSTR>(game1), constants[1].c_str());
@@ -267,14 +270,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 	const std::wstring air(L"Adobe AIR.dll");
-	std::wstring *airdest[MAX_PATH];
+	std::wstring *airdest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airdest),
 		pathcontainer[4].str().c_str(),
 		air.c_str()
 	);
 
-	std::wstring *airlatest[MAX_PATH];
+	std::wstring *airlatest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airlatest),
 		pathcontainer[2].str().c_str(),
@@ -282,21 +285,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 
-	std::wstring *flash[MAX_PATH];
+	std::wstring *flash = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flash),
 		L"Resources",
 		L"NPSWF32.dll"
 	);
 
-	std::wstring *flashdest[MAX_PATH];
+	std::wstring *flashdest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashdest),
 		reinterpret_cast<LPWSTR>(airclientfinal),
 		reinterpret_cast<LPWSTR>(flash)
 	);
 
-	std::wstring *flashlatest[MAX_PATH];
+	std::wstring *flashlatest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashlatest),
 		pathcontainer[2].str().c_str(),
@@ -304,21 +307,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 
 
-	std::wstring *cgdest[MAX_PATH];
+	std::wstring *cgdest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgdest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		cg.c_str()
 	);
 
-	std::wstring *cggldest[MAX_PATH];
+	std::wstring *cggldest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cggldest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
 		cggl.c_str()
 	);
 
-	std::wstring *cgd3d9dest[MAX_PATH];
+	std::wstring *cgd3d9dest = nullptr;
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9dest),
 		reinterpret_cast<LPWSTR>(gameclientfinal),
