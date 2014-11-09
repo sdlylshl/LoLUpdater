@@ -25,7 +25,7 @@ bool done = false;
 std::wstringstream pathcontainer[6];
 
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
-std::wstring* tbb = nullptr;
+std::wstring* tbb[MAX_PATH+1];
 std::wstring cwd(_wgetcwd(
 	nullptr,
 	0
@@ -361,7 +361,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* airversion;
 	airversion = buffer_15;
 
-	std::wstring buffer_15a[MAX_PATH + 1] = {std::wstring(constants[1].c_str())};
+	std::wstring buffer_15a[MAX_PATH + 1] = {constants[1]};
 	std::wstring* lpStr15a;
 	lpStr15a = buffer_15a;
 
@@ -390,10 +390,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 		wprintf(reinterpret_cast<LPWSTR>(&version));
 #endif
-		std::wstring buffer_17[MAX_PATH + 1] = {constants[1].c_str()};
+		std::wstring buffer_17[MAX_PATH + 1] = {constants[1]};
 		std::wstring* airversion;
 		airversion = buffer_17;
-		PathAppend(reinterpret_cast<LPWSTR>(&airversion), constants[2].c_str());
+
+		std::wstring buffer_17a[MAX_PATH + 1] = { constants[2] };
+		std::wstring* lpStr17a;
+		lpStr17a = buffer_17a;
+
+		PathAppend(reinterpret_cast<LPWSTR>(&airversion), reinterpret_cast<LPWSTR>(&lpStr17a));
 #ifdef DEBUG
 		wprintf(reinterpret_cast<LPWSTR>(&airversion));
 #endif
