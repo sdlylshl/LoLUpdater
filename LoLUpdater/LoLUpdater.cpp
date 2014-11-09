@@ -24,7 +24,7 @@ bool done = false;
 // 5 = unblock tbb
 std::wstringstream pathcontainer[6];
 
-const std::wstring constants[3] = {L":Zone.Identifier", L"Adobe AIR\\Versions\\1.0", L"AIR\\"};
+const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 std::wstring* tbb = nullptr;
 std::wstring cwd(_wgetcwd(
 	nullptr,
@@ -493,16 +493,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&cgd3d9dest));
 #endif
-	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&airdest)) + std::wstring(constants[0].c_str()));
+	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&airdest)) + constants[0]);
 #ifdef DEBUG
 	wprintf(pathcontainer[3].str().c_str());
 #endif
 
-	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&flashdest)) + std::wstring(constants[0].c_str()));
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&flashdest)) + constants[0]);
 #ifdef DEBUG
 	wprintf(pathcontainer[4].str().c_str());
 #endif
-	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&tbb)) + std::wstring(constants[0].c_str()));
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&tbb)) + constants[0]);
 #ifdef DEBUG
 	wprintf(pathcontainer[5].str().c_str());
 #endif
