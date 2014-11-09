@@ -269,7 +269,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (garena.good())
 	{
 		version[0] = L"Game";
-		airversion[0] = constants[2] + constants[1];
+		std::wstring buffer_17[MAX_PATH] = { constants[1].c_str() };
+		std::wstring* airversion;
+		airversion = buffer_17;
+		PathAppend(reinterpret_cast<LPWSTR>(airversion), constants[2].c_str());
 	}
 
 	pathcontainer[3] << (pathcontainer[1].str() + std::wstring(reinterpret_cast<LPWSTR>(version)));
