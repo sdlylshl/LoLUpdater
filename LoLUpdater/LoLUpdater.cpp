@@ -8,8 +8,8 @@
 #include <Shlwapi.h>
 #include <direct.h>
 
-#ifndef VC_EXTRALEAN
-#define VC_EXTRALEAN
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #endif
 
 #ifndef UNICODE
