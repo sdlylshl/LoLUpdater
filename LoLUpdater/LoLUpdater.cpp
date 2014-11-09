@@ -131,14 +131,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ShowWindow(hwnd, nCmdShow);
 #ifdef DEBUG
+	SetConsoleOutputCP(CP_UTF8);
 	AllocConsole();
+	_wfreopen(L"CONOUT$", L"w", stdout);
 #endif
 	std::wstring buffer_1[MAX_PATH] = { L"projects" };
 	std::wstring* lpStr1;
 	lpStr1 = buffer_1;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr1), L"lol_air_client");
 #ifdef DEBUG
-	_wfreopen(L"projects+airclient", reinterpret_cast<LPWSTR>(buffer_1), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_1));
 #endif
 
 	std::wstring buffer_3[MAX_PATH] = { L"solutions" };
@@ -146,7 +148,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	lpStr3 = buffer_3;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr3), L"lol_game_client_sln");
 #ifdef DEBUG
-	_wfreopen(L"solutions + gameclient", reinterpret_cast<LPWSTR>(buffer_3), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_3));
 #endif
 
 	const std::wstring rads(L"RADS");
@@ -157,7 +159,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(buffer_1));
 #ifdef DEBUG
-	_wfreopen(L"rads+projects+airclient", reinterpret_cast<LPWSTR>(buffer_2), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_2));
 #endif
 	// game
 	std::wstring buffer_4[MAX_PATH] = { rads };
@@ -165,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	lpStr4 = buffer_4;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr4), reinterpret_cast<LPWSTR>(lpStr3));
 #ifdef DEBUG
-	_wfreopen(L"rads+solutions+gameclient", reinterpret_cast<LPWSTR>(buffer_4), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_4));
 #endif
 
 	const std::wstring rel(L"releases");
@@ -174,23 +176,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	gameclient = buffer_5;
 	PathAppend(reinterpret_cast<LPWSTR>(gameclient), rel.c_str());
 #ifdef DEBUG
-	_wfreopen(L"rads+solutions+gameclient+releases", reinterpret_cast<LPWSTR>(buffer_5), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_5));
 #endif
 	std::wstring buffer_6[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring* airclient;
 	airclient = buffer_6;
 	PathAppend(reinterpret_cast<LPWSTR>(airclient), rel.c_str());
 #ifdef DEBUG
-	_wfreopen(L"rads+projects+airclient+releases", reinterpret_cast<LPWSTR>(buffer_6), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_6));
 #endif
 	GetModuleFileName(nullptr, reinterpret_cast<LPWSTR>(&cwd[0]), MAX_PATH);
 #ifdef DEBUG
-	_wfreopen(L"naked working dir", reinterpret_cast<LPWSTR>(&cwd[0]), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(&cwd[0]));
 #endif
 	// 14 = length of "LoLUpdater.exe"
-	cwd[0].resize(cwd[0].length() - 14);
+	cwd.resize(cwd[0].length() - 14);
 #ifdef DEBUG
-	_wfreopen(L"just working dir", reinterpret_cast<LPWSTR>(&cwd[0]), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(&cwd[0]));
 #endif
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE = compact");
 	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
@@ -198,7 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH);
 #ifdef DEBUG
-	_wfreopen(L"naked cgbinpath env variable", reinterpret_cast<LPWSTR>(&cgbinpath[0]), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(&cgbinpath[0]));
 #endif
 	wcsncat_s(
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -207,19 +209,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 #ifdef DEBUG
-	_wfreopen(L"modified cgbinpath variable", reinterpret_cast<LPWSTR>(&cgbinpath[0]), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(&cgbinpath[0]));
 #endif
 
 	std::wstring progfiles = std::wstring(L":") + std::wstring(L"Program Files");
 	pathcontainer[1] << &cwd[0].c_str()[0] + progfiles;
 #ifdef DEBUG
-	_wfreopen(L"drive letter + progfiles", pathcontainer[1].str().c_str(), stdout);
+	wprintf(pathcontainer[1].str().c_str());
 #endif
 	if (sizeof(void*) == 4)
 	{
 		pathcontainer[1] << std::wstring(L" (x86)");
 #ifdef DEBUG
-		_wfreopen(L"progfiles + x86", pathcontainer[1].str().c_str(), stdout);
+		wprintf(pathcontainer[1].str().c_str());
 #endif
 	}
 
@@ -227,7 +229,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	pathcontainer[1] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + constants[2];
 #ifdef DEBUG
-	_wfreopen(L"progfiles + common + adobe + air + bla bla bla", pathcontainer[1].str().c_str(), stdout);
+	wprintf(pathcontainer[1].str().c_str());
 #endif
 	std::wstring adobepath[MAX_PATH];
 	PathCombine(
@@ -236,7 +238,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		constants[1].c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"final adobepath", reinterpret_cast<LPWSTR>(adobepath), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(adobepath));
 #endif
 	
 
@@ -248,7 +250,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cg.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"cg source file", reinterpret_cast<LPWSTR>(cgbin), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cgbin));
 #endif
 	const std::wstring cggl(L"CgGL.dll");
 	std::wstring cgglbin[MAX_PATH];
@@ -258,7 +260,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cggl.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"cggl source file", reinterpret_cast<LPWSTR>(cgglbin), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cgglbin));
 #endif
 	const std::wstring cgd3d9(L"CgD3D9.dll");
 	std::wstring cgd3d9bin[MAX_PATH];
@@ -268,7 +270,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"cgd3d source file", reinterpret_cast<LPWSTR>(cgd3d9bin), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cgd3d9bin));
 #endif
 
 	std::wstring buffer_7[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(buffer_5)) };
@@ -276,7 +278,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	random7 = buffer_7;
 	PathAppend(reinterpret_cast<LPWSTR>(random7), L"0.0.1.64");
 #ifdef DEBUG
-	_wfreopen(L"gameclient + version number", reinterpret_cast<LPWSTR>(random7), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(random7));
 #endif
 	const std::wstring dep(L"deploy");
 	std::wstring buffer_12[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(random7)) };
@@ -284,7 +286,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	version = buffer_12;
 	PathAppend(reinterpret_cast<LPWSTR>(version), dep.c_str());
 #ifdef DEBUG
-	_wfreopen(L"final game path", reinterpret_cast<LPWSTR>(version), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(version));
 #endif
 
 
@@ -294,14 +296,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	lpStr14 = buffer_14;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr14), L"0.0.1.117");
 #ifdef DEBUG
-	_wfreopen(L"airclient + version", reinterpret_cast<LPWSTR>(buffer_14), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_14));
 #endif
 	std::wstring buffer_13[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(buffer_14)) };
 	std::wstring* lpStr13;
 	lpStr13 = buffer_13;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr13), dep.c_str());
 #ifdef DEBUG
-	_wfreopen(L"airclient + version + deploy", reinterpret_cast<LPWSTR>(buffer_13), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_13));
 #endif
 
 
@@ -310,7 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	airversion = buffer_15;
 	PathAppend(reinterpret_cast<LPWSTR>(airversion), reinterpret_cast<LPWSTR>(lpStr13));
 #ifdef DEBUG
-	_wfreopen(L"final air path", reinterpret_cast<LPWSTR>(buffer_15), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(buffer_15));
 #endif
 
 
@@ -319,36 +321,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (garena.good())
 	{
 #ifdef DEBUG
-		_wfreopen(L"this is garena", reinterpret_cast<LPWSTR>(garena.good()), stdout);
+		wprintf(reinterpret_cast<LPWSTR>(garena.good()));
 #endif
 		version[0].clear();
 #ifdef DEBUG
-		_wfreopen(L"is buffer cleared?", reinterpret_cast<LPWSTR>(version), stdout);
+		wprintf(reinterpret_cast<LPWSTR>(version));
 #endif
 		airversion[0].clear();
 #ifdef DEBUG
-		_wfreopen(L"is buffer cleared?", reinterpret_cast<LPWSTR>(airversion), stdout);
+		wprintf(reinterpret_cast<LPWSTR>(airversion));
 #endif
 		version[0] = L"Game";
 #ifdef DEBUG
-		_wfreopen(L"garena game path", reinterpret_cast<LPWSTR>(version), stdout);
+		wprintf(reinterpret_cast<LPWSTR>(version));
 #endif
 		std::wstring buffer_17[MAX_PATH] = { constants[1].c_str() };
 		std::wstring* airversion;
 		airversion = buffer_17;
 		PathAppend(reinterpret_cast<LPWSTR>(airversion), constants[2].c_str());
 #ifdef DEBUG
-		_wfreopen(L"garena air path", reinterpret_cast<LPWSTR>(airversion), stdout);
+		wprintf(reinterpret_cast<LPWSTR>(airversion));
 #endif
 	}
 
 	pathcontainer[2] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) + std::wstring(reinterpret_cast<LPWSTR>(buffer_12)));
 #ifdef DEBUG
-	_wfreopen(L"current working directory + app.exe", pathcontainer[2].str().c_str(), stdout);
+	wprintf(pathcontainer[2].str().c_str());
 #endif
 	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) + std::wstring(reinterpret_cast<LPWSTR>(buffer_15)));
 #ifdef DEBUG
-	_wfreopen(L"current working directory", pathcontainer[3].str().c_str(), stdout);
+	wprintf(pathcontainer[3].str().c_str());
 #endif
 
 	PathCombine(
@@ -357,7 +359,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		L"tbb.dll"
 		);
 #ifdef DEBUG
-	_wfreopen(L"tbb path", reinterpret_cast<LPWSTR>(tbb), stdout);
+	wprintf(L"tbb path", reinterpret_cast<LPWSTR>(tbb));
 #endif
 	const std::wstring air(L"Adobe AIR.dll");
 	std::wstring airdest[MAX_PATH];
@@ -367,7 +369,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		air.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"where adobe air.dll will be copied to", reinterpret_cast<LPWSTR>(airdest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(airdest));
 #endif
 	std::wstring airlatest[MAX_PATH];
 	PathCombine(
@@ -376,7 +378,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		air.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"where the latest adobe air dll is", reinterpret_cast<LPWSTR>(airlatest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(airlatest));
 #endif
 
 	std::wstring buffer_11[MAX_PATH] = { L"Resources" };
@@ -385,7 +387,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	PathAppend(reinterpret_cast<LPWSTR>(flash), L"NPSWF32.dll");
 #ifdef DEBUG
-	_wfreopen(L"should say Resouces\\npswf32.dll", reinterpret_cast<LPWSTR>(flash), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(flash));
 #endif
 
 	std::wstring flashdest[MAX_PATH];
@@ -395,7 +397,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(flash)
 		);
 #ifdef DEBUG
-	_wfreopen(L"where flash will be copied to", reinterpret_cast<LPWSTR>(flashdest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(flashdest));
 #endif
 
 	std::wstring flashlatest[MAX_PATH];
@@ -405,7 +407,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(flash)
 		);
 #ifdef DEBUG
-	_wfreopen(L"where the latest flash dll is located", reinterpret_cast<LPWSTR>(flashlatest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(flashlatest));
 #endif
 
 	std::wstring cgdest[MAX_PATH];
@@ -415,7 +417,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cg.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"where cg will be copied to", reinterpret_cast<LPWSTR>(cgdest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cgdest));
 #endif
 
 	std::wstring cggldest[MAX_PATH];
@@ -425,7 +427,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cggl.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"where cggl will be copied to", reinterpret_cast<LPWSTR>(cggldest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cggldest));
 #endif
 	std::wstring cgd3d9dest[MAX_PATH];
 	PathCombine(
@@ -434,20 +436,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9.c_str()
 		);
 #ifdef DEBUG
-	_wfreopen(L"where cgd3d9 will be copied to", reinterpret_cast<LPWSTR>(cgd3d9dest), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(cgd3d9dest));
 #endif
 	pathcontainer[4] << (std::wstring(reinterpret_cast<LPWSTR>(airdest))+constants[0]);
 #ifdef DEBUG
-	_wfreopen(L"adobe air dll + unblock", pathcontainer[4].str().c_str(), stdout);
+	wprintf(pathcontainer[4].str().c_str());
 #endif
 
 	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(flashdest))+constants[0]);
 #ifdef DEBUG
-	_wfreopen(L"flash + unblock", pathcontainer[5].str().c_str(), stdout);
+	wprintf(pathcontainer[5].str().c_str());
 #endif
 	pathcontainer[6] << (std::wstring(reinterpret_cast<LPWSTR>(tbb))+constants[0]);
 #ifdef DEBUG
-	_wfreopen(L"tbb + unblock", pathcontainer[6].str().c_str(), stdout);
+	wprintf(pathcontainer[6].str().c_str());
 #endif
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
@@ -456,7 +458,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 #ifdef DEBUG
-		_wfreopen(L"IsXP", reinterpret_cast<LPWSTR>((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1)), stdout);
+		wprintf(reinterpret_cast<LPWSTR>((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1)));
 #endif
 		tbbdownload(L"Xp.dll");
 	}
@@ -473,7 +475,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (((abcd[2] & fma_movbe_osxsave_mask) == fma_movbe_osxsave_mask) || /* ((xcr0 & 6) == 6) || */ ((abcd[1] & avx2_bmi12_mask) == avx2_bmi12_mask) || ((abcd[2] & (1 << 5)) != 0))
 		{
 #ifdef DEBUG
-			_wfreopen(L"IsAVX2", reinterpret_cast<LPWSTR>(((abcd[2] & fma_movbe_osxsave_mask) == fma_movbe_osxsave_mask) || /* ((xcr0 & 6) == 6) || */ ((abcd[1] & avx2_bmi12_mask) == avx2_bmi12_mask) || ((abcd[2] & (1 << 5)) != 0)), stdout);
+			wprintf(reinterpret_cast<LPWSTR>(((abcd[2] & fma_movbe_osxsave_mask) == fma_movbe_osxsave_mask) || /* ((xcr0 & 6) == 6) || */ ((abcd[1] & avx2_bmi12_mask) == avx2_bmi12_mask) || ((abcd[2] & (1 << 5)) != 0)));
 #endif
 			tbbdownload(L"Avx2.dll");
 		}
@@ -484,7 +486,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
 #ifdef DEBUG
-				_wfreopen(L"IsAVX", reinterpret_cast<LPWSTR>((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false)), stdout);
+				wprintf(reinterpret_cast<LPWSTR>((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false)));
 #endif
 				tbbdownload(L"Avx.dll");
 			}
@@ -493,7 +495,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
 #ifdef DEBUG
-					_wfreopen(L"IsSSE2", reinterpret_cast<LPWSTR>(IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE)), stdout);
+					wprintf(reinterpret_cast<LPWSTR>(IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE)));
 #endif
 					tbbdownload(L"Sse2.dll");
 				}
@@ -502,7 +504,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
 #ifdef DEBUG
-						_wfreopen(L"IsSSE", reinterpret_cast<LPWSTR>(IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE)), stdout);
+						wprintf(reinterpret_cast<LPWSTR>(IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE)));
 #endif
 						tbbdownload(L"Sse.dll");
 					}
@@ -523,7 +525,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(reinterpret_cast<LPWSTR>(cgd3d9bin), reinterpret_cast<LPWSTR>(cgd3d9dest), false);
 	std::wstring unblocks[3] = { pathcontainer[4].str(), pathcontainer[5].str(), pathcontainer[6].str() };
 #ifdef DEBUG
-	_wfreopen(L"collection of file to be unblocked (3 files)", reinterpret_cast<LPWSTR>(unblocks), stdout);
+	wprintf(reinterpret_cast<LPWSTR>(unblocks));
 #endif
 	for (std::wstring i : unblocks)
 	{
