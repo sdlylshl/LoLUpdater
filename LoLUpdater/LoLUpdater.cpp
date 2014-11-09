@@ -35,7 +35,7 @@ const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
 RECT end = { 0, 100, 100, 120 };
 
-void download(const std::wstring& url, const std::wstring& file, const std::wstring& args)
+void download(std::wstring url, std::wstring file, std::wstring args)
 {
 	HRESULT hRez = URLDownloadToFile(
 		nullptr,
@@ -47,8 +47,6 @@ void download(const std::wstring& url, const std::wstring& file, const std::wstr
 
 	if (hRez == 0)
 	{
-
-
 		std::wstring unblocker[MAX_PATH];
 		std::wstring *unblocker1;
 		unblocker1 = unblocker;
@@ -71,7 +69,7 @@ void download(const std::wstring& url, const std::wstring& file, const std::wstr
 			);
 
 
-		pathcontainer[0] << (std::wstring(unblocker[0].c_str()) + std::wstring(constants[0]));
+		pathcontainer[0] << (std::wstring(reinterpret_cast<LPWSTR>(unblocker)) + std::wstring(constants[0]));
 
 		DeleteFile(pathcontainer[0].str().c_str());
 		pathcontainer[0].str(std::wstring());
