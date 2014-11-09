@@ -256,39 +256,100 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	pathcontainer[0] << std::wstring(L"\\Common Files\\");
 
-	std::wstring* adobepath[MAX_PATH];
+	std::wstring adobepath[MAX_PATH];
+	std::wstring *adobepath1;
+	adobepath1 = adobepath;
+
+	// String for balance of path name.
+	std::wstring asd[] = { pathcontainer[0].str() };
+	std::wstring *asd1;
+	asd1 = asd;
+
+	// String for directory name.
+	std::wstring asd2[] = { constants[1] };
+	std::wstring *asd21;
+	asd21 = asd2;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(adobepath),
-		pathcontainer[0].str().c_str(),
-		constants[1].c_str()
+		reinterpret_cast<LPWSTR>(asd1),
+		reinterpret_cast<LPWSTR>(asd21)
 		);
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(adobepath));
 #endif
 
 
 	const std::wstring cg(L"Cg.dll");
-	std::wstring* cgbin[MAX_PATH];
+
+
+
+	std::wstring cgbin[MAX_PATH];
+	std::wstring *cgbin1;
+	cgbin1 = cgbin;
+
+	// String for balance of path name.
+	std::wstring asd233[] = { std::wstring(reinterpret_cast<LPWSTR>(&cgbinpath[0])) };
+	std::wstring *asd12;
+	asd12 = asd233;
+
+	// String for directory name.
+	std::wstring asd23[] = { cg };
+	std::wstring *asd213;
+	asd213 = asd23;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgbin),
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		cg.c_str()
+		reinterpret_cast<LPWSTR>(asd12),
+		reinterpret_cast<LPWSTR>(asd213)
 		);
+
+
+
+
+
 
 	const std::wstring cggl(L"CgGL.dll");
-	std::wstring* cgglbin[MAX_PATH];
+
+	std::wstring cgglbin[MAX_PATH];
+	std::wstring *cgglbin1;
+	cgglbin1 = cgglbin;
+
+
+	// String for directory name.
+	std::wstring asd232[] = { cggl };
+	std::wstring *asd2132;
+	asd2132 = asd232;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgglbin),
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		cggl.c_str()
+		reinterpret_cast<LPWSTR>(asd12),
+		reinterpret_cast<LPWSTR>(asd2132)
 		);
 
+
+
+
 	const std::wstring cgd3d9(L"CgD3D9.dll");
-	std::wstring* cgd3d9bin[MAX_PATH];
+	std::wstring cgd3d9bin[MAX_PATH];
+	std::wstring *cgd3d9bin1;
+	cgd3d9bin1 = cgd3d9bin;
+
+
+	// String for directory name.
+	std::wstring asd2322[] = { cgd3d9 };
+	std::wstring *asd21321;
+	asd21321 = asd2322;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9bin),
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		cgd3d9.c_str()
+		reinterpret_cast<LPWSTR>(asd12),
+		reinterpret_cast<LPWSTR>(asd21321)
 		);
 
 	std::wstring buffer_7[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
@@ -396,30 +457,80 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(pathcontainer[2].str().c_str());
 #endif
 
+
+
+
+	// String for balance of path name.
+	std::wstring asdaa[] = { pathcontainer[1].str() };
+	std::wstring *asd1aa;
+	asd1aa = asdaa;
+
+	// String for directory name.
+	std::wstring asd2bb[] = { std::wstring(L"tbb.dll") };
+	std::wstring *asd21bb;
+	asd21bb = asd2bb;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(tbb),
-		pathcontainer[1].str().c_str(),
-		L"tbb.dll"
+		reinterpret_cast<LPWSTR>(asd1aa),
+		reinterpret_cast<LPWSTR>(asd21bb)
 		);
+
+
+
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(tbb));
 #endif
 	const std::wstring air(L"Adobe AIR.dll");
-	std::wstring* airdest[MAX_PATH];
+	std::wstring airdest[MAX_PATH];
+	std::wstring *airdest1;
+	airdest1 = airdest;
+
+	// String for balance of path name.
+	std::wstring asdcc[] = { pathcontainer[2].str() };
+	std::wstring *asd1cc;
+	asd1cc = asdcc;
+
+	// String for directory name.
+	std::wstring asd2cc[] = { air };
+	std::wstring *asd21cc;
+	asd21cc = asd2cc;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airdest),
-		pathcontainer[2].str().c_str(),
-		air.c_str()
+		reinterpret_cast<LPWSTR>(asdcc),
+		reinterpret_cast<LPWSTR>(asd21cc)
 		);
+
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(airdest));
 #endif
-	std::wstring* airlatest[MAX_PATH];
+	std::wstring  airlatest[MAX_PATH];
+	std::wstring * airlatest1;
+	airlatest1 = airlatest;
+
+	// String for balance of path name.
+	std::wstring asdccdd[] = { std::wstring(reinterpret_cast<LPWSTR>(adobepath)) };
+	std::wstring *asd1ccdd;
+	asd1ccdd = asdccdd;
+
+	// String for directory name.
+	std::wstring asd2ccqq[] = { air };
+	std::wstring *asd21ccqq;
+	asd21ccqq = asd2ccqq;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airlatest),
-		reinterpret_cast<LPWSTR>(adobepath),
-		air.c_str()
+		reinterpret_cast<LPWSTR>(asd1ccdd),
+		reinterpret_cast<LPWSTR>(asd21ccqq)
 		);
+
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(airlatest));
 #endif
@@ -437,51 +548,129 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(flash));
 #endif
 
-	std::wstring* flashdest[MAX_PATH];
+	std::wstring  flashdest[MAX_PATH];
+	std::wstring * flashdest1;
+	flashdest1 = flashdest;
+
+	// String for balance of path name.
+	std::wstring asdccddqq[] = { pathcontainer[2].str() };
+	std::wstring *asd1ccddqq;
+	asd1ccddqq = asdccddqq;
+
+	// String for directory name.
+	std::wstring asd2ccqqqq[] = { std::wstring(reinterpret_cast<LPWSTR>(flash)) };
+	std::wstring *asd21ccqqqq;
+	asd21ccqqqq = asd2ccqqqq;
+
+
 	PathCombine(
-		reinterpret_cast<LPWSTR>(flashdest),
-		pathcontainer[2].str().c_str(),
-		reinterpret_cast<LPWSTR>(flash)
+		reinterpret_cast<LPWSTR>(airlatest),
+		reinterpret_cast<LPWSTR>(asd1ccddqq),
+		reinterpret_cast<LPWSTR>(asd21ccqqqq)
 		);
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(flashdest));
 #endif
 
-	std::wstring* flashlatest[MAX_PATH];
+	std::wstring flashlatest[MAX_PATH];
+	std::wstring * flashlatest1;
+	flashlatest1 = flashlatest;
+
+	// String for balance of path name.
+	std::wstring asdccddqqqq[] = { std::wstring(reinterpret_cast<LPWSTR>(adobepath)) };
+	std::wstring *asd1ccddqqqq;
+	asd1ccddqqqq = asdccddqqqq;
+
+	// String for directory name.
+	std::wstring asd2ccqqqqqq[] = { std::wstring(reinterpret_cast<LPWSTR>(flash)) };
+	std::wstring *asd21ccqqqqqq;
+	asd21ccqqqqqq = asd2ccqqqqqq;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashlatest),
-		reinterpret_cast<LPWSTR>(adobepath),
-		reinterpret_cast<LPWSTR>(flash)
+		reinterpret_cast<LPWSTR>(asd1ccddqqqq),
+		reinterpret_cast<LPWSTR>(asd21ccqqqqqq)
 		);
+
+
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(flashlatest));
 #endif
 
-	std::wstring* cgdest[MAX_PATH];
+	std::wstring cgdest[MAX_PATH];
+	std::wstring * cgdest1;
+	cgdest1 = cgdest;
+
+	// String for balance of path name.
+	std::wstring asdccddqqqqqq[] = { pathcontainer[1].str() };
+	std::wstring *asd1ccddqqqqqq;
+	asd1ccddqqqqqq = asdccddqqqqqq;
+
+	// String for directory name.
+	std::wstring asd2ccqqqqqqqq[] = { cg };
+	std::wstring *asd21ccqqqqqqqq;
+	asd21ccqqqqqqqq = asd2ccqqqqqqqq;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgdest),
-		pathcontainer[1].str().c_str(),
-		cg.c_str()
+		reinterpret_cast<LPWSTR>(asd1ccddqqqqqq),
+		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqq)
 		);
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(cgdest));
 #endif
 
-	std::wstring* cggldest[MAX_PATH];
+	std::wstring cggldest[MAX_PATH];
+	std::wstring *cggldest1;
+	cggldest1 = cggldest;
+
+	// String for balance of path name.
+	std::wstring asdccddqqqqqqqq[] = { pathcontainer[1].str() };
+	std::wstring *asd1ccddqqqqqqqq;
+	asd1ccddqqqqqqqq = asdccddqqqqqqqq;
+
+	// String for directory name.
+	std::wstring asd2ccqqqqqqqqqq[] = { cggl };
+	std::wstring *asd21ccqqqqqqqqqq;
+	asd21ccqqqqqqqqqq = asd2ccqqqqqqqqqq;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cggldest),
-		pathcontainer[1].str().c_str(),
-		cggl.c_str()
+		reinterpret_cast<LPWSTR>(asd1ccddqqqqqqqq),
+		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqqqq)
 		);
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(cggldest));
 #endif
-	std::wstring* cgd3d9dest[MAX_PATH];
+	std::wstring cgd3d9dest[MAX_PATH];
+	std::wstring *cgd3d9dest1;
+	cgdest1 = cgdest;
+
+	// String for balance of path name.
+	std::wstring asdccddqqqqqqqqw[] = { pathcontainer[1].str() };
+	std::wstring *asd1ccddqqqqqqqqw;
+	asd1ccddqqqqqqqqw = asdccddqqqqqqqqw;
+
+	// String for directory name.
+	std::wstring asd2ccqqqqqqqqqqa[] = { cgd3d9 };
+	std::wstring *asd21ccqqqqqqqqqqa;
+	asd21ccqqqqqqqqqqa = asd2ccqqqqqqqqqqa;
+
+
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9dest),
-		pathcontainer[1].str().c_str(),
-		cgd3d9.c_str()
+		reinterpret_cast<LPWSTR>(asd1ccddqqqqqqqqw),
+		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqqqqa)
 		);
+
+
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(cgd3d9dest));
 #endif
