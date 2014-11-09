@@ -38,7 +38,7 @@ void download(std::wstring fromurl, std::wstring dest, std::wstring args)
 		nullptr
 		);
 	std::wstring *unblocker = nullptr;
-	PathCombine(reinterpret_cast<LPWSTR>(unblocker), reinterpret_cast<LPWSTR>(&cwd[0]), dest.c_str());
+	PathCombine(reinterpret_cast<LPWSTR>(&unblocker), reinterpret_cast<LPWSTR>(&cwd[0]), dest.c_str());
 	pathcontainer[0] << (reinterpret_cast<LPWSTR>(&unblocker) + constants[0]);
 	DeleteFile(pathcontainer[0].str().c_str());
 	pathcontainer[0].str(std::wstring());
