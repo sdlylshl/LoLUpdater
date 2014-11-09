@@ -21,7 +21,7 @@ bool done = false;
 // 7 = unblock tbb
 
 std::wstringstream pathcontainer[8];
-const std::wstring constants[2] = { L":Zone.Identifier", L"Adobe AIR\\Versions\\1.0" };
+const std::wstring constants[3] = { L":Zone.Identifier", L"Adobe AIR\\Versions\\1.0", L"AIR\\" };
 std::wstring* tbb = nullptr;
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
@@ -200,7 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	pathcontainer[2] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + std::wstring(L"AIR\\");
+	pathcontainer[2] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + constants[2];
 
 	std::wstring adobepath[MAX_PATH];
 	PathCombine(
@@ -269,7 +269,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (garena.good())
 	{
 		version[0] = L"Game";
-		airversion[0] = constants[2];
+		airversion[0] = constants[2] + constants[1];
 	}
 
 	pathcontainer[3] << (pathcontainer[1].str() + std::wstring(reinterpret_cast<LPWSTR>(version)));
