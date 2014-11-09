@@ -268,6 +268,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (garena.good())
 	{
+		version[0].clear();
+		airversion[0].clear();
 		version[0] = L"Game";
 		std::wstring buffer_17[MAX_PATH] = { constants[1].c_str() };
 		std::wstring* airversion;
