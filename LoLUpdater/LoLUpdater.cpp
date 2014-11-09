@@ -164,7 +164,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr1a;
 	lpStr1a = buffer_1a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr1), reinterpret_cast<LPWSTR>(&lpStr1a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr1), reinterpret_cast<LPWSTR>(lpStr1a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr1));
 #endif
@@ -177,9 +177,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr3a;
 	lpStr3a = buffer_3a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr3), reinterpret_cast<LPWSTR>(&lpStr3a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr3), reinterpret_cast<LPWSTR>(lpStr3a));
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(&lpStr3));
+	wprintf(reinterpret_cast<LPWSTR>(lpStr3));
 #endif
 
 	const std::wstring rads(L"RADS");
@@ -192,7 +192,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr2a;
 	lpStr2a = buffer_2a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr2), reinterpret_cast<LPWSTR>(&lpStr2a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr2a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr2));
 #endif
@@ -205,7 +205,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr4a;
 	lpStr4a = buffer_4a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr4), reinterpret_cast<LPWSTR>(&lpStr4a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr4), reinterpret_cast<LPWSTR>(lpStr4a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr4));
 #endif
@@ -218,14 +218,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr5a;
 	lpStr5a = buffer_5a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&gameclient), reinterpret_cast<LPWSTR>(&lpStr5a));
+	PathAppend(reinterpret_cast<LPWSTR>(gameclient), reinterpret_cast<LPWSTR>(lpStr5a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(gameclient));
 #endif
 	std::wstring buffer_6[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring* airclient;
 	airclient = buffer_6;
-	PathAppend(reinterpret_cast<LPWSTR>(&airclient), reinterpret_cast<LPWSTR>(&lpStr5a));
+	PathAppend(reinterpret_cast<LPWSTR>(airclient), reinterpret_cast<LPWSTR>(lpStr5a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(airclient));
 #endif
@@ -317,9 +317,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	lpStr7a = buffer_7a;
 
 
-	PathAppend(reinterpret_cast<LPWSTR>(&random7), reinterpret_cast<LPWSTR>(&lpStr7a));
+	PathAppend(reinterpret_cast<LPWSTR>(random7), reinterpret_cast<LPWSTR>(lpStr7a));
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(&random7));
+	wprintf(reinterpret_cast<LPWSTR>(random7));
 #endif
 	std::wstring buffer_12[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(random7)) };
 	std::wstring* version;
@@ -330,7 +330,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr12a;
 	lpStr12a = buffer_12a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&version), reinterpret_cast<LPWSTR>(&lpStr12a));
+	PathAppend(reinterpret_cast<LPWSTR>(version), reinterpret_cast<LPWSTR>(lpStr12a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(version));
 #endif
@@ -344,14 +344,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr14a;
 	lpStr14a = buffer_14a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr14), reinterpret_cast<LPWSTR>(&lpStr14a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr14), reinterpret_cast<LPWSTR>(lpStr14a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr14));
 #endif
 	std::wstring buffer_13[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr14)) };
 	std::wstring* lpStr13;
 	lpStr13 = buffer_13;
-	PathAppend(reinterpret_cast<LPWSTR>(&lpStr13), reinterpret_cast<LPWSTR>(&lpStr12a));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr13), reinterpret_cast<LPWSTR>(lpStr12a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr13));
 #endif
@@ -365,7 +365,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr15a;
 	lpStr15a = buffer_15a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&airversion), reinterpret_cast<LPWSTR>(&lpStr15a));
+	PathAppend(reinterpret_cast<LPWSTR>(airversion), reinterpret_cast<LPWSTR>(lpStr15a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(airversion));
 #endif
@@ -398,7 +398,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		std::wstring* lpStr17a;
 		lpStr17a = buffer_17a;
 
-		PathAppend(reinterpret_cast<LPWSTR>(airversion), reinterpret_cast<LPWSTR>(&lpStr17a));
+		PathAppend(reinterpret_cast<LPWSTR>(airversion), reinterpret_cast<LPWSTR>(lpStr17a));
 #ifdef DEBUG
 		wprintf(reinterpret_cast<LPWSTR>(airversion));
 #endif
@@ -449,7 +449,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* flasha;
 	flasha = buffer_11a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(&flash), reinterpret_cast<LPWSTR>(&flasha));
+	PathAppend(reinterpret_cast<LPWSTR>(flash), reinterpret_cast<LPWSTR>(flasha));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(flash));
 #endif
@@ -560,7 +560,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(reinterpret_cast<LPWSTR>(cgbin), reinterpret_cast<LPWSTR>(cgdest), false);
 	CopyFile(reinterpret_cast<LPWSTR>(cgglbin), reinterpret_cast<LPWSTR>(cggldest), false);
 	CopyFile(reinterpret_cast<LPWSTR>(cgd3d9bin), reinterpret_cast<LPWSTR>(cgd3d9dest), false);
-	std::wstring unblocks[3] = {pathcontainer[3].str(), pathcontainer[4].str(), pathcontainer[5].str()};
+	std::wstring unblocks[3] = { std::wstring(pathcontainer[3].str().c_str()), std::wstring(pathcontainer[4].str().c_str()), std::wstring(pathcontainer[5].str().c_str()) };
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(unblocks));
 #endif
