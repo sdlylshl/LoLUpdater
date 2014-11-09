@@ -43,6 +43,9 @@
     <OutDir>C:\Riot Games\League of Legends</OutDir>
     <IntDir>C:\Riot Games\League of Legends</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>C:\Riot Games\League of Legends</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
@@ -94,6 +97,7 @@
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>Urlmon.Lib;Shlwapi.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
