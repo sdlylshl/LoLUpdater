@@ -153,11 +153,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	const std::wstring rel(L"releases");
-	std::wstring buffer_5[MAX_PATH] = { reinterpret_cast<LPWSTR>(lpStr4) };
+	std::wstring buffer_5[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr4)) };
 	std::wstring *gameclient;
 	gameclient = buffer_5;
 	PathAppend(reinterpret_cast<LPWSTR>(gameclient), rel.c_str());
-	std::wstring buffer_6[MAX_PATH] = { reinterpret_cast<LPWSTR>(lpStr2) };
+	std::wstring buffer_6[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring *airclient;
 	airclient = buffer_6;
 	PathAppend(reinterpret_cast<LPWSTR>(airclient), rel.c_str());
@@ -221,26 +221,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 
-	std::wstring buffer_7[MAX_PATH] = { reinterpret_cast<LPWSTR>(gameclient) };
+	std::wstring buffer_7[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
 	std::wstring *random7;
 	random7 = buffer_7;
 
 	PathAppend(reinterpret_cast<LPWSTR>(random7), L"0.0.1.64");
 
-	std::wstring buffer_8[MAX_PATH] = { reinterpret_cast<LPWSTR>(gameclient) };
+	std::wstring buffer_8[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
 	std::wstring *version;
 	version = buffer_8;
 
 	PathAppend(reinterpret_cast<LPWSTR>(random7), constants[1].c_str());
 
 
-	std::wstring buffer_9[MAX_PATH] = { reinterpret_cast<LPWSTR>(airclient) };
+	std::wstring buffer_9[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(airclient)) };
 	std::wstring *random9;
 	random9 = buffer_9;
 
 	PathAppend(reinterpret_cast<LPWSTR>(random9), L"0.0.1.117");
 
-	std::wstring buffer_10[MAX_PATH] = { reinterpret_cast<LPWSTR>(random9) };
+	std::wstring buffer_10[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(random9)) };
 	std::wstring *airversion;
 	airversion = buffer_10;
 
@@ -255,8 +255,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		airversion[0] = constants[2];
 	}
 
-	pathcontainer[3] << (pathcontainer[1].str() + reinterpret_cast<LPWSTR>(version));
-	pathcontainer[4] << (pathcontainer[1].str() + reinterpret_cast<LPWSTR>(airversion));
+	pathcontainer[3] << (pathcontainer[1].str() + std::wstring(reinterpret_cast<LPWSTR>(version)));
+	pathcontainer[4] << (pathcontainer[1].str() + std::wstring(reinterpret_cast<LPWSTR>(airversion)));
 
 
 	PathCombine(
@@ -281,7 +281,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 
-	std::wstring buffer_11[MAX_PATH] = { reinterpret_cast<LPWSTR>(L"Resources") };
+	std::wstring buffer_11[MAX_PATH] = { L"Resources" };
 	std::wstring *flash;
 	flash = buffer_11;
 
@@ -324,12 +324,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9.c_str()
 		);
 
-	pathcontainer[5] << (reinterpret_cast<LPWSTR>(airdest)+constants[0]);
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(airdest))+constants[0]);
 
 
-	pathcontainer[6] << (reinterpret_cast<LPWSTR>(flashdest)+constants[0]);
+	pathcontainer[6] << (std::wstring(reinterpret_cast<LPWSTR>(flashdest))+constants[0]);
 
-	pathcontainer[7] << (reinterpret_cast<LPWSTR>(tbb)+constants[0]);
+	pathcontainer[7] << (std::wstring(reinterpret_cast<LPWSTR>(tbb))+constants[0]);
 
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
