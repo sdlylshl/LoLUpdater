@@ -75,7 +75,7 @@ void download(const std::wstring& url, const std::wstring& file, const std::wstr
 
 void tbbdownload(const std::wstring& file)
 {
-	std::wstring* ftp[MAX_PATH + 1];
+	std::wstring* ftp[MAX_PATH];
 
 	UrlCombine(
 		L"http://lol.jdhpro.com/",
@@ -156,11 +156,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	AllocConsole();
 	_wfreopen(L"CONOUT$", L"w", stdout);
 #endif
-	std::wstring buffer_1[MAX_PATH + 1] = {std::wstring(L"projects")};
+	std::wstring buffer_1[MAX_PATH] = {std::wstring(L"projects")};
 	std::wstring* lpStr1;
 	lpStr1 = buffer_1;
 
-	std::wstring buffer_1a[MAX_PATH + 1] = { std::wstring(L"lol_air_client") };
+	std::wstring buffer_1a[] = { std::wstring(L"lol_air_client") };
 	std::wstring* lpStr1a;
 	lpStr1a = buffer_1a;
 
@@ -169,11 +169,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(lpStr1));
 #endif
 
-	std::wstring buffer_3[MAX_PATH + 1] = { std::wstring(L"solutions") };
+	std::wstring buffer_3[MAX_PATH] = { std::wstring(L"solutions") };
 	std::wstring* lpStr3;
 	lpStr3 = buffer_3;
 
-	std::wstring buffer_3a[MAX_PATH + 1] = { std::wstring(L"lol_game_client_sln") };
+	std::wstring buffer_3a[] = { std::wstring(L"lol_game_client_sln") };
 	std::wstring* lpStr3a;
 	lpStr3a = buffer_3a;
 
@@ -184,11 +184,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	const std::wstring rads(L"RADS");
 	// air
-	std::wstring buffer_2[MAX_PATH + 1] = {rads};
+	std::wstring buffer_2[MAX_PATH] = {rads};
 	std::wstring* lpStr2;
 	lpStr2 = buffer_2;
 
-	std::wstring buffer_2a[MAX_PATH + 1] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr1))};
+	std::wstring buffer_2a[] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr1))};
 	std::wstring* lpStr2a;
 	lpStr2a = buffer_2a;
 
@@ -197,11 +197,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(lpStr2));
 #endif
 	// game
-	std::wstring buffer_4[MAX_PATH + 1] = {rads};
+	std::wstring buffer_4[MAX_PATH] = {rads};
 	std::wstring* lpStr4;
 	lpStr4 = buffer_4;
 
-	std::wstring buffer_4a[MAX_PATH + 1] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr3))};
+	std::wstring buffer_4a[] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr3))};
 	std::wstring* lpStr4a;
 	lpStr4a = buffer_4a;
 
@@ -210,11 +210,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(lpStr4));
 #endif
 
-	std::wstring buffer_5[MAX_PATH + 1] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr4))};
+	std::wstring buffer_5[MAX_PATH] = {std::wstring(reinterpret_cast<LPWSTR>(lpStr4))};
 	std::wstring* gameclient;
 	gameclient = buffer_5;
 
-	std::wstring buffer_5a[MAX_PATH + 1] = { std::wstring(L"releases") };
+	std::wstring buffer_5a[] = { std::wstring(L"releases") };
 	std::wstring* lpStr5a;
 	lpStr5a = buffer_5a;
 
@@ -222,7 +222,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(gameclient));
 #endif
-	std::wstring buffer_6[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
+	std::wstring buffer_6[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring* airclient;
 	airclient = buffer_6;
 	PathAppend(reinterpret_cast<LPWSTR>(airclient), reinterpret_cast<LPWSTR>(lpStr5a));
@@ -232,16 +232,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE = compact");
-	std::vector<std::wstring> cgbinpath(MAX_PATH + 1, std::wstring());
+	std::vector<std::wstring> cgbinpath(MAX_PATH , std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 	                       reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-	                       MAX_PATH + 1);
+	                       MAX_PATH );
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&cgbinpath[0]));
 #endif
 	wcsncat_s(
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		MAX_PATH + 1,
+		MAX_PATH ,
 		L"\\",
 		_TRUNCATE
 	);
@@ -262,11 +262,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	pathcontainer[0] << (std::wstring(L"\\Common Files\\Adobe ") + constants[2]);
-#ifdef DEBUG
-	wprintf(pathcontainer[0].str().c_str());
-#endif
-	std::wstring *adobepath[MAX_PATH + 1];
+	pathcontainer[0] << std::wstring(L"\\Common Files\\");
+
+	std::wstring *adobepath[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(adobepath),
 		pathcontainer[0].str().c_str(),
@@ -278,7 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	const std::wstring cg(L"Cg.dll");
-	std::wstring *cgbin[MAX_PATH + 1];
+	std::wstring *cgbin[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -288,7 +286,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgbin));
 #endif
 	const std::wstring cggl(L"CgGL.dll");
-	std::wstring* cgglbin[MAX_PATH + 1];
+	std::wstring* cgglbin[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgglbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -298,7 +296,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgglbin));
 #endif
 	const std::wstring cgd3d9(L"CgD3D9.dll");
-	std::wstring* cgd3d9bin[MAX_PATH + 1];
+	std::wstring* cgd3d9bin[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9bin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -308,11 +306,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgd3d9bin));
 #endif
 
-	std::wstring buffer_7[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
+	std::wstring buffer_7[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
 	std::wstring* random7;
 	random7 = buffer_7;
 
-	std::wstring buffer_7a[MAX_PATH + 1] = {std::wstring(L"0.0.1.64")};
+	std::wstring buffer_7a[] = {std::wstring(L"0.0.1.64")};
 	std::wstring* lpStr7a;
 	lpStr7a = buffer_7a;
 
@@ -321,12 +319,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(random7));
 #endif
-	std::wstring buffer_12[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(random7)) };
+	std::wstring buffer_12[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(random7)) };
 	std::wstring* version;
 	version = buffer_12;
 
 
-	std::wstring buffer_12a[MAX_PATH + 1] = { std::wstring(L"deploy") };
+	std::wstring buffer_12a[] = { std::wstring(L"deploy") };
 	std::wstring* lpStr12a;
 	lpStr12a = buffer_12a;
 
@@ -336,11 +334,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
 
-	std::wstring buffer_14[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(airclient)) };
+	std::wstring buffer_14[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(airclient)) };
 	std::wstring* lpStr14;
 	lpStr14 = buffer_14;
 
-	std::wstring buffer_14a[MAX_PATH + 1] = {std::wstring(L"0.0.1.117")};
+	std::wstring buffer_14a[] = {std::wstring(L"0.0.1.117")};
 	std::wstring* lpStr14a;
 	lpStr14a = buffer_14a;
 
@@ -348,7 +346,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr14));
 #endif
-	std::wstring buffer_13[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr14)) };
+	std::wstring buffer_13[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr14)) };
 	std::wstring* lpStr13;
 	lpStr13 = buffer_13;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr13), reinterpret_cast<LPWSTR>(lpStr12a));
@@ -357,11 +355,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
 
-	std::wstring buffer_15[MAX_PATH + 1] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr13)) };
+	std::wstring buffer_15[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr13)) };
 	std::wstring* airversion;
 	airversion = buffer_15;
 
-	std::wstring buffer_15a[MAX_PATH + 1] = {constants[1]};
+	std::wstring buffer_15a[] = {constants[1]};
 	std::wstring* lpStr15a;
 	lpStr15a = buffer_15a;
 
@@ -390,11 +388,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 		wprintf(reinterpret_cast<LPWSTR>(version));
 #endif
-		std::wstring buffer_17[MAX_PATH + 1] = {constants[1]};
+		std::wstring buffer_17[MAX_PATH] = {constants[1]};
 		std::wstring* airversion;
 		airversion = buffer_17;
 
-		std::wstring buffer_17a[MAX_PATH + 1] = { constants[2] };
+		std::wstring buffer_17a[] = { constants[2] };
 		std::wstring* lpStr17a;
 		lpStr17a = buffer_17a;
 
@@ -422,7 +420,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(tbb));
 #endif
 	const std::wstring air(L"Adobe AIR.dll");
-	std::wstring *airdest[MAX_PATH + 1];
+	std::wstring *airdest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airdest),
 		pathcontainer[2].str().c_str(),
@@ -431,7 +429,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(airdest));
 #endif
-	std::wstring *airlatest[MAX_PATH + 1];
+	std::wstring *airlatest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airlatest),
 		reinterpret_cast<LPWSTR>(adobepath),
@@ -441,11 +439,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(airlatest));
 #endif
 
-	std::wstring buffer_11[MAX_PATH + 1] = {std::wstring(L"Resources")};
+	std::wstring buffer_11[MAX_PATH] = {std::wstring(L"Resources")};
 	std::wstring* flash;
 	flash = buffer_11;
 
-	std::wstring buffer_11a[MAX_PATH + 1] = { std::wstring(L"NPSWF32.dll") };
+	std::wstring buffer_11a[] = { std::wstring(L"NPSWF32.dll") };
 	std::wstring* flasha;
 	flasha = buffer_11a;
 
@@ -454,7 +452,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(flash));
 #endif
 
-	std::wstring *flashdest[MAX_PATH + 1];
+	std::wstring *flashdest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashdest),
 		pathcontainer[2].str().c_str(),
@@ -464,7 +462,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(flashdest));
 #endif
 
-	std::wstring *flashlatest[MAX_PATH + 1];
+	std::wstring *flashlatest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashlatest),
 		reinterpret_cast<LPWSTR>(adobepath),
@@ -474,7 +472,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(flashlatest));
 #endif
 
-	std::wstring *cgdest[MAX_PATH + 1];
+	std::wstring *cgdest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgdest),
 		pathcontainer[1].str().c_str(),
@@ -484,7 +482,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgdest));
 #endif
 
-	std::wstring *cggldest[MAX_PATH + 1];
+	std::wstring *cggldest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cggldest),
 		pathcontainer[1].str().c_str(),
@@ -493,7 +491,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(cggldest));
 #endif
-	std::wstring *cgd3d9dest[MAX_PATH + 1];
+	std::wstring *cgd3d9dest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9dest),
 		pathcontainer[1].str().c_str(),
