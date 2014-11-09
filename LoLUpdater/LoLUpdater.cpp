@@ -417,7 +417,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(L"tbb path", reinterpret_cast<LPWSTR>(&tbb));
 #endif
 	const std::wstring air(L"Adobe AIR.dll");
-	std::wstring airdest[MAX_PATH + 1];
+	std::wstring *airdest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&airdest),
 		pathcontainer[2].str().c_str(),
@@ -426,7 +426,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&airdest));
 #endif
-	std::wstring airlatest[MAX_PATH + 1];
+	std::wstring *airlatest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&airlatest),
 		reinterpret_cast<LPWSTR>(&adobepath),
