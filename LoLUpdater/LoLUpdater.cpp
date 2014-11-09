@@ -156,11 +156,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	AllocConsole();
 	_wfreopen(L"CONOUT$", L"w", stdout);
 #endif
-	std::wstring buffer_1[MAX_PATH + 1] = {L"projects"};
+	std::wstring buffer_1[MAX_PATH + 1] = {std::wstring(L"projects")};
 	std::wstring* lpStr1;
 	lpStr1 = buffer_1;
 
-	std::wstring buffer_1a[MAX_PATH + 1] = {L"lol_air_client"};
+	std::wstring buffer_1a[MAX_PATH + 1] = { std::wstring(L"lol_air_client") };
 	std::wstring* lpStr1a;
 	lpStr1a = buffer_1a;
 
@@ -169,11 +169,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(&lpStr1));
 #endif
 
-	std::wstring buffer_3[MAX_PATH + 1] = {L"solutions"};
+	std::wstring buffer_3[MAX_PATH + 1] = { std::wstring(L"solutions") };
 	std::wstring* lpStr3;
 	lpStr3 = buffer_3;
 
-	std::wstring buffer_3a[MAX_PATH + 1] = {L"lol_game_client_sln"};
+	std::wstring buffer_3a[MAX_PATH + 1] = { std::wstring(L"lol_game_client_sln") };
 	std::wstring* lpStr3a;
 	lpStr3a = buffer_3a;
 
