@@ -47,9 +47,31 @@ void download(const std::wstring& url, const std::wstring& file, const std::wstr
 
 	if (hRez == 0)
 	{
-		std::wstring* unblocker[MAX_PATH];
-		PathCombine(reinterpret_cast<LPWSTR>(&unblocker), reinterpret_cast<LPWSTR>(&cwd[0]), file.c_str());
-		pathcontainer[0] << (std::wstring(reinterpret_cast<LPWSTR>(&unblocker)) + constants[0]);
+
+
+		std::wstring unblocker[MAX_PATH];
+		std::wstring *unblocker1;
+		unblocker1 = unblocker;
+
+		// String for balance of path name.
+		std::wstring unblocker2[] = { std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) };
+		std::wstring *unblockerq;
+		unblockerq = unblocker2;
+
+		// String for directory name.
+		std::wstring unblocker3[] = { std::wstring(file.c_str()) };
+		std::wstring *unblockerqq;
+		unblockerqq = unblocker3;
+
+
+		PathCombine(
+			reinterpret_cast<LPWSTR>(unblocker1),
+			reinterpret_cast<LPWSTR>(unblockerq),
+			reinterpret_cast<LPWSTR>(unblockerqq)
+			);
+
+
+		pathcontainer[0] << (std::wstring(unblocker[0].c_str()) + std::wstring(constants[0]));
 
 		DeleteFile(pathcontainer[0].str().c_str());
 		pathcontainer[0].str(std::wstring());
@@ -616,7 +638,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	PathCombine(
-		reinterpret_cast<LPWSTR>(cgdest),
+		reinterpret_cast<LPWSTR>(cgdest1),
 		reinterpret_cast<LPWSTR>(asd1ccddqqqqqq),
 		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqq)
 		);
@@ -641,7 +663,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	PathCombine(
-		reinterpret_cast<LPWSTR>(cggldest),
+		reinterpret_cast<LPWSTR>(cggldest1),
 		reinterpret_cast<LPWSTR>(asd1ccddqqqqqqqq),
 		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqqqq)
 		);
@@ -651,7 +673,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 	std::wstring cgd3d9dest[MAX_PATH];
 	std::wstring *cgd3d9dest1;
-	cgdest1 = cgdest;
+	cgd3d9dest1 = cgdest;
 
 	// String for balance of path name.
 	std::wstring asdccddqqqqqqqqw[] = { pathcontainer[1].str() };
@@ -665,14 +687,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 	PathCombine(
-		reinterpret_cast<LPWSTR>(cgd3d9dest),
+		reinterpret_cast<LPWSTR>(cgd3d9dest1),
 		reinterpret_cast<LPWSTR>(asd1ccddqqqqqqqqw),
 		reinterpret_cast<LPWSTR>(asd21ccqqqqqqqqqqa)
 		);
 
 
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(cgd3d9dest));
+	wprintf(reinterpret_cast<LPWSTR>(cgd3d9dest1));
 #endif
 	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(airdest)) + constants[0]);
 #ifdef DEBUG
