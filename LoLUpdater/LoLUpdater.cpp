@@ -200,7 +200,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	pathcontainer[2] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + std::wstring(L"AIR\\") + constants[1];
+	pathcontainer[2] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + std::wstring(L"AIR\\");
+
+	std::wstring adobepath[MAX_PATH];
+	PathCombine(
+		reinterpret_cast<LPWSTR>(adobepath),
+		pathcontainer[2].str().c_str(),
+		constants[1].c_str()
+		);
+
+	
 
 	const std::wstring cg(L"Cg.dll");
 	std::wstring cgbin[MAX_PATH];
@@ -284,7 +293,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring airlatest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(airlatest),
-		pathcontainer[2].str().c_str(),
+		reinterpret_cast<LPWSTR>(adobepath),
 		air.c_str()
 		);
 
@@ -306,7 +315,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring flashlatest[MAX_PATH];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(flashlatest),
-		pathcontainer[2].str().c_str(),
+		reinterpret_cast<LPWSTR>(adobepath),
 		reinterpret_cast<LPWSTR>(flash)
 		);
 
