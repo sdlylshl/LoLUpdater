@@ -445,7 +445,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(&flash));
 #endif
 
-	std::wstring flashdest[MAX_PATH + 1];
+	std::wstring *flashdest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&flashdest),
 		pathcontainer[2].str().c_str(),
@@ -455,7 +455,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(&flashdest));
 #endif
 
-	std::wstring flashlatest[MAX_PATH + 1];
+	std::wstring *flashlatest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&flashlatest),
 		reinterpret_cast<LPWSTR>(&adobepath),
@@ -465,7 +465,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(&flashlatest));
 #endif
 
-	std::wstring cgdest[MAX_PATH + 1];
+	std::wstring *cgdest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&cgdest),
 		pathcontainer[1].str().c_str(),
@@ -475,7 +475,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(&cgdest));
 #endif
 
-	std::wstring cggldest[MAX_PATH + 1];
+	std::wstring *cggldest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&cggldest),
 		pathcontainer[1].str().c_str(),
@@ -484,7 +484,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&cggldest));
 #endif
-	std::wstring cgd3d9dest[MAX_PATH + 1];
+	std::wstring *cgd3d9dest[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(&cgd3d9dest),
 		pathcontainer[1].str().c_str(),
