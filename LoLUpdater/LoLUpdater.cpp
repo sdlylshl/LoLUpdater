@@ -261,7 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	pathcontainer[0] << (std::wstring(L"\\Common Files") + std::wstring(L"\\Adobe ") + constants[2]);
+	pathcontainer[0] << (std::wstring(L"\\Common Files\\Adobe ") + constants[2]);
 #ifdef DEBUG
 	wprintf(pathcontainer[0].str().c_str());
 #endif
