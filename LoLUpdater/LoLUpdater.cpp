@@ -227,7 +227,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	airclient = buffer_6;
 	PathAppend(reinterpret_cast<LPWSTR>(&airclient), reinterpret_cast<LPWSTR>(&lpStr5a));
 #ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(airclient);
+	wprintf(reinterpret_cast<LPWSTR>(airclient));
 #endif
 
 
@@ -507,7 +507,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(pathcontainer[3].str().c_str());
 #endif
 
-	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>&flashdest)) + constants[0]);
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(flashdest)) + constants[0]);
 #ifdef DEBUG
 	wprintf(pathcontainer[4].str().c_str());
 #endif
