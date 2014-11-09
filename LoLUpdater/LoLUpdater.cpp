@@ -493,16 +493,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(&cgd3d9dest));
 #endif
-	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&airdest)) + constants[0].c_str());
+	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&airdest)) + std::wstring(constants[0].c_str()));
 #ifdef DEBUG
 	wprintf(pathcontainer[3].str().c_str());
 #endif
 
-	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&flashdest)) + constants[0].c_str());
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&flashdest)) + std::wstring(constants[0].c_str()));
 #ifdef DEBUG
 	wprintf(pathcontainer[4].str().c_str());
 #endif
-	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&tbb)) + constants[0].c_str());
+	pathcontainer[5] << (std::wstring(reinterpret_cast<LPWSTR>(&tbb)) + std::wstring(constants[0].c_str()));
 #ifdef DEBUG
 	wprintf(pathcontainer[5].str().c_str());
 #endif
