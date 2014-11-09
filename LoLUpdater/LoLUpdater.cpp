@@ -199,7 +199,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring *lpStr2a;
 	lpStr2a = buffer_2a;
 
-	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr2));
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr2a));
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(lpStr2));
 #endif
@@ -274,7 +274,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(pathcontainer[0].str().c_str());
 #endif
-	std::wstring adobepath[MAX_PATH + 1];
+	std::wstring *adobepath[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(adobepath),
 		pathcontainer[0].str().c_str(),
@@ -286,7 +286,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	
 
 	const std::wstring cg(L"Cg.dll");
-	std::wstring cgbin[MAX_PATH + 1];
+	std::wstring *cgbin[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -296,7 +296,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgbin));
 #endif
 	const std::wstring cggl(L"CgGL.dll");
-	std::wstring cgglbin[MAX_PATH + 1];
+	std::wstring *cgglbin[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgglbin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -306,7 +306,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(reinterpret_cast<LPWSTR>(cgglbin));
 #endif
 	const std::wstring cgd3d9(L"CgD3D9.dll");
-	std::wstring cgd3d9bin[2];
+	std::wstring *cgd3d9bin[MAX_PATH + 1];
 	PathCombine(
 		reinterpret_cast<LPWSTR>(cgd3d9bin),
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
