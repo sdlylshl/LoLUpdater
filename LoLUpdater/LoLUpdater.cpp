@@ -8,6 +8,10 @@
 #include <Shlwapi.h>
 #include <direct.h>
 
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
 bool done = false;
 // 0 = adobe install dir
 // 1 = game
