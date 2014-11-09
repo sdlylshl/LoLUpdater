@@ -22,7 +22,7 @@ bool done = false;
 
 std::wstringstream pathcontainer[8];
 const std::wstring constants[3] = { L":Zone.Identifier", L"deploy", L"Air\\Adobe AIR\\Versions\\1.0" };
-std::wstring *tbb = nullptr;
+std::wstring* tbb = nullptr;
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
@@ -37,7 +37,7 @@ void download(const std::wstring fromurl, const std::wstring dest, const std::ws
 		0,
 		nullptr
 		);
-	std::wstring *unblocker = nullptr;
+	std::wstring* unblocker = nullptr;
 	PathCombine(reinterpret_cast<LPWSTR>(unblocker), pathcontainer[1].str().c_str(), dest.c_str());
 	pathcontainer[0] << (reinterpret_cast<LPWSTR>(&unblocker) + constants[0]);
 	DeleteFile(pathcontainer[0].str().c_str());
@@ -131,55 +131,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ShowWindow(hwnd, nCmdShow);
 
-
 	std::wstring buffer_1[MAX_PATH] = { L"projects" };
 	std::wstring *lpStr1;
 	lpStr1 = buffer_1;
-
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr1), L"lol_air_client");
-
-	const std::wstring rads(L"RADS");
-
-	std::wstring buffer_2[MAX_PATH] = { rads };
-	std::wstring *lpStr2;
-	lpStr2 = buffer_2;
-
-	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr1));
 
 	std::wstring buffer_3[MAX_PATH] = { L"solutions" };
 	std::wstring *lpStr3;
 	lpStr3 = buffer_3;
-
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr3), L"lol_game_client_sln");
 
+	const std::wstring rads(L"RADS");
+	std::wstring buffer_2[MAX_PATH] = { rads };
+	std::wstring *lpStr2;
+	lpStr2 = buffer_2;
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr1));
 	std::wstring buffer_4[MAX_PATH] = { rads };
 	std::wstring *lpStr4;
 	lpStr4 = buffer_4;
-
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr4), reinterpret_cast<LPWSTR>(lpStr3));
 
 
 	const std::wstring rel(L"releases");
-
-
-
 	std::wstring buffer_5[MAX_PATH] = { reinterpret_cast<LPWSTR>(lpStr4) };
 	std::wstring *gameclient;
 	gameclient = buffer_5;
-
 	PathAppend(reinterpret_cast<LPWSTR>(gameclient), rel.c_str());
-
 	std::wstring buffer_6[MAX_PATH] = { reinterpret_cast<LPWSTR>(lpStr2) };
 	std::wstring *airclient;
 	airclient = buffer_6;
-
 	PathAppend(reinterpret_cast<LPWSTR>(airclient), rel.c_str());
-
 
 	std::vector<std::wstring> currentdirectorybuffer(MAX_PATH, std::wstring());
 	GetModuleFileName(nullptr, reinterpret_cast<LPWSTR>(&currentdirectorybuffer[0]), MAX_PATH);
-
-
 	// pathcontainer[1] << (cwdfinal.substr(0, cwdfinal.find_last_of(L"\\/")) + L"\\");
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE=compact");
 	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
@@ -197,7 +181,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	std::wstring progfiles = std::wstring(L":") + std::wstring(L"Program Files");
 
-
 	if (bit == 8)
 	{
 		pathcontainer[2] << progfiles + std::wstring(L" (x86)");
@@ -208,13 +191,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	std::wstring *common = nullptr;
-	PathCombine(
-		reinterpret_cast<LPWSTR>(common),
-		L"Common Files",
-		L"Adobe "
-		);
-	pathcontainer[2] << common;
+	std::wstring buffer_12[MAX_PATH] = { L"Common Files" };
+	std::wstring *common;
+	common = buffer_12;
+	PathAppend(reinterpret_cast<LPWSTR>(common), L"Adobe ");
+
+	pathcontainer[2] << reinterpret_cast<LPWSTR>(common)+constants[2];
 
 	const std::wstring cg(L"Cg.dll");
 	std::wstring *cgbin = nullptr;
@@ -237,7 +219,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		cgd3d9.c_str()
 		);
-
 
 
 	std::wstring buffer_7[MAX_PATH] = { reinterpret_cast<LPWSTR>(gameclient) };
@@ -298,7 +279,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		pathcontainer[2].str().c_str(),
 		air.c_str()
 		);
-
 
 
 	std::wstring buffer_11[MAX_PATH] = { reinterpret_cast<LPWSTR>(L"Resources") };
