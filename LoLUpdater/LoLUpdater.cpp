@@ -6,9 +6,7 @@
 
 #include <Windows.h>
 #include <Shlwapi.h>
-
-// Todo: find c++ way
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <direct.h>
 
 bool done = false;
 // 0 = intermediate combiner
@@ -22,7 +20,10 @@ bool done = false;
 std::wstringstream pathcontainer[7];
 const std::wstring constants[3] = { L":Zone.Identifier", L"Adobe AIR\\Versions\\1.0", L"AIR\\" };
 std::wstring *tbb = nullptr;
-std::vector<std::wstring> cwd(MAX_PATH, std::wstring());
+std::wstring cwd(_wgetcwd(
+	nullptr,
+	0
+	));
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
@@ -38,7 +39,7 @@ void download(std::wstring fromurl, std::wstring dest, std::wstring args)
 		nullptr
 		);
 	std::wstring *unblocker = nullptr;
-	PathCombine(reinterpret_cast<LPWSTR>(&unblocker), reinterpret_cast<LPWSTR>(&cwd[0]), dest.c_str());
+	PathCombine(reinterpret_cast<LPWSTR>(&unblocker), reinterpret_cast<LPWSTR>(&cwd), dest.c_str());
 	pathcontainer[0] << (reinterpret_cast<LPWSTR>(&unblocker) + constants[0]);
 	DeleteFile(pathcontainer[0].str().c_str());
 	pathcontainer[0].str(std::wstring());
@@ -185,15 +186,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef DEBUG
 	wprintf(reinterpret_cast<LPWSTR>(buffer_6));
 #endif
-	GetModuleFileName(nullptr, reinterpret_cast<LPWSTR>(&cwd[0]), MAX_PATH);
-#ifdef DEBUG
-	wprintf(reinterpret_cast<LPWSTR>(&cwd[0]));
-#endif
-	// todo fix this
-	// /* fix this tomorrow */ cwd.resize(cwd[0].length() - 14);
-#ifdef DEBUG
-	// wprintf(const_cast<LPWSTR>(cwd[0].c_str()));
-#endif
+
+
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE = compact");
 	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
@@ -213,7 +207,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
 	std::wstring progfiles = std::wstring(L":") + std::wstring(L"Program Files");
-	pathcontainer[1] << std::wstring(reinterpret_cast<LPWSTR>(&cwd[0]))[0] + progfiles;
+	pathcontainer[1] << std::wstring(reinterpret_cast<LPWSTR>(&cwd))[0] + progfiles;
 #ifdef DEBUG
 	wprintf(pathcontainer[1].str().c_str());
 #endif
@@ -344,11 +338,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 	}
 
-	pathcontainer[2] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) + std::wstring(reinterpret_cast<LPWSTR>(buffer_12)));
+	pathcontainer[2] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd)) + std::wstring(reinterpret_cast<LPWSTR>(buffer_12)));
 #ifdef DEBUG
 	wprintf(pathcontainer[2].str().c_str());
 #endif
-	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd[0])) + std::wstring(reinterpret_cast<LPWSTR>(buffer_15)));
+	pathcontainer[3] << (std::wstring(reinterpret_cast<LPWSTR>(&cwd)) + std::wstring(reinterpret_cast<LPWSTR>(buffer_15)));
 #ifdef DEBUG
 	wprintf(pathcontainer[3].str().c_str());
 #endif
