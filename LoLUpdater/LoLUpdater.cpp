@@ -21,7 +21,7 @@ bool done = false;
 // 7 = unblock tbb
 
 std::wstringstream pathcontainer[8];
-const std::wstring constants[3] = { L":Zone.Identifier", L"deploy", L"Air\\Adobe AIR\\Versions\\1.0" };
+const std::wstring constants[2] = { L":Zone.Identifier", L"Adobe AIR\\Versions\\1.0" };
 std::wstring* tbb = nullptr;
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
@@ -135,17 +135,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* lpStr1;
 	lpStr1 = buffer_1;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr1), L"lol_air_client");
+	// result: projects\lol_air_client
 
 	std::wstring buffer_3[MAX_PATH] = { L"solutions" };
 	std::wstring* lpStr3;
 	lpStr3 = buffer_3;
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr3), L"lol_game_client_sln");
 
+
 	const std::wstring rads(L"RADS");
+	// air
 	std::wstring buffer_2[MAX_PATH] = { rads };
 	std::wstring* lpStr2;
 	lpStr2 = buffer_2;
+
 	PathAppend(reinterpret_cast<LPWSTR>(lpStr2), reinterpret_cast<LPWSTR>(lpStr1));
+
+	// game
 	std::wstring buffer_4[MAX_PATH] = { rads };
 	std::wstring* lpStr4;
 	lpStr4 = buffer_4;
@@ -157,14 +163,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring* gameclient;
 	gameclient = buffer_5;
 	PathAppend(reinterpret_cast<LPWSTR>(gameclient), rel.c_str());
+
 	std::wstring buffer_6[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr2)) };
 	std::wstring* airclient;
 	airclient = buffer_6;
 	PathAppend(reinterpret_cast<LPWSTR>(airclient), rel.c_str());
 
+
 	std::vector<std::wstring> currentdirectorybuffer(MAX_PATH, std::wstring());
 	GetModuleFileName(nullptr, reinterpret_cast<LPWSTR>(&currentdirectorybuffer[0]), MAX_PATH);
-	// pathcontainer[1] << (cwdfinal.substr(0, cwdfinal.find_last_of(L"\\/")) + L"\\");
+	// 14 = length of "LoLUpdater.exe"
+	currentdirectorybuffer[0].resize(currentdirectorybuffer[0].length() - 14);
 	download(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe", L"Cg-3.1_April2012_Setup.exe", L"/verysilent /TYPE=compact");
 	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
@@ -191,12 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 
-	std::wstring buffer_12[MAX_PATH] = { L"Common Files" };
-	std::wstring* common;
-	common = buffer_12;
-	PathAppend(reinterpret_cast<LPWSTR>(common), L"Adobe ");
-
-	pathcontainer[2] << reinterpret_cast<LPWSTR>(common)+constants[2];
+	pathcontainer[2] << std::wstring(L"Common Files") + std::wstring(L"Adobe ") + std::wstring(L"AIR\\") + constants[1];
 
 	const std::wstring cg(L"Cg.dll");
 	std::wstring cgbin[MAX_PATH];
@@ -224,27 +228,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wstring buffer_7[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
 	std::wstring* random7;
 	random7 = buffer_7;
-
 	PathAppend(reinterpret_cast<LPWSTR>(random7), L"0.0.1.64");
-
-	std::wstring buffer_8[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(gameclient)) };
+	const std::wstring dep(L"deploy");
+	std::wstring buffer_12[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(random7)) };
 	std::wstring* version;
-	version = buffer_8;
+	version = buffer_12;
+	PathAppend(reinterpret_cast<LPWSTR>(version), dep.c_str());
 
-	PathAppend(reinterpret_cast<LPWSTR>(random7), constants[1].c_str());
 
 
-	std::wstring buffer_9[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(airclient)) };
-	std::wstring* random9;
-	random9 = buffer_9;
+	std::wstring buffer_14[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(airclient)) };
+	std::wstring*lpStr14;
+	lpStr14 = buffer_14;
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr14), L"0.0.1.117");
 
-	PathAppend(reinterpret_cast<LPWSTR>(random9), L"0.0.1.117");
 
-	std::wstring buffer_10[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(random9)) };
+	std::wstring buffer_13[MAX_PATH] = { std::wstring(reinterpret_cast<LPWSTR>(lpStr14)) };
+	std::wstring* lpStr13;
+	lpStr13 = buffer_13;
+	PathAppend(reinterpret_cast<LPWSTR>(lpStr13), dep.c_str());
+
+	std::wstring buffer_15[MAX_PATH] = { constants[1].c_str() };
 	std::wstring* airversion;
-	airversion = buffer_10;
+	airversion = buffer_15;
+	PathAppend(reinterpret_cast<LPWSTR>(airversion), reinterpret_cast<LPWSTR>(lpStr13));
 
-	PathAppend(reinterpret_cast<LPWSTR>(airversion), constants[1].c_str());
 
 
 	std::wifstream garena(L"lol.exe");
