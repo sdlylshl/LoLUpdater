@@ -1,3 +1,5 @@
+
+
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -434,12 +436,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	else
 	{
-		// Todo: add AVX2 support
+		int avx2;
+		int abcd[4];
+		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
+		uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
+		__cpuidex(abcd, 1, 0);
+		if (((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask) || !((static_cast<uint32_t>(_xgetbv(0)) & 6) == 6))
+		{
+			avx2 = 0;
+		}
+
+		__cpuidex(abcd, 7, 0);
+		if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
+		{
+			avx2 = 0;
+		}
+
+		__cpuidex(abcd, 0x80000001, 0);
+		if ((abcd[2] & (1 << 5)) == 0)
+		{
+			avx2 = 0;
+		}
+		if (avx2 != 0)
+		{
+			tbbdownload(L"Avx2.dll");
+		}
+		else
+		{ 
 		int cpuInfo[4];
 		__cpuid(cpuInfo, 1);
-		if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
+		if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 		{
-			tbbdownload(L"Avx.dll");
+				tbbdownload(L"Avx.dll");
+
 		}
 		else
 		{
@@ -459,6 +488,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				}
 			}
 		}
+
+
+	}
 	}
 
 	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
