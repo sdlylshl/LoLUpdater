@@ -88,24 +88,21 @@ void downloadtbb(const std::wstring& file)
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	PAINTSTRUCT ps;
+	HDC hdc;
 	switch (msg)
 	{
-	case WM_CLOSE:
-		DestroyWindow(hwnd);
-		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	case WM_PAINT:
-		PAINTSTRUCT ps;
-		HDC hdc;
 		hdc = BeginPaint(hwnd, &ps);
 		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
 		{
 			DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
-			EndPaint(hwnd, &ps);
 		}
+		EndPaint(hwnd, &ps);
 		break;
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
