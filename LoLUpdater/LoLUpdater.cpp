@@ -20,16 +20,10 @@ std::wstringstream pathcontainer[4];
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t* airclient;
-wchar_t* gameclient;
 wchar_t gameclient1[MAX_PATH + 1] = L"";
 wchar_t airclient1[MAX_PATH + 1] = L"";
 wchar_t unblocker1[MAX_PATH + 1] = L"";
-HWND hwnd;
-const std::wstring g_szClassName(L"mainwindow1");
-RECT start = { 0, 0, 100, 20 };
 RECT end = { 0, 100, 100, 120 };
-
 void download(std::wstring url, std::wstring file, std::wstring args)
 {
 	URLDownloadToFile(
@@ -115,6 +109,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		PAINTSTRUCT ps;
 		HDC hdc;
+		RECT start = { 0, 0, 100, 20 };
 		hdc = BeginPaint(hwnd, &ps);
 		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
@@ -137,7 +132,6 @@ void initbasepaths()
 		&cwd[0],
 		_TRUNCATE
 		);
-	airclient = airclient1;
 
 	wcsncat_s(
 		gameclient1,
@@ -145,7 +139,7 @@ void initbasepaths()
 		&cwd[0],
 		_TRUNCATE
 		);
-	gameclient = gameclient1;
+
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -159,7 +153,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	MSG Msg;
 	WNDCLASSEXW wc;
-
+	std::wstring g_szClassName(L"mainwindow1");
 	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
@@ -173,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 	RegisterClassEx(&wc);
-
+	HWND hwnd;
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
 		g_szClassName.c_str(),
@@ -215,6 +209,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* cgd3d9bin;
 	wchar_t* airdest;
 	wchar_t* airlatest1;
+	wchar_t* airclient;
+	wchar_t* gameclient;
 
 	wchar_t* flashdest;
 	wchar_t* flashlatest;
@@ -239,6 +235,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	wchar_t airlatest[MAX_PATH + 1] = L"";
+
+	airclient = airclient1;
+	gameclient = gameclient1;
 
 	wchar_t* rads = L"RADS";
 	wchar_t* rel = L"releases";
