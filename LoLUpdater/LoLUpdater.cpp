@@ -17,27 +17,14 @@ bool done = false;
 // 2 = npswf32.dll destination (incl working directory)
 // 3 = tbb.dll destination (incl working directory)
 std::wstringstream pathcontainer[4];
-
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
-
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-std::vector<std::wstring> cgbinpath(MAX_PATH + 1, std::wstring());
-wchar_t progdrive[MAX_PATH + 1];
-
 wchar_t* airclient;
 wchar_t* gameclient;
-
-wchar_t* unblocker;
-
-wchar_t unblocker2[MAX_PATH + 1] = L"";
-wchar_t* unblockerq;
-
-wchar_t* unblockerqq;
-
 wchar_t gameclient1[MAX_PATH + 1] = L"";
 wchar_t airclient1[MAX_PATH + 1] = L"";
-
+wchar_t unblocker1[MAX_PATH + 1] = L"";
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
@@ -53,37 +40,35 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		nullptr
 		);
 
-	wchar_t unblocker1[MAX_PATH + 1] = L"";
 
-	wchar_t unblocker3[MAX_PATH + 1] = L"";
+	wchar_t* unblocker;
+	unblocker = unblocker1;
 
-	unblockerq = unblocker2;
+	wchar_t* unblocker2;
+	wchar_t unblocker21[MAX_PATH + 1] = L"";
+	unblocker2 = unblocker21;
+
 
 	wcsncat_s(
-		unblocker3,
+		unblocker2,
 		MAX_PATH + 1,
 		file.c_str(),
 		_TRUNCATE
 		);
 
-	unblockerqq = unblocker3;
-
-	unblocker = unblocker1;
-
-	PathCombine(
+	PathAppend(
 		unblocker,
-		unblockerq,
-		unblockerqq
+		unblocker2
 		);
 
-	pathcontainer[0] << (std::wstring(unblocker1) + constants[0]);
+	pathcontainer[0] << (std::wstring(unblocker) + constants[0]);
 
 	DeleteFile(pathcontainer[0].str().c_str());
 
 	pathcontainer[0].str(std::wstring());
 	pathcontainer[0].clear();
-	*unblockerqq = { '/0' };
-
+	*unblocker1 = { '/0' };
+	*unblocker21 = { '/0' };
 	SHELLEXECUTEINFOW ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -200,12 +185,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
 		nullptr,
 		0,
 		progdrive);
 
+	std::vector<std::wstring> cgbinpath(MAX_PATH + 1, std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH + 1);
@@ -216,7 +203,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 	wcsncat_s(
-		unblocker2,
+		unblocker1,
 		MAX_PATH,
 		&cwd[0],
 		_TRUNCATE
