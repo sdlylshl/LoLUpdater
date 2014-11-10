@@ -98,14 +98,14 @@ namespace tbb {
         __TBB_DECL_ATOMIC_FIELD(value_type,my_value,S)                \
         aligned_storage() = default ;                                 \
         constexpr aligned_storage(value_type value):my_value(value){} \
-		    };                                                                \
+				    };                                                                \
 
 #else
 #define ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(S)                  \
     template<typename value_type>                                     \
     struct aligned_storage<value_type,S> {                            \
         __TBB_DECL_ATOMIC_FIELD(value_type,my_value,S)                \
-		    };                                                                \
+				    };                                                                \
 
 #endif
 
@@ -132,14 +132,14 @@ namespace tbb {
         typedef atomic_rep<S>::word word;                                                                \
         inline static word compare_and_swap( volatile void* location, word new_value, word comparand ) { \
             return __TBB_machine_cmpswp##S##M(location,new_value,comparand);                             \
-		        }                                                                                                \
+				        }                                                                                                \
         inline static word fetch_and_add( volatile void* location, word addend ) {                       \
             return __TBB_machine_fetchadd##S##M(location,addend);                                        \
-		        }                                                                                                \
+				        }                                                                                                \
         inline static word fetch_and_store( volatile void* location, word value ) {                      \
             return __TBB_machine_fetchstore##S##M(location,value);                                       \
-		        }                                                                                                \
-		    };
+				        }                                                                                                \
+				    };
 
 #define __TBB_DECL_ATOMIC_PRIMITIVES(S)                                                                  \
     template<memory_semantics M>                                                                         \
@@ -147,14 +147,14 @@ namespace tbb {
         typedef atomic_rep<S>::word word;                                                                \
         inline static word compare_and_swap( volatile void* location, word new_value, word comparand ) { \
             return __TBB_machine_cmpswp##S(location,new_value,comparand);                                \
-		        }                                                                                                \
+				        }                                                                                                \
         inline static word fetch_and_add( volatile void* location, word addend ) {                       \
             return __TBB_machine_fetchadd##S(location,addend);                                           \
-		        }                                                                                                \
+				        }                                                                                                \
         inline static word fetch_and_store( volatile void* location, word value ) {                      \
             return __TBB_machine_fetchstore##S(location,value);                                          \
-		        }                                                                                                \
-		    };
+				        }                                                                                                \
+				    };
 
 		template<memory_semantics M>
 		struct atomic_load_store_traits;    // Primary template declaration
@@ -164,12 +164,12 @@ namespace tbb {
         template <typename T>                                           \
         inline static T load( const volatile T& location ) {            \
             return __TBB_load_##M( location );                          \
-		        }                                                               \
+				        }                                                               \
         template <typename T>                                           \
         inline static void store( volatile T& location, T value ) {     \
             __TBB_store_##M( location, value );                         \
-		        }                                                               \
-		    }
+				        }                                                               \
+				    }
 
 #if __TBB_USE_FENCED_ATOMICS
 		__TBB_DECL_FENCED_ATOMIC_PRIMITIVES(1, full_fence)
@@ -418,13 +418,13 @@ namespace tbb {
                                                                                                     \
             T operator=( T rhs ) {return store_with_release(rhs);}                                  \
             atomic<T>& operator=( const atomic<T>& rhs ) {store_with_release(rhs); return *this;}   \
-	        };
+		        };
 #else
 #define __TBB_DECL_ATOMIC(T)                                                                    \
         template<> struct atomic<T>: internal::atomic_impl_with_arithmetic<T,T,char> {              \
             T operator=( T rhs ) {return store_with_release(rhs);}                                  \
             atomic<T>& operator=( const atomic<T>& rhs ) {store_with_release(rhs); return *this;}   \
-	        };
+		        };
 #endif
 
 #if __TBB_64BIT_ATOMICS
@@ -450,13 +450,13 @@ namespace tbb {
         constexpr atomic(T arg): internal::atomic_impl_with_arithmetic<T,T,char>(arg) {}       \
         T operator=( U rhs ) {return store_with_release(T(rhs));}                              \
         atomic<T>& operator=( const atomic<T>& rhs ) {store_with_release(rhs); return *this;}  \
-	    };
+		    };
 #else
 #define __TBB_DECL_ATOMIC_ALT(T,U) \
     template<> struct atomic<T>: internal::atomic_impl_with_arithmetic<T,T,char> {             \
         T operator=( U rhs ) {return store_with_release(T(rhs));}                              \
         atomic<T>& operator=( const atomic<T>& rhs ) {store_with_release(rhs); return *this;}  \
-	    };
+		    };
 #endif
 		__TBB_DECL_ATOMIC_ALT(unsigned, size_t)
 		__TBB_DECL_ATOMIC_ALT(int, ptrdiff_t)

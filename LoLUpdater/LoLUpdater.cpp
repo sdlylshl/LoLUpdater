@@ -1,10 +1,8 @@
 #include <sstream>
 #include <fstream>
-#include <iostream>
 #include <vector>
 #include <memory>
 
-#include <Windows.h>
 #include <Shlwapi.h>
 #include <direct.h>
 #include <Shlobj.h>
@@ -75,7 +73,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
 }
 
-void tbbdownload(const std::wstring& file)
+void downloadtbb(const std::wstring& file)
 {
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
 	DWORD dwLength = sizeof(finalurl);
@@ -152,13 +150,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
+	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
 		nullptr,
 		0,
 		progdrive);
-
 	std::vector<std::wstring> cgbinpath(MAX_PATH + 1, std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
@@ -199,7 +198,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	{
 		*airclient1 = '\0';
 		*gameclient1 = '\0';
-
 
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
@@ -255,7 +253,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		commonfiles,
 		adobedir
 		);
-
 
 	wchar_t* cgbasepath;
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
@@ -381,7 +378,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GetVersionEx(&osvi);
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
-		tbbdownload(L"Xp.dll");
+		downloadtbb(L"Xp.dll");
 	}
 	else
 	{
@@ -408,7 +405,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (avx2 != 0)
 		{
-			tbbdownload(L"Avx2.dll");
+			downloadtbb(L"Avx2.dll");
 		}
 		else
 		{
@@ -416,37 +413,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
 			{
-				tbbdownload(L"Avx.dll");
+				downloadtbb(L"Avx.dll");
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(L"Sse2.dll");
+					downloadtbb(L"Sse2.dll");
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						tbbdownload(L"Sse.dll");
+						downloadtbb(L"Sse.dll");
 					}
 					else
 					{
-						tbbdownload(L"Default.dll");
+						downloadtbb(L"Default.dll");
 					}
 				}
 			}
 		}
 	}
-
-	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
-	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	std::wstring unblocks[3] = { pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
+	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 
 	for (std::wstring& e : unblocks)
 	{
