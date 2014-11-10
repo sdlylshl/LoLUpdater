@@ -8,82 +8,31 @@
 #include <Shlwapi.h>
 #include <direct.h>
 #include <Shlobj.h>
-
-
-#define INTERNET_MAX_PATH_LENGTH  2048
-#define INTERNET_MAX_URL_LENGTH   (INTERNET_MAX_SCHEME_LENGTH + sizeof("://")+ INTERNET_MAX_PATH_LENGTH)
+#include <wininet.h>
 
 bool done = false;
-// 0 = reused buffer
-// 1 = unblock air
-// 2 = unblock flash
-// 3 = unblock tbb
+// used to keep filepaths together with the unblock tag (constants[0])
+// 0 = download buffer (used in the download function to store nvidiacg/adobeair installer, cleared after each use)
+// 1 = adobe air.dll destination (incl working directory)
+// 2 = npswf32.dll destination (incl working directory)
+// 3 = tbb.dll destination (incl working directory)
 std::wstringstream pathcontainer[4];
 
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
-std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
+
 wchar_t cwd[MAX_PATH];
 wchar_t drive = *cwd;
+
+std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
 wchar_t progdrive[MAX_PATH];
-wchar_t unblocker[MAX_PATH] = L"";
-wchar_t* unblocker1;
-wchar_t unblocker2[] = L"";
-wchar_t* unblockerq;
-wchar_t unblocker3[] = L"";
-wchar_t* unblockerqq;
-wchar_t* rel = L"releases";
-wchar_t* rads = L"RADS";
-wchar_t sol1[MAX_PATH] = L"solutions";
-wchar_t* sol;
-wchar_t lolgame1[] = L"lol_game_client_sln";
-wchar_t* lolgame;
-wchar_t adobepath1[MAX_PATH] = L"";
-wchar_t* adobepath;
-wchar_t asd[MAX_PATH] = L"";
-wchar_t proj1[MAX_PATH] = L"projects";
-wchar_t* proj;
-wchar_t lolair1[] = L"lol_air_client";
-wchar_t* lolair;
-wchar_t cgbin1[MAX_PATH] = L"";
-wchar_t asd233[MAX_PATH] = L"";
-wchar_t* asd12;
-wchar_t* cgbin;
-wchar_t cgglbin1[MAX_PATH] = L"";
-wchar_t* cgglbin;
-wchar_t* cg = L"Cg.dll";
-wchar_t* cggl = L"CgGL.dll";
-wchar_t* cgd3d9 = L"CgD3D9.dll";
-wchar_t cgd3d9bin1[MAX_PATH] = L"";
-wchar_t* cgd3d9bin;
-wchar_t* gameversion = L"0.0.1.64";
-wchar_t* dep = L"deploy";
-wchar_t* airversion = L"0.0.1.117";
-wchar_t tbb1[MAX_PATH] = L"";
-wchar_t* tbbfile = L"tbb.dll";
-wchar_t airdest1[MAX_PATH] = L"";
-wchar_t* airdest;
-wchar_t airlatest[MAX_PATH] = L"";
-wchar_t* airlatest1;
-wchar_t buffer_11[MAX_PATH] = L"Resources";
-wchar_t* flash;
-wchar_t* air = L"Adobe AIR.dll";
-wchar_t buffer_11a[MAX_PATH] = L"NPSWF32.dll";
-wchar_t* flasha;
-wchar_t flashdest1[MAX_PATH] = L"";
-wchar_t* flashdest;
-wchar_t flashlatest1[MAX_PATH] = L"";
-wchar_t* flashlatest;
-wchar_t cgdest1[MAX_PATH] = L"";
-wchar_t* cgdest;
-wchar_t cggldest1[MAX_PATH] = L"";
-wchar_t* cggldest;
-wchar_t cgd3d9dest1[MAX_PATH] = L"";
-wchar_t* cgd3d9dest;
 wchar_t airclient1[MAX_PATH] = L"";
 wchar_t* airclient;
 wchar_t gameclient1[MAX_PATH] = L"";
 wchar_t* gameclient;
+
+
+
 HWND hwnd;
 const std::wstring g_szClassName(L"mainwindow1");
 RECT start = { 0, 0, 100, 20 };
@@ -99,7 +48,14 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		nullptr
 		);
 
-	unblocker1 = unblocker;
+	wchar_t unblocker1[MAX_PATH] = L"";
+	wchar_t* unblocker;
+	wchar_t unblocker2[] = L"";
+	wchar_t* unblockerq;
+	wchar_t unblocker3[] = L"";
+	wchar_t* unblockerqq;
+	unblocker = unblocker1;
+
 	wcsncat_s(
 		unblocker2,
 		MAX_PATH,
@@ -107,10 +63,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		_TRUNCATE
 		);
 
-
 	unblockerq = unblocker2;
-
-
 
 	wcsncat_s(
 		unblocker3,
@@ -119,11 +72,10 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		_TRUNCATE
 		);
 
-
 	unblockerqq = unblocker3;
 
 	PathCombine(
-		unblocker1,
+		unblocker,
 		unblockerq,
 		unblockerqq
 		);
@@ -150,8 +102,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 
 void tbbdownload(const std::wstring& file)
 {
-
-	wchar_t finalurl[2048];
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
 	DWORD dwLength = sizeof(finalurl);
 	UrlCombine(
 		L"http://lol.jdhpro.com/",
@@ -197,6 +148,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+void initbasepaths()
+{
+	wcsncat_s(
+		airclient1,
+		MAX_PATH,
+		&cwd[0],
+		_TRUNCATE
+		);
+	airclient = airclient1;
+
+	wcsncat_s(
+		gameclient1,
+		MAX_PATH,
+		&cwd[0],
+		_TRUNCATE
+		);
+	gameclient = gameclient1;
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -234,22 +204,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	ShowWindow(hwnd, nCmdShow);
 	_wgetcwd(cwd, MAX_PATH);
 
-	TCHAR szPath[MAX_PATH];
-
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
 		nullptr,
 		0,
 		progdrive);
 
-
-
-
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH);
-
-
 	wcsncat_s(
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH,
@@ -257,29 +220,64 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 
-	// base
+	initbasepaths();
 
-	wcsncat_s(
-		airclient1,
-		MAX_PATH,
-		&cwd[0],
-		_TRUNCATE
-		);
+	wchar_t* rel = L"releases";
+	wchar_t* rads = L"RADS";
+
+	wchar_t lolgame1[] = L"lol_game_client_sln";
+	wchar_t* lolgame;
+	wchar_t adobepath1[MAX_PATH] = L"";
+	wchar_t* adobepath;
+	wchar_t asd[MAX_PATH] = L"";
+
+	wchar_t lolair1[] = L"lol_air_client";
+	wchar_t* lolair;
+	wchar_t cgbin1[MAX_PATH] = L"";
+	wchar_t cgbasepath1[MAX_PATH] = L"";
+	wchar_t* cgbasepath;
+	wchar_t* cgbin;
+	wchar_t cgglbin1[MAX_PATH] = L"";
+	wchar_t* cgglbin;
+	wchar_t* cg = L"Cg.dll";
+	wchar_t* cggl = L"CgGL.dll";
+	wchar_t* cgd3d9 = L"CgD3D9.dll";
+	wchar_t cgd3d9bin1[MAX_PATH] = L"";
+	wchar_t* cgd3d9bin;
+	wchar_t* gameversion = L"0.0.1.64";
+	wchar_t* dep = L"deploy";
+	wchar_t* airversion = L"0.0.1.117";
+	wchar_t tbb1[MAX_PATH] = L"";
+	wchar_t* tbbfile = L"tbb.dll";
+	wchar_t airdest1[MAX_PATH] = L"";
+	wchar_t* airdest;
+	wchar_t airlatest[MAX_PATH] = L"";
+	wchar_t* airlatest1;
+	wchar_t buffer_11[MAX_PATH] = L"Resources";
+	wchar_t* flash;
+	wchar_t* air = L"Adobe AIR.dll";
+	wchar_t buffer_11a[MAX_PATH] = L"NPSWF32.dll";
+	wchar_t* flasha;
+	wchar_t flashdest1[MAX_PATH] = L"";
+	wchar_t* flashdest;
+	wchar_t flashlatest1[MAX_PATH] = L"";
+	wchar_t* flashlatest;
+	wchar_t cgdest1[MAX_PATH] = L"";
+	wchar_t* cgdest;
+	wchar_t cggldest1[MAX_PATH] = L"";
+	wchar_t* cggldest;
+	wchar_t cgd3d9dest1[MAX_PATH] = L"";
+	wchar_t* cgd3d9dest;
+
+	wchar_t* commonfiles;
+	wchar_t adobedir1[MAX_PATH] = L"";
+	wchar_t* adobedir;
+	wchar_t commonfiles1[MAX_PATH] = L"";
+	wchar_t* asd212;
 
 
-	airclient = airclient1;
-
-
-	wcsncat_s(
-		gameclient1,
-		MAX_PATH,
-		&cwd[0],
-		_TRUNCATE
-		);
-
-	gameclient = gameclient1;
-
-
+	wchar_t proj1[MAX_PATH] = L"projects";
+	wchar_t* proj;
 	proj = proj1;
 
 	lolair = lolair1;
@@ -288,7 +286,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(airclient, lolair);
 	PathAppend(airclient, rel);
 
-
+	wchar_t sol1[MAX_PATH] = L"solutions";
+	wchar_t* sol;
 	sol = sol1;
 
 	lolgame = lolgame1;
@@ -296,86 +295,69 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(gameclient, sol);
 	PathAppend(gameclient, lolgame);
 	PathAppend(gameclient, rel);
-
 	adobepath = adobepath1;
-
-
 	wcsncat_s(
-		asd,
+		commonfiles1,
 		MAX_PATH,
 		progdrive,
 		_TRUNCATE
 		);
 
-	wchar_t* asd1;
-	wchar_t asd2[MAX_PATH] = L"";
-	wchar_t* asd21;
-	asd1 = asd;
 
-	asd21 = asd2;
+	commonfiles = commonfiles1;
+
+	adobedir = adobedir1;
 
 	wcsncat_s(
-		asd21,
+		adobedir,
 		MAX_PATH,
 		constants[1].c_str(),
 		_TRUNCATE
 		);
 
-
-
 	PathCombine(
 		adobepath,
-		asd1,
-		asd21
+		commonfiles,
+		adobedir
 		);
-
 
 	cgbin = cgbin1;
 	wcsncat_s(
-		asd233,
+		cgbasepath1,
 		MAX_PATH,
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		_TRUNCATE
 		);
 
-
-	asd12 = asd233;
-
+	cgbasepath = cgbasepath1;
 
 	PathCombine(
 		cgbin,
-		asd12,
+		cgbasepath,
 		cg
 		);
 
-
 	cgglbin = cgglbin1;
-
 
 	PathCombine(
 		cgglbin,
-		asd12,
+		cgbasepath,
 		cggl
 		);
-
 
 	cgd3d9bin = cgd3d9bin1;
 
 	PathCombine(
 		cgd3d9bin,
-		asd12,
+		cgbasepath,
 		cgd3d9
 		);
 
-
 	PathAppend(gameclient, gameversion);
-
 	PathAppend(gameclient, dep);
-
-
 	PathAppend(airclient, airversion);
 	PathAppend(airclient, dep);
-	PathAppend(airclient, asd21);
+	PathAppend(airclient, adobedir);
 
 	std::wifstream garena(L"lol.exe");
 
@@ -387,113 +369,73 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		wchar_t *garenagame = L"Game";
 
-		wchar_t airclient1[MAX_PATH] = L"";
-		wcsncat_s(
-			airclient1,
-			MAX_PATH,
-			&drive,
-			_TRUNCATE
-			);
+		initbasepaths();
 
-		wchar_t* airclient;
-		airclient = airclient1;
-		wchar_t gameclient1[MAX_PATH] = L"";
-		wcsncat_s(
-			gameclient1,
-			MAX_PATH,
-			&drive,
-			_TRUNCATE
-			);
-
-		wchar_t* gameclient;
-		gameclient = gameclient1;
 		PathAppend(gameclient, garenagame);
-		wchar_t asd22[MAX_PATH] = L"";
+
 		wcsncat_s(
 			asd22,
 			MAX_PATH,
 			constants[2].c_str(),
 			_TRUNCATE
 			);
-		wchar_t* asd212;
+
 		asd212 = asd22;
 
 		PathAppend(airclient, asd212);
 	}
 
-
 	tbb = tbb1;
 
-
-	PathAppend(tbb, gameclient);
-	PathAppend(tbb, tbbfile);
+	PathCombine(tbb, gameclient, tbbfile);
 
 	airdest = airdest1;
-
-
-
 	PathCombine(
 		airdest,
 		airclient,
 		air
 		);
 
-
 	airlatest1 = airlatest;
-
 	PathCombine(
 		airlatest,
 		adobepath,
 		air
 		);
 
-
 	flash = buffer_11;
-
-
 	flasha = buffer_11a;
-
 	PathAppend(flash, flasha);
 
-
 	flashdest = flashdest1;
-
 	PathCombine(
 		flashdest,
 		airclient,
 		flash
 		);
 
-
 	flashlatest = flashlatest1;
-
 	PathCombine(
 		flashlatest,
 		adobepath,
 		flash
 		);
 
-
 	cgdest = cgdest1;
-
 	PathCombine(
 		cgdest,
 		gameclient,
 		cg
 		);
 
-
 	cggldest = cggldest1;
-
 	PathCombine(
 		cggldest,
 		gameclient,
 		cggl
 		);
 
-
 	cgd3d9dest = cgd3d9dest1;
-
 	PathCombine(
 		cgd3d9dest,
 		gameclient,
@@ -502,7 +444,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	pathcontainer[1] << (std::wstring(airdest) + constants[0]);
 	pathcontainer[2] << (std::wstring(flashdest) + constants[0]);
-	pathcontainer[3] << (std::wstring(&tbb[0]) + constants[0]);
+	pathcontainer[3] << (std::wstring(tbb) + constants[0]);
 
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
@@ -561,8 +503,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
 	std::wstring unblocks[3] = { pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 
-
-	for(std::wstring& e : unblocks)
+	for (std::wstring& e : unblocks)
 	{
 		DeleteFile(e.c_str());
 	}
