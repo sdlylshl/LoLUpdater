@@ -65,8 +65,8 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 
 	pathcontainer[0].str(std::wstring());
 	pathcontainer[0].clear();
-	*unblocker1 = { '\0' };
-	*unblocker21 = { '\0' };
+	*unblocker1 = '\0';
+	*unblocker21 = '\0';
 	SHELLEXECUTEINFOW ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
