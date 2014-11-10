@@ -126,12 +126,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-#ifdef DEBUG
-	SetConsoleOutputCP(CP_UTF8);
-	AllocConsole();
-	_wfreopen(L"CONOUT$", L"w", stdout);
-#endif
-
 	MSG Msg;
 	WNDCLASSEXW wc;
 	std::wstring g_szClassName(L"mainwindow1");
@@ -221,41 +215,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(airclient, garenaair);
 	}
 
-	wchar_t* adobepath;
-	wchar_t* cgbasepath;
-	wchar_t* cgbin;
-	wchar_t* cgglbin;
-	wchar_t* cgd3d9bin;
-	wchar_t* airdest;
-	wchar_t* airlatest1;
-
-
-	wchar_t* flashdest;
-	wchar_t* flashlatest;
-	wchar_t* cgdest;
-	wchar_t* cggldest;
-	wchar_t* cgd3d9dest;
-	wchar_t* commonfiles;
-	wchar_t* adobedir;
-
-	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
-	wchar_t airdest1[MAX_PATH + 1] = L"";
-	wchar_t cgglbin1[MAX_PATH + 1] = L"";
-	wchar_t cgbin1[MAX_PATH + 1] = L"";
-	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
-	wchar_t adobepath1[MAX_PATH + 1] = L"";
-	wchar_t flashdest1[MAX_PATH + 1] = L"";
-	wchar_t flashlatest1[MAX_PATH + 1] = L"";
-	wchar_t cgdest1[MAX_PATH + 1] = L"";
-	wchar_t cggldest1[MAX_PATH + 1] = L"";
-	wchar_t adobedir1[MAX_PATH + 1] = L"";
-	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
-	wchar_t commonfiles1[MAX_PATH + 1] = L"";
-	wchar_t tbb1[MAX_PATH + 1] = L"";
-	wchar_t airlatest[MAX_PATH + 1] = L"";
-
-
-
 	wchar_t* rads = L"RADS";
 	wchar_t* rel = L"releases";
 	PathAppend(airclient, rads);
@@ -266,7 +225,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(gameclient, L"solutions");
 	PathAppend(gameclient, L"lol_game_client_sln");
 	PathAppend(gameclient, rel);
+	wchar_t* adobepath;
+	wchar_t adobepath1[MAX_PATH + 1] = L"";
 	adobepath = adobepath1;
+	wchar_t* commonfiles;
+	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		commonfiles1,
 		MAX_PATH + 1,
@@ -276,6 +239,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	commonfiles = commonfiles1;
 
+	wchar_t* adobedir;
+	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	adobedir = adobedir1;
 
 	wcsncat_s(
@@ -291,7 +256,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		adobedir
 		);
 
-	cgbin = cgbin1;
+
+	wchar_t* cgbasepath;
+	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		cgbasepath1,
 		MAX_PATH + 1,
@@ -302,24 +269,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	cgbasepath = cgbasepath1;
 
 	wchar_t* cg = L"Cg.dll";
-	wchar_t* cggl = L"CgGL.dll";
-	wchar_t* cgd3d9 = L"CgD3D9.dll";
+	wchar_t* cgbin;
+	wchar_t cgbin1[MAX_PATH + 1] = L"";
+	cgbin = cgbin1;
 	PathCombine(
 		cgbin,
 		cgbasepath,
 		cg
 		);
-
+	wchar_t* cgglbin;
+	wchar_t cgglbin1[MAX_PATH + 1] = L"";
 	cgglbin = cgglbin1;
-
+	wchar_t* cggl = L"CgGL.dll";
 	PathCombine(
 		cgglbin,
 		cgbasepath,
 		cggl
 		);
-
+	wchar_t* cgd3d9bin;
+	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	cgd3d9bin = cgd3d9bin1;
-
+	wchar_t* cgd3d9 = L"CgD3D9.dll";
 	PathCombine(
 		cgd3d9bin,
 		cgbasepath,
@@ -333,9 +303,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(airclient, dep);
 	PathAppend(airclient, adobedir);
 
+	wchar_t tbb1[MAX_PATH + 1] = L"";
 	tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
-
+	wchar_t* airdest;
+	wchar_t airdest1[MAX_PATH + 1] = L"";
 	airdest = airdest1;
 	wchar_t* air = L"Adobe AIR.dll";
 	PathCombine(
@@ -343,7 +315,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		airclient,
 		air
 		);
-
+	wchar_t* airlatest1;
+	wchar_t airlatest[MAX_PATH + 1] = L"";
 	airlatest1 = airlatest;
 	PathCombine(
 		airlatest,
@@ -356,27 +329,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	flash = res;
 	PathAppend(flash, L"NPSWF32.dll");
 
+	wchar_t* flashdest;
+	wchar_t flashdest1[MAX_PATH + 1] = L"";
 	flashdest = flashdest1;
 	PathCombine(
 		flashdest,
 		airclient,
 		flash
 		);
-
+	wchar_t* flashlatest;
+	wchar_t flashlatest1[MAX_PATH + 1] = L"";
 	flashlatest = flashlatest1;
 	PathCombine(
 		flashlatest,
 		adobepath,
 		flash
 		);
-
+	wchar_t* cgdest;
+	wchar_t cgdest1[MAX_PATH + 1] = L"";
 	cgdest = cgdest1;
 	PathCombine(
 		cgdest,
 		gameclient,
 		cg
 		);
-
+	wchar_t* cggldest;
+	wchar_t cggldest1[MAX_PATH + 1] = L"";
 	cggldest = cggldest1;
 	PathCombine(
 		cggldest,
@@ -384,6 +362,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cggl
 		);
 
+	wchar_t* cgd3d9dest;
+	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
 	cgd3d9dest = cgd3d9dest1;
 	PathCombine(
 		cgd3d9dest,
