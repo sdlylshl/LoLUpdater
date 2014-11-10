@@ -2,18 +2,12 @@
 #include <fstream>
 #include <vector>
 #include <memory>
-
 #include <Shlwapi.h>
 #include <direct.h>
 #include <Shlobj.h>
 #include <wininet.h>
 
 bool done = false;
-// used to keep filepaths together with the unblock tag (constants[0])
-// 0 = download buffer (used in the download function to store nvidiacg/adobeair installer, cleared after each use)
-// 1 = adobe air.dll destination (incl working directory)
-// 2 = npswf32.dll destination (incl working directory)
-// 3 = tbb.dll destination (incl working directory)
 std::wstringstream pathcontainer[4];
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
@@ -52,9 +46,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		);
 
 	pathcontainer[0] << (std::wstring(unblocker) + constants[0]);
-
 	DeleteFile(pathcontainer[0].str().c_str());
-
 	pathcontainer[0].str(std::wstring());
 	pathcontainer[0].clear();
 	*unblocker1 = '\0';
@@ -174,7 +166,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&cwd[0],
 		_TRUNCATE
 		);
-	wchar_t gameclient1[MAX_PATH + 1] = L"";
 	wchar_t airclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		airclient1,
@@ -182,7 +173,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&cwd[0],
 		_TRUNCATE
 		);
-
+	wchar_t gameclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		gameclient1,
 		MAX_PATH + 1,
@@ -196,9 +187,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	std::wifstream garena(L"lol.exe");
 	if (garena.good())
 	{
-		*airclient1 = '\0';
-		*gameclient1 = '\0';
-
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
 		wchar_t* garenaair;
@@ -212,7 +200,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		garenaair = garenaair1;
 		PathAppend(airclient, garenaair);
 	}
-
 	wchar_t* rads = L"RADS";
 	wchar_t* rel = L"releases";
 	PathAppend(airclient, rads);
@@ -236,7 +223,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	commonfiles = commonfiles1;
-
 	wchar_t* adobedir;
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	adobedir = adobedir1;
@@ -262,7 +248,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		_TRUNCATE
 		);
-
 	cgbasepath = cgbasepath1;
 
 	wchar_t* cg = L"Cg.dll";
@@ -391,13 +376,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		{
 			avx2 = 0;
 		}
-
 		__cpuidex(abcd, 7, 0);
 		if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
 		{
 			avx2 = 0;
 		}
-
 		__cpuidex(abcd, 0x80000001, 0);
 		if ((abcd[2] & (1 << 5)) == 0)
 		{
@@ -440,8 +423,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 
+	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 	for (std::wstring& e : unblocks)
 	{
 		DeleteFile(e.c_str());
@@ -453,6 +436,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
 	}
-
 	return Msg.wParam;
 }
