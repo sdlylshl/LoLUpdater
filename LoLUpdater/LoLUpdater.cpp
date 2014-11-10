@@ -67,8 +67,8 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 
 	pathcontainer[0].str(std::wstring());
 	pathcontainer[0].clear();
-	*unblocker1 = { '/0' };
-	*unblocker21 = { '/0' };
+	*unblocker1 = { '\0' };
+	*unblocker21 = { '\0' };
 	SHELLEXECUTEINFOW ShExecInfo = { 0 };
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -323,15 +323,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (garena.good())
 	{
-		airclient = L"";
-
-		gameclient = L"";
-
-		wchar_t* garenagame = L"Game";
-
+		*airclient = '\0';
+		*gameclient = '\0';
 		initbasepaths();
 
-		PathAppend(gameclient, garenagame);
+		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
 		wchar_t* garenaair;
 
@@ -341,9 +337,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			constants[2].c_str(),
 			_TRUNCATE
 			);
-
 		garenaair = garenaair1;
-
 		PathAppend(airclient, garenaair);
 	}
 
