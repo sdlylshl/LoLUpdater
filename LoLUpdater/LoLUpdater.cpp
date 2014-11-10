@@ -1,8 +1,153 @@
-#include <LoLUpdater.h>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <memory>
+
+#include <Windows.h>
+#include <Shlwapi.h>
+#include <direct.h>
+
+bool done = false;
+// 0 = download cache
+// 1 = adobe install dir
+// 2 = unblock air
+// 3 = unblock flash
+// 4 = unblock tbb
+std::wstringstream pathcontainer[5];
+
+const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
+wchar_t* tbb;
+std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
+wchar_t *cwd = nullptr;
+wchar_t ExeName[MAX_PATH];
+const wchar_t* DriveLetter = &ExeName[0];
+HWND hwnd;
+const std::wstring g_szClassName(L"mainwindow1");
+RECT start = { 0, 0, 100, 20 };
+RECT end = { 0, 100, 100, 120 };
+
+void download(std::wstring url, std::wstring file, std::wstring args)
+{
+	URLDownloadToFile(
+		nullptr,
+		url.c_str(),
+		file.c_str(),
+		0,
+		nullptr
+		);
+
+	wchar_t unblocker[MAX_PATH] = L"";
+	wchar_t* unblocker1;
+	unblocker1 = unblocker;
+
+	wchar_t unblocker2[] = L"";
+
+	wcsncat_s(
+		unblocker2,
+		MAX_PATH,
+		DriveLetter,
+		_TRUNCATE
+		);
+
+	wchar_t* unblockerq;
+	unblockerq = unblocker2;
+
+	wchar_t unblocker3[] = L"";
+
+	wcsncat_s(
+		unblocker3,
+		MAX_PATH,
+		file.c_str(),
+		_TRUNCATE
+		);
+
+	wchar_t* unblockerqq;
+	unblockerqq = unblocker3;
+
+	PathCombine(
+		unblocker1,
+		unblockerq,
+		unblockerqq
+		);
+
+	pathcontainer[0] << std::wstring(unblocker1 + constants[0]);
+
+	DeleteFile(pathcontainer[0].str().c_str());
+	pathcontainer[0].str(std::wstring());
+	pathcontainer[0].clear();
+
+	SHELLEXECUTEINFOW ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = L"runas";
+	ShExecInfo.lpFile = file.c_str();
+	ShExecInfo.lpParameters = args.c_str();
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteEx(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+}
+
+void tbbdownload(const std::wstring& file)
+{
+	std::wstring* ftp[MAX_PATH];
+
+	UrlCombine(
+		L"http://lol.jdhpro.com/",
+		file.c_str(),
+		reinterpret_cast<LPWSTR>(ftp),
+		reinterpret_cast<LPDWORD>(ftp),
+		0
+		);
+
+	URLDownloadToFile(
+		nullptr,
+		reinterpret_cast<LPWSTR>(ftp),
+		tbb,
+		0,
+		nullptr
+		);
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_PAINT:
+		PAINTSTRUCT ps;
+		HDC hdc;
+		hdc = BeginPaint(hwnd, &ps);
+		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
+		if (done == true)
+		{
+			DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
+			EndPaint(hwnd, &ps);
+		}
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+	return 0;
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef DEBUG
+	SetConsoleOutputCP(CP_UTF8);
+	AllocConsole();
+	_wfreopen(L"CONOUT$", L"w", stdout);
+#endif
+
 	MSG Msg;
 	WNDCLASSEXW wc;
 
@@ -29,44 +174,56 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	cwd = _wgetcwd(nullptr, 0);
+	GetModuleFileName(nullptr, ExeName, MAX_PATH);
+	_wgetcwd(
+		reinterpret_cast<LPWSTR>(cwd),
+		MAX_PATH
+		);
+	wchar_t progdrive1[MAX_PATH];
+	GetWindowsDirectory(
+		progdrive1,
+		MAX_PATH
+		);
+	const wchar_t* progdrive = &progdrive1[0];
 
-#ifdef DEBUG
-	SetConsoleOutputCP(CP_UTF8);
-	AllocConsole();
-	_wfreopen(L"CONOUT$", L"w", stdout);
-#endif
-
-	std::vector<std::wstring> cgbinpath(MAX_PATH, std::wstring());
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
 		MAX_PATH);
+
+
+	wcsncat_s(
+		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		MAX_PATH,
+		L"\\",
+		_TRUNCATE
+		);
 
 	// base
 	wchar_t airclient1[MAX_PATH] = L"";
 	wcsncat_s(
 		airclient1,
 		MAX_PATH,
-		cgbinpath[0].c_str(),
+		&cwd[0],
 		_TRUNCATE
 		);
 
 	wchar_t* airclient;
 	airclient = airclient1;
+
 	wchar_t gameclient1[MAX_PATH] = L"";
 	wcsncat_s(
 		gameclient1,
 		MAX_PATH,
-		cgbinpath[0].c_str(),
+		&cwd[0],
 		_TRUNCATE
 		);
 	wchar_t* gameclient;
 	gameclient = gameclient1;
 
-	// Constants
 	wchar_t* rel = L"releases";
 	wchar_t* rads = L"RADS";
 
-	// air
 	wchar_t proj1[MAX_PATH] = L"projects";
 	wchar_t* proj;
 	proj = proj1;
@@ -77,39 +234,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(airclient, proj);
 	PathAppend(airclient, lolair);
 	PathAppend(airclient, rel);
-	// deallocate lolair1
 
-	//game
 	wchar_t sol1[MAX_PATH] = L"solutions";
 	wchar_t* sol;
 	sol = sol1;
 	wchar_t lolgame1[] = L"lol_game_client_sln";
 	wchar_t* lolgame;
 	lolgame = lolgame1;
-	PathAppend(airclient, rads);
-	PathAppend(airclient, sol);
-	PathAppend(airclient, lolgame);
-	PathAppend(airclient, rel);
-	// deallocate lolgame1
+	PathAppend(gameclient, rads);
+	PathAppend(gameclient, sol);
+	PathAppend(gameclient, lolgame);
+	PathAppend(gameclient, rel);
 
-	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
-	wcsncat_s(
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
-		MAX_PATH,
-		L"\\",
-		_TRUNCATE
-		);
-
-	pathcontainer[0] << (std::wstring(cgbinpath[0]) + std::wstring(L":Program Files"));
+	pathcontainer[1] << (progdrive + std::wstring(L":Program Files"));
 
 	if (sizeof(void*) == 4)
 	{
-		pathcontainer[0] << std::wstring(L" (x86)");
+		pathcontainer[1] << std::wstring(L" (x86)");
 	}
 
-	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
-
-	pathcontainer[0] << std::wstring(L"\\Common Files\\");
+	pathcontainer[1] << std::wstring(L"\\Common Files\\");
 
 	wchar_t adobepath1[MAX_PATH] = L"";
 	wchar_t* adobepath;
@@ -119,7 +263,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wcsncat_s(
 		asd,
 		MAX_PATH,
-		pathcontainer[0].str().c_str(),
+		pathcontainer[1].str().c_str(),
 		_TRUNCATE
 		);
 	wchar_t* asd1;
@@ -210,7 +354,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wcsncat_s(
 			airclient1,
 			MAX_PATH,
-			cgbinpath[0].c_str(),
+			DriveLetter,
 			_TRUNCATE
 			);
 
@@ -220,7 +364,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wcsncat_s(
 			gameclient1,
 			MAX_PATH,
-			cgbinpath[0].c_str(),
+			DriveLetter,
 			_TRUNCATE
 			);
 
@@ -332,9 +476,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9
 		);
 
-	pathcontainer[1] << (std::wstring(airdest1) + constants[0]);
-	pathcontainer[2] << (std::wstring(flashdest1) + constants[0]);
-	pathcontainer[3] << (std::wstring(tbb1) + constants[0]);
+	pathcontainer[2] << (std::wstring(airdest1) + constants[0]);
+	pathcontainer[3] << (std::wstring(flashdest1) + constants[0]);
+	pathcontainer[4] << (std::wstring(tbb1) + constants[0]);
 
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
@@ -384,12 +528,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wprintf(cgd3d9bin);
 	wprintf(cgd3d9dest);
 #endif
+	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
+	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	std::wstring unblocks[3] = { std::wstring(pathcontainer[1].str().c_str()), std::wstring(pathcontainer[2].str().c_str()), std::wstring(pathcontainer[3].str().c_str()) };
+	std::wstring unblocks[3] = { pathcontainer[2].str(), pathcontainer[3].str(), pathcontainer[4].str() };
 	for (std::wstring i : unblocks)
 	{
 		DeleteFile(&i[0]);
