@@ -1,5 +1,3 @@
-
-
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -36,7 +34,6 @@ wchar_t unblocker2[MAX_PATH + 1] = L"";
 wchar_t* unblockerq;
 
 wchar_t* unblockerqq;
-
 
 wchar_t gameclient1[MAX_PATH + 1] = L"";
 wchar_t airclient1[MAX_PATH + 1] = L"";
@@ -241,7 +238,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* cgd3d9dest;
 	wchar_t* commonfiles;
 	wchar_t* adobedir;
-
 
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	wchar_t airdest1[MAX_PATH + 1] = L"";
@@ -462,35 +458,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			tbbdownload(L"Avx2.dll");
 		}
 		else
-		{ 
-		int cpuInfo[4];
-		__cpuid(cpuInfo, 1);
-		if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 		{
-				tbbdownload(L"Avx.dll");
-
-		}
-		else
-		{
-			if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
+			int cpuInfo[4];
+			__cpuid(cpuInfo, 1);
+			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) || false))
 			{
-				tbbdownload(L"Sse2.dll");
+				tbbdownload(L"Avx.dll");
 			}
 			else
 			{
-				if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					tbbdownload(L"Sse.dll");
+					tbbdownload(L"Sse2.dll");
 				}
 				else
 				{
-					tbbdownload(L"Default.dll");
+					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
+					{
+						tbbdownload(L"Sse.dll");
+					}
+					else
+					{
+						tbbdownload(L"Default.dll");
+					}
 				}
 			}
 		}
-
-
-	}
 	}
 
 	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
