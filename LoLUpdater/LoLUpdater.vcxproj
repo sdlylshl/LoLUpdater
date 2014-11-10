@@ -47,6 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>C:\Riot Games\League of Legends</OutDir>
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -90,6 +91,13 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -100,6 +108,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>Urlmon.Lib;Shlwapi.Lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
+      <AssemblyDebug>false</AssemblyDebug>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
