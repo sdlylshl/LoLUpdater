@@ -40,14 +40,12 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		nullptr
 		);
 
-
 	wchar_t* unblocker;
 	unblocker = unblocker1;
 
 	wchar_t* unblocker2;
 	wchar_t unblocker21[MAX_PATH + 1] = L"";
 	unblocker2 = unblocker21;
-
 
 	wcsncat_s(
 		unblocker2,
@@ -323,8 +321,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (garena.good())
 	{
-		*airclient = '\0';
-		*gameclient = '\0';
+		*airclient1 = '\0';
+		*gameclient1 = '\0';
 		initbasepaths();
 
 		PathAppend(gameclient, L"Game");
