@@ -24,7 +24,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		file.c_str(),
 		0,
 		nullptr
-		);
+		); 
 
 	wchar_t* unblocker;
 	unblocker = unblocker1;
@@ -360,7 +360,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GetVersionEx(&osvi);
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
-		downloadtbb(L"Xp.dll");
+		downloadtbb(L"XP.dll");
 	}
 	else
 	{
@@ -385,7 +385,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (avx2 != 0)
 		{
-			downloadtbb(L"Avx2.dll");
+			downloadtbb(L"AVX2.dll");
 		}
 		else
 		{
@@ -393,19 +393,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
 			{
-				downloadtbb(L"Avx.dll");
+				downloadtbb(L"AVX.dll");
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					downloadtbb(L"Sse2.dll");
+					downloadtbb(L"SSE2.dll");
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						downloadtbb(L"Sse.dll");
+						downloadtbb(L"SSE.dll");
 					}
 					else
 					{
