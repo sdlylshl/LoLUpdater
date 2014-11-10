@@ -20,10 +20,10 @@ std::wstringstream pathcontainer[4];
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t gameclient1[MAX_PATH + 1] = L"";
-wchar_t airclient1[MAX_PATH + 1] = L"";
 wchar_t unblocker1[MAX_PATH + 1] = L"";
+RECT start = { 0, 0, 100, 20 };
 RECT end = { 0, 100, 100, 120 };
+
 void download(std::wstring url, std::wstring file, std::wstring args)
 {
 	URLDownloadToFile(
@@ -109,7 +109,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		PAINTSTRUCT ps;
 		HDC hdc;
-		RECT start = { 0, 0, 100, 20 };
 		hdc = BeginPaint(hwnd, &ps);
 		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
 		if (done == true)
@@ -122,24 +121,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	return 0;
-}
-
-void initbasepaths()
-{
-	wcsncat_s(
-		airclient1,
-		MAX_PATH + 1,
-		&cwd[0],
-		_TRUNCATE
-		);
-
-	wcsncat_s(
-		gameclient1,
-		MAX_PATH + 1,
-		&cwd[0],
-		_TRUNCATE
-		);
-
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -200,7 +181,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&cwd[0],
 		_TRUNCATE
 		);
-	initbasepaths();
+	wchar_t gameclient1[MAX_PATH + 1] = L"";
+	wchar_t airclient1[MAX_PATH + 1] = L"";
+	wcsncat_s(
+		airclient1,
+		MAX_PATH + 1,
+		&cwd[0],
+		_TRUNCATE
+		);
+
+	wcsncat_s(
+		gameclient1,
+		MAX_PATH + 1,
+		&cwd[0],
+		_TRUNCATE
+		);
+	wchar_t* airclient;
+	wchar_t* gameclient;
+	airclient = airclient1;
+	gameclient = gameclient1;
+	std::wifstream garena(L"lol.exe");
+	if (garena.good())
+	{
+		*airclient1 = '\0';
+		*gameclient1 = '\0';
+
+
+		PathAppend(gameclient, L"Game");
+		wchar_t garenaair1[MAX_PATH + 1] = L"";
+		wchar_t* garenaair;
+
+		wcsncat_s(
+			garenaair1,
+			MAX_PATH + 1,
+			constants[2].c_str(),
+			_TRUNCATE
+			);
+		garenaair = garenaair1;
+		PathAppend(airclient, garenaair);
+	}
 
 	wchar_t* adobepath;
 	wchar_t* cgbasepath;
@@ -209,8 +228,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* cgd3d9bin;
 	wchar_t* airdest;
 	wchar_t* airlatest1;
-	wchar_t* airclient;
-	wchar_t* gameclient;
+
 
 	wchar_t* flashdest;
 	wchar_t* flashlatest;
@@ -236,8 +254,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	wchar_t airlatest[MAX_PATH + 1] = L"";
 
-	airclient = airclient1;
-	gameclient = gameclient1;
+
 
 	wchar_t* rads = L"RADS";
 	wchar_t* rel = L"releases";
@@ -315,28 +332,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	PathAppend(airclient, L"0.0.1.117");
 	PathAppend(airclient, dep);
 	PathAppend(airclient, adobedir);
-
-	std::wifstream garena(L"lol.exe");
-
-	if (garena.good())
-	{
-		*airclient1 = '\0';
-		*gameclient1 = '\0';
-		initbasepaths();
-
-		PathAppend(gameclient, L"Game");
-		wchar_t garenaair1[MAX_PATH + 1] = L"";
-		wchar_t* garenaair;
-
-		wcsncat_s(
-			garenaair1,
-			MAX_PATH + 1,
-			constants[2].c_str(),
-			_TRUNCATE
-			);
-		garenaair = garenaair1;
-		PathAppend(airclient, garenaair);
-	}
 
 	tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
