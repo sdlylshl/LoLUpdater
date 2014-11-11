@@ -16,20 +16,21 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
 
-void install(std::wstring file, std::wstring args)
+void runAndWait(std::wstring file, std::wstring args)
 {
-	SHELLEXECUTEINFO ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo.hwnd = nullptr;
-	ShExecInfo.lpVerb = L"runas";
-	ShExecInfo.lpFile = file.c_str();
-	ShExecInfo.lpParameters = args.c_str();
-	ShExecInfo.lpDirectory = nullptr;
-	ShExecInfo.nShow = SW_SHOW;
-	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteEx(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	SHELLEXECUTEINFO ei = {};
+	ei.cbSize = sizeof(SHELLEXECUTEINFO);
+	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei.lpVerb = L"runas";
+	ei.lpFile = file.c_str();
+	ei.lpParameters = args.c_str();
+	ei.nShow = SW_SHOW;
+
+	if (!ShellExecuteEx(&ei))
+		throw std::runtime_error("failed to execute program");
+
+	if (WaitForSingleObject(ei.hProcess, INFINITE) == WAIT_FAILED)
+		throw std::runtime_error("failed to wait for program to finish");
 }
 
 void download(std::wstring url, std::wstring file, std::wstring args)
@@ -67,7 +68,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	pathcontainer[0].clear();
 	*unblocker1 = '\0';
 	*unblocker21 = '\0';
-	install(file, args);
+	runAndWait(file, args);
 }
 
 void downloadtbb(const std::wstring& file)
@@ -152,7 +153,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	fclose(f);
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
-	install(cgsetup, L"/verysilent /TYPE = compact");
+	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
