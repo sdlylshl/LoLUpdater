@@ -7,7 +7,7 @@
 #include <Shlobj.h>
 #include <wininet.h>
 bool done = false;
-std::wstringstream unblk[2];
+std::wstringstream unblk;
 const std::wstring adobeairpath = {std::wstring(L"Adobe AIR\\Versions\\1.0")};
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
@@ -17,12 +17,12 @@ RECT end = { 2, 20, 0, 0 };
 
 void unblockFile(std::wstring const& path)
 {
-	unblk[0] << (cwd + path + L":Zone.Identifier");
-	if (DeleteFile(unblk[0].str().c_str()) == 0)
+	unblk << (cwd + path + L":Zone.Identifier");
+	if (DeleteFile(unblk.str().c_str()) == 0)
 		throw std::runtime_error("failed to unblock file");
 
-	unblk[0].str(std::wstring());
-	unblk[0].clear();
+	unblk.str(std::wstring());
+	unblk.clear();
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -42,48 +42,21 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 		throw std::runtime_error("failed to wait for program to finish");
 }
 
-void downloadFile(std::wstring const& url, std::wstring const& file, BOOL tbb)
+void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	if (tbb)
-	{
-		wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
-		DWORD dwLength = sizeof(finalurl);
-		UrlCombine(
-			L"http://lol.jdhpro.com/",
-			file.c_str(),
-			finalurl,
-			&dwLength,
-			0
-			);
-		unblk[0] << (finalurl + file);
-		unblk[1] << (cwd + tbb);
-		if (URLDownloadToFile(nullptr, unblk[0].str().c_str(), file.c_str(), 0, nullptr) != S_OK)
-			throw std::runtime_error("failed to download file");
 
-		unblk[0].str(std::wstring());
-		unblk[0].clear();
-		if (DeleteFile(unblk[1].str().c_str()) == 0)
-			; // well shit, this is very unfortunate
-		unblk[1].str(std::wstring());
-		unblk[1].clear();
-	}
-	else
-	{
 		if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 			throw std::runtime_error("failed to download file");
-	}	
+		if (DeleteFile(file.c_str()) == 0)
+			; // well shit, this is very unfortunate
 }
 
 // todo: explore temp path options
 void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
-	downloadFile(url, file, false);
+	downloadFile(url, file);
 	unblockFile(file);
 	runAndWait(file, args);
-	
-
-	if (DeleteFile(file.c_str()) == 0)
-		; // well shit, this is very unfortunate
 }
 
 void copyerrorcheck(BOOL res)
@@ -385,9 +358,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
+
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
+	DWORD dwLength = sizeof(finalurl);
+	wchar_t tbbname[INTERNET_MAX_URL_LENGTH];
+
+
+
+
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
-		downloadFile(nullptr, L"XP.dll", true);
+		wcsncat_s(
+			tbbname,
+			INTERNET_MAX_URL_LENGTH,
+			L"XP.dll",
+			_TRUNCATE
+			);
 	}
 	else
 	{
@@ -412,7 +398,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (avx2 != 0)
 		{
-			downloadFile(nullptr, L"AVX2.dll", true);
+			wcsncat_s(
+				tbbname,
+				INTERNET_MAX_URL_LENGTH,
+				L"AVX2.dll",
+				_TRUNCATE
+				);
 		}
 		else
 		{
@@ -420,28 +411,60 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
 			{
-				downloadFile(nullptr, L"AVX.dll", true);
+				wcsncat_s(
+					tbbname,
+					INTERNET_MAX_URL_LENGTH,
+					L"AVX.dll",
+					_TRUNCATE
+					);
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					downloadFile(nullptr, L"SSE2.dll", true);
+					wcsncat_s(
+						tbbname,
+						INTERNET_MAX_URL_LENGTH,
+						L"SSE2.dll",
+						_TRUNCATE
+						);
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						downloadFile(nullptr, L"SSE.dll", true);
+						wcsncat_s(
+							tbbname,
+							INTERNET_MAX_URL_LENGTH,
+							L"SSE.dll",
+							_TRUNCATE
+							);
 					}
 					else
 					{
-						downloadFile(nullptr, L"Default.dll", true);
+						wcsncat_s(
+							tbbname,
+							INTERNET_MAX_URL_LENGTH,
+							L"Default.dll",
+							_TRUNCATE
+							);
 					}
 				}
 			}
 		}
 	}
+
+	UrlCombine(
+		L"http://lol.jdhpro.com/",
+		tbbname,
+		finalurl,
+		&dwLength,
+		0
+		);
+	unblk << (std::wstring(finalurl) + std::wstring(tbbname));
+	downloadFile(unblk.str().c_str(), tbb);
+	unblk.str(std::wstring());
+	unblk.clear();
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
