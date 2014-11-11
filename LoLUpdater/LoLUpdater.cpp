@@ -6,8 +6,8 @@
 #include <direct.h>
 #include <Shlobj.h>
 #include <wininet.h>
-
 bool done = false;
+
 std::wstringstream pathcontainer[4];
 const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
 wchar_t* tbb;
@@ -15,6 +15,7 @@ wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
+
 
 void install(std::wstring file, std::wstring args)
 {
@@ -40,7 +41,7 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 		file.c_str(),
 		0,
 		nullptr
-		); 
+		);
 
 	wchar_t* unblocker;
 	unblocker = unblocker1;
@@ -141,7 +142,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		g_szClassName.c_str(),
 		L"LoLUpdater",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 480, 240,
+		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
