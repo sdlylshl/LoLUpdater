@@ -20,13 +20,13 @@ void unblockFile(std::wstring const& path)
 	unblk << (cwd + path + L":Zone.Identifier");
 	if (DeleteFile(unblk.str().c_str()) == 0)
 		throw std::runtime_error("failed to unblock file");
-
-	unblk.str(std::wstring());
-	unblk.clear();
+	unblk << L"";
+	&unblk.clear;
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
+	unblockFile(file);
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -44,10 +44,8 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-
 		if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 			throw std::runtime_error("failed to download file");
-		unblockFile(file.c_str());
 }
 
 // todo: explore temp path options
@@ -116,7 +114,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
-	UpdateWindow(hwnd);
 	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	FILE* f;
@@ -126,7 +123,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
-	DeleteFile(cgsetup.c_str());
+
+
+	DeleteFile(unblk.str().c_str());
+
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
@@ -357,9 +357,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
 
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
 	DWORD dwLength = sizeof(finalurl);
-	wchar_t tbbname[INTERNET_MAX_URL_LENGTH];
+	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
 
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
@@ -458,7 +458,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	downloadFile(finalurl, tbb);
-
+	unblockFile(tbb);
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
