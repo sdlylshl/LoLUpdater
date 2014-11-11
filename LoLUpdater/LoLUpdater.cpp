@@ -159,14 +159,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr,
 		0,
 		progdrive);
-	wchar_t cgbinpath1[MAX_PATH + 1];
-	wchar_t* cgbinpath;
-	cgbinpath = cgbinpath1;
+	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		cgbinpath,
 		MAX_PATH + 1);
 	wcsncat_s(
-		cgbinpath1,
+		cgbinpath,
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
