@@ -13,8 +13,8 @@ const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstr
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
-RECT start = { 40, 10, 0, 0 };
-RECT end = { 40, 30, 0, 0 };
+RECT start = { 2, 0, 0, 0 };
+RECT end = { 2, 20, 0, 0 };
 
 void install(std::wstring file, std::wstring args)
 {
@@ -103,7 +103,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"Patching..", -1, &start, DT_SINGLELINE | DT_NOCLIP);
+		DrawText(hdc, L"Patching...", -1, &start, DT_SINGLELINE | DT_NOCLIP);
 		if (done == true)
 		{
 			DrawText(hdc, L"Done!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
@@ -194,8 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* gameclient;
 	airclient = airclient1;
 	gameclient = gameclient1;
-	std::wifstream garena(L"lol.exe");
-	if (garena.good())
+	if (std::wifstream(L"lol.exe").good())
 	{
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
