@@ -7,7 +7,7 @@
 #include <Shlobj.h>
 #include <wininet.h>
 bool done = false;
-
+std::wstringstream unblk[2];
 const std::wstring adobeairpath = {std::wstring(L"Adobe AIR\\Versions\\1.0")};
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
@@ -17,8 +17,12 @@ RECT end = { 2, 20, 0, 0 };
 
 void unblockFile(std::wstring const& path)
 {
-	if (DeleteFile((path + L":Zone.Identifier").c_str()) == 0)
+	unblk[0] << (cwd + path + L":Zone.Identifier");
+	if (DeleteFile(unblk[0].str().c_str()) == 0)
 		throw std::runtime_error("failed to unblock file");
+
+	unblk[0].str(std::wstring());
+	unblk[0].clear();
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -38,70 +42,54 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 		throw std::runtime_error("failed to wait for program to finish");
 }
 
-void download(std::wstring const& url, std::wstring const& file, std::wstring const& args)
+void downloadFile(std::wstring const& url, std::wstring const& file, BOOL tbb)
 {
+	if (tbb)
+	{
+		wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
+		DWORD dwLength = sizeof(finalurl);
+		UrlCombine(
+			L"http://lol.jdhpro.com/",
+			file.c_str(),
+			finalurl,
+			&dwLength,
+			0
+			);
+		unblk[0] << (finalurl + file);
+		unblk[1] << (cwd + tbb);
+		if (URLDownloadToFile(nullptr, unblk[0].str().c_str(), file.c_str(), 0, nullptr) != S_OK)
+			throw std::runtime_error("failed to download file");
 
-	if (URLDownloadToFile(
-		nullptr,
-		url.c_str(),
-		file.c_str(),
-		0,
-		nullptr
-		) != S_OK)
-		throw std::runtime_error("failed to download file");
+		unblk[0].str(std::wstring());
+		unblk[0].clear();
+		if (DeleteFile(unblk[1].str().c_str()) == 0)
+			; // well shit, this is very unfortunate
+		unblk[1].str(std::wstring());
+		unblk[1].clear();
+	}
+	else
+	{
+		if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
+			throw std::runtime_error("failed to download file");
+	}	
+}
 
-	wchar_t* unblocker;
-	unblocker = unblocker1;
-
-	wchar_t* unblocker2;
-	wchar_t unblocker21[MAX_PATH + 1] = L"";
-	unblocker2 = unblocker21;
-
-	wcsncat_s(
-		unblocker2,
-		MAX_PATH + 1,
-		file.c_str(),
-		_TRUNCATE
-		);
-
-	PathAppend(
-		unblocker,
-		unblocker2
-		);
-
+// todo: explore temp path options
+void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
+{
+	downloadFile(url, file, false);
 	unblockFile(file);
-
-	*unblocker1 = '\0';
-	*unblocker21 = '\0';
 	runAndWait(file, args);
+	
+
+	if (DeleteFile(file.c_str()) == 0)
+		; // well shit, this is very unfortunate
 }
 
 void copyerrorcheck(BOOL res)
 {
 	if (res = NULL)
 		throw std::runtime_error("failed to copy file");
-}
-
-void downloadtbb(std::wstring const& file)
-{
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
-	DWORD dwLength = sizeof(finalurl);
-	UrlCombine(
-		L"http://lol.jdhpro.com/",
-		file.c_str(),
-		finalurl,
-		&dwLength,
-		0
-		);
-
-	if (URLDownloadToFile(
-		nullptr,
-		finalurl,
-		tbb,
-		0,
-		nullptr
-		) != S_OK)
-		throw std::runtime_error("failed to download file");
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -165,8 +153,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
 
-	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
+	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
+	DeleteFile(cgsetup.c_str());
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
@@ -398,7 +387,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GetVersionEx(&osvi);
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
-		downloadtbb(L"XP.dll");
+		downloadFile(nullptr, L"XP.dll", true);
 	}
 	else
 	{
@@ -423,7 +412,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 		if (avx2 != 0)
 		{
-			downloadtbb(L"AVX2.dll");
+			downloadFile(nullptr, L"AVX2.dll", true);
 		}
 		else
 		{
@@ -431,23 +420,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
 			{
-				downloadtbb(L"AVX.dll");
+				downloadFile(nullptr, L"AVX.dll", true);
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					downloadtbb(L"SSE2.dll");
+					downloadFile(nullptr, L"SSE2.dll", true);
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						downloadtbb(L"SSE.dll");
+						downloadFile(nullptr, L"SSE.dll", true);
 					}
 					else
 					{
-						downloadtbb(L"Default.dll");
+						downloadFile(nullptr, L"Default.dll", true);
 					}
 				}
 			}
@@ -458,7 +447,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
-	unblockFile(tbb);
 	unblockFile(airdest);
 	unblockFile(flashdest);
 	done = true;
