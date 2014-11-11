@@ -186,7 +186,7 @@
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <CompileAs>CompileAsCpp</CompileAs>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <AdditionalOptions>/nologo /DLL /MAP /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>

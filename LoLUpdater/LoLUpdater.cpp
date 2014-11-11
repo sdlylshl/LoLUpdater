@@ -16,6 +16,22 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 0, 0, 100, 20 };
 RECT end = { 0, 100, 100, 120 };
 
+void install(std::wstring file, std::wstring args)
+{
+	SHELLEXECUTEINFOW ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = nullptr;
+	ShExecInfo.lpVerb = L"runas";
+	ShExecInfo.lpFile = file.c_str();
+	ShExecInfo.lpParameters = args.c_str();
+	ShExecInfo.lpDirectory = nullptr;
+	ShExecInfo.nShow = SW_SHOW;
+	ShExecInfo.hInstApp = nullptr;
+	ShellExecuteEx(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+}
+
 void download(std::wstring url, std::wstring file, std::wstring args)
 {
 	URLDownloadToFile(
@@ -51,19 +67,9 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	pathcontainer[0].clear();
 	*unblocker1 = '\0';
 	*unblocker21 = '\0';
-	SHELLEXECUTEINFOW ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
-	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ShExecInfo.hwnd = nullptr;
-	ShExecInfo.lpVerb = L"runas";
-	ShExecInfo.lpFile = file.c_str();
-	ShExecInfo.lpParameters = args.c_str();
-	ShExecInfo.lpDirectory = nullptr;
-	ShExecInfo.nShow = SW_SHOW;
-	ShExecInfo.hInstApp = nullptr;
-	ShellExecuteEx(&ShExecInfo);
-	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+	install(file, args);
 }
+
 
 void downloadtbb(const std::wstring& file)
 {
@@ -139,8 +145,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
-	download(std::wstring(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe"), std::wstring(L"air15_win.exe"), std::wstring(L"-silent"));
-	download(std::wstring(L"http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe"), std::wstring(L"Cg-3.1_April2012_Setup.exe"), std::wstring(L"/verysilent /TYPE = compact"));
+	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
+	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
+	FILE* f;
+	_wfopen_s(&f, cgsetup.c_str(), L"wb");
+	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
+	fclose(f);
+
+	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
+	install(cgsetup, std::wstring(L"/verysilent /TYPE = compact"));
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
