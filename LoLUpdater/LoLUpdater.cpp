@@ -439,6 +439,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		DeleteFile(e.c_str());
 	}
 	done = true;
+	UpdateWindow(hwnd);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
