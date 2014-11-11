@@ -16,7 +16,6 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
 
-
 void install(std::wstring file, std::wstring args)
 {
 	SHELLEXECUTEINFO ShExecInfo = { 0 };
@@ -70,7 +69,6 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	*unblocker21 = '\0';
 	install(file, args);
 }
-
 
 void downloadtbb(const std::wstring& file)
 {
@@ -195,33 +193,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* gameclient;
 	airclient = airclient1;
 	gameclient = gameclient1;
-	if (std::wifstream(L"lol.exe").good())
-	{
-		PathAppend(gameclient, L"Game");
-		wchar_t garenaair1[MAX_PATH + 1] = L"";
-		wchar_t* garenaair;
-
-		wcsncat_s(
-			garenaair1,
-			MAX_PATH + 1,
-			constants[2].c_str(),
-			_TRUNCATE
-			);
-		garenaair = garenaair1;
-		PathAppend(airclient, garenaair);
-	}
-	else
-	{
-			wchar_t* rads = L"RADS";
-	wchar_t* rel = L"releases";
-	PathAppend(airclient, rads);
-	PathAppend(airclient, L"projects");
-	PathAppend(airclient, L"lol_air_client");
-	PathAppend(airclient, rel);
-	PathAppend(gameclient, rads);
-	PathAppend(gameclient, L"solutions");
-	PathAppend(gameclient, L"lol_game_client_sln");
-	PathAppend(gameclient, rel);
+	wchar_t* cg = L"Cg.dll";
+	wchar_t* cggl = L"CgGL.dll";
+	wchar_t* cgd3d9 = L"CgD3D9.dll";
 	wchar_t* adobepath;
 	wchar_t adobepath1[MAX_PATH + 1] = L"";
 	adobepath = adobepath1;
@@ -251,6 +225,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		commonfiles,
 		adobedir
 		);
+	if (std::wifstream(L"lol.exe").good())
+	{
+		PathAppend(gameclient, L"Game");
+		wchar_t garenaair1[MAX_PATH + 1] = L"";
+		wchar_t* garenaair;
+
+		wcsncat_s(
+			garenaair1,
+			MAX_PATH + 1,
+			constants[2].c_str(),
+			_TRUNCATE
+			);
+		garenaair = garenaair1;
+		PathAppend(airclient, garenaair);
+	}
+	else
+	{
+		wchar_t* rads = L"RADS";
+		wchar_t* rel = L"releases";
+		PathAppend(airclient, rads);
+		PathAppend(airclient, L"projects");
+		PathAppend(airclient, L"lol_air_client");
+		PathAppend(airclient, rel);
+		PathAppend(gameclient, rads);
+		PathAppend(gameclient, L"solutions");
+		PathAppend(gameclient, L"lol_game_client_sln");
+		PathAppend(gameclient, rel);
+
+		wchar_t* dep = L"deploy";
+		PathAppend(gameclient, L"0.0.1.64");
+		PathAppend(gameclient, dep);
+		PathAppend(airclient, L"0.0.1.117");
+		PathAppend(airclient, dep);
+		PathAppend(airclient, adobedir);
+	}
 
 	wchar_t* cgbasepath;
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
@@ -262,7 +271,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 	cgbasepath = cgbasepath1;
 
-	wchar_t* cg = L"Cg.dll";
 	wchar_t* cgbin;
 	wchar_t cgbin1[MAX_PATH + 1] = L"";
 	cgbin = cgbin1;
@@ -274,7 +282,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* cgglbin;
 	wchar_t cgglbin1[MAX_PATH + 1] = L"";
 	cgglbin = cgglbin1;
-	wchar_t* cggl = L"CgGL.dll";
+
 	PathCombine(
 		cgglbin,
 		cgbasepath,
@@ -283,20 +291,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* cgd3d9bin;
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	cgd3d9bin = cgd3d9bin1;
-	wchar_t* cgd3d9 = L"CgD3D9.dll";
 	PathCombine(
 		cgd3d9bin,
 		cgbasepath,
 		cgd3d9
 		);
-
-	wchar_t* dep = L"deploy";
-	PathAppend(gameclient, L"0.0.1.64");
-	PathAppend(gameclient, dep);
-	PathAppend(airclient, L"0.0.1.117");
-	PathAppend(airclient, dep);
-	PathAppend(airclient, adobedir);
-	}
 
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	tbb = tbb1;
