@@ -13,13 +13,13 @@ const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstr
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
-RECT start = { 0, 0, 100, 20 };
-RECT end = { 0, 100, 100, 120 };
+RECT start = { 40, 10, 0, 0 };
+RECT end = { 40, 30, 0, 0 };
 
 void install(std::wstring file, std::wstring args)
 {
-	SHELLEXECUTEINFOW ShExecInfo = { 0 };
-	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFOW);
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ShExecInfo.hwnd = nullptr;
 	ShExecInfo.lpVerb = L"runas";
@@ -103,10 +103,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"Patching..", -1, &start, DT_CENTER);
+		DrawText(hdc, L"Patching..", -1, &start, DT_SINGLELINE | DT_NOCLIP);
 		if (done == true)
 		{
-			DrawText(hdc, L"Done!", -1, &end, DT_CENTER);
+			DrawText(hdc, L"Done!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
 		}
 		EndPaint(hwnd, &ps);
 		break;
@@ -433,14 +433,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
-
 	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 	for (std::wstring& e : unblocks)
 	{
 		DeleteFile(e.c_str());
 	}
 	done = true;
-	InvalidateRect(hwnd, &end, false);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
