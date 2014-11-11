@@ -238,7 +238,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			_TRUNCATE
 			);
 		garenaair = garenaair1;
+		wchar_t garenaair2[MAX_PATH + 1] = L"";
+		wchar_t* garenaair20;
+
+		wcsncat_s(
+			garenaair2,
+			MAX_PATH + 1,
+			constants[1].c_str(),
+			_TRUNCATE
+			);
+		garenaair20 = garenaair2;
 		PathAppend(airclient, garenaair);
+		PathAppend(airclient, garenaair20);
 	}
 	else
 	{
