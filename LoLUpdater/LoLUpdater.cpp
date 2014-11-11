@@ -153,7 +153,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	fclose(f);
 
 	download(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
-	install(cgsetup, std::wstring(L"/verysilent /TYPE = compact"));
+	install(cgsetup, L"/verysilent /TYPE = compact");
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
