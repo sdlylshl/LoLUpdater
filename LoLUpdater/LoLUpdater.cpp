@@ -8,13 +8,18 @@
 #include <wininet.h>
 bool done = false;
 
-std::wstringstream pathcontainer[4];
-const std::wstring constants[3] = { std::wstring(L":Zone.Identifier"), std::wstring(L"Adobe AIR\\Versions\\1.0"), std::wstring(L"AIR\\") };
+const std::wstring adobeairpath = {std::wstring(L"Adobe AIR\\Versions\\1.0")};
 wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
+
+void unblockFile(std::wstring const& path)
+{
+	if (DeleteFile((path + L":Zone.Identifier").c_str()) == 0)
+		throw std::runtime_error("failed to unblock file");
+}
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
@@ -64,10 +69,8 @@ void download(std::wstring const& url, std::wstring const& file, std::wstring co
 		unblocker2
 		);
 
-	pathcontainer[0] << (std::wstring(unblocker) + constants[0]);
-	DeleteFile(pathcontainer[0].str().c_str());
-	pathcontainer[0].str(std::wstring());
-	pathcontainer[0].clear();
+	unblockFile(file);
+
 	*unblocker1 = '\0';
 	*unblocker21 = '\0';
 	runAndWait(file, args);
@@ -154,6 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
 	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	FILE* f;
@@ -226,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wcsncat_s(
 		adobedir,
 		MAX_PATH + 1,
-		constants[1].c_str(),
+		adobeairpath.c_str(),
 		_TRUNCATE
 		);
 
@@ -241,10 +245,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
 		wchar_t* garenaair;
 
+
 		wcsncat_s(
 			garenaair1,
 			MAX_PATH + 1,
-			constants[2].c_str(),
+			L"AIR\\",
 			_TRUNCATE
 			);
 		garenaair = garenaair1;
@@ -254,7 +259,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wcsncat_s(
 			garenaair2,
 			MAX_PATH + 1,
-			constants[1].c_str(),
+			adobeairpath.c_str(),
 			_TRUNCATE
 			);
 		garenaair20 = garenaair2;
@@ -330,9 +335,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		airclient,
 		air
 		);
-	wchar_t* airlatest1;
-	wchar_t airlatest[MAX_PATH + 1] = L"";
-	airlatest1 = airlatest;
+
+	wchar_t airlatest1[MAX_PATH + 1] = L"";
+	wchar_t* airlatest;
+	airlatest = airlatest1;
 	PathCombine(
 		airlatest,
 		adobepath,
@@ -386,10 +392,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9
 		);
 
-	pathcontainer[1] << (std::wstring(airdest) + constants[0]);
-	pathcontainer[2] << (std::wstring(flashdest) + constants[0]);
-	pathcontainer[3] << (std::wstring(tbb) + constants[0]);
-
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -400,7 +402,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	else
 	{
-		int avx2;
+		int avx2 = 0;
 		int abcd[4];
 		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
 		uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
@@ -456,13 +458,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
-	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
-	for (std::wstring& e : unblocks)
-	{
-		DeleteFile(e.c_str());
-	}
+	unblockFile(tbb);
+	unblockFile(airdest);
+	unblockFile(flashdest);
 	done = true;
-
 	UpdateWindow(hwnd);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
