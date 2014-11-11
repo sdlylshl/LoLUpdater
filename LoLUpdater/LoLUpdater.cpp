@@ -6,6 +6,8 @@
 #include <direct.h>
 #include <Shlobj.h>
 #include <wininet.h>
+#include <atlbase.h>
+#include <atlsecurity.h>
 bool done = false;
 
 std::wstringstream pathcontainer[4];
@@ -452,6 +454,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		DeleteFile(e.c_str());
 	}
 	done = true;
+
 	UpdateWindow(hwnd);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
