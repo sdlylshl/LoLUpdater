@@ -159,12 +159,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr,
 		0,
 		progdrive);
-	std::vector<std::wstring> cgbinpath(MAX_PATH + 1, std::wstring());
+	wchar_t cgbinpath1[MAX_PATH + 1];
+	wchar_t* cgbinpath;
+	cgbinpath = cgbinpath1;
 	GetEnvironmentVariable(L"CG_BIN_PATH",
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		cgbinpath,
 		MAX_PATH + 1);
 	wcsncat_s(
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		cgbinpath1,
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
@@ -277,7 +279,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wcsncat_s(
 		cgbasepath1,
 		MAX_PATH + 1,
-		reinterpret_cast<LPWSTR>(&cgbinpath[0]),
+		cgbinpath,
 		_TRUNCATE
 		);
 	cgbasepath = cgbasepath1;
