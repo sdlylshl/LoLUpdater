@@ -6,8 +6,6 @@
 #include <direct.h>
 #include <Shlobj.h>
 #include <wininet.h>
-#include <atlbase.h>
-#include <atlsecurity.h>
 bool done = false;
 
 std::wstringstream pathcontainer[4];
