@@ -20,8 +20,8 @@ void unblockFile(std::wstring const& path)
 	unblk << (cwd + path + L":Zone.Identifier");
 	if (DeleteFile(unblk.str().c_str()) == 0)
 		throw std::runtime_error("failed to unblock file");
-	unblk << L"";
-	&unblk.clear;
+	unblk.str(L"");
+	unblk.clear();
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
