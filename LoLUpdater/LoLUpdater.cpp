@@ -35,15 +35,16 @@ void runAndWait(std::wstring file, std::wstring args)
 
 void download(std::wstring url, std::wstring file, std::wstring args)
 {
-	URLDownloadToFile(
-		nullptr,
-		url.c_str(),
-		file.c_str(),
-		0,
-		nullptr
-		);
 
-	wchar_t* unblocker;
+		if (URLDownloadToFile(
+			nullptr,
+			url.c_str(),
+			file.c_str(),
+			0,
+			nullptr
+			) == S_OK)
+	{
+		wchar_t* unblocker;
 	unblocker = unblocker1;
 
 	wchar_t* unblocker2;
@@ -69,6 +70,25 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	*unblocker1 = '\0';
 	*unblocker21 = '\0';
 	runAndWait(file, args);
+	}
+	else
+	{
+			throw std::runtime_error("failed to download file");
+	}
+
+	
+}
+
+void copyerrorcheck(BOOL res)
+{
+	DWORD errext;
+	errext = GetLastError();
+
+	if (res == NULL)
+		throw std::runtime_error("failed to copy file");
+
+	if (errext = ERROR_ACCESS_DENIED)
+		throw std::runtime_error("failed to copy file, file is readonly/hidden");
 }
 
 void downloadtbb(const std::wstring& file)
@@ -83,13 +103,14 @@ void downloadtbb(const std::wstring& file)
 		0
 		);
 
-	URLDownloadToFile(
+	if (URLDownloadToFile(
 		nullptr,
 		finalurl,
 		tbb,
 		0,
 		nullptr
-		);
+		) != S_OK)
+		throw std::runtime_error("failed to download file");
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -442,11 +463,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 		}
 	}
-	CopyFile(airlatest, airdest, false);
-	CopyFile(flashlatest, flashdest, false);
-	CopyFile(cgbin, cgdest, false);
-	CopyFile(cgglbin, cggldest, false);
-	CopyFile(cgd3d9bin, cgd3d9dest, false);
+	copyerrorcheck(CopyFile(airlatest, airdest, false));
+	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
+	copyerrorcheck(CopyFile(cgbin, cgdest, false));
+	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
+	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
 	std::wstring unblocks[3]{ pathcontainer[1].str(), pathcontainer[2].str(), pathcontainer[3].str() };
 	for (std::wstring& e : unblocks)
 	{
