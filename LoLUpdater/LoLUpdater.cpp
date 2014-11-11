@@ -16,7 +16,7 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
 
-void runAndWait(std::wstring file, std::wstring args)
+void runAndWait(std::wstring const& file, std::wstring const& args)
 {
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -33,18 +33,19 @@ void runAndWait(std::wstring file, std::wstring args)
 		throw std::runtime_error("failed to wait for program to finish");
 }
 
-void download(std::wstring url, std::wstring file, std::wstring args)
+void download(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
 
-		if (URLDownloadToFile(
-			nullptr,
-			url.c_str(),
-			file.c_str(),
-			0,
-			nullptr
-			) == S_OK)
-	{
-		wchar_t* unblocker;
+	if (URLDownloadToFile(
+		nullptr,
+		url.c_str(),
+		file.c_str(),
+		0,
+		nullptr
+		) != S_OK)
+		throw std::runtime_error("failed to download file");
+
+	wchar_t* unblocker;
 	unblocker = unblocker1;
 
 	wchar_t* unblocker2;
@@ -70,28 +71,15 @@ void download(std::wstring url, std::wstring file, std::wstring args)
 	*unblocker1 = '\0';
 	*unblocker21 = '\0';
 	runAndWait(file, args);
-	}
-	else
-	{
-			throw std::runtime_error("failed to download file");
-	}
-
-	
 }
 
 void copyerrorcheck(BOOL res)
 {
-	DWORD errext;
-	errext = GetLastError();
-
-	if (res == NULL)
+	if (res = NULL)
 		throw std::runtime_error("failed to copy file");
-
-	if (errext = ERROR_ACCESS_DENIED)
-		throw std::runtime_error("failed to copy file, file is readonly/hidden");
 }
 
-void downloadtbb(const std::wstring& file)
+void downloadtbb(std::wstring const& file)
 {
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH];
 	DWORD dwLength = sizeof(finalurl);
