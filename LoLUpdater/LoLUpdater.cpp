@@ -47,15 +47,13 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 		if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 			throw std::runtime_error("failed to download file");
-		if (DeleteFile(file.c_str()) == 0)
-			; // well shit, this is very unfortunate
+		unblockFile(file.c_str());
 }
 
 // todo: explore temp path options
 void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
 	downloadFile(url, file);
-	unblockFile(file);
 	runAndWait(file, args);
 }
 
@@ -363,9 +361,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	DWORD dwLength = sizeof(finalurl);
 	wchar_t tbbname[INTERNET_MAX_URL_LENGTH];
 
-
-
-
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(
@@ -461,10 +456,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&dwLength,
 		0
 		);
-	unblk << (std::wstring(finalurl) + std::wstring(tbbname));
-	downloadFile(unblk.str().c_str(), tbb);
-	unblk.str(std::wstring());
-	unblk.clear();
+
+	downloadFile(finalurl, tbb);
+
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
