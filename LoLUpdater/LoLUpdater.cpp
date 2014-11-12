@@ -7,32 +7,38 @@
 #include <Shlobj.h>
 #include <wininet.h>
 bool done = false;
-std::wstringstream unblk;
-const std::wstring adobeairpath = {std::wstring(L"Adobe AIR\\Versions\\1.0")};
-wchar_t* tbb;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t unblocker1[MAX_PATH + 1] = L"";
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
 
+wchar_t* unblocker;
+wchar_t unblocker1[MAX_PATH + 1] = L"";
+
 void unblockFile(std::wstring const& path)
 {
-	unblk << (cwd + path + L":Zone.Identifier");
-	if (DeleteFile(unblk.str().c_str()) == 0)
-		throw std::runtime_error("failed to unblock file");
+	PathCombine(unblocker, cwd, path.c_str());
+	wcsncat_s(
+		unblocker,
+		MAX_PATH + 1,
+		L":Zone.Identifier",
+		_TRUNCATE
+		);
 
-	unblk.str(std::wstring());
-	unblk.clear();
+	DeleteFile(unblocker);
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
 	unblockFile(file);
+	memset(unblocker, 0, MAX_PATH + 1);
+	PathCombine(unblocker, cwd, file.c_str());
+
+
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ei.lpVerb = L"runas";
-	ei.lpFile = file.c_str();
+	ei.lpFile = unblocker;
 	ei.lpParameters = args.c_str();
 	ei.nShow = SW_SHOW;
 
@@ -41,12 +47,12 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 
 	if (WaitForSingleObject(ei.hProcess, INFINITE) == WAIT_FAILED)
 		throw std::runtime_error("failed to wait for program to finish");
+
 }
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-		if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
-			throw std::runtime_error("failed to download file");
+	URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr);
 }
 
 // todo: explore temp path options
@@ -115,18 +121,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
+	unblocker = unblocker1;
 	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
+	std::wstring airsetup(L"air15_win.exe");
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	FILE* f;
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
 
-	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", L"air15_win.exe", L"-silent");
+	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airsetup, L"-silent");
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 
-
-	DeleteFile(unblk.str().c_str());
+	DeleteFile((cwd + std::wstring(L"\\") + cgsetup).c_str());
+	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
@@ -142,12 +150,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgbinpath,
 		MAX_PATH + 1,
 		L"\\",
-		_TRUNCATE
-		);
-	wcsncat_s(
-		unblocker1,
-		MAX_PATH,
-		&cwd[0],
 		_TRUNCATE
 		);
 	wchar_t airclient1[MAX_PATH + 1] = L"";
@@ -187,7 +189,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* adobedir;
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	adobedir = adobedir1;
-
+	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
 	wcsncat_s(
 		adobedir,
 		MAX_PATH + 1,
@@ -285,6 +287,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	wchar_t tbb1[MAX_PATH + 1] = L"";
+	wchar_t* tbb;
 	tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
 	wchar_t* airdest;
@@ -458,7 +461,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		0
 		);
 
-	downloadFile(finalurl, tbb);
+	downloadFile(std::wstring(finalurl), std::wstring(tbb));
 	unblockFile(tbb);
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
