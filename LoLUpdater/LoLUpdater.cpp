@@ -219,7 +219,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(airclient, garenaair);
 		PathAppend(airclient, garenaair20);
 	}
-	else
+
+	if (std::wifstream(L"lol.launcher.exe").good())
 	{
 		const wchar_t* rads = L"RADS";
 		PathAppend(airclient, rads);
@@ -238,6 +239,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
+
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
 	wchar_t* cgbasepath = cgbasepath1;
 	wcsncat_s(
