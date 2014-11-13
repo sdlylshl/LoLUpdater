@@ -9,8 +9,8 @@
 #include <wininet.h>
 bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-RECT start = { 2, 0, 0, 0 };
-RECT end = { 2, 20, 0, 0 };
+RECT start = {2, 0, 0, 0};
+RECT end = {2, 20, 0, 0};
 HRESULT result;
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 wchar_t* unblocker = unblocker1;
@@ -24,10 +24,9 @@ void unblockFile(std::wstring const& path)
 		MAX_PATH + 1,
 		L":Zone.Identifier",
 		_TRUNCATE
-		);
+	);
 
 	DeleteFile(unblocker);
-
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -38,7 +37,7 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ei.lpVerb = L"runas";
 	ei.lpFile = unblocker;
 	ei.lpParameters = args.c_str();
@@ -96,7 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
+                   LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG Msg;
 	WNDCLASSEXW wc;
@@ -122,11 +121,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	HWND hwnd;
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
-		g_szClassName.c_str(),
-		L"LoLUpdater",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
-		nullptr, nullptr, hInstance, nullptr);
+		                g_szClassName.c_str(),
+		                L"LoLUpdater",
+		                WS_OVERLAPPEDWINDOW,
+		                CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
+		                nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == NULL)
 	{
@@ -152,34 +151,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
-		CSIDL_PROGRAM_FILES_COMMON,
-		nullptr,
-		0,
-		progdrive);
+	                CSIDL_PROGRAM_FILES_COMMON,
+	                nullptr,
+	                0,
+	                progdrive);
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH",
-		cgbinpath,
-		MAX_PATH + 1);
+	                       cgbinpath,
+	                       MAX_PATH + 1);
 	wcsncat_s(
 		cgbinpath,
 		MAX_PATH + 1,
 		L"\\",
 		_TRUNCATE
-		);
+	);
 	wchar_t airclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		airclient1,
 		MAX_PATH + 1,
 		&cwd[0],
 		_TRUNCATE
-		);
+	);
 	wchar_t gameclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		gameclient1,
 		MAX_PATH + 1,
 		&cwd[0],
 		_TRUNCATE
-		);
+	);
 	wchar_t* airclient = airclient1;
 	wchar_t* gameclient = gameclient1;
 	wchar_t* cg = L"Cg.dll";
@@ -190,29 +189,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t* adobepath = adobepath1;
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	wchar_t* commonfiles = commonfiles1;
-	
+
 	wcsncat_s(
 		commonfiles1,
 		MAX_PATH + 1,
 		progdrive,
 		_TRUNCATE
-		);
+	);
 
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	wchar_t* adobedir = adobedir1;
-	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
+	const std::wstring adobeairpath = {std::wstring(L"Adobe AIR\\Versions\\1.0")};
 	wcsncat_s(
 		adobedir,
 		MAX_PATH + 1,
 		adobeairpath.c_str(),
 		_TRUNCATE
-		);
+	);
 
 	PathCombine(
 		adobepath,
 		commonfiles,
 		adobedir
-		);
+	);
 	if (std::wifstream(L"lol.exe").good())
 	{
 		PathAppend(gameclient, L"Game");
@@ -224,7 +223,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			MAX_PATH + 1,
 			L"AIR\\",
 			_TRUNCATE
-			);
+		);
 		wchar_t garenaair2[MAX_PATH + 1] = L"";
 		wchar_t* garenaair20 = garenaair2;
 
@@ -233,7 +232,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			MAX_PATH + 1,
 			adobeairpath.c_str(),
 			_TRUNCATE
-			);
+		);
 		PathAppend(airclient, garenaair);
 		PathAppend(airclient, garenaair20);
 	}
@@ -253,7 +252,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		wchar_t* dep = L"deploy";
 		PathAppend(gameclient, L"0.0.1.64");
 		PathAppend(gameclient, dep);
-		PathAppend(airclient, L"0.0.1.117");
+		PathAppend(airclient, L"0.0.1.118");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
@@ -266,7 +265,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		MAX_PATH + 1,
 		cgbinpath,
 		_TRUNCATE
-		);
+	);
 
 	wchar_t* cgbin;
 	wchar_t cgbin1[MAX_PATH + 1] = L"";
@@ -275,7 +274,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgbin,
 		cgbasepath,
 		cg
-		);
+	);
 
 	wchar_t cgglbin1[MAX_PATH + 1] = L"";
 	wchar_t* cgglbin = cgglbin1;
@@ -283,7 +282,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgglbin,
 		cgbasepath,
 		cggl
-		);
+	);
 
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	wchar_t* cgd3d9bin = cgd3d9bin1;
@@ -291,7 +290,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9bin,
 		cgbasepath,
 		cgd3d9
-		);
+	);
 
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	wchar_t* tbb = tbb1;
@@ -304,7 +303,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		airdest,
 		airclient,
 		air
-		);
+	);
 
 	wchar_t airlatest1[MAX_PATH + 1] = L"";
 	wchar_t* airlatest = airlatest1;
@@ -312,7 +311,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		airlatest,
 		adobepath,
 		air
-		);
+	);
 
 	wchar_t res[MAX_PATH + 1] = L"Resources";
 	wchar_t* flash = res;
@@ -325,7 +324,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		flashdest,
 		airclient,
 		flash
-		);
+	);
 
 	wchar_t flashlatest1[MAX_PATH + 1] = L"";
 	wchar_t* flashlatest = flashlatest1;
@@ -333,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		flashlatest,
 		adobepath,
 		flash
-		);
+	);
 
 	wchar_t cgdest1[MAX_PATH + 1] = L"";
 	wchar_t* cgdest = cgdest1;
@@ -341,7 +340,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgdest,
 		gameclient,
 		cg
-		);
+	);
 
 	wchar_t cggldest1[MAX_PATH + 1] = L"";
 	wchar_t* cggldest = cggldest1;
@@ -349,7 +348,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cggldest,
 		gameclient,
 		cggl
-		);
+	);
 
 
 	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
@@ -358,7 +357,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgd3d9dest,
 		gameclient,
 		cgd3d9
-		);
+	);
 
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
@@ -376,7 +375,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			INTERNET_MAX_URL_LENGTH,
 			L"XP.dll",
 			_TRUNCATE
-			);
+		);
 	}
 	else
 	{
@@ -406,7 +405,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				INTERNET_MAX_URL_LENGTH,
 				L"AVX2.dll",
 				_TRUNCATE
-				);
+			);
 		}
 		else
 		{
@@ -419,7 +418,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					INTERNET_MAX_URL_LENGTH,
 					L"AVX.dll",
 					_TRUNCATE
-					);
+				);
 			}
 			else
 			{
@@ -430,7 +429,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 						INTERNET_MAX_URL_LENGTH,
 						L"SSE2.dll",
 						_TRUNCATE
-						);
+					);
 				}
 				else
 				{
@@ -441,7 +440,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 							INTERNET_MAX_URL_LENGTH,
 							L"SSE.dll",
 							_TRUNCATE
-							);
+						);
 					}
 					else
 					{
@@ -450,7 +449,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 							INTERNET_MAX_URL_LENGTH,
 							L"Default.dll",
 							_TRUNCATE
-							);
+						);
 					}
 				}
 			}
@@ -463,7 +462,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		finalurl,
 		&dwLength,
 		0
-		);
+	);
 
 	downloadFile(std::wstring(finalurl), std::wstring(tbb));
 	unblockFile(tbb);
