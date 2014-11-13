@@ -16,6 +16,7 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 
 void unblockFile(std::wstring const& path)
 {
+	memset(unblocker, 0, MAX_PATH + 1);
 	PathCombine(unblocker, cwd, path.c_str());
 	wcsncat_s(
 		unblocker,
@@ -25,6 +26,7 @@ void unblockFile(std::wstring const& path)
 		);
 
 	DeleteFile(unblocker);
+	// fail check here? non-critical though...
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -32,7 +34,6 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	unblockFile(file);
 	memset(unblocker, 0, MAX_PATH + 1);
 	PathCombine(unblocker, cwd, file.c_str());
-
 
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -52,7 +53,10 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr);
+	if(!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
+	{
+		throw std::runtime_error("failed to initialize download");	
+	}
 }
 
 // todo: explore temp path options
@@ -110,7 +114,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-	RegisterClassEx(&wc);
+	if(RegisterClassEx(&wc) == NULL)
+	{
+		throw std::runtime_error("failed to register window");	
+	}
 	HWND hwnd;
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
@@ -119,8 +126,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
 		nullptr, nullptr, hInstance, nullptr);
+		
+		if(hnwd == NULL)
+		{
+			throw std::runtime_error("failed to create window");	
+		}
 
-	ShowWindow(hwnd, nCmdShow);
+	if(ShowWindow(hwnd, nCmdShow) == NULL)
+	{
+		throw std::runtime_error("failed to show window");		
+	}
 	unblocker = unblocker1;
 	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
 	std::wstring airsetup(L"air15_win.exe");
@@ -471,7 +486,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	unblockFile(airdest);
 	unblockFile(flashdest);
 	done = true;
-	UpdateWindow(hwnd);
+	if(UpdateWindow(hwnd) == NULL)
+	{
+		throw std::runtime_error("failed to update window");		
+	}
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
