@@ -1,3 +1,4 @@
+// Custom patch for LoL
 #include <sstream>
 #include <fstream>
 #include <vector>
