@@ -12,8 +12,8 @@ wchar_t* cwd(_wgetcwd(nullptr, 0));
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
 HRESULT result;
-wchar_t* unblocker;
 wchar_t unblocker1[MAX_PATH + 1] = L"";
+wchar_t* unblocker = unblocker1;
 
 void unblockFile(std::wstring const& path)
 {
@@ -26,16 +26,8 @@ void unblockFile(std::wstring const& path)
 		_TRUNCATE
 		);
 
-	result = DeleteFile(unblocker);
-	
-	if(result = ERROR_FILE_NOT_FOUND)
-	{
-		throw std::runtime_error("failed to unblock file, file does not exist");
-	}
-	if(result = ERROR_ACCESS_DENIED)
-	{
-			throw std::runtime_error("failed to unblock file");
-	}
+	DeleteFile(unblocker);
+
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -57,14 +49,13 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 
 	if (WaitForSingleObject(ei.hProcess, INFINITE) == WAIT_FAILED)
 		throw std::runtime_error("failed to wait for program to finish");
-
 }
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	if(!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
+	if (!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
 	{
-		throw std::runtime_error("failed to initialize download");	
+		throw std::runtime_error("failed to initialize download");
 	}
 }
 
@@ -122,10 +113,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-	if(RegisterClassEx(&wc) == NULL)
+
+	if (RegisterClassEx(&wc) == NULL)
 	{
-		throw std::runtime_error("failed to register window");	
+		throw std::runtime_error("failed to register window");
 	}
+
 	HWND hwnd;
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
@@ -134,19 +127,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
 		nullptr, nullptr, hInstance, nullptr);
-		
-		if(hwnd == NULL)
-		{
-			throw std::runtime_error("failed to create window");	
-		}
 
-	if(ShowWindow(hwnd, nCmdShow) == NULL)
+	if (hwnd == NULL)
 	{
-		throw std::runtime_error("failed to show window");		
+		throw std::runtime_error("failed to create window");
 	}
-	unblocker = unblocker1;
-	std::wstring cgsetup(L"Cg-3.1_April2012_Setup.exe");
-	std::wstring airsetup(L"air15_win.exe");
+
+	ShowWindow(hwnd, nCmdShow);
+
+
+	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+	const std::wstring airsetup = L"air15_win.exe";
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	FILE* f;
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
@@ -189,18 +180,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&cwd[0],
 		_TRUNCATE
 		);
-	wchar_t* airclient;
-	wchar_t* gameclient;
-	airclient = airclient1;
-	gameclient = gameclient1;
+	wchar_t* airclient = airclient1;
+	wchar_t* gameclient = gameclient1;
 	wchar_t* cg = L"Cg.dll";
 	wchar_t* cggl = L"CgGL.dll";
 	wchar_t* cgd3d9 = L"CgD3D9.dll";
-	wchar_t* adobepath;
+
 	wchar_t adobepath1[MAX_PATH + 1] = L"";
-	adobepath = adobepath1;
-	wchar_t* commonfiles;
+	wchar_t* adobepath = adobepath1;
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
+	wchar_t* commonfiles = commonfiles1;
+	
 	wcsncat_s(
 		commonfiles1,
 		MAX_PATH + 1,
@@ -208,10 +198,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		_TRUNCATE
 		);
 
-	commonfiles = commonfiles1;
-	wchar_t* adobedir;
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
-	adobedir = adobedir1;
+	wchar_t* adobedir = adobedir1;
 	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
 	wcsncat_s(
 		adobedir,
@@ -229,8 +217,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	{
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
-		wchar_t* garenaair;
-
+		wchar_t* garenaair = garenaair1;
 
 		wcsncat_s(
 			garenaair1,
@@ -238,9 +225,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			L"AIR\\",
 			_TRUNCATE
 			);
-		garenaair = garenaair1;
 		wchar_t garenaair2[MAX_PATH + 1] = L"";
-		wchar_t* garenaair20;
+		wchar_t* garenaair20 = garenaair2;
 
 		wcsncat_s(
 			garenaair2,
@@ -248,7 +234,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			adobeairpath.c_str(),
 			_TRUNCATE
 			);
-		garenaair20 = garenaair2;
 		PathAppend(airclient, garenaair);
 		PathAppend(airclient, garenaair20);
 	}
@@ -273,15 +258,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(airclient, adobedir);
 	}
 
-	wchar_t* cgbasepath;
+
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
+	wchar_t* cgbasepath = cgbasepath1;
 	wcsncat_s(
 		cgbasepath1,
 		MAX_PATH + 1,
 		cgbinpath,
 		_TRUNCATE
 		);
-	cgbasepath = cgbasepath1;
 
 	wchar_t* cgbin;
 	wchar_t cgbin1[MAX_PATH + 1] = L"";
@@ -291,18 +276,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		cgbasepath,
 		cg
 		);
-	wchar_t* cgglbin;
-	wchar_t cgglbin1[MAX_PATH + 1] = L"";
-	cgglbin = cgglbin1;
 
+	wchar_t cgglbin1[MAX_PATH + 1] = L"";
+	wchar_t* cgglbin = cgglbin1;
 	PathCombine(
 		cgglbin,
 		cgbasepath,
 		cggl
 		);
-	wchar_t* cgd3d9bin;
+
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
-	cgd3d9bin = cgd3d9bin1;
+	wchar_t* cgd3d9bin = cgd3d9bin1;
 	PathCombine(
 		cgd3d9bin,
 		cgbasepath,
@@ -310,12 +294,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	wchar_t tbb1[MAX_PATH + 1] = L"";
-	wchar_t* tbb;
-	tbb = tbb1;
+	wchar_t* tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
-	wchar_t* airdest;
+
 	wchar_t airdest1[MAX_PATH + 1] = L"";
-	airdest = airdest1;
+	wchar_t* airdest = airdest1;
 	wchar_t* air = L"Adobe AIR.dll";
 	PathCombine(
 		airdest,
@@ -324,8 +307,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	wchar_t airlatest1[MAX_PATH + 1] = L"";
-	wchar_t* airlatest;
-	airlatest = airlatest1;
+	wchar_t* airlatest = airlatest1;
 	PathCombine(
 		airlatest,
 		adobepath,
@@ -333,46 +315,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		);
 
 	wchar_t res[MAX_PATH + 1] = L"Resources";
-	wchar_t* flash;
-	flash = res;
+	wchar_t* flash = res;
 	PathAppend(flash, L"NPSWF32.dll");
 
-	wchar_t* flashdest;
+
 	wchar_t flashdest1[MAX_PATH + 1] = L"";
-	flashdest = flashdest1;
+	wchar_t* flashdest = flashdest1;
 	PathCombine(
 		flashdest,
 		airclient,
 		flash
 		);
-	wchar_t* flashlatest;
+
 	wchar_t flashlatest1[MAX_PATH + 1] = L"";
-	flashlatest = flashlatest1;
+	wchar_t* flashlatest = flashlatest1;
 	PathCombine(
 		flashlatest,
 		adobepath,
 		flash
 		);
-	wchar_t* cgdest;
+
 	wchar_t cgdest1[MAX_PATH + 1] = L"";
-	cgdest = cgdest1;
+	wchar_t* cgdest = cgdest1;
 	PathCombine(
 		cgdest,
 		gameclient,
 		cg
 		);
-	wchar_t* cggldest;
+
 	wchar_t cggldest1[MAX_PATH + 1] = L"";
-	cggldest = cggldest1;
+	wchar_t* cggldest = cggldest1;
 	PathCombine(
 		cggldest,
 		gameclient,
 		cggl
 		);
 
-	wchar_t* cgd3d9dest;
+
 	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
-	cgd3d9dest = cgd3d9dest1;
+	wchar_t* cgd3d9dest = cgd3d9dest1;
 	PathCombine(
 		cgd3d9dest,
 		gameclient,
@@ -494,9 +475,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	unblockFile(airdest);
 	unblockFile(flashdest);
 	done = true;
-	if(UpdateWindow(hwnd) == NULL)
+	if (UpdateWindow(hwnd) == NULL)
 	{
-		throw std::runtime_error("failed to update window");		
+		throw std::runtime_error("failed to update window");
 	}
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
