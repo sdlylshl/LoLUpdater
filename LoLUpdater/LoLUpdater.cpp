@@ -10,7 +10,7 @@ bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 RECT start = { 2, 0, 0, 0 };
 RECT end = { 2, 20, 0, 0 };
-
+HRESULT result;
 wchar_t* unblocker;
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 
@@ -25,8 +25,16 @@ void unblockFile(std::wstring const& path)
 		_TRUNCATE
 		);
 
-	DeleteFile(unblocker);
-	// fail check here? non-critical though...
+	result = DeleteFile(unblocker);
+	
+	if(result = ERROR_FILE_NOT_FOUND)
+	{
+		throw std::runtime_error("failed to unblock file, file does not exist");
+	}
+	if(result = ERROR_ACCESS_DENIED)
+	{
+			throw std::runtime_error("failed to unblock file");
+	}
 }
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
@@ -59,7 +67,6 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 	}
 }
 
-// todo: explore temp path options
 void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
 	downloadFile(url, file);
