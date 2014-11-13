@@ -78,10 +78,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"Patching...", -1, &start, DT_SINGLELINE);
+		DrawText(hdc, L"Patching...", -1, &start, DT_SINGLELINE | DT_NOCLIP);
 		if (done)
 		{
-			DrawText(hdc, L"Done!", -1, &end, DT_SINGLELINE);
+			DrawText(hdc, L"Done!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
 		}
 		EndPaint(hwnd, &ps);
 		break;
