@@ -69,8 +69,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
-	RECT start = { 2, 0, 0, 0 };
-	RECT end = { 2, 20, 0, 0 };
+	RECT start = {2, 0, 0, 0};
+	RECT end = {2, 20, 0, 0};
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -166,14 +166,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		&cwd[0],
 		_TRUNCATE
 	);
-
-
-
 	SHGetFolderPath(nullptr,
-		CSIDL_PROGRAM_FILES_COMMON,
-		nullptr,
-		0,
-		progdrive);
+	                CSIDL_PROGRAM_FILES_COMMON,
+	                nullptr,
+	                0,
+	                progdrive);
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	wchar_t* commonfiles = commonfiles1;
 	wcsncat_s(
