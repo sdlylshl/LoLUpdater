@@ -135,7 +135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
 		nullptr, nullptr, hInstance, nullptr);
 		
-		if(hnwd == NULL)
+		if(hwnd == NULL)
 		{
 			throw std::runtime_error("failed to create window");	
 		}
