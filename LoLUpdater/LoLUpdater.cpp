@@ -132,19 +132,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	ShowWindow(hwnd, nCmdShow);
-
-
-	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
-	const std::wstring airsetup = L"air15_win.exe";
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	FILE* f;
+	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
-
+	const std::wstring airsetup = L"air15_win.exe";
 	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air15_win.exe", airsetup, L"-silent");
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
-
 	DeleteFile((cwd + std::wstring(L"\\") + cgsetup).c_str());
 	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 
