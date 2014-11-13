@@ -9,9 +9,6 @@
 #include <wininet.h>
 bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-RECT start = {2, 0, 0, 0};
-RECT end = {2, 20, 0, 0};
-HRESULT result;
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 wchar_t* unblocker = unblocker1;
 
@@ -74,6 +71,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
+	RECT start = { 2, 0, 0, 0 };
+	RECT end = { 2, 20, 0, 0 };
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -98,9 +97,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 {
 	MSG Msg;
-	WNDCLASSEXW wc;
-	std::wstring g_szClassName(L"mainwindow1");
-	wc.cbSize = sizeof(WNDCLASSEXW);
+	WNDCLASSEX wc;
+	const std::wstring g_szClassName(L"mainwindow1");
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
@@ -181,9 +180,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	);
 	wchar_t* airclient = airclient1;
 	wchar_t* gameclient = gameclient1;
-	wchar_t* cg = L"Cg.dll";
-	wchar_t* cggl = L"CgGL.dll";
-	wchar_t* cgd3d9 = L"CgD3D9.dll";
+	const wchar_t* cg = L"Cg.dll";
+	const wchar_t* cggl = L"CgGL.dll";
+	const wchar_t* cgd3d9 = L"CgD3D9.dll";
 
 	wchar_t adobepath1[MAX_PATH + 1] = L"";
 	wchar_t* adobepath = adobepath1;
@@ -238,8 +237,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	else
 	{
-		wchar_t* rads = L"RADS";
-		wchar_t* rel = L"releases";
+		const wchar_t* rads = L"RADS";
+		const wchar_t* rel = L"releases";
 		PathAppend(airclient, rads);
 		PathAppend(airclient, L"projects");
 		PathAppend(airclient, L"lol_air_client");
@@ -298,7 +297,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	wchar_t airdest1[MAX_PATH + 1] = L"";
 	wchar_t* airdest = airdest1;
-	wchar_t* air = L"Adobe AIR.dll";
+	const wchar_t* air = L"Adobe AIR.dll";
 	PathCombine(
 		airdest,
 		airclient,
