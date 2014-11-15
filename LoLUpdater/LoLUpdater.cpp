@@ -11,10 +11,9 @@ bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 wchar_t* unblocker = unblocker1;
-
 void unblockFile(std::wstring const& path)
 {
-	memset(unblocker, 0, MAX_PATH + 1);
+	*unblocker = '\0';
 	PathCombine(unblocker, cwd, path.c_str());
 	wcsncat_s(
 		unblocker,
@@ -28,7 +27,7 @@ void unblockFile(std::wstring const& path)
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
 	unblockFile(file);
-	memset(unblocker, 0, MAX_PATH + 1);
+	*unblocker = '\0';
 	PathCombine(unblocker, cwd, file.c_str());
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
