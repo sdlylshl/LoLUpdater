@@ -15,57 +15,63 @@ layout: default
 </dd>
 <dl>
   <dt><IMG SRC="img/pic.png" ALT="Screenshot of LoLUpdater running (Took 17 seconds!)"></dt>
-  <dt>How to install:</dt>
-  <dd>
+  <details open>
+    <summary><dt>How to install</dt>
+    </summary>
+    <dd>
+      <ul>
+        <li>Exit the PvP.net client/game, everything that is League of Legends</li>
+        <li>Install the Microsoft Visual C++ Redistributable(s) (both if you are 64bit, x86 only if you are 32bit).</li>
+        <li>Right click lolupdater.exe -> properties -> unblock</li>
+        <li>Run from any of the paths below (your installation directory for LoL)</li>
+        <dd>
+          <table>
+            <tbody>
+              <tr>
+                <th>Standard LoL directory/PBE</th>
+                <td>
+                  <code>C:\Riot Games\League of Legends</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Garena (32-Bit)</th>
+                <td>
+                  <code>C:\Program Files\GarenaLoL\GameData\Apps\LoL</code>
+                  <br>
+                  <code>C:\Program Files\GarenaLoLPH\GameData\Apps\LoLPH</code>
+                </td>
+              </tr>
+              <tr>
+                <th>Garena (64-Bit)</th>
+                <td>
+                  <code>C:\Program Files (x86)\GarenaLoL\GameData\Apps\LoL</code>
+                  <br>
+                  <code>C:\Program Files (x86)\GarenaLoLPH\GameData\Apps\LoLPH</code>
+                </td>
+            </tbody>
+          </table>
+        </dd>
+
+  </details>
+  <details>
+    <summary><dt>Manual Installation</dt>
+    </summary>
     <ul>
-      <li>Exit the PvP.net client/game, everything that is League of Legends</li>
-          <li>Install the Microsoft Visual C++ Redistributable(s) (both if you are 64bit, x86 only if you are 32bit).</li>
-          <li>Right click lolupdater.exe -> properties -> unblock</li>
-          <li>Run from any of the paths below (your installation directory for LoL)</li>
-          <dd>
-            <table>
-              <tbody>
-                <tr>
-                  <th>Standard LoL directory/PBE</th>
-                  <td>
-                    <code>C:\Riot Games\League of Legends</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Garena (32-Bit)</th>
-                  <td>
-                    <code>C:\Program Files\GarenaLoL\GameData\Apps\LoL</code>
-                    <br>
-                    <code>C:\Program Files\GarenaLoLPH\GameData\Apps\LoLPH</code>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Garena (64-Bit)</th>
-                  <td>
-                    <code>C:\Program Files (x86)\GarenaLoL\GameData\Apps\LoL</code>
-                    <br>
-                    <code>C:\Program Files (x86)\GarenaLoLPH\GameData\Apps\LoLPH</code>
-                  </td>
-              </tbody>
-            </table>
-          </dd>
+      <li>Download/Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG</a> </a>
+        </a>
+      </li>
+      <li>Move <code>cg.dll</code>, <code>cggl.dll</code> and <code>cgd3d9.dll</code> from <code>C:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> to <code>C:\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\highest version number\deploy</code>
+      </li>
+      <li>Copy <code>Adobe AIR.dll</code> and NPSWF32.dll from <code>C:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>C:\Riot Games\League of Legends\RADS\projects\lol_air_client\releases\highest version number\deploy\Adobe AIR\Versions\1.0</code>
+      </li>
+      <li>Check the highest SMID instruction your processor supports <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a> (Haswell), <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a> (most common nowadays),
+        <a
+        href="http://lol.jdhpro.com/SSE.dll">SSE</a> or <a href="http://lol.jdhpro.com/Default.dll">none</a>, then download the file and put it in the same directory as the cg files, finally rename the file to <code>tbb.dll</code>
+      </li>
+      <li>To finish everything off make sure you unblock the replaced files by right clicking on the file -> properties -> then click unblock, if you can't see the unblock button then it already is unblocked and you do not have to think about this.</li>
+    </ul>
+  </details>
 </dl>
-<details>
-  <summary><dt>Manual Installation</dt>
-  </summary>
-  <ul>
-    <li>Download/Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG</a> </a>
-      </a>
-    </li>
-    <li>Move <code>cg.dll</code>, <code>cggl.dll</code> and <code>cgd3d9.dll</code> from <code>C:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> to <code>C:\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\highest version number\deploy</code>
-    </li>
-    <li>Copy <code>Adobe AIR.dll</code> and NPSWF32.dll from <code>C:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>C:\Riot Games\League of Legends\RADS\projects\lol_air_client\releases\highest version number\deploy\Adobe AIR\Versions\1.0</code>
-    </li>
-    <li>Check the highest SMID instruction your processor supports <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a> (Haswell), <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a> (most common nowadays), <a href="http://lol.jdhpro.com/SSE.dll">SSE</a>      or <a href="http://lol.jdhpro.com/Default.dll">none</a>, then download the file and put it in the same directory as the cg files, finally rename the file to <code>tbb.dll</code>
-    </li>
-    <li>To finish everything off make sure you unblock the replaced files by right clicking on the file -> properties -> then click unblock, if you can't see the unblock button then it already is unblocked and you do not have to think about this.</li>
-  </ul>
-</details>
 <iframe src="http://files.quizsnack.com/iframe/embed.html?hash=qhildf03&width=250&height=370&wmode=window&bgcolor=EEEEEE&t=1414842988&width=250&height=370" width="250" height="370" seamless="seamless" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
 <iframe src="http://files.quizsnack.com/iframe/embed.html?hash=q7xcqunx&width=250&height=370&wmode=window&bgcolor=EEEEEE&t=1414842415&width=250&height=370" width="250" height="370" seamless="seamless" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
 <iframe src="http://files.quizsnack.com/iframe/embed.html?hash=qhkm695k&width=250&height=370&wmode=window&bgcolor=EEEEEE&t=1414842976&width=250&height=370" width="250" height="370" seamless="seamless" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
