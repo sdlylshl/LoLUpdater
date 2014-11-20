@@ -255,7 +255,7 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>None</ErrorReporting>
       <CompileAsManaged>false</CompileAsManaged>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <StringPooling>true</StringPooling>
       <CompileAsWinRT>false</CompileAsWinRT>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
