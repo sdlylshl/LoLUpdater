@@ -231,10 +231,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(gameclient, L"solutions");
 		PathAppend(gameclient, L"lol_game_client_sln");
 		PathAppend(gameclient, rel);
-		PathAppend(gameclient, L"0.0.1.70");
+		PathAppend(gameclient, L"0.0.1.71");
 		const wchar_t* dep = L"deploy";
 		PathAppend(gameclient, dep);
-		PathAppend(airclient, L"0.0.1.121");
+		PathAppend(airclient, L"0.0.1.123");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
