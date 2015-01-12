@@ -235,7 +235,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(gameclient, L"0.0.1.71");
 		const wchar_t* dep = L"deploy";
 		PathAppend(gameclient, dep);
-		PathAppend(airclient, L"0.0.1.123");
+		PathAppend(airclient, L"0.0.1.124");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
