@@ -5,15 +5,17 @@
 #include <Shlwapi.h>
 #include <direct.h>
 #include <Shlobj.h>
+#include <wininet.h>
+
 bool done = false;
-std::wstring cwd(_wgetcwd(nullptr, 0));
+wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 wchar_t* unblocker = unblocker1;
 
 void unblockFile(std::wstring const& path)
 {
 	*unblocker = '\0';
-	PathCombine(unblocker, cwd.c_str(), path.c_str());
+	PathCombine(unblocker, cwd, path.c_str());
 	wcsncat_s(
 		unblocker,
 		MAX_PATH + 1,
@@ -27,7 +29,7 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 {
 	unblockFile(file);
 	*unblocker = '\0';
-	PathCombine(unblocker, cwd.c_str(), file.c_str());
+	PathCombine(unblocker, cwd, file.c_str());
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -35,17 +37,32 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	ei.lpFile = unblocker;
 	ei.lpParameters = args.c_str();
 	ei.nShow = SW_SHOW;
+
+	if (!ShellExecuteEx(&ei))
+		throw std::runtime_error("failed to execute program");
+
+	if (WaitForSingleObject(ei.hProcess, INFINITE) == WAIT_FAILED)
+		throw std::runtime_error("failed to wait for program to finish");
 }
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr);
+	if (!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
+	{
+		throw std::runtime_error("failed to initialize download");
+	}
 }
 
 void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
 	downloadFile(url, file);
 	runAndWait(file, args);
+}
+
+void cpyerrchk(BOOL res)
+{
+	if (res = NULL)
+		throw std::runtime_error("failed to copy file");
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -92,7 +109,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
- 
+
+	if (RegisterClassEx(&wc) == NULL)
+	{
+		throw std::runtime_error("failed to register window");
+	}
+
 	HWND hwnd;
 	hwnd = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
@@ -101,6 +123,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
 		nullptr, nullptr, hInstance, nullptr);
+
+	if (hwnd == NULL)
+	{
+		throw std::runtime_error("failed to create window");
+	}
 
 	ShowWindow(hwnd, nCmdShow);
 	HRSRC hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
@@ -305,14 +332,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
-	wchar_t finalurl[2048] = L"";
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
 	DWORD dwLength = sizeof(finalurl);
-	wchar_t tbbname[2048] = L"";
+	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(
 			tbbname,
-			2048,
+			INTERNET_MAX_URL_LENGTH,
 			L"XP.dll",
 			_TRUNCATE
 			);
@@ -342,7 +369,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		{
 			wcsncat_s(
 				tbbname,
-				2048,
+				INTERNET_MAX_URL_LENGTH,
 				L"AVX2.dll",
 				_TRUNCATE
 				);
@@ -355,7 +382,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			{
 				wcsncat_s(
 					tbbname,
-					2048,
+					INTERNET_MAX_URL_LENGTH,
 					L"AVX.dll",
 					_TRUNCATE
 					);
@@ -366,7 +393,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				{
 					wcsncat_s(
 						tbbname,
-						2048,
+						INTERNET_MAX_URL_LENGTH,
 						L"SSE2.dll",
 						_TRUNCATE
 						);
@@ -377,7 +404,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					{
 						wcsncat_s(
 							tbbname,
-							2048,
+							INTERNET_MAX_URL_LENGTH,
 							L"SSE.dll",
 							_TRUNCATE
 							);
@@ -386,7 +413,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 					{
 						wcsncat_s(
 							tbbname,
-							2048,
+							INTERNET_MAX_URL_LENGTH,
 							L"Default.dll",
 							_TRUNCATE
 							);
@@ -404,15 +431,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		0
 		);
 	downloadFile(std::wstring(finalurl), std::wstring(tbb));
-	CopyFile(cgbin, cgdest, false);
-	CopyFile(cgglbin, cggldest, false);
-	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	CopyFile(airlatest, airdest, false);
-	CopyFile(flashlatest, flashdest, false);
+	cpyerrchk(CopyFile(cgbin, cgdest, false));
+	cpyerrchk(CopyFile(cgglbin, cggldest, false));
+	cpyerrchk(CopyFile(cgd3d9bin, cgd3d9dest, false));
+	cpyerrchk(CopyFile(airlatest, airdest, false));
+	cpyerrchk(CopyFile(flashlatest, flashdest, false));
 	unblockFile(tbb);
 	unblockFile(airdest);
 	unblockFile(flashdest);
 	done = true;
+	if (UpdateWindow(hwnd) == NULL)
+	{
+		throw std::runtime_error("failed to update window");
+	}
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
