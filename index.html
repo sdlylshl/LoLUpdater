@@ -3,9 +3,8 @@ title: Home
 layout: default
 ---
 
-<span id="hero">Unable to max League of Legends with your computer? then this will help you get those extra FPS! Soon for OSX!.<br>
-  Increases ingame FPS and makes the PvP.net client more responsive.
-  Open-Source and free, written in C++.
+<span id="hero">This will help you get those extra FPS in the game League of Legends! Soon for OSX!.<br>
+Free software written in C++, source code available at the top left.
 </span>
 <hr>
 <center>
@@ -19,8 +18,8 @@ layout: default
 <script type="text/javascript"
 src="//pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
-><dt><IMG SRC="https://raw.githubusercontent.com/Loggan08/LoLUpdater/gh-pages/img/LoLUpdater.png" ALT="Screenshot of LoLUpdater running"></dt>
 <IMG SRC="https://raw.githubusercontent.com/Loggan08/LoLUpdater/gh-pages/fuckriot.jpg" ALT="Not Riot"></dt>
+><dt><IMG SRC="https://raw.githubusercontent.com/Loggan08/LoLUpdater/gh-pages/img/LoLUpdater.png" ALT="Screenshot of LoLUpdater running"></dt>
 <script type="text/javascript">
     google_ad_client = "ca-pub-6694715230959620";
     google_ad_slot = "2482110934";
@@ -43,6 +42,7 @@ src="//pagead2.googlesyndication.com/pagead/show_ads.js">
     <dd>
       <ul>
         <li>Exit the PvP.net client/game</li>
+        <li>Unblock the vcredists by right clicking -> properties -> unblock</li>
         <li>Install the Microsoft Visual C++ Redistributable(s) (both if you are on a 64bit cpu, x86 only if you are on 32bit cpu).</li>
         <li>Right click lolupdater.exe -> properties -> unblock</li>
         <li>If you are on XP you will need streams.exe from sysinternals to unblock the file first to avoid any nasty ingame bugs.</li>
@@ -84,18 +84,18 @@ src="//pagead2.googlesyndication.com/pagead/show_ads.js">
     <summary><dt>Manual Installation</dt>
     </summary>
     <ul>
-      <li>Download/Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG</a> </a>
+      <li>Download & Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG</a> </a>
         </a>
       </li>
-      <li>Move <code>Cg.dll</code>, <code>CgGL.dll</code> and <code>CgD3D9.dll</code> from <code>C:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> (you can experiment with the 64bit libraries) to <code>C:\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\highest version number\deploy</code>
+      <li>Move <code>Cg.dll</code>, <code>CgGL.dll</code> and <code>CgD3D9.dll</code> from <code>C:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> to <code>%leaguedirectory%\RADS\solutions\lol_game_client_sln\releases\highest version number\deploy</code>
       </li>
-      <li>Copy <code>Adobe AIR.dll</code> and <code>NPSWF32.dll</code> from <code>C:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>C:\Riot Games\League of Legends\RADS\projects\lol_air_client\releases\highest version number\deploy\Adobe AIR\Versions\1.0</code>
+      <li>Copy <code>Adobe AIR.dll</code> and <code>NPSWF32.dll</code> from <code>C:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>%leaguedirectory%\RADS\projects\lol_air_client\releases\highest version number\deploy\Adobe AIR\Versions\1.0</code>
       </li>
-      <li>Check the highest SMID instruction your processor supports (CPU-Z can see this) <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a> (Haswell), <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a>,
+      <li>Check the highest SMID instruction your processor supports (with the help of the program "CPU-Z") <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a> (Haswell processors), <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a>,
         <a
-        href="http://lol.jdhpro.com/SSE.dll">SSE</a> or <a href="http://lol.jdhpro.com/Default.dll">none</a>, then download the file and put it in the same directory as the cg files, finally rename the file to <code>tbb.dll</code>
+        href="http://lol.jdhpro.com/SSE.dll">SSE</a> or <a href="http://lol.jdhpro.com/Default.dll">none</a>, then download the file and put it in the same directory as the Cg files, finally rename the file to <code>tbb.dll</code>
       </li>
-      <li>To finish everything off make sure you unblock the replaced files by right clicking on the files -> properties -> unblock, if you are unable to see the unblock button then it already is unblocked</li>
+      <li>Finish everything off by unblocking the replaced files by right clicking them -> properties -> unblock, if you are unable to see the unblock button then it already is unblocked</li>
     </ul>
   </details>
 </dl>
