@@ -8,7 +8,6 @@
 #include <wininet.h>
 #include <dirent.h>
 #include <stdio.h>
-#include <algorithm>
 
 bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
@@ -237,30 +236,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(gameclient, rel);
 
 
-		DIR *pdir = opendir("RADS\\projects\\lol_air_client\\releases");
-		struct dirent *pent = nullptr;
-		std::wstringstream results;
+		 // first off, we need to create a pointer to a directory
+		DIR *pdir = opendir("RADS\\projects\\lol_air_client\\releases");; // remember, it's good practice to initialise a pointer to NULL!
+	struct dirent *pent = nullptr;
 
-		while (pent = readdir (pdir))
-		 {
-		 results << pent->d_name;
-		 }
-		closedir (pdir);
+    while (pent = readdir (pdir)) // while there is still something in the directory to list
+    {
+		cout << pent->d_name;
+    }
+
+    // finally, let's close the directory
+    closedir (pdir);
+
+
+
+
 		// fix this
-		PathAppend(gameclient, results.str().c_str());
+		PathAppend(gameclient, L"0.0.1.72");
+
 		const wchar_t* dep = L"deploy";
 		PathAppend(gameclient, dep);
 
 
 
-		std::wstringstream results1;
+
 		// first off, we need to create a pointer to a directory
 		DIR *pdir1 = opendir("solutions\\lol_game_client_sln\\releases");; // remember, it's good practice to initialise a pointer to NULL!
 		struct dirent *pent1 = nullptr;
 
 		while (pent1 = readdir(pdir1)) // while there is still something in the directory to list
 		{
-			results1 << pent1->d_name;
+			// put everything in array
 		}
 
 		// finally, let's close the directory
@@ -272,7 +278,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 
 		// fix this
-		PathAppend(airclient, results.str().c_str());
+		PathAppend(airclient, L"0.0.1.125");
 
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
