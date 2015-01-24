@@ -118,7 +118,6 @@
     <ClCompile Include="LoLUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dirent.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
