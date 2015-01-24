@@ -6,8 +6,6 @@
 #include <direct.h>
 #include <Shlobj.h>
 #include <wininet.h>
-#include <dirent.h>
-#include <stdio.h>
 
 bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
@@ -234,52 +232,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		PathAppend(gameclient, L"solutions");
 		PathAppend(gameclient, L"lol_game_client_sln");
 		PathAppend(gameclient, rel);
-
-
-		 // first off, we need to create a pointer to a directory
-		DIR *pdir = opendir("RADS\\projects\\lol_air_client\\releases");; // remember, it's good practice to initialise a pointer to NULL!
-	struct dirent *pent = nullptr;
-
-    while (pent = readdir (pdir)) // while there is still something in the directory to list
-    {
-		cout << pent->d_name;
-    }
-
-    // finally, let's close the directory
-    closedir (pdir);
-
-
-
-
-		// fix this
 		PathAppend(gameclient, L"0.0.1.72");
-
 		const wchar_t* dep = L"deploy";
 		PathAppend(gameclient, dep);
-
-
-
-
-		// first off, we need to create a pointer to a directory
-		DIR *pdir1 = opendir("solutions\\lol_game_client_sln\\releases");; // remember, it's good practice to initialise a pointer to NULL!
-		struct dirent *pent1 = nullptr;
-
-		while (pent1 = readdir(pdir1)) // while there is still something in the directory to list
-		{
-			// put everything in array
-		}
-
-		// finally, let's close the directory
-		closedir(pdir1);
-
-
-
-
-
-
-		// fix this
-		PathAppend(airclient, L"0.0.1.125");
-
+		PathAppend(airclient, L"0.0.1.126");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
