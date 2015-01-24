@@ -1,0 +1,7 @@
+*.cpp    text=auto
+*.h    text=auto
+*.rc    binary
+*.sln    text=auto
+*.vcxproj text=auto
+*.ico   binary
+*.md text=auto
