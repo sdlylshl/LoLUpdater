@@ -3,7 +3,7 @@
 #include <memory>
 #include <Shlwapi.h>
 #include <Shlobj.h>
-#include <wininet.h>
+#define MAX_URL_LENGTH 33
 
 bool done = false;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
@@ -25,14 +25,11 @@ void unblockFile(std::wstring const& path)
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
-	unblockFile(file);
-	*unblocker = '\0';
-	PathCombine(unblocker, cwd, file.c_str());
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ei.lpVerb = L"runas";
-	ei.lpFile = unblocker;
+	ei.lpFile = file.c_str();
 	ei.lpParameters = args.c_str();
 	ei.nShow = SW_SHOW;
 	ShellExecuteEx(&ei);
@@ -47,6 +44,7 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
 {
 	downloadFile(url, file);
+	unblockFile(file);
 	runAndWait(file, args);
 }
 
@@ -308,14 +306,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
+	wchar_t finalurl[MAX_URL_LENGTH] = L"";
 	DWORD dwLength = sizeof(finalurl);
-	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
+	wchar_t tbbname[MAX_URL_LENGTH] = L"";
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(
 			tbbname,
-			INTERNET_MAX_URL_LENGTH,
+			MAX_URL_LENGTH,
 			L"XP.dll",
 			_TRUNCATE
 			);
@@ -345,7 +343,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		{
 			wcsncat_s(
 				tbbname,
-				INTERNET_MAX_URL_LENGTH,
+				MAX_URL_LENGTH,
 				L"AVX2.dll",
 				_TRUNCATE
 				);
@@ -358,7 +356,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			{
 				wcsncat_s(
 					tbbname,
-					INTERNET_MAX_URL_LENGTH,
+					MAX_URL_LENGTH,
 					L"AVX.dll",
 					_TRUNCATE
 					);
@@ -369,7 +367,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 				{
 					wcsncat_s(
 						tbbname,
-						INTERNET_MAX_URL_LENGTH,
+						MAX_URL_LENGTH,
 						L"SSE2.dll",
 						_TRUNCATE
 						);
@@ -380,7 +378,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 					{
 						wcsncat_s(
 							tbbname,
-							INTERNET_MAX_URL_LENGTH,
+							MAX_URL_LENGTH,
 							L"SSE.dll",
 							_TRUNCATE
 							);
@@ -389,7 +387,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 					{
 						wcsncat_s(
 							tbbname,
-							INTERNET_MAX_URL_LENGTH,
+							MAX_URL_LENGTH,
 							L"Default.dll",
 							_TRUNCATE
 							);
