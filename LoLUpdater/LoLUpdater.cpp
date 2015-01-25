@@ -79,19 +79,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 {
 	MSG Msg;
 	WNDCLASSEX wc;
-	const std::wstring g_szClassName(L"mainwindow1");
+	const std::wstring g_szClassName(L"LoLUpdaterWindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
-	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 	RegisterClassEx(&wc);
 
 	HWND hwnd;
@@ -100,21 +98,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		g_szClassName.c_str(),
 		L"LoLUpdater",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 405, 100,
+		CW_USEDEFAULT, CW_USEDEFAULT, 410, 100,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
-	FILE* f;
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+	FILE* f;
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
-	const std::wstring airsetup = L"air16_win.exe";
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
+	const std::wstring airsetup = L"air16_win.exe";
 	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup, L"-silent");
 	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
-	wchar_t progdrive[MAX_PATH + 1];
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		cgbinpath,
@@ -139,6 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		&cwd[0],
 		_TRUNCATE
 		);
+	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr,
 		CSIDL_PROGRAM_FILES_COMMON,
 		nullptr,
@@ -404,14 +402,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		0
 		);
 	downloadFile(std::wstring(finalurl), std::wstring(tbb));
+	unblockFile(tbb);
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
-	unblockFile(tbb);
-	unblockFile(airdest);
-	unblockFile(flashdest);
 	done = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
