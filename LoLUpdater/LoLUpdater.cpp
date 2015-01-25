@@ -6,14 +6,25 @@
 #define MAX_URL_LENGTH 33
 
 bool done = false;
-wchar_t* cwd(_wgetcwd(nullptr, 0));
+wchar_t path[MAX_PATH + 1];
 wchar_t unblocker1[MAX_PATH + 1] = L"";
 wchar_t* unblocker = unblocker1;
 
-void unblockFile(std::wstring const& path)
+void unblockFile(std::wstring const& path1)
 {
 	*unblocker = '\0';
-	PathCombine(unblocker, cwd, path.c_str());
+	wcsncat_s(
+		unblocker,
+		MAX_PATH + 1,
+		path,
+		_TRUNCATE
+		);
+	wcsncat_s(
+		unblocker,
+		MAX_PATH + 1,
+		path1.c_str(),
+		_TRUNCATE
+		);
 	wcsncat_s(
 		unblocker,
 		MAX_PATH + 1,
@@ -92,7 +103,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your League of Legends installation directory";
 	auto pidl = SHBrowseForFolder(&bi);
-	wchar_t path[MAX_PATH + 1];
 	if (pidl != nullptr)
 	{
 		SHGetPathFromIDList(pidl, path);
@@ -413,8 +423,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	done = true;
-	DeleteFile((cwd + std::wstring(L"\\") + cgsetup).c_str());
-	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
