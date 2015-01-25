@@ -111,7 +111,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	const std::wstring airsetup = L"air16_win.exe";
 	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup, L"-silent");
-	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		cgbinpath,
@@ -409,6 +408,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	done = true;
+	DeleteFile((cwd + std::wstring(L"\\") + cgsetup).c_str());
+	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
