@@ -87,7 +87,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	RegisterClassEx(&wc);
