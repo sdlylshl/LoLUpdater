@@ -36,18 +36,6 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	WaitForSingleObject(ei.hProcess, INFINITE);
 }
 
-void downloadFile(std::wstring const& url, std::wstring const& file)
-{
-	URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr);
-}
-
-void downloadAndRunFile(std::wstring const& url, std::wstring const& file, std::wstring const& args)
-{
-	downloadFile(url, file);
-	unblockFile(file);
-	runAndWait(file, args);
-}
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
@@ -109,7 +97,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fclose(f);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	const std::wstring airsetup = L"air16_win.exe";
-	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup, L"-silent");
+	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
+	unblockFile(airsetup);
+	runAndWait(airsetup, L"-silent");
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH",
 		cgbinpath,
@@ -399,7 +389,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		&dwLength,
 		0
 		);
-	downloadFile(std::wstring(finalurl), std::wstring(tbb));
+	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
 	unblockFile(tbb);
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
