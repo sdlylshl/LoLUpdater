@@ -88,6 +88,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		CW_USEDEFAULT, CW_USEDEFAULT, 410, 100,
 		nullptr, nullptr, hInstance, nullptr);
 
+
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = L"Select your League of Legends installation directory";
+	auto pidl = SHBrowseForFolder(&bi);
+	wchar_t path[MAX_PATH + 1];
+	if (pidl != nullptr)
+	{
+		SHGetPathFromIDList(pidl, path);
+		IMalloc* imalloc = nullptr;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
 	ShowWindow(hwnd, nCmdShow);
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
@@ -114,14 +129,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wcsncat_s(
 		airclient1,
 		MAX_PATH + 1,
-		&cwd[0],
+		path,
 		_TRUNCATE
 		);
 	wchar_t gameclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(
 		gameclient1,
 		MAX_PATH + 1,
-		&cwd[0],
+		path,
 		_TRUNCATE
 		);
 	wchar_t progdrive[MAX_PATH + 1];
@@ -140,6 +155,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		);
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	auto adobedir = adobedir1;
+
 	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
 	wcsncat_s(
 		adobedir,
