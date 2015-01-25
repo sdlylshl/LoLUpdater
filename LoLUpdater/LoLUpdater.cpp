@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		g_szClassName.c_str(),
 		L"LoLUpdater",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 407, 134,
+		CW_USEDEFAULT, CW_USEDEFAULT, 405, 100,
 		nullptr, nullptr, hInstance, nullptr);
 
 	ShowWindow(hwnd, nCmdShow);
