@@ -1,6 +1,5 @@
 *.user
 *.suo
-*.exe
 ia32
 Tbb
 Debug

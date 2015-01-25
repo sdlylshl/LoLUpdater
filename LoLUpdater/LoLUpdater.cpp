@@ -113,7 +113,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const std::wstring airsetup = L"air16_win.exe";
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	downloadAndRunFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup, L"-silent");
-	DeleteFile((cwd + std::wstring(L"\\") + cgsetup).c_str());
 	DeleteFile((cwd + std::wstring(L"\\") + airsetup).c_str());
 	wchar_t progdrive[MAX_PATH + 1];
 	wchar_t cgbinpath[MAX_PATH + 1];
