@@ -3,5 +3,6 @@
 *.rc    binary
 *.sln    text=auto
 *.vcxproj text=auto
+*.filters text=auto
 *.ico   binary
 *.md text=auto

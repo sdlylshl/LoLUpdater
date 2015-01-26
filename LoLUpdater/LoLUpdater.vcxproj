@@ -114,6 +114,9 @@
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
     </Manifest>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IntDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LoLUpdater.cpp" />
@@ -123,6 +126,12 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cg-3.1_April2012_Setup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
