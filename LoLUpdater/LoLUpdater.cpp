@@ -80,6 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
+	
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	FILE* f;
@@ -87,39 +88,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
+	
 	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
+	
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1);
 	wcsncat_s(cgbinpath, MAX_PATH + 1, L"\\", _TRUNCATE);
+	
 	wchar_t airclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(airclient1, MAX_PATH + 1, path, _TRUNCATE);
+	
 	wchar_t gameclient1[MAX_PATH + 1] = L"";
 	wcsncat_s(gameclient1, MAX_PATH + 1, path, _TRUNCATE);
+	
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
+	
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	auto commonfiles = commonfiles1;
 	wcsncat_s(commonfiles1, MAX_PATH + 1, progdrive, _TRUNCATE);
+	
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	auto adobedir = adobedir1;
 	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
 	wcsncat_s(adobedir, MAX_PATH + 1, adobeairpath.c_str(), _TRUNCATE);
+	
 	wchar_t adobepath1[MAX_PATH + 1] = L"";
 	auto adobepath = adobepath1;
 	PathCombine(adobepath, commonfiles, adobedir);
+	
 	auto airclient = airclient1;
 	auto gameclient = gameclient1;
+	
 	wchar_t instdir[MAX_PATH + 1] = L"";
 	auto instdir1 = instdir;
 	PathCombine(instdir1, path, L"lol.exe");
+	
 	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
+		
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
 		auto garenaair = garenaair1;
 		wcsncat_s(garenaair1, MAX_PATH + 1, L"Air\\", _TRUNCATE);
 		wcsncat_s(garenaair1, MAX_PATH + 1, adobeairpath.c_str(), _TRUNCATE);
+		
 		PathAppend(airclient, garenaair);
 	}
 	else
@@ -130,6 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PathAppend(airclient, L"lol_air_client");
 		auto rel = L"releases";
 		PathAppend(airclient, rel);
+		
 		PathAppend(gameclient, rads);
 		PathAppend(gameclient, L"solutions");
 		PathAppend(gameclient, L"lol_game_client_sln");
@@ -137,6 +152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PathAppend(gameclient, L"0.0.1.72");
 		auto dep = L"deploy";
 		PathAppend(gameclient, dep);
+		
 		PathAppend(airclient, L"0.0.1.126");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
@@ -145,53 +161,68 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
 	auto cgbasepath = cgbasepath1;
 	wcsncat_s(cgbasepath1, MAX_PATH + 1, cgbinpath, _TRUNCATE);
+	
 	wchar_t cgbin1[MAX_PATH + 1] = L"";
 	auto cgbin = cgbin1;
 	auto cg = L"Cg.dll";
 	PathCombine(cgbin, cgbasepath, cg);
+	
 	wchar_t cgglbin1[MAX_PATH + 1] = L"";
 	auto cgglbin = cgglbin1;
 	auto cggl = L"CgGL.dll";
 	PathCombine(cgglbin, cgbasepath, cggl);
+	
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	auto cgd3d9bin = cgd3d9bin1;
 	auto cgd3d9 = L"CgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbasepath, cgd3d9);
+	
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	auto tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
+	
 	wchar_t airdest1[MAX_PATH + 1] = L"";
 	auto airdest = airdest1;
 	auto air = L"Adobe AIR.dll";
 	PathCombine(airdest, airclient, air);
+	
 	wchar_t airlatest1[MAX_PATH + 1] = L"";
 	auto airlatest = airlatest1;
 	PathCombine(airlatest, adobepath, air);
+	
 	wchar_t res[MAX_PATH + 1] = L"Resources";
 	auto flash = res;
 	PathAppend(flash, L"NPSWF32.dll");
+	
 	wchar_t flashdest1[MAX_PATH + 1] = L"";
 	auto flashdest = flashdest1;
 	PathCombine(flashdest, airclient, flash);
+	
 	wchar_t flashlatest1[MAX_PATH + 1] = L"";
 	auto flashlatest = flashlatest1;
 	PathCombine(flashlatest, adobepath, flash);
+	
 	wchar_t cgdest1[MAX_PATH + 1] = L"";
 	auto cgdest = cgdest1;
 	PathCombine(cgdest, gameclient, cg);
+	
 	wchar_t cggldest1[MAX_PATH + 1] = L"";
 	auto cggldest = cggldest1;
 	PathCombine(cggldest, gameclient, cggl);
+	
 	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
 	auto cgd3d9dest = cgd3d9dest1;
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
+	
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
+	
 	wchar_t finalurl[MAX_URL_LENGTH] = L"";
 	DWORD dwLength = sizeof(finalurl);
 	wchar_t tbbname[MAX_URL_LENGTH] = L"";
+	
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(tbbname, MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
