@@ -63,7 +63,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		DrawText(hdc, L"In Progress...", -1, &start, DT_SINGLELINE | DT_NOCLIP);
 		if (done)
 		{
-			DrawText(hdc, L"Finished!, Enjoy a better League", -1, &end, DT_SINGLELINE | DT_NOCLIP);
+			DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
 		}
 		EndPaint(hwnd, &ps);
 		break;
@@ -99,10 +99,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		CW_USEDEFAULT, CW_USEDEFAULT, 410, 100,
 		nullptr, nullptr, hInstance, nullptr);
 
-
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your League of Legends installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
+	const std::wstring airsetup = L"air16_win.exe";
+	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
@@ -112,8 +113,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
-	const std::wstring airsetup = L"air16_win.exe";
-	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 	wchar_t cgbinpath[MAX_PATH + 1];
