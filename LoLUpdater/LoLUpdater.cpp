@@ -80,13 +80,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	WNDCLASSEX wc;
 	const std::wstring g_szClassName(L"LoLUpdaterWindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	RegisterClassEx(&wc);
 
