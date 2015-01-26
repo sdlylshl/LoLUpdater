@@ -172,7 +172,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		);
 	auto airclient = airclient1;
 	auto gameclient = gameclient1;
-	if (std::wifstream(L"lol.exe").good() && std::wifstream(L"lol.launcher.exe").fail())
+	wchar_t instdir[MAX_PATH + 1] = L"";
+	auto instdir1 = instdir;
+	PathCombine(
+		instdir1,
+		path,
+		L"lol.exe"
+		);
+	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
@@ -180,7 +187,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		wcsncat_s(
 			garenaair1,
 			MAX_PATH + 1,
-			L"AIR\\",
+			L"Air\\",
 			_TRUNCATE
 			);
 		wcsncat_s(
@@ -191,8 +198,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			);
 		PathAppend(airclient, garenaair);
 	}
-
-	if (std::wifstream(L"lol.launcher.exe").good() && std::wifstream(L"lol.exe").fail())
+	else
 	{
 		auto rads = L"RADS";
 		PathAppend(airclient, rads);
