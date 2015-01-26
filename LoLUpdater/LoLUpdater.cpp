@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 
 	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = L"Select your League of Legends installation directory";
+	bi.lpszTitle = L"Select your League of Legends installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	if (pidl != nullptr)
 	{
