@@ -183,16 +183,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			L"AIR\\",
 			_TRUNCATE
 			);
-		wchar_t garenaair2[MAX_PATH + 1] = L"";
-		auto garenaair20 = garenaair2;
 		wcsncat_s(
-			garenaair2,
+			garenaair1,
 			MAX_PATH + 1,
 			adobeairpath.c_str(),
 			_TRUNCATE
 			);
 		PathAppend(airclient, garenaair);
-		PathAppend(airclient, garenaair20);
 	}
 
 	if (std::wifstream(L"lol.launcher.exe").good() && std::wifstream(L"lol.exe").fail())
