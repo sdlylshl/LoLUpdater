@@ -103,16 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your League of Legends installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
-	if (pidl != nullptr)
-	{
-		SHGetPathFromIDList(pidl, path);
-		IMalloc* imalloc = nullptr;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
-		{
-			imalloc->Free(pidl);
-			imalloc->Release();
-		}
-	}
+	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
