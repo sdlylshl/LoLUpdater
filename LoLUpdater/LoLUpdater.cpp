@@ -70,8 +70,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.lpszClassName = g_szClassName.c_str();
-	wc.hIcon = LoadIcon(nullptr, MAKEINTRESOURCE(101));
-	wc.hIconSm = LoadIcon(nullptr, MAKEINTRESOURCE(101));
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	RegisterClassEx(&wc);
 
 	HWND hwnd;
