@@ -13,24 +13,9 @@ wchar_t* unblocker = unblocker1;
 void unblockFile(std::wstring const& path1)
 {
 	*unblocker = '\0';
-	wcsncat_s(
-		unblocker,
-		MAX_PATH + 1,
-		path,
-		_TRUNCATE
-		);
-	wcsncat_s(
-		unblocker,
-		MAX_PATH + 1,
-		path1.c_str(),
-		_TRUNCATE
-		);
-	wcsncat_s(
-		unblocker,
-		MAX_PATH + 1,
-		L":Zone.Identifier",
-		_TRUNCATE
-		);
+	wcsncat_s(unblocker, MAX_PATH + 1, path, _TRUNCATE);
+	wcsncat_s(unblocker, MAX_PATH + 1, path1.c_str(), _TRUNCATE);
+	wcsncat_s(unblocker, MAX_PATH + 1, L":Zone.Identifier", _TRUNCATE);
 	DeleteFile(unblocker);
 }
 
@@ -87,16 +72,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	RegisterClassEx(&wc);
 
 	HWND hwnd;
-	hwnd = CreateWindowEx(
-		WS_EX_CLIENTEDGE,
-		g_szClassName.c_str(),
-		L"LoLUpdater",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 410, 100,
-		nullptr, nullptr, hInstance, nullptr);
-
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 410, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = L"Select your League of Legends installation directory:";
+	bi.lpszTitle = L"Select your League of Legends/GarenaLoL installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	const std::wstring airsetup = L"air16_win.exe";
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
@@ -112,86 +90,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 	wchar_t cgbinpath[MAX_PATH + 1];
-	GetEnvironmentVariable(L"CG_BIN_PATH",
-		cgbinpath,
-		MAX_PATH + 1);
-	wcsncat_s(
-		cgbinpath,
-		MAX_PATH + 1,
-		L"\\",
-		_TRUNCATE
-		);
+	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1);
+	wcsncat_s(cgbinpath, MAX_PATH + 1, L"\\", _TRUNCATE);
 	wchar_t airclient1[MAX_PATH + 1] = L"";
-	wcsncat_s(
-		airclient1,
-		MAX_PATH + 1,
-		path,
-		_TRUNCATE
-		);
+	wcsncat_s(airclient1, MAX_PATH + 1, path, _TRUNCATE);
 	wchar_t gameclient1[MAX_PATH + 1] = L"";
-	wcsncat_s(
-		gameclient1,
-		MAX_PATH + 1,
-		path,
-		_TRUNCATE
-		);
+	wcsncat_s(gameclient1, MAX_PATH + 1, path, _TRUNCATE);
 	wchar_t progdrive[MAX_PATH + 1];
-	SHGetFolderPath(nullptr,
-		CSIDL_PROGRAM_FILES_COMMON,
-		nullptr,
-		0,
-		progdrive);
+	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
 	wchar_t commonfiles1[MAX_PATH + 1] = L"";
 	auto commonfiles = commonfiles1;
-	wcsncat_s(
-		commonfiles1,
-		MAX_PATH + 1,
-		progdrive,
-		_TRUNCATE
-		);
+	wcsncat_s(commonfiles1, MAX_PATH + 1, progdrive, _TRUNCATE);
 	wchar_t adobedir1[MAX_PATH + 1] = L"";
 	auto adobedir = adobedir1;
-
 	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
-	wcsncat_s(
-		adobedir,
-		MAX_PATH + 1,
-		adobeairpath.c_str(),
-		_TRUNCATE
-		);
+	wcsncat_s(adobedir, MAX_PATH + 1, adobeairpath.c_str(), _TRUNCATE);
 	wchar_t adobepath1[MAX_PATH + 1] = L"";
 	auto adobepath = adobepath1;
-	PathCombine(
-		adobepath,
-		commonfiles,
-		adobedir
-		);
+	PathCombine(adobepath, commonfiles, adobedir);
 	auto airclient = airclient1;
 	auto gameclient = gameclient1;
 	wchar_t instdir[MAX_PATH + 1] = L"";
 	auto instdir1 = instdir;
-	PathCombine(
-		instdir1,
-		path,
-		L"lol.exe"
-		);
+	PathCombine(instdir1, path, L"lol.exe");
 	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
 		wchar_t garenaair1[MAX_PATH + 1] = L"";
 		auto garenaair = garenaair1;
-		wcsncat_s(
-			garenaair1,
-			MAX_PATH + 1,
-			L"Air\\",
-			_TRUNCATE
-			);
-		wcsncat_s(
-			garenaair1,
-			MAX_PATH + 1,
-			adobeairpath.c_str(),
-			_TRUNCATE
-			);
+		wcsncat_s(garenaair1, MAX_PATH + 1, L"Air\\", _TRUNCATE);
+		wcsncat_s(garenaair1, MAX_PATH + 1, adobeairpath.c_str(), _TRUNCATE);
 		PathAppend(airclient, garenaair);
 	}
 	else
@@ -216,92 +144,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cgbasepath1[MAX_PATH + 1] = L"";
 	auto cgbasepath = cgbasepath1;
-	wcsncat_s(
-		cgbasepath1,
-		MAX_PATH + 1,
-		cgbinpath,
-		_TRUNCATE
-		);
+	wcsncat_s(cgbasepath1, MAX_PATH + 1, cgbinpath, _TRUNCATE);
 	wchar_t cgbin1[MAX_PATH + 1] = L"";
 	auto cgbin = cgbin1;
 	auto cg = L"Cg.dll";
-	PathCombine(
-		cgbin,
-		cgbasepath,
-		cg
-		);
+	PathCombine(cgbin, cgbasepath, cg);
 	wchar_t cgglbin1[MAX_PATH + 1] = L"";
 	auto cgglbin = cgglbin1;
 	auto cggl = L"CgGL.dll";
-	PathCombine(
-		cgglbin,
-		cgbasepath,
-		cggl
-		);
+	PathCombine(cgglbin, cgbasepath, cggl);
 	wchar_t cgd3d9bin1[MAX_PATH + 1] = L"";
 	auto cgd3d9bin = cgd3d9bin1;
 	auto cgd3d9 = L"CgD3D9.dll";
-	PathCombine(
-		cgd3d9bin,
-		cgbasepath,
-		cgd3d9
-		);
+	PathCombine(cgd3d9bin, cgbasepath, cgd3d9);
 	wchar_t tbb1[MAX_PATH + 1] = L"";
 	auto tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
 	wchar_t airdest1[MAX_PATH + 1] = L"";
 	auto airdest = airdest1;
 	auto air = L"Adobe AIR.dll";
-	PathCombine(
-		airdest,
-		airclient,
-		air
-		);
+	PathCombine(airdest, airclient, air);
 	wchar_t airlatest1[MAX_PATH + 1] = L"";
 	auto airlatest = airlatest1;
-	PathCombine(
-		airlatest,
-		adobepath,
-		air
-		);
+	PathCombine(airlatest, adobepath, air);
 	wchar_t res[MAX_PATH + 1] = L"Resources";
 	auto flash = res;
 	PathAppend(flash, L"NPSWF32.dll");
 	wchar_t flashdest1[MAX_PATH + 1] = L"";
 	auto flashdest = flashdest1;
-	PathCombine(
-		flashdest,
-		airclient,
-		flash
-		);
+	PathCombine(flashdest, airclient, flash);
 	wchar_t flashlatest1[MAX_PATH + 1] = L"";
 	auto flashlatest = flashlatest1;
-	PathCombine(
-		flashlatest,
-		adobepath,
-		flash
-		);
+	PathCombine(flashlatest, adobepath, flash);
 	wchar_t cgdest1[MAX_PATH + 1] = L"";
 	auto cgdest = cgdest1;
-	PathCombine(
-		cgdest,
-		gameclient,
-		cg
-		);
+	PathCombine(cgdest, gameclient, cg);
 	wchar_t cggldest1[MAX_PATH + 1] = L"";
 	auto cggldest = cggldest1;
-	PathCombine(
-		cggldest,
-		gameclient,
-		cggl
-		);
+	PathCombine(cggldest, gameclient, cggl);
 	wchar_t cgd3d9dest1[MAX_PATH + 1] = L"";
 	auto cgd3d9dest = cgd3d9dest1;
-	PathCombine(
-		cgd3d9dest,
-		gameclient,
-		cgd3d9
-		);
+	PathCombine(cgd3d9dest, gameclient, cgd3d9);
 	OSVERSIONINFO osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -311,12 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t tbbname[MAX_URL_LENGTH] = L"";
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
-		wcsncat_s(
-			tbbname,
-			MAX_URL_LENGTH,
-			L"XP.dll",
-			_TRUNCATE
-			);
+		wcsncat_s(tbbname, MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
 	}
 	else
 	{
@@ -341,12 +219,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		}
 		if (avx2 != 0)
 		{
-			wcsncat_s(
-				tbbname,
-				MAX_URL_LENGTH,
-				L"AVX2.dll",
-				_TRUNCATE
-				);
+			wcsncat_s(tbbname, MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
 		}
 		else
 		{
@@ -354,56 +227,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
 			{
-				wcsncat_s(
-					tbbname,
-					MAX_URL_LENGTH,
-					L"AVX.dll",
-					_TRUNCATE
-					);
+				wcsncat_s(tbbname, MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
 			}
 			else
 			{
 				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
 				{
-					wcsncat_s(
-						tbbname,
-						MAX_URL_LENGTH,
-						L"SSE2.dll",
-						_TRUNCATE
-						);
+					wcsncat_s(tbbname, MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
 				}
 				else
 				{
 					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
 					{
-						wcsncat_s(
-							tbbname,
-							MAX_URL_LENGTH,
-							L"SSE.dll",
-							_TRUNCATE
-							);
+						wcsncat_s(tbbname, MAX_URL_LENGTH, L"SSE.dll", _TRUNCATE);
 					}
 					else
 					{
-						wcsncat_s(
-							tbbname,
-							MAX_URL_LENGTH,
-							L"Default.dll",
-							_TRUNCATE
-							);
+						wcsncat_s(tbbname, MAX_URL_LENGTH, L"Default.dll", _TRUNCATE);
 					}
 				}
 			}
 		}
 	}
 
-	UrlCombine(
-		L"http://lol.jdhpro.com/",
-		tbbname,
-		finalurl,
-		&dwLength,
-		0
-		);
+	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
 	unblockFile(tbb);
 	CopyFile(cgbin, cgdest, false);
