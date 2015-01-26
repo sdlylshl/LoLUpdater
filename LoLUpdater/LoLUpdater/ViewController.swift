@@ -110,18 +110,68 @@ class ViewController: NSViewController {
 		fm.copyItemAtPath(from, toPath: to, error: err)
 	}
 	
+	func replace(from: String, to: String, err: NSErrorPointer = nil) {
+		let fm = NSFileManager.defaultManager()
+		fm.replaceItemAtURL(<#originalItemURL: NSURL#>, withItemAtURL: <#NSURL#>, backupItemName: <#String?#>, options: <#NSFileManagerItemReplacementOptions#>, resultingItemURL: <#AutoreleasingUnsafeMutablePointer<NSURL?>#>, error: <#NSErrorPointer#>)
+	}
+	
 	func setDefaultPath(path: String) {
 		var userDefaults = NSUserDefaults.standardUserDefaults()
 		userDefaults.setValue(path, forKey: "defaultPath")
 		userDefaults.synchronize()
 	}
 	
-	func highestVersionNumer(path: String) -> String {
-		// TODO
-		let fm = NSFileManager.defaultManager()
-		return ""
+	func highestVersionNumber(path: String) -> String? {
+		func splitVersion(string: String) -> [String] {
+			return split(string, {$0 == "."}, maxSplit: 5, allowEmptySlices: true)
+		}
+		
+		var result = "0.0.0.0"
+		var splitResult = ["0", "0", "0", "0"]
+		if let dirURL = NSURL(fileURLWithPath: path) {
+			let keys = [NSURLIsDirectoryKey, NSURLLocalizedNameKey]
+			let fileManager = NSFileManager.defaultManager()
+			let enumerator = fileManager.enumeratorAtURL(
+				dirURL,
+				includingPropertiesForKeys: keys,
+				options: (NSDirectoryEnumerationOptions.SkipsPackageDescendants |
+					NSDirectoryEnumerationOptions.SkipsSubdirectoryDescendants |
+					NSDirectoryEnumerationOptions.SkipsHiddenFiles),
+				errorHandler: {(url, error) -> Bool in
+					return true
+				}
+			)
+			
+			while let element = enumerator?.nextObject() as? NSURL {
+				var getter: AnyObject?
+				element.getResourceValue(&getter, forKey: NSURLIsDirectoryKey, error: nil)
+				let isDirectory = getter! as Bool
+				if isDirectory {
+					element.getResourceValue(&getter, forKey: NSURLLocalizedNameKey, error: nil)
+					let itemName = getter! as String
+					
+					let splitItemName = split(itemName, {$0 == "."}, maxSplit: 5, allowEmptySlices: true)
+					if splitItemName.count != 4 {
+						continue
+					}
+					
+					
+					for i in 0...3 {
+						let itemNumber = splitItemName[i].toInt()
+						let resultNumber = splitResult[i].toInt()
+						if itemNumber != nil && resultNumber! < itemNumber! {
+							result = itemName
+							splitResult = splitItemName
+							break
+						}
+						
+					}
+				}
+			}
+		}
+		
+		return result
 	}
-
 
 }
 

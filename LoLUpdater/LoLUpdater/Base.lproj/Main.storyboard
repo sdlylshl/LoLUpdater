@@ -138,7 +138,7 @@
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
-                                        <buttonCell type="radio" title="Remove" imagePosition="left" alignment="left" inset="2" id="QGM-3N-6fv">
+                                        <buttonCell type="radio" title="Remove" imagePosition="left" alignment="left" enabled="NO" inset="2" id="QGM-3N-6fv">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
