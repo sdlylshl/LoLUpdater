@@ -95,7 +95,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	
 	runAndWait(airsetup, L"-silent");
-	
+
+	EnableWindow(hwnd, TRUE);
+
 	wchar_t cgbinpath[PATH];
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, PATH);
 	wcsncat_s(cgbinpath, PATH, L"\\", _TRUNCATE);
@@ -293,7 +295,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	unblockFile(tbb);
-	EnableWindow(hwnd, TRUE);
 	done = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
