@@ -84,6 +84,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
 	
+	EnableWindow(hwnd, FALSE);
+
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	FILE* f;
@@ -293,6 +295,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	done = true;
+	EnableWindow(hwnd, TRUE);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
