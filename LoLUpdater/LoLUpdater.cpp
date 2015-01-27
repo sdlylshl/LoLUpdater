@@ -293,8 +293,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 	unblockFile(tbb);
-	done = true;
 	EnableWindow(hwnd, TRUE);
+	done = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
