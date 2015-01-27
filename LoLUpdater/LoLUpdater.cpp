@@ -83,7 +83,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
-	
 	EnableWindow(hwnd, FALSE);
 
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
@@ -92,9 +91,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
+	unblockFile(airsetup);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	
-	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 	
 	wchar_t cgbinpath[PATH];
