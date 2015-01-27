@@ -48,6 +48,7 @@
     <OutDir>C:\Riot Games\League of Legends</OutDir>
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
     <GenerateManifest>true</GenerateManifest>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,6 +100,7 @@
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
       <OpenMPSupport>false</OpenMPSupport>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -110,6 +112,11 @@
       <AdditionalDependencies>Urlmon.Lib;Shlwapi.Lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
       <AssemblyDebug>false</AssemblyDebug>
+      <LinkStatus>true</LinkStatus>
+      <PreventDllBinding>false</PreventDllBinding>
+      <CreateHotPatchableImage>X86Image</CreateHotPatchableImage>
+      <LargeAddressAware>true</LargeAddressAware>
+      <TerminalServerAware>true</TerminalServerAware>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
