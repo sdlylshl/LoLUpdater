@@ -288,12 +288,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
-	unblockFile(tbb);
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
+	unblockFile(tbb);
 	done = true;
 	EnableWindow(hwnd, TRUE);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
