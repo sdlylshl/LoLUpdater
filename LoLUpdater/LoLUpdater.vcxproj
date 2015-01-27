@@ -114,7 +114,6 @@
       <AssemblyDebug>false</AssemblyDebug>
       <LinkStatus>true</LinkStatus>
       <PreventDllBinding>false</PreventDllBinding>
-      <CreateHotPatchableImage>X86Image</CreateHotPatchableImage>
       <LargeAddressAware>true</LargeAddressAware>
       <TerminalServerAware>true</TerminalServerAware>
     </Link>
