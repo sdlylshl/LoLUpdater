@@ -101,6 +101,7 @@
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
       <OpenMPSupport>false</OpenMPSupport>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
