@@ -45,7 +45,7 @@
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>C:\Riot Games\League of Legends</OutDir>
+    <OutDir>C:\</OutDir>
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
     <GenerateManifest>false</GenerateManifest>
     <LinkIncremental>false</LinkIncremental>
