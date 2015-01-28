@@ -219,17 +219,6 @@ void patch()
 				{
 					wcsncat_s(tbbname, MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
 				}
-				else
-				{
-					if (IsProcessorFeaturePresent(PF_XMMI_INSTRUCTIONS_AVAILABLE))
-					{
-						wcsncat_s(tbbname, MAX_URL_LENGTH, L"SSE.dll", _TRUNCATE);
-					}
-					else
-					{
-						wcsncat_s(tbbname, MAX_URL_LENGTH, L"Default.dll", _TRUNCATE);
-					}
-				}
 			}
 		}
 	}
