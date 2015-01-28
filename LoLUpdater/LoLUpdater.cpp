@@ -264,18 +264,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
-	MSG Msg;
-	WNDCLASSEX wc;
+	MSG Msg = { 0 };
+	WNDCLASSEX wc = { 0 };
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = 0;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
