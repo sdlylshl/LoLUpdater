@@ -39,7 +39,6 @@ void patch()
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
-	unblockFile(airsetup);
 
 	FILE* f;
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
@@ -234,12 +233,13 @@ void patch()
 
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
-	unblockFile(tbb);
-
+	
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
+	unblockFile(tbb);
 
+	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 
 	CopyFile(airlatest, airdest, false);
