@@ -156,8 +156,7 @@ void patch()
 	auto tbb = tbb1;
 	PathCombine(tbb, gameclient, L"tbb.dll");
 
-	OSVERSIONINFO osvi;
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	OSVERSIONINFO osvi{};
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionEx(&osvi);
 
