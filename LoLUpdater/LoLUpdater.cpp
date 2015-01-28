@@ -10,8 +10,6 @@ auto done = false;
 wchar_t path[PATH];
 wchar_t unblocker1[PATH] = L"";
 auto unblocker = unblocker1;
-const std::wstring airsetup = L"air16_win.exe";
-const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
@@ -37,6 +35,18 @@ void unblockFile(std::wstring const& path1)
 
 void patch()
 {
+	const std::wstring airsetup = L"air16_win.exe";
+	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+
+	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
+	unblockFile(airsetup);
+
+	FILE* f;
+	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
+	_wfopen_s(&f, cgsetup.c_str(), L"wb");
+	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
+	fclose(f);
+
 	wchar_t gameclient1[PATH] = L"";
 	auto gameclient = gameclient1;
 	wcsncat_s(gameclient, PATH, path, _TRUNCATE);
@@ -287,17 +297,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your League of Legends/GarenaLoL installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
-	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
-	unblockFile(airsetup);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
-
-	FILE* f;
-	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
-	_wfopen_s(&f, cgsetup.c_str(), L"wb");
-	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
-	fclose(f);
 	
 	std::thread t{patch};
 	t.join();
