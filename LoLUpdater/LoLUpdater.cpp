@@ -292,7 +292,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	RegisterClassEx(&wc);
 
-	// Create the window, open folder browser, save selected path to variable, then show the window
+	// Create the window, open folder browser, save selected path to variable then show the window
 	HWND hwnd;
 	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
