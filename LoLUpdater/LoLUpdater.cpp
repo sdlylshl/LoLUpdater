@@ -75,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	RegisterClassEx(&wc);
 
 	HWND hwnd;
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 410, 100, nullptr, nullptr, hInstance, nullptr);
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your League of Legends/GarenaLoL installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
@@ -83,6 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
 	EnableWindow(hwnd, FALSE);
 
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
