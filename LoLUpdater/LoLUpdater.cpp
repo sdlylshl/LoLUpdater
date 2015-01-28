@@ -11,6 +11,7 @@ wchar_t path[PATH];
 wchar_t unblocker1[PATH] = L"";
 auto unblocker = unblocker1;
 
+// Runs an executable and waits for finish
 void runAndWait(std::wstring const& file, std::wstring const& args)
 {
 	SHELLEXECUTEINFO ei = {};
@@ -24,6 +25,7 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	WaitForSingleObject(ei.hProcess, INFINITE);
 }
 
+// Removes the "downloaded from internet" tag on files so the computer think it is from your own
 void unblockFile(std::wstring const& path1)
 {
 	*unblocker = '\0';
@@ -33,15 +35,18 @@ void unblockFile(std::wstring const& path1)
 	DeleteFile(unblocker);
 }
 
+// The whole patch function
 void patch()
 {
 	const std::wstring airsetup = L"air16_win.exe";
-	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
+	// Downloads Adobe Air
 	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 
+	// Extracts Nvidia CG (that is embedded in LoLUpdater)
 	FILE* f;
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
+	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	_wfopen_s(&f, cgsetup.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
@@ -54,6 +59,7 @@ void patch()
 	auto airclient = airclient1;
 	wcsncat_s(airclient, PATH, path, _TRUNCATE);
 
+	// Unblocks the Adobe Air installer, runs it and waits for finish
 	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 
@@ -77,6 +83,8 @@ void patch()
 	auto instdir = instdir1;
 	PathCombine(instdir, path, L"lol.exe");
 
+	// Check if you are installing for Garena or regular LoL
+	// Todo: Add PBE support
 	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
@@ -110,9 +118,11 @@ void patch()
 		PathAppend(airclient, adobedir);
 	}
 
+	// Installs Nvidia CG
 	wchar_t cgbinpath[PATH];
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 
+	// Checks where Nvidia CG was installed
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, PATH);
 	wcsncat_s(cgbinpath, PATH, L"\\", _TRUNCATE);
 
@@ -176,12 +186,14 @@ void patch()
 	DWORD dwLength = sizeof(finalurl);
 	wchar_t tbbname[MAX_URL_LENGTH] = L"";
 
+	// Checks if you are running on XP or not
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(tbbname, MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
 	}
 	else
 	{
+		// Check if your CPU supports the AVX2 SIMD
 		auto avx2 = 0;
 		int abcd[4];
 		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
@@ -207,6 +219,7 @@ void patch()
 		}
 		else
 		{
+			// Check if your CPU supports the AVX SIMD
 			int cpuInfo[4];
 			__cpuid(cpuInfo, 1);
 			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
@@ -215,28 +228,30 @@ void patch()
 			}
 			else
 			{
-				if (IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE))
-				{
+				// Else default to SSE2.dll
 					wcsncat_s(tbbname, MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
-				}
 			}
 		}
 	}
 
+	// Downloads tbb.dll
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
 	
+	// Copies the Cg files and unblocks tbb.dll
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
 	unblockFile(tbb);
 
+	// Copies the Adobe Air/Flash files
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	// Stuff to draw the text on the window and handle window events
 	PAINTSTRUCT ps;
 	HDC hdc;
 	RECT start = { 2, 0, 0, 0 };
@@ -264,19 +279,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
+	// The window class
 	MSG Msg = { 0 };
 	WNDCLASSEX wc = { 0 };
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	RegisterClassEx(&wc);
 
+	// Create the window, open folder browser, save selected path to variable, then show the window
 	HWND hwnd;
 	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
@@ -286,9 +302,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 	
+	// Run patch function in separate thread
 	std::thread t{patch};
 	t.join();
 	
+	// Tell the program that the patch is done
 	done = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
