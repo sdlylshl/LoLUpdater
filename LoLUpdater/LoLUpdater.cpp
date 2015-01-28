@@ -26,7 +26,6 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	WaitForSingleObject(ei.hProcess, INFINITE);
 }
 
-
 void unblockFile(std::wstring const& path1)
 {
 	*unblocker = '\0';
@@ -301,10 +300,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
 	
-
 	std::thread t{patch};
 	t.join();
-
+	
 	done = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
