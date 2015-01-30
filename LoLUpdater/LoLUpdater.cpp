@@ -61,7 +61,7 @@ void patch()
 
 	wchar_t adobedir1[PATH] = L"";
 	auto adobedir = adobedir1;
-	const std::wstring adobeairpath = { std::wstring(L"Adobe AIR\\Versions\\1.0") };
+	const std::wstring adobeairpath = { L"Adobe AIR\\Versions\\1.0" };
 	wcsncat_s(adobedir, PATH, adobeairpath.c_str(), _TRUNCATE);
 
 	wchar_t adobepath1[PATH] = L"";
