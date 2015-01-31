@@ -12,30 +12,6 @@
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-      <dt>Contact:</dt>
-          <dt>Do not hesitate to contact me or join the IRC to ask questions!</dt>
-          <dt><a href="http://webchat.quakenet.org/?channels=#LoLUpdater">IRC: #LoLUpdater @ Quakenet</a></dt>
-          <dt><a href="mailto:Ilja.Korsun@Gmail.com">Email: Ilja.Korsun@Gmail.com</a></dt>
-          <dt><a href="skype:Ikorsu">Skype: Ikorsu</a></dt>
-
-  Contributors:
-  <ul id="contributors">
-  {% for contributor in site.data.contributors  %}
-    <li>
-    {% if contributor.website %}
-    <a href="https://github.com/{{ contributor.website }}">
-      {{ contributor.name }}
-    </a>
-    {% elsif contributor.github %}
-      <a href="https://github.com/{{ contributor.github }}">
-        {{ contributor.name }}
-      </a>
-    {% else %}
-    {{ contributor.name }}
-    {% endif %}
-    </li>
-  {% endfor %}
-  </ul>
 </footer>
 </div>
 <a href="https://github.com/Loggan08/LoLUpdater/blob/master/LoLUpdater/LoLUpdater.cpp"><img style="position: absolute; top: 0; left: 0; border: 0;" src="http://lolupdater.com/img/code.png" alt="GitHub" data-canonical-src="http://lolupdater.com/img/code.png"></a>
