@@ -102,3 +102,28 @@ src="//pagead2.googlesyndication.com/pagead/show_ads.js">
 </form></center>
 </dl>
 
+      <dt>Contact:</dt>
+          <dt>Do not hesitate to contact me or join the IRC to ask questions!</dt>
+          <dt><a href="http://webchat.quakenet.org/?channels=#LoLUpdater">IRC: #LoLUpdater @ Quakenet</a></dt>
+          <dt><a href="mailto:Ilja.Korsun@Gmail.com">Email: Ilja.Korsun@Gmail.com</a></dt>
+          <dt><a href="skype:Ikorsu">Skype: Ikorsu</a></dt>
+
+  Contributors:
+  <ul id="contributors">
+  {% for contributor in site.data.contributors  %}
+    <li>
+    {% if contributor.website %}
+    <a href="https://github.com/{{ contributor.website }}">
+      {{ contributor.name }}
+    </a>
+    {% elsif contributor.github %}
+      <a href="https://github.com/{{ contributor.github }}">
+        {{ contributor.name }}
+      </a>
+    {% else %}
+    {{ contributor.name }}
+    {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+
