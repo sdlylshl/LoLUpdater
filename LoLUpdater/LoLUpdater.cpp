@@ -293,7 +293,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	UpdateWindow(hwnd);
 	
 	// Downloads Adobe Air
-	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
+	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 
 	// Extracts Nvidia CG (that is embedded in LoLUpdater)
 	FILE* f;
