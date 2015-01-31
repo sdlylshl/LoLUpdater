@@ -109,6 +109,7 @@ void patch()
 
 	// Installs Nvidia CG
 	wchar_t cgbinpath[PATH];
+	unblockFile(cgsetup);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 
 	// Checks where Nvidia CG was installed
