@@ -5,17 +5,15 @@ layout: default
 
 <span id="hero">The #1 tool for increasing FPS in the game <a href=http://leagueoflegends.com>League of Legends</a>, also makes the <a href="http://pvp.net">PvP.net</a> client more responsive.<br>
 <br>
-Does not change graphics.<br>
+Does not affect graphics at all<br>
 OSX patch is under development!<br>
 <br>
 Back in March 2014 Riot said <a href="http://forums.euw.leagueoflegends.com/board/showthread.php?p=15329279#15329279"><u>this</u></a> about LoLUpdater.<br>
 <br>
 <dt><img src="img/Riot.png"></dt><br>
-So no, you cannot get banned for using this.<br>
+You will not get banned for using this.<br>
 <br>
-Works by replacing DLL files with the latest ones from Nvidia/Intel/Adobe, (Riot uses very old DLL files)
-
-    
+Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_library">DLL</a> files with the latest ones available from Nvidia/Intel/Adobe, (Riot uses very old DLL files).
 </span>
 </dt>
 <hr>
@@ -56,23 +54,25 @@ src="//pagead2.googlesyndication.com/pagead/show_ads.js">
       <ul>
         <li>Exit the PvP.net client/Game</li>
         <br>
-        <li>Install <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe">vcredist_x86.exe</a> & <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe">vcredist_x64.exe</a></li>
+        <li>Install <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe">Microsoft Visual C++ Redistributable 2013 (x86)</a> & <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe">Microsoft Visual C++ Redistributable 2013 (x64)</a></li>
          <br>
-        <li>Right click LoLupdater.exe -> Properties -> Unblock (If you are on XP you will need <a href="http://lol.jdhpro.com/UnblockLoLUpdater-XP.zip">this</a> to unblock the file, extract and run "Unblock.bat" in the same directory as LoLUpdater.exe)</li>
+        <li>Right click LoLupdater.exe -> Properties -> Unblock</li>
         <img src="img/unblock.png"><br>
+         <br>
+         <li>On XP you will need <a href="http://lol.jdhpro.com/UnblockLoLUpdater-XP.zip">this</a> to unblock the file, extract and run "Unblock.bat" in the same directory as LoLUpdater.exe</li>
          <br>
         <li>Run LoLUpdater and select your <code>League of Legends</code> or <code>GarenaLoL\GameData\Apps\LoL</code> directory, wait (1 minute on a 100/10 line with a SSD), then enjoy! (You can close LoLUpdater once it's done)</li>
          <br>
-        <li>You need to redownload LoLUpdater every time League of Legends gets a patch, will also provide FPS updates every now and then, so be sure to check back. (Run once every LoL patch to keep it active)</li>
+        <li>You need to redownload LoLUpdater every time League of Legends gets a patch, will also provide FPS updates every now and then, so be sure to check back for updates. (Run once every LoL patch to keep it active)</li>
         <br>
-        <li>For GarenaLoL it does not matter what patch LoLUpdater is for, will always install.</li>
+        <li>GarenaLoL is independent of supported patch version (will always install, no matter what)</li>
 
   </details>
   <details>
     <summary><dt>Manual Installation: (click)</dt>
     </summary>
     <ul>
-      <li>Download & Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Does'nt matter if you have an ATI graphics card)</a>, unblock the installers.
+      <li>Download & Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Does'nt matter if you have an ATI graphics card)</a>, unblock the installers (If you are on XP then use the unblocker mentioned in the regular installation instructions, just edit the .bat file).
         </a>
       </li>
        <br>
@@ -82,7 +82,7 @@ src="//pagead2.googlesyndication.com/pagead/show_ads.js">
       <li>Copy <code>Adobe AIR.dll</code> from <code>%WindowsDrive%:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>%leaguedirectory%\RADS\projects\lol_air_client\releases\%Latest%\deploy\Adobe AIR\Versions\1.0</code> (put <code>NPSWF32.dll</code> in the <code>Resources</code> folder)
       </li>
        <br>
-      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> and check what SIMD instructions your CPU supports then download the right one (AVX2 > AVX > SSE2): <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a>, <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a> or <a href="http://lol.jdhpro.com/XP.dll">Windows XP</a> and put it in the same directory as the Cg files (see above), rename it to <code>tbb.dll</code> and unblock it (If you are on XP then use the unblocker mentioned in the regular installation instructions, just edit the .bat file).
+      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> and check what SIMD instructions your CPU supports then download the right one (AVX2 > AVX > SSE2): <a href="http://lol.jdhpro.com/AVX2.dll">AVX2</a>, <a href="http://lol.jdhpro.com/AVX.dll">AVX</a>, <a href="http://lol.jdhpro.com/SSE2.dll">SSE2</a> or <a href="http://lol.jdhpro.com/XP.dll">Windows XP</a> and put it in the same directory as the Cg files (see above), rename it to <code>tbb.dll</code> and unblock it.
       </li>
       <br>
       <li>Now you are free to play!</li>
