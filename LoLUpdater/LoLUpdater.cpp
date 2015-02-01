@@ -257,7 +257,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"In Progress...", -1, &start, DT_SINGLELINE | DT_NOCLIP);
+		DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP);
 		if (finished == true)
 		{
 			DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
@@ -288,7 +288,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	HWND hwnd;
 	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = L"Select your League of Legends/GarenaLoL installation directory:";
+	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	SHGetPathFromIDList(pidl, path);
 	ShowWindow(hwnd, nCmdShow);
