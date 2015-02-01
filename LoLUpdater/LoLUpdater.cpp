@@ -14,6 +14,7 @@ wchar_t unblocker1[MAX_PATH+1] = L"";
 auto unblocker = unblocker1;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
+const std::wstring airsetup = L"air16_win.exe";
 
 void RunAndWait(std::wstring const& filename, std::wstring const& args)
 {
@@ -48,10 +49,8 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 
 void patch()
 {
-	const std::wstring airsetup = L"air16_win.exe";
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
-	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 	wchar_t runair[MAX_PATH+1] = { 0 };
 	PathCombine(runair, cwd, airsetup.c_str());
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
@@ -81,14 +80,7 @@ void patch()
 	wchar_t instdir[MAX_PATH+1] = { 0 };
 	PathCombine(instdir, loldir, L"lol.exe");
 
-	if (std::wifstream(instdir).good())
-	{
-		PathAppend(gameclient, L"Game");
-		wchar_t garenaair[MAX_PATH+1] = L"Air\\";
-		wcsncat_s(garenaair, MAX_PATH+1, adobedir, _TRUNCATE);
-		PathAppend(airclient, garenaair);
-	}
-	else
+	if (std::wifstream(instdir).fail())
 	{
 		auto rads = L"RADS";
 		PathAppend(airclient, rads);
@@ -106,6 +98,13 @@ void patch()
 		PathAppend(airclient, L"0.0.1.127");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
+	}
+	else
+	{
+		PathAppend(gameclient, L"Game");
+		wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
+		wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
+		PathAppend(airclient, garenaair);
 	}
 
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
@@ -285,11 +284,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	SHGetPathFromIDList(pidl, loldir);
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
+	EnableWindow(hwnd, FALSE);
+
+	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 
 	std::thread t{ patch };
 	t.join();
 
 	finished = true;
+	EnableWindow(hwnd, TRUE);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
