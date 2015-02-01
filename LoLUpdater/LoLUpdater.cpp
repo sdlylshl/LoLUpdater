@@ -103,10 +103,10 @@ void patch()
 	else
 	{
 		int abcd[4];
-		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
+		uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 
-		__cpuidex(abcd, 1, 0);
-		if (((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask) || !((static_cast<uint32_t>(_xgetbv(0)) & 6) == 6))
+		__cpuidex(abcd, 7, 0);
+		if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
 		{
 			int cpuInfo[4];
 			__cpuid(cpuInfo, 1);
