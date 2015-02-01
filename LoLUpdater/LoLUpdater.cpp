@@ -12,6 +12,8 @@ bool finished = false;
 wchar_t loldir[MAX_PATH+1];
 wchar_t unblocker1[MAX_PATH+1] = L"";
 auto unblocker = unblocker1;
+wchar_t* cwd(_wgetcwd(nullptr, 0));
+const std::wstring unblocktag = L":Zone.Identifier";
 
 void RunAndWait(std::wstring const& filename, std::wstring const& args)
 {
@@ -31,7 +33,7 @@ void UnblockFile(std::wstring const& filename)
 	*unblocker = '\0';
 	wcsncat_s(unblocker, MAX_PATH+1, loldir, _TRUNCATE);
 	wcsncat_s(unblocker, MAX_PATH+1, filename.c_str(), _TRUNCATE);
-	wcsncat_s(unblocker, MAX_PATH+1, L":Zone.Identifier", _TRUNCATE);
+	wcsncat_s(unblocker, MAX_PATH+1, unblocktag.c_str(), _TRUNCATE);
 	DeleteFile(unblocker);
 }
 
@@ -50,7 +52,12 @@ void patch()
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
 	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
-	
+	wchar_t runair1[MAX_PATH + 1] = L"";
+	wchar_t* runair = runair1;
+	PathCombine(runair, cwd, airsetup.c_str());
+	DeleteFile(std::wstring(runair + unblocktag).c_str());
+	RunAndWait(runair, L"-silent");
+
 	wchar_t gameclient1[MAX_PATH+1] = L"";
 	auto gameclient = gameclient1;
 	wcsncat_s(gameclient, MAX_PATH+1, loldir, _TRUNCATE);
@@ -59,10 +66,13 @@ void patch()
 	auto airclient = airclient1;
 	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
-	UnblockFile(airsetup.c_str());
-	RunAndWait(airsetup, L"-silent");
-
 	ExtractResource(1, cgsetup.c_str());
+	wchar_t cgbinpath[MAX_PATH + 1];
+	wchar_t runcg1[MAX_PATH + 1] = L"";
+	auto runcg = runcg1;
+	PathCombine(runcg, cwd, cgsetup.c_str());
+	DeleteFile(std::wstring(runcg + unblocktag).c_str());
+	RunAndWait(runcg, L"/verysilent /TYPE = compact");
 
 	wchar_t progdrive[MAX_PATH+1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
@@ -105,24 +115,21 @@ void patch()
 		PathAppend(airclient, adobedir);
 	}
 
-	wchar_t cgbinpath[MAX_PATH+1];
-	UnblockFile(cgsetup);
-	RunAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
 
 	wchar_t cgbin1[MAX_PATH+1] = L"";
 	auto cgbin = cgbin1;
-	auto cg = L"Cg.dll";
+	auto cg = L"cg.dll";
 	PathCombine(cgbin, cgbinpath, cg);
 
 	wchar_t cgglbin1[MAX_PATH+1] = L"";
 	auto cgglbin = cgglbin1;
-	auto cggl = L"CgGL.dll";
+	auto cggl = L"cgGL.dll";
 	PathCombine(cgglbin, cgbinpath, cggl);
 
 	wchar_t cgd3d9bin1[MAX_PATH+1] = L"";
 	auto cgd3d9bin = cgd3d9bin1;
-	auto cgd3d9 = L"CgD3D9.dll";
+	auto cgd3d9 = L"cgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
 	wchar_t airdest1[MAX_PATH+1] = L"";
