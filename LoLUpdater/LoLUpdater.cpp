@@ -10,7 +10,7 @@ bool finished = false;
 wchar_t unblocker1[MAX_PATH+1] = L"";
 auto unblocker = unblocker1;
 
-void runAndWait(std::wstring const& file, std::wstring const& args)
+void RunAndWait(std::wstring const& file, std::wstring const& args)
 {
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -54,7 +54,7 @@ void patch()
 	wcsncat_s(airclient, MAX_PATH+1, path, _TRUNCATE);
 
 	UnblockFile(airsetup);
-	runAndWait(airsetup, L"-silent");
+	RunAndWait(airsetup, L"-silent");
 	DeleteFile(airsetup.c_str());
 
 	wchar_t progdrive[MAX_PATH+1];
@@ -100,7 +100,7 @@ void patch()
 
 	wchar_t cgbinpath[MAX_PATH + 1];
 	UnblockFile(cgsetup);
-	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
+	RunAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	DeleteFile(cgsetup.c_str());
 
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
@@ -227,8 +227,8 @@ void patch()
 	fwrite(LockResource(LoadResource(nullptr, hRes1)), SizeofResource(nullptr, hRes1), 1, f1);
 	fclose(f1);
 	CopyFile(ccp.c_str(), cp, false);
-	UnblockFile(cp);
 	DeleteFile(ccp.c_str());
+	UnblockFile(cp);
 
 	FILE* f2;
 	auto hRes2 = FindResource(nullptr, MAKEINTRESOURCE(3), RT_RCDATA);
@@ -240,8 +240,8 @@ void patch()
 	fwrite(LockResource(LoadResource(nullptr, hRes2)), SizeofResource(nullptr, hRes2), 1, f2);
 	fclose(f2);
 	CopyFile(ccr.c_str(), cr, false);
-	UnblockFile(cr);
 	DeleteFile(ccr.c_str());
+	UnblockFile(cr);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
