@@ -4,9 +4,36 @@
 #include <Shlobj.h>
 #include <thread>
 #include <wininet.h>
-#include <LoLUpdater.h>
 
-CLimitSingleInstance g_SingleInstanceObj(TEXT("Global\\{101UPD473R-BYL0GG4N-N1C071N3-G01D}"));
+class CLimitSingleInstance
+{
+protected:
+	DWORD  m_dwLastError;
+	HANDLE m_hMutex;
+
+public:
+	CLimitSingleInstance(std::wstring const& strMutexName)
+	{
+		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
+		m_dwLastError = GetLastError();
+	}
+
+	~CLimitSingleInstance()
+	{
+		if (m_hMutex)
+		{
+			CloseHandle(m_hMutex);
+			m_hMutex = nullptr;
+		}
+	}
+
+	BOOL IsAnotherInstanceRunning()
+	{
+		return (ERROR_ALREADY_EXISTS == m_dwLastError);
+	}
+};
+
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N-N1C071N3-G01D}");
 
 bool finished = false;
 wchar_t loldir[MAX_PATH+1];
@@ -285,7 +312,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
+	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 
 	std::thread t{ patch };
 	t.join();

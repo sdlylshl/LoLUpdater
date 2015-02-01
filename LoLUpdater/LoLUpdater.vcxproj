@@ -130,7 +130,6 @@
     <ClCompile Include="LoLUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LoLUpdater.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
