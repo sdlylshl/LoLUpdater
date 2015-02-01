@@ -284,7 +284,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	SHGetPathFromIDList(pidl, loldir);
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
-	EnableWindow(hwnd, FALSE);
 
 	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
 
@@ -292,7 +291,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	t.join();
 
 	finished = true;
-	EnableWindow(hwnd, TRUE);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
