@@ -33,7 +33,7 @@ public:
 	}
 };
 
-CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N-N1C071N3-G01D}");
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N}");
 
 bool finished = false;
 wchar_t loldir[MAX_PATH+1];
@@ -54,6 +54,14 @@ void RunAndWait(std::wstring const& filename, std::wstring const& args)
 	ei.nShow = SW_SHOW;
 	ShellExecuteEx(&ei);
 	WaitForSingleObject(ei.hProcess, INFINITE);
+}
+
+void downloadFile(std::wstring const& url, std::wstring const& file)
+{
+	if (!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
+	{
+		throw std::runtime_error("failed to initialize download");
+	}
 }
 
 void UnblockFile(std::wstring const& filename)
@@ -232,7 +240,7 @@ void patch()
 		}
 	}
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
-	URLDownloadToFile(nullptr, finalurl, tbb, 0, nullptr);
+	downloadFile(finalurl, tbb);
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
@@ -312,7 +320,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	URLDownloadToFile(nullptr, L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
+	downloadFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str());
 
 	std::thread t{ patch };
 	t.join();
