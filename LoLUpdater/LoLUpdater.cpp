@@ -60,7 +60,7 @@ void patch()
 	wchar_t progdrive[MAX_PATH+1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
 
-	wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
+	wchar_t adobedir[MAX_PATH+1] = L"Adobe AIR\\Versions\\1.0";
 
 	wchar_t adobepath1[MAX_PATH+1] = L"";
 	auto adobepath = adobepath1;
@@ -73,9 +73,9 @@ void patch()
 	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
-		wchar_t garenaair1[MAX_PATH + 1] = L"Air\\";
+		wchar_t garenaair1[MAX_PATH+1] = L"Air\\";
 		auto garenaair = garenaair1;
-		wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
+		wcsncat_s(garenaair, MAX_PATH+1, adobedir, _TRUNCATE);
 		PathAppend(airclient, garenaair);
 	}
 	else
@@ -98,7 +98,7 @@ void patch()
 		PathAppend(airclient, adobedir);
 	}
 
-	wchar_t cgbinpath[MAX_PATH + 1];
+	wchar_t cgbinpath[MAX_PATH+1];
 	UnblockFile(cgsetup);
 	RunAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	DeleteFile(cgsetup.c_str());
@@ -221,7 +221,7 @@ void patch()
 	auto hRes1 = FindResource(nullptr, MAKEINTRESOURCE(2), RT_RCDATA);
 	const std::wstring ccp = L"msvcp120.dll";
 	_wfopen_s(&f1, ccp.c_str(), L"wb");
-	wchar_t cp1[MAX_PATH + 1] = L"";
+	wchar_t cp1[MAX_PATH+1] = L"";
 	auto cp = cp1;
 	PathCombine(cp, gameclient, ccp.c_str());
 	fwrite(LockResource(LoadResource(nullptr, hRes1)), SizeofResource(nullptr, hRes1), 1, f1);
@@ -234,7 +234,7 @@ void patch()
 	auto hRes2 = FindResource(nullptr, MAKEINTRESOURCE(3), RT_RCDATA);
 	const std::wstring ccr = L"msvcr120.dll";
 	_wfopen_s(&f2, ccr.c_str(), L"wb");
-	wchar_t cr1[MAX_PATH + 1] = L"";
+	wchar_t cr1[MAX_PATH+1] = L"";
 	auto cr = cr1;
 	PathCombine(cr, gameclient, ccr.c_str());
 	fwrite(LockResource(LoadResource(nullptr, hRes2)), SizeofResource(nullptr, hRes2), 1, f2);
