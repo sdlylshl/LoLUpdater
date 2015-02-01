@@ -33,12 +33,11 @@ public:
 	}
 };
 
-CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-2014-2015}");
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
-wchar_t unblocker1[MAX_PATH + 1] = L"";
-auto unblocker = unblocker1;
+wchar_t unblocker[MAX_PATH + 1] = { 0 };
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
 const std::wstring airsetup = L"air16_win.exe";
@@ -53,7 +52,7 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 	}
 }
 
-void AirDL()
+void AdobeAirDL()
 {
 	downloadFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str());
 }
@@ -82,19 +81,18 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	fclose(f);
 }
 
-void patch()
+void threadingbuildingblocks()
 {
-	
 	wchar_t tbb[MAX_PATH + 1] = { 0 };
 	PathCombine(tbb, gameclient, L"tbb.dll");
-
-	OSVERSIONINFO osvi{};
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osvi);
 
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
 	DWORD dwLength = sizeof(finalurl);
 	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
+
+	OSVERSIONINFO osvi{};
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
 
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
@@ -182,8 +180,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	std::thread t1{ AirDL };
-	t1.join();
+	std::thread t{ AdobeAirDL };
+	t.join();
 
 	wchar_t runair[MAX_PATH + 1] = { 0 };
 	PathCombine(runair, cwd, airsetup.c_str());
@@ -198,7 +196,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ei.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei))
-		throw std::runtime_error("failed to execute program");
+		throw std::runtime_error("failed to execute the Adobe AIR Installer");
 
 	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1,
 		&ei.hProcess,
@@ -229,7 +227,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ei1.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei1))
-		throw std::runtime_error("failed to execute program");
+		throw std::runtime_error("failed to execute the NvidiaCG Installer");
 
 	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1,
 		&ei1.hProcess,
@@ -334,8 +332,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	auto cgd3d9dest = cgd3d9dest1;
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
 
-	std::thread t{ patch };
-	t.join();
+	std::thread t1{ threadingbuildingblocks };
+	t1.join();
 
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
