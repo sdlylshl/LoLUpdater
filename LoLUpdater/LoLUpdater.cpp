@@ -55,6 +55,7 @@ void patch()
 
 	unblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
+	DeleteFile(airsetup.c_str());
 
 	wchar_t progdrive[MAX_PATH+1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
@@ -100,6 +101,7 @@ void patch()
 	wchar_t cgbinpath[MAX_PATH + 1];
 	unblockFile(cgsetup);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
+	DeleteFile(cgsetup.c_str());
 
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
 
@@ -238,9 +240,6 @@ void patch()
 	fclose(f2);
 	CopyFile(ccr.c_str(), cr, false);
 	DeleteFile(ccr.c_str());
-
-	DeleteFile(cgsetup.c_str());
-	DeleteFile(airsetup.c_str());
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
