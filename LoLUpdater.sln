@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(CppDepend) = preSolution
-		Project = ".\LoLUpdater.cdproj"
+		Project = ""
 	EndGlobalSection
 EndGlobal

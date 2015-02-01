@@ -4,32 +4,44 @@
 #include <Shlobj.h>
 #include <thread>
 #include <wininet.h>
+#include <LoLUpdater.h>
 
-wchar_t path[MAX_PATH+1];
+CLimitSingleInstance g_SingleInstanceObj(TEXT("Global\\{101UPD473R-BYL0GG4N-N1C071N3-G01D}"));
+
 bool finished = false;
+wchar_t loldir[MAX_PATH+1];
 wchar_t unblocker1[MAX_PATH+1] = L"";
 auto unblocker = unblocker1;
 
-void RunAndWait(std::wstring const& file, std::wstring const& args)
+void RunAndWait(std::wstring const& filename, std::wstring const& args)
 {
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ei.lpVerb = L"runas";
-	ei.lpFile = file.c_str();
+	ei.lpFile = filename.c_str();
 	ei.lpParameters = args.c_str();
 	ei.nShow = SW_SHOW;
 	ShellExecuteEx(&ei);
 	WaitForSingleObject(ei.hProcess, INFINITE);
 }
 
-void UnblockFile(std::wstring const& path1)
+void UnblockFile(std::wstring const& filename)
 {
 	*unblocker = '\0';
-	wcsncat_s(unblocker, MAX_PATH+1, path, _TRUNCATE);
-	wcsncat_s(unblocker, MAX_PATH+1, path1.c_str(), _TRUNCATE);
+	wcsncat_s(unblocker, MAX_PATH+1, loldir, _TRUNCATE);
+	wcsncat_s(unblocker, MAX_PATH+1, filename.c_str(), _TRUNCATE);
 	wcsncat_s(unblocker, MAX_PATH+1, L":Zone.Identifier", _TRUNCATE);
 	DeleteFile(unblocker);
+}
+
+void ExtractResource(int RCDATAID, std::wstring const& filename)
+{
+	FILE* f;
+	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(RCDATAID), RT_RCDATA);
+	_wfopen_s(&f, filename.c_str(), L"wb");
+	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
+	fclose(f);
 }
 
 void patch()
@@ -38,24 +50,19 @@ void patch()
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
 	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
-
-	FILE* f;
-	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(1), RT_RCDATA);
-	_wfopen_s(&f, cgsetup.c_str(), L"wb");
-	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
-	fclose(f);
-
+	
 	wchar_t gameclient1[MAX_PATH+1] = L"";
 	auto gameclient = gameclient1;
-	wcsncat_s(gameclient, MAX_PATH+1, path, _TRUNCATE);
+	wcsncat_s(gameclient, MAX_PATH+1, loldir, _TRUNCATE);
 
 	wchar_t airclient1[MAX_PATH+1] = L"";
 	auto airclient = airclient1;
-	wcsncat_s(airclient, MAX_PATH+1, path, _TRUNCATE);
+	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
-	UnblockFile(airsetup);
+	UnblockFile(airsetup.c_str());
 	RunAndWait(airsetup, L"-silent");
-	DeleteFile(airsetup.c_str());
+
+	ExtractResource(1, cgsetup.c_str());
 
 	wchar_t progdrive[MAX_PATH+1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
@@ -68,7 +75,7 @@ void patch()
 
 	wchar_t instdir1[MAX_PATH+1] = L"";
 	auto instdir = instdir1;
-	PathCombine(instdir, path, L"lol.exe");
+	PathCombine(instdir, loldir, L"lol.exe");
 
 	if (std::wifstream(instdir).good())
 	{
@@ -101,23 +108,21 @@ void patch()
 	wchar_t cgbinpath[MAX_PATH+1];
 	UnblockFile(cgsetup);
 	RunAndWait(cgsetup, L"/verysilent /TYPE = compact");
-	DeleteFile(cgsetup.c_str());
-
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
 
 	wchar_t cgbin1[MAX_PATH+1] = L"";
 	auto cgbin = cgbin1;
-	auto cg = L"\\Cg.dll";
+	auto cg = L"Cg.dll";
 	PathCombine(cgbin, cgbinpath, cg);
 
 	wchar_t cgglbin1[MAX_PATH+1] = L"";
 	auto cgglbin = cgglbin1;
-	auto cggl = L"\\CgGL.dll";
+	auto cggl = L"CgGL.dll";
 	PathCombine(cgglbin, cgbinpath, cggl);
 
 	wchar_t cgd3d9bin1[MAX_PATH+1] = L"";
 	auto cgd3d9bin = cgd3d9bin1;
-	auto cgd3d9 = L"\\CgD3D9.dll";
+	auto cgd3d9 = L"CgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
 	wchar_t airdest1[MAX_PATH+1] = L"";
@@ -217,37 +222,32 @@ void patch()
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 
-	FILE* f1;
-	auto hRes1 = FindResource(nullptr, MAKEINTRESOURCE(2), RT_RCDATA);
 	const std::wstring ccp = L"msvcp120.dll";
-	_wfopen_s(&f1, ccp.c_str(), L"wb");
-	wchar_t cp1[MAX_PATH+1] = L"";
+	wchar_t cp1[MAX_PATH + 1] = L"";
 	auto cp = cp1;
 	PathCombine(cp, gameclient, ccp.c_str());
-	fwrite(LockResource(LoadResource(nullptr, hRes1)), SizeofResource(nullptr, hRes1), 1, f1);
-	fclose(f1);
-	CopyFile(ccp.c_str(), cp, false);
+	ExtractResource(2, cp);
+	CopyFile(ccp.c_str(), ccp.c_str(), false);
 	DeleteFile(ccp.c_str());
 	UnblockFile(cp);
 
-	FILE* f2;
-	auto hRes2 = FindResource(nullptr, MAKEINTRESOURCE(3), RT_RCDATA);
 	const std::wstring ccr = L"msvcr120.dll";
-	_wfopen_s(&f2, ccr.c_str(), L"wb");
-	wchar_t cr1[MAX_PATH+1] = L"";
+	wchar_t cr1[MAX_PATH + 1] = L"";
 	auto cr = cr1;
 	PathCombine(cr, gameclient, ccr.c_str());
-	fwrite(LockResource(LoadResource(nullptr, hRes2)), SizeofResource(nullptr, hRes2), 1, f2);
-	fclose(f2);
+	ExtractResource(3, cr);
 	CopyFile(ccr.c_str(), cr, false);
 	DeleteFile(ccr.c_str());
 	UnblockFile(cr);
+
+	DeleteFile(cgsetup.c_str());
+	DeleteFile(airsetup.c_str());
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
 	HDC hdc;
+	PAINTSTRUCT ps;
 	RECT start = { 2, 0, 0, 0 };
 	RECT end = { 2, 20, 0, 0 };
 	switch (msg)
@@ -273,6 +273,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
+
+	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
+		return FALSE;
+
 	MSG Msg = { 0 };
 	WNDCLASSEX wc = { 0 };
 	const std::wstring g_szClassName(L"mainwindow");
@@ -285,18 +289,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	RegisterClassEx(&wc);
 
-	HWND hwnd;
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
+	HWND hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
-	SHGetPathFromIDList(pidl, path);
+	SHGetPathFromIDList(pidl, loldir);
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	std::thread t{patch};
+	std::thread t{ patch };
 	t.join();
-	
+
 	finished = true;
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
