@@ -1,8 +1,6 @@
 #ifndef LimitSingleInstance_H
 #define LimitSingleInstance_H
 
-#include <windows.h> 
-
 //This code is from Q243953 in case you lose the article and wonder
 //where this code came from.
 class CLimitSingleInstance
@@ -17,7 +15,7 @@ public:
 		//Make sure that you use a name that is unique for this application otherwise
 		//two apps may think they are the same if they are using same name for
 		//3rd parm to CreateMutex
-		m_hMutex = CreateMutex(NULL, FALSE, strMutexName); //do early
+		m_hMutex = CreateMutex(nullptr, 0, strMutexName); //do early
 		m_dwLastError = GetLastError(); //save for use later...
 	}
 
@@ -26,7 +24,7 @@ public:
 		if (m_hMutex)  //Do not forget to close handles.
 		{
 			CloseHandle(m_hMutex); //Do as late as possible.
-			m_hMutex = NULL; //Good habit to be in.
+			m_hMutex = nullptr; //Good habit to be in.
 		}
 	}
 

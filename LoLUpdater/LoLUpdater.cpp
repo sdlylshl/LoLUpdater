@@ -52,24 +52,20 @@ void patch()
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 
 	URLDownloadToFile(nullptr, L"http://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str(), 0, nullptr);
-	wchar_t runair1[MAX_PATH + 1] = L"";
-	wchar_t* runair = runair1;
+	wchar_t runair[MAX_PATH+1] = { 0 };
 	PathCombine(runair, cwd, airsetup.c_str());
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
 	RunAndWait(runair, L"-silent");
 
-	wchar_t gameclient1[MAX_PATH+1] = L"";
-	auto gameclient = gameclient1;
+	wchar_t gameclient[MAX_PATH+1] = { 0 };
 	wcsncat_s(gameclient, MAX_PATH+1, loldir, _TRUNCATE);
 
-	wchar_t airclient1[MAX_PATH+1] = L"";
-	auto airclient = airclient1;
-	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
+	wchar_t airclient[MAX_PATH+1] = { 0 };
+	wcsncat_s(airclient, MAX_PATH+1, loldir, _TRUNCATE);
 
 	ExtractResource(1, cgsetup.c_str());
-	wchar_t cgbinpath[MAX_PATH + 1];
-	wchar_t runcg1[MAX_PATH + 1] = L"";
-	auto runcg = runcg1;
+	wchar_t cgbinpath[MAX_PATH+1];;
+	wchar_t runcg[MAX_PATH+1] = { 0 };
 	PathCombine(runcg, cwd, cgsetup.c_str());
 	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 	RunAndWait(runcg, L"/verysilent /TYPE = compact");
@@ -79,19 +75,16 @@ void patch()
 
 	wchar_t adobedir[MAX_PATH+1] = L"Adobe AIR\\Versions\\1.0";
 
-	wchar_t adobepath1[MAX_PATH+1] = L"";
-	auto adobepath = adobepath1;
+	wchar_t adobepath[MAX_PATH+1] = { 0 };
 	PathCombine(adobepath, progdrive, adobedir);
 
-	wchar_t instdir1[MAX_PATH+1] = L"";
-	auto instdir = instdir1;
+	wchar_t instdir[MAX_PATH+1] = { 0 };
 	PathCombine(instdir, loldir, L"lol.exe");
 
 	if (std::wifstream(instdir).good())
 	{
 		PathAppend(gameclient, L"Game");
-		wchar_t garenaair1[MAX_PATH+1] = L"Air\\";
-		auto garenaair = garenaair1;
+		wchar_t garenaair[MAX_PATH+1] = L"Air\\";
 		wcsncat_s(garenaair, MAX_PATH+1, adobedir, _TRUNCATE);
 		PathAppend(airclient, garenaair);
 	}
@@ -117,40 +110,33 @@ void patch()
 
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1);
 
-	wchar_t cgbin1[MAX_PATH+1] = L"";
-	auto cgbin = cgbin1;
+	wchar_t cgbin[MAX_PATH+1] = L"";
 	auto cg = L"cg.dll";
 	PathCombine(cgbin, cgbinpath, cg);
 
-	wchar_t cgglbin1[MAX_PATH+1] = L"";
-	auto cgglbin = cgglbin1;
+	wchar_t cgglbin[MAX_PATH+1] = L"";
 	auto cggl = L"cgGL.dll";
 	PathCombine(cgglbin, cgbinpath, cggl);
 
-	wchar_t cgd3d9bin1[MAX_PATH+1] = L"";
-	auto cgd3d9bin = cgd3d9bin1;
+	wchar_t cgd3d9bin[MAX_PATH+1] = L"";
 	auto cgd3d9 = L"cgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
-	wchar_t airdest1[MAX_PATH+1] = L"";
-	auto airdest = airdest1;
+	wchar_t airdest[MAX_PATH+1] = L"";
 	auto air = L"Adobe AIR.dll";
 	PathCombine(airdest, airclient, air);
 
-	wchar_t airlatest1[MAX_PATH+1] = L"";
-	auto airlatest = airlatest1;
+	wchar_t airlatest[MAX_PATH+1] = L"";
 	PathCombine(airlatest, adobepath, air);
 
 	wchar_t res[MAX_PATH+1] = L"Resources";
 	auto flash = res;
 	PathAppend(flash, L"NPSWF32.dll");
 
-	wchar_t flashdest1[MAX_PATH+1] = L"";
-	auto flashdest = flashdest1;
+	wchar_t flashdest[MAX_PATH+1] = L"";
 	PathCombine(flashdest, airclient, flash);
 
-	wchar_t flashlatest1[MAX_PATH+1] = L"";
-	auto flashlatest = flashlatest1;
+	wchar_t flashlatest[MAX_PATH+1] = L"";
 	PathCombine(flashlatest, adobepath, flash);
 
 	wchar_t cgdest1[MAX_PATH+1] = L"";
@@ -165,8 +151,7 @@ void patch()
 	auto cgd3d9dest = cgd3d9dest1;
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
 
-	wchar_t tbb1[MAX_PATH+1] = L"";
-	auto tbb = tbb1;
+	wchar_t tbb[MAX_PATH+1] = { 0 };
 	PathCombine(tbb, gameclient, L"tbb.dll");
 
 	OSVERSIONINFO osvi{};
@@ -230,8 +215,7 @@ void patch()
 	CopyFile(flashlatest, flashdest, false);
 
 	const std::wstring ccp = L"msvcp120.dll";
-	wchar_t cp1[MAX_PATH + 1] = L"";
-	auto cp = cp1;
+	wchar_t cp[MAX_PATH+1] = { 0 };
 	PathCombine(cp, gameclient, ccp.c_str());
 	ExtractResource(2, cp);
 	CopyFile(ccp.c_str(), ccp.c_str(), false);
@@ -239,8 +223,7 @@ void patch()
 	UnblockFile(cp);
 
 	const std::wstring ccr = L"msvcr120.dll";
-	wchar_t cr1[MAX_PATH + 1] = L"";
-	auto cr = cr1;
+	wchar_t cr[MAX_PATH+1] = { 0 };
 	PathCombine(cr, gameclient, ccr.c_str());
 	ExtractResource(3, cr);
 	CopyFile(ccr.c_str(), cr, false);
@@ -280,9 +263,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
-
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
-		return FALSE;
+		return 0;
 
 	MSG Msg = { 0 };
 	WNDCLASSEX wc = { 0 };
