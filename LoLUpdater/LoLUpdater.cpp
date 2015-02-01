@@ -64,7 +64,7 @@ void patch()
 	wcsncat_s(airclient, MAX_PATH+1, loldir, _TRUNCATE);
 
 	ExtractResource(1, cgsetup.c_str());
-	wchar_t cgbinpath[MAX_PATH+1];;
+	wchar_t cgbinpath[MAX_PATH+1];
 	wchar_t runcg[MAX_PATH+1] = { 0 };
 	PathCombine(runcg, cwd, cgsetup.c_str());
 	DeleteFile(std::wstring(runcg + unblocktag).c_str());
