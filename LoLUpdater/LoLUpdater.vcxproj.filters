@@ -31,6 +31,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Cg-3.1_April2012_Setup.exe" />
+    <None Include="msvcr120.dll" />
+    <None Include="msvcp120.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon.ico">
