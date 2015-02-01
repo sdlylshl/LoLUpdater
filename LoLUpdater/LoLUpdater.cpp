@@ -23,7 +23,7 @@ void runAndWait(std::wstring const& file, std::wstring const& args)
 	WaitForSingleObject(ei.hProcess, INFINITE);
 }
 
-void unblockFile(std::wstring const& path1)
+void UnblockFile(std::wstring const& path1)
 {
 	*unblocker = '\0';
 	wcsncat_s(unblocker, MAX_PATH+1, path, _TRUNCATE);
@@ -53,7 +53,7 @@ void patch()
 	auto airclient = airclient1;
 	wcsncat_s(airclient, MAX_PATH+1, path, _TRUNCATE);
 
-	unblockFile(airsetup);
+	UnblockFile(airsetup);
 	runAndWait(airsetup, L"-silent");
 	DeleteFile(airsetup.c_str());
 
@@ -99,7 +99,7 @@ void patch()
 	}
 
 	wchar_t cgbinpath[MAX_PATH + 1];
-	unblockFile(cgsetup);
+	UnblockFile(cgsetup);
 	runAndWait(cgsetup, L"/verysilent /TYPE = compact");
 	DeleteFile(cgsetup.c_str());
 
@@ -213,7 +213,7 @@ void patch()
 	CopyFile(cgbin, cgdest, false);
 	CopyFile(cgglbin, cggldest, false);
 	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	unblockFile(tbb);
+	UnblockFile(tbb);
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 
@@ -227,6 +227,7 @@ void patch()
 	fwrite(LockResource(LoadResource(nullptr, hRes1)), SizeofResource(nullptr, hRes1), 1, f1);
 	fclose(f1);
 	CopyFile(ccp.c_str(), cp, false);
+	UnblockFile(cp);
 	DeleteFile(ccp.c_str());
 
 	FILE* f2;
@@ -239,6 +240,7 @@ void patch()
 	fwrite(LockResource(LoadResource(nullptr, hRes2)), SizeofResource(nullptr, hRes2), 1, f2);
 	fclose(f2);
 	CopyFile(ccr.c_str(), cr, false);
+	UnblockFile(cr);
 	DeleteFile(ccr.c_str());
 }
 
