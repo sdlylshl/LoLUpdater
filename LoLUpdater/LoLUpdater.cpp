@@ -33,7 +33,7 @@ public:
 	}
 };
 
-CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N}");
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-2014-2015}");
 
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
@@ -41,23 +41,9 @@ wchar_t unblocker1[MAX_PATH + 1] = L"";
 auto unblocker = unblocker1;
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
-
-void RunAndWait(std::wstring const& filename, std::wstring const& args)
-{
-	SHELLEXECUTEINFO ei = {};
-	ei.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ei.lpVerb = L"runas";
-	ei.lpFile = filename.c_str();
-	ei.lpParameters = args.c_str();
-	ei.nShow = SW_SHOW;
-
-	if (!ShellExecuteEx(&ei))
-		throw std::runtime_error("failed to execute program");
-
-		if (MsgWaitForMultipleObjects(1, &ei.hProcess, FALSE, INFINITE, QS_ALLINPUT) == WAIT_FAILED)
-			throw std::runtime_error("failed to wait for program to finish");
-}
+const std::wstring airsetup = L"air16_win.exe";
+const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+wchar_t gameclient[MAX_PATH + 1] = { 0 };
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -65,6 +51,11 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 	{
 		throw std::runtime_error("failed to initialize download");
 	}
+}
+
+void AirDL()
+{
+	downloadFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str());
 }
 
 void copyerrorcheck(BOOL res)
@@ -93,25 +84,167 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 
 void patch()
 {
-	const std::wstring airsetup = L"air16_win.exe";
-	downloadFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str());
+	
+	wchar_t tbb[MAX_PATH + 1] = { 0 };
+	PathCombine(tbb, gameclient, L"tbb.dll");
+
+	OSVERSIONINFO osvi{};
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
+	DWORD dwLength = sizeof(finalurl);
+	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
+
+	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
+	{
+		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
+	}
+	else
+	{
+		int abcd[4];
+		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
+
+		__cpuidex(abcd, 1, 0);
+		if (((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask) || !((static_cast<uint32_t>(_xgetbv(0)) & 6) == 6))
+		{
+			int cpuInfo[4];
+			__cpuid(cpuInfo, 1);
+			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
+			}
+			else
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
+			}
+		}
+			else
+		{
+			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+		}
+
+	}
+	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
+	downloadFile(finalurl, tbb);
+	UnblockFile(tbb);
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	HDC hdc;
+	PAINTSTRUCT ps;
+	RECT start = { 2, 0, 0, 0 };
+	RECT end = { 2, 20, 0, 0 };
+	switch (msg)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &ps);
+		DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP);
+		if (finished)
+		{
+			DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
+		}
+		EndPaint(hwnd, &ps);
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+	return 0;
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
+	LPSTR, int nCmdShow)
+{
+	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
+		return 0;
+
+	MSG Msg = { 0 };
+	WNDCLASSEX wc = { 0 };
+	const std::wstring g_szClassName(L"mainwindow");
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.lpfnWndProc = WndProc;
+	wc.hInstance = hInstance;
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wc.lpszClassName = g_szClassName.c_str();
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	RegisterClassEx(&wc);
+
+	HWND hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL installation directory:";
+	auto pidl = SHBrowseForFolder(&bi);
+	SHGetPathFromIDList(pidl, loldir);
+	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
+
+	std::thread t1{ AirDL };
+	t1.join();
+
 	wchar_t runair[MAX_PATH + 1] = { 0 };
 	PathCombine(runair, cwd, airsetup.c_str());
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
-	RunAndWait(runair, L"-silent");
 
-	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+	SHELLEXECUTEINFO ei = {};
+	ei.cbSize = sizeof(SHELLEXECUTEINFO);
+	ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei.lpVerb = L"runas";
+	ei.lpFile = runair;
+	ei.lpParameters = L"-silent";
+	ei.nShow = SW_SHOW;
+
+	if (!ShellExecuteEx(&ei))
+		throw std::runtime_error("failed to execute program");
+
+	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1,
+		&ei.hProcess,
+		FALSE,
+		INFINITE,
+		QS_ALLINPUT
+		)
+		)
+	{
+		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&Msg);
+		}
+	}
+	DeleteFile(airsetup.c_str());
+
 	ExtractResource(1, cgsetup.c_str());
 	wchar_t runcg[MAX_PATH + 1] = { 0 };
 	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 	PathCombine(runcg, cwd, cgsetup.c_str());
-	RunAndWait(runcg, L"/verysilent /TYPE = compact");
 
-	wchar_t gameclient[MAX_PATH + 1] = { 0 };
-	wcsncat_s(gameclient, MAX_PATH + 1, loldir, _TRUNCATE);
+	SHELLEXECUTEINFO ei1 = {};
+	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
+	ei1.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei1.lpVerb = L"runas";
+	ei1.lpFile = runcg;
+	ei1.lpParameters = L"/verysilent /TYPE = compact";
+	ei1.nShow = SW_SHOW;
 
-	wchar_t airclient[MAX_PATH + 1] = { 0 };
-	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
+	if (!ShellExecuteEx(&ei1))
+		throw std::runtime_error("failed to execute program");
+
+	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1,
+		&ei1.hProcess,
+		FALSE,
+		INFINITE,
+		QS_ALLINPUT
+		)
+		)
+	{
+		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&Msg);
+		}
+	}
+	DeleteFile(cgsetup.c_str());
 
 	wchar_t cgbinpath[MAX_PATH + 1];
 
@@ -122,6 +255,11 @@ void patch()
 
 	wchar_t adobepath[MAX_PATH + 1] = { 0 };
 	PathCombine(adobepath, progdrive, adobedir);
+
+	wcsncat_s(gameclient, MAX_PATH + 1, loldir, _TRUNCATE);
+
+	wchar_t airclient[MAX_PATH + 1] = { 0 };
+	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
 	wchar_t instdir[MAX_PATH + 1] = { 0 };
 	PathCombine(instdir, loldir, L"lol.exe");
@@ -196,66 +334,12 @@ void patch()
 	auto cgd3d9dest = cgd3d9dest1;
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
 
-	wchar_t tbb[MAX_PATH + 1] = { 0 };
-	PathCombine(tbb, gameclient, L"tbb.dll");
+	std::thread t{ patch };
+	t.join();
 
-	OSVERSIONINFO osvi{};
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osvi);
-
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = L"";
-	DWORD dwLength = sizeof(finalurl);
-	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = L"";
-
-	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
-	{
-		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
-	}
-	else
-	{
-		auto avx2 = 0;
-		int abcd[4];
-		uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
-		uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
-		__cpuidex(abcd, 1, 0);
-		if (((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask) || !((static_cast<uint32_t>(_xgetbv(0)) & 6) == 6))
-		{
-			avx2 = 0;
-		}
-		__cpuidex(abcd, 7, 0);
-		if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
-		{
-			avx2 = 0;
-		}
-		__cpuidex(abcd, 0x80000001, 0);
-		if ((abcd[2] & (1 << 5)) == 0)
-		{
-			avx2 = 0;
-		}
-		if (avx2 != 0)
-		{
-			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
-		}
-		else
-		{
-			int cpuInfo[4];
-			__cpuid(cpuInfo, 1);
-			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
-			}
-			else
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
-			}
-		}
-	}
-	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
-	downloadFile(finalurl, tbb);
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
-	UnblockFile(tbb);
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 
@@ -275,66 +359,9 @@ void patch()
 	DeleteFile(ccr.c_str());
 	UnblockFile(cr);
 
-	DeleteFile(cgsetup.c_str());
-	DeleteFile(airsetup.c_str());
-}
-
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	HDC hdc;
-	PAINTSTRUCT ps;
-	RECT start = { 2, 0, 0, 0 };
-	RECT end = { 2, 20, 0, 0 };
-	switch (msg)
-	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_PAINT:
-		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP);
-		if (finished == true)
-		{
-			DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
-		}
-		EndPaint(hwnd, &ps);
-		break;
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-	return 0;
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-	LPSTR, int nCmdShow)
-{
-	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
-		return 0;
-
-	MSG Msg = { 0 };
-	WNDCLASSEX wc = { 0 };
-	const std::wstring g_szClassName(L"mainwindow");
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.lpfnWndProc = WndProc;
-	wc.hInstance = hInstance;
-	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-	wc.lpszClassName = g_szClassName.c_str();
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
-	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
-	RegisterClassEx(&wc);
-
-	HWND hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL installation directory:";
-	auto pidl = SHBrowseForFolder(&bi);
-	SHGetPathFromIDList(pidl, loldir);
-	ShowWindow(hwnd, nCmdShow);
-	UpdateWindow(hwnd);
-
-	std::thread t{ patch };
-	t.join();
-
 	finished = true;
+
+	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
