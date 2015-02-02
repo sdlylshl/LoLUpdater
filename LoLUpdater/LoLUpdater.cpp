@@ -8,7 +8,7 @@
 class CLimitSingleInstance
 {
 protected:
-	DWORD  m_dwLastError;
+	DWORD m_dwLastError;
 	HANDLE m_hMutex;
 
 public:
@@ -59,7 +59,7 @@ void AdobeAirDL()
 
 void copyerrorcheck(BOOL res)
 {
-	if (res = NULL)
+	if (res == NULL)
 		throw std::runtime_error("failed to copy file");
 }
 
@@ -117,11 +117,10 @@ void threadingbuildingblocks()
 				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
 			}
 		}
-			else
+		else
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
 		}
-
 	}
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	downloadFile(finalurl, tbb);
