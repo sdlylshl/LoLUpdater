@@ -1,0 +1,147 @@
+---
+title: Home
+layout: default
+---
+
+<span id="hero">Det bästa verktyget för att öka FPSen i spelet <a href=http://leagueoflegends.com>League of Legends</a>, gör också <a href="http://pvp.net">PvP.net</a> klienten mer responsiv/snabbare.<br>
+<br>
+Påverkar inte grafiken.<br>
+Kan göra så att in-game shoppen öppnar snabbare.<br>
+OSX version under utveckling<br>
+<br>
+I mars 2014 sade <a href="http://riotgames.com/">Riot</a><a href="http://forums.euw.leagueoflegends.com/board/showthread.php?p=15329279#15329279"><u>det här</u></a> om LoLUpdater.<br>
+<br>
+<dt><img src="img/Riot.png"></dt><br>
+Du kan inte bli bannad för att du använder LoLUpdater.<br>
+<br>
+Fungerar genom att byta ut League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_library">DLL</a> filer med de senaste från Nvidia/Intel/Adobe, (LoL använder gamla DLL filer).
+</span>
+</dt>
+<hr>
+<center>
+    <dt><img src="img/Folderbrowser.png">        <img src="img/LoLUpdater.png"></dt>
+    <iframe width="420" height="315" src="https://www.youtube.com/embed/86rSSBU_Cso" frameborder="0" allowfullscreen></iframe>
+    <br>
+<script type="text/javascript">
+    google_ad_client = "ca-pub-6694715230959620";
+    google_ad_slot = "2482110934";
+    google_ad_width = 320;
+    google_ad_height = 100;
+</script>
+<!-- asdasd -->
+<script type="text/javascript"
+src="//pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+<dt class="center"><a href="http://lol.jdhpro.com/LoLUpdater.exe" class="btn">Ladda ned LoLUpdater</a>
+<br>
+<a href="https://github.com/Loggan08/LoLUpdater/blob/master/LoLUpdater/LoLUpdater.cpp">Länk till källkod</a><a href="http://sv.wikipedia.org/wiki/C%2B%2B"><img src="img/cpplogo.png" width="6%" height="6%"></a>
+</dt> 
+<dd>
+  <strong><time>2015-02-01 17:27 GMT+1</time> (<code>5.2</code> patch)</strong>
+</dd>
+<script type="text/javascript">
+    google_ad_client = "ca-pub-6694715230959620";
+    google_ad_slot = "1005377730";
+    google_ad_width = 320;
+    google_ad_height = 100;
+</script>
+<script type="text/javascript"
+src="//pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></center>
+<dl>
+  <details open>
+ <summary><dt>Installations instruktioner</dt>
+    </summary>
+    <dd>
+      <ul>
+      <li>Installera <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe">Microsoft Visual C++ Redistributable 2013 (x86)</a> & <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe">Microsoft Visual C++ Redistributable 2013 (x64)</a></li>
+        <br>
+        <li>Avsluta PvP.net klienten/spelet</li>
+         <br>
+        <li>Kör LoLUpdater.exe och välj din <code>League of Legends</code> eller <code>GarenaLoL\GameData\Apps\LoL</code> mapp, vänta (1 minut på en 100mbit lina med en SSD) (Stäng LoLUpdater när den är klar)</li>
+         <br>
+         <li>Kör den såhär på XP:</li>
+         <br>
+         <img src="img/XPinstallation.png" width="33%" height="33%">
+         <br>
+         <br>
+        <li>Ladda ned LoLUpdater igen efter varje LoL-Patch (Riot Patch) för att ha kvar alla fördelar</li>
+        <br>
+        <li>Spelar ingen roll vilken patchversion du har på GarenaLoL, kommer alltid att installeras</li>
+
+  </details>
+  <details>
+    <summary><dt>Manuell Installation: (Klicka)</dt>
+    </summary>
+    <ul>
+    <details open>
+    <summary><dt>Hur du avblockerar filer:</dt>
+    </summary>Högerklicka -> Egenskaper -> Avblockera</li><br>
+        <img src="img/unblock.png"><br>
+         <br>
+         <li>Om du är på WinXP behöver du <a href="http://lol.jdhpro.com/UnblockFile.zip">det här</a> för att avblockera filer, extrahera och kör "Unblock.bat" i samma map som filerna som du ska avblockera ligger (Redigera Unblock.bat och ändra filnamnet innuti)</li>
+         </details>
+    <br>
+      <li>Installera <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> och <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Spelar ingen roll om du har ATI-grafikkort)</a>, Avblockera båda filerna.
+        </a>
+      </li>
+       <br>
+      <li>Flytta <code>cg.dll</code>, <code>cgGL.dll</code> och <code>cgD3D9.dll</code> från <code>%WindowsDrive%:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> till <code>%leaguedirectory%\RADS\solutions\lol_game_client_sln\releases\%Latest%\deploy</code>
+      </li>
+       <br>
+      <li>Kopiera <code>Adobe AIR.dll</code> från <code>%WindowsDrive%:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> till <code>%leaguedirectory%\RADS\projects\lol_air_client\releases\%Latest%\deploy\Adobe AIR\Versions\1.0</code> (Lägg <code>NPSWF32.dll</code> i <code>Resources</code> mappen)
+      </li>
+       <br>
+      <li>Ladda ned <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> och kolla vilka SIMD instruktioner din CPU stödjer sedan laddar du ned rätt fil (<code>AVX2 > AVX > SSE2</code>): <a href="http://lol.jdhpro.com/AVX2.dll"><code>AVX2</code></a>, <a href="http://lol.jdhpro.com/AVX.dll"><code>AVX</code></a>, <a href="http://lol.jdhpro.com/SSE2.dll"><code>SSE2</code></a> eller <a href="http://lol.jdhpro.com/XP.dll"><code>WinXP</code></a> och lägg de i samma mapp som <code>cg.dll<code> (Se ovan), byt namn på filen till <code>tbb.dll</code> och avblockera den.
+      </li>
+      <br>
+      <li>
+         Ladda ned <a href="http://lol.jdhpro.com/msvcp120.dll"><code>msvcp120</code></a> & <a href="http://lol.jdhpro.com/msvcr120.dll"><code>msvcr120</code></a> och kopiera de till samma ställe som <code>cg.dll</code> (Se ovan), avblockera dessa filer.
+      </li>
+      <br>
+      <li>Nu kan du spela! (Upprepa varje patch)</li>
+   </ul>
+  </details>
+</dl>
+
+      <dt>Kontakt information:</dt>
+          <dt><a href="http://webchat.quakenet.org/?channels=#LoLUpdater">IRC: #LoLUpdater @ Quakenet</a></dt>
+          <dt><a href="mailto:Ilja.Korsun@Gmail.com">Email: Ilja.Korsun@Gmail.com</a></dt>
+          <dt><a href="skype:Ikorsu">Skype: Ikorsu</a></dt>
+<br>
+  Utvecklarna:
+  <ul id="contributors">
+  {% for contributor in site.data.contributors  %}
+    <li>
+    {% if contributor.website %}
+    <a href="https://github.com/{{ contributor.website }}">
+      {{ contributor.name }}
+    </a>
+    {% elsif contributor.github %}
+      <a href="https://github.com/{{ contributor.github }}">
+        {{ contributor.name }}
+      </a>
+    {% else %}
+    {{ contributor.name }}
+    {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+  
+    <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_donations">
+<input type="hidden" name="business" value="ilja.korsun@gmail.com">
+<input type="hidden" name="lc" value="US">
+<input type="hidden" name="item_name" value="LoLUpdater">
+<input type="hidden" name="no_note" value="0">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="bn" value="PP-DonationsBF:heart.png:NonHostedGuest">
+<input type="image" src="http://www.lolupdater.com/img/heart.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+    
+    <iframe src="http://files.quizsnack.com/iframe/embed.html?hash=q7t54kmh&width=250&height=370&wmode=transparent&t=1422864496&width=250&height=370" width="250" height="325" seamless="seamless" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+    
+</center>
+
