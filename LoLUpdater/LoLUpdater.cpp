@@ -4,7 +4,6 @@
 #include <Shlobj.h>
 #include <thread>
 #include <wininet.h>
-#include <vector>
 
 class CLimitSingleInstance
 {
@@ -71,29 +70,6 @@ void UnblockFile(std::wstring const& filename)
 	wcsncat_s(unblocker, MAX_PATH + 1, filename.c_str(), _TRUNCATE);
 	wcsncat_s(unblocker, MAX_PATH + 1, unblocktag.c_str(), _TRUNCATE);
 	DeleteFile(unblocker);
-}
-
-void getSubdirs(std::vector<std::wstring>& output, const std::wstring& path)
-{
-	WIN32_FIND_DATA findfiledata;
-	HANDLE hFind;
-
-	wchar_t fullpath[MAX_PATH];
-	GetFullPathName(path.c_str(), MAX_PATH, fullpath, nullptr);
-	std::wstring fp(fullpath);
-
-	hFind = FindFirstFile((fp + L"\\*").c_str(), &findfiledata);
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		do
-		{
-			if ((findfiledata.dwFileAttributes | FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY
-				&& (findfiledata.cFileName[0] != '.'))
-			{
-				output.push_back(findfiledata.cFileName);
-			}
-		} while (FindNextFile(hFind, &findfiledata) != 0);
-	}
 }
 
 void ExtractResource(int RCDATAID, std::wstring const& filename)
@@ -297,18 +273,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PathAppend(gameclient, L"solutions");
 		PathAppend(gameclient, L"lol_game_client_sln");
 		PathAppend(gameclient, rel);
-
-		std::vector<std::wstring> gameversion;
-		getSubdirs(gameversion, gameclient);
-
-		PathAppend(gameclient, std::wstring(gameversion.begin(), gameversion.end()).c_str());
+		PathAppend(gameclient, L"0.0.1.74");
 		auto dep = L"deploy";
 		PathAppend(gameclient, dep);
-
-		std::vector<std::wstring> airversion;
-		getSubdirs(airversion, airclient);
-
-		PathAppend(airclient, std::wstring(airversion.begin(), airversion.end()).c_str());
+		PathAppend(airclient, L"0.0.1.127");
 		PathAppend(airclient, dep);
 		PathAppend(airclient, adobedir);
 	}
