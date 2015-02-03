@@ -1,8 +1,10 @@
 *.cpp    text=auto
 *.h    text=auto
 *.rc    binary
-*.sln    text=auto
-*.vcxproj text=auto
+*.sln    eol=crlf
+*.vcxproj eol=crlf
 *.filters text=auto
 *.ico   binary
+*.exe 	binary
+*.dll	binary
 *.md text=auto
