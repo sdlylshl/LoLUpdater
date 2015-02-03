@@ -45,9 +45,7 @@ const std::wstring airsetup = L"air16_win.exe";
 const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t airclient[MAX_PATH + 1] = {0};
-const wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
-const std::wstring cpp(L"msvcp120.dll");
-const std::wstring cpr(L"msvcr120.dll");
+wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -265,6 +263,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t patchclient[MAX_PATH + 1] = {0};
 	wcsncat_s(patchclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
+	const std::wstring cpp = L"msvcp120.dll";
+	const std::wstring cpr = L"msvcr120.dll";
+
 	if (std::wifstream(instdir).fail())
 	{
 		if (std::wifstream(instdirCN).fail())
@@ -331,6 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			}
 			PathAppend(airclient, data1.c_str());
 			PathAppend(airclient, dep);
+			PathAppend(airclient, adobedir);
 
 			std::wstring data12;
 			HANDLE hFind2;
@@ -356,32 +358,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			PathAppend(patchclient, data12.c_str());
 			PathAppend(patchclient, dep);
 
-			std::wstring input = gameclient;
-			std::wcin >> input;
-			std::wofstream out("game.txt");
-			out << input;
-			out.close();
-
-
-			std::wstring input1 = airclient;
-			std::wcin >> input1;
-			std::wofstream out1("air.txt");
-			out1 << input1;
-			out1.close();
-
-
-			std::wstring input2 = patchclient;
-			std::wcin >> input2;
-			std::wofstream out2("output.txt");
-			out2 << input2;
-			out2.close();
-
-			wchar_t cp1[MAX_PATH + 1] = {0};
+			wchar_t cp1[MAX_PATH + 1] = L"";
 			PathCombine(cp1, patchclient, cpp.c_str());
 			ExtractResource(2, cp1);
 			UnblockFile(cp1);
 
-			wchar_t cr1[MAX_PATH + 1] = {0};
+			wchar_t cr1[MAX_PATH + 1] = L"";
 			PathCombine(cr1, patchclient, cpr.c_str());
 			ExtractResource(3, cr1);
 			UnblockFile(cr1);
@@ -434,23 +416,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
-	ExtractResource(2, L"5.exe");
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
-	ExtractResource(2, L"6.exe");
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
+
+	std::wstring input = flashlatest;
+	std::wcin >> input;
+	std::wofstream out("output.txt");
+	out << input;
+	out.close();
+
+	std::wstring input1 = flashdest;
+	std::wcin >> input1;
+	std::wofstream out1("output1.txt");
+	out1 << input1;
+	out1.close();
+
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
+	ExtractResource(2, L"6.exe");
 
-
-	wchar_t cp[MAX_PATH + 1] = {0};
+	wchar_t cp[MAX_PATH + 1] = L"";
 	PathCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
 	UnblockFile(cp);
-
-	wchar_t cr[MAX_PATH + 1] = {0};
+	ExtractResource(2, L"7.exe");
+	wchar_t cr[MAX_PATH + 1] = L"";
 	PathCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
 	UnblockFile(cr);
