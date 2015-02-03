@@ -395,23 +395,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 
+	std::wstring cpp(L"msvcp120.dll");
+	std::wstring cpr(L"msvcr120.dll");
+
 	wchar_t cp[MAX_PATH + 1] = {0};
-	PathCombine(cp, gameclient, L"msvcp120.dll");
+	PathCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
 	UnblockFile(cp);
 
 	wchar_t cr[MAX_PATH + 1] = {0};
-	PathCombine(cr, gameclient, L"msvcr120.dll");
+	PathCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
 	UnblockFile(cr);
 
 	wchar_t cp1[MAX_PATH + 1] = { 0 };
-	PathCombine(cp1, patchclient, L"msvcp120.dll");
+	PathCombine(cp1, patchclient, cpp.c_str());
 	ExtractResource(2, cp1);
 	UnblockFile(cp1);
 
 	wchar_t cr1[MAX_PATH + 1] = { 0 };
-	PathCombine(cr1, patchclient, L"msvcr120.dll");
+	PathCombine(cr1, patchclient, cpr.c_str());
 	ExtractResource(3, cr1);
 	UnblockFile(cr1);
 
