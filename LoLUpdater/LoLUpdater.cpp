@@ -253,8 +253,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	ExtractResource(1, cgsetup.c_str());
 	wchar_t runcg[MAX_PATH + 1] = {0};
-	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 	PathCombine(runcg, cwd, cgsetup.c_str());
+	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei1 = {};
 	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -313,7 +313,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			PathAppend(gameclient, L"solutions");
 			PathAppend(gameclient, L"lol_game_client_sln");
 			PathAppend(gameclient, rel);
-
 
 			auto dep = L"deploy";
 			PathAppend(gameclient, findlatest(gameclient).c_str());
