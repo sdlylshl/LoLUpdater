@@ -4,7 +4,6 @@
 #include <Shlobj.h>
 #include <thread>
 #include <wininet.h>
-#include <iostream>
 
 class CLimitSingleInstance
 {
@@ -422,18 +421,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
-
-	std::wstring input = flashlatest;
-	std::wcin >> input;
-	std::wofstream out("output.txt");
-	out << input;
-	out.close();
-
-	std::wstring input1 = flashdest;
-	std::wcin >> input1;
-	std::wofstream out1("output1.txt");
-	out1 << input1;
-	out1.close();
 
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 	ExtractResource(2, L"6.exe");
