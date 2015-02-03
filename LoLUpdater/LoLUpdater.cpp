@@ -4,6 +4,7 @@
 #include <Shlobj.h>
 #include <thread>
 #include <wininet.h>
+#include <iostream>
 
 class CLimitSingleInstance
 {
@@ -43,10 +44,10 @@ const std::wstring unblocktag = L":Zone.Identifier";
 const std::wstring airsetup = L"air16_win.exe";
 const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = {0};
-wchar_t airclient[MAX_PATH + 1] = { 0 };
-wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
-std::wstring cpp(L"msvcp120.dll");
-std::wstring cpr(L"msvcr120.dll");
+wchar_t airclient[MAX_PATH + 1] = {0};
+const wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
+const std::wstring cpp(L"msvcp120.dll");
+const std::wstring cpr(L"msvcr120.dll");
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -257,12 +258,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t instdir[MAX_PATH + 1] = {0};
 	PathCombine(instdir, loldir, L"lol.exe");
-	
-	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
-	PathCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
-	
 
-	wchar_t patchclient[MAX_PATH + 1] = { 0 };
+	wchar_t instdirCN[MAX_PATH + 1] = {0};
+	PathCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
+
+	wchar_t patchclient[MAX_PATH + 1] = {0};
 	wcsncat_s(patchclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
 	if (std::wifstream(instdir).fail())
@@ -270,19 +270,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		if (std::wifstream(instdirCN).fail())
 		{
 			auto rads = L"RADS";
-			PathCombine(airclient, rads, L"projects");
+			PathAppend(airclient, rads);
+			PathAppend(airclient, L"projects");
 			PathAppend(airclient, L"lol_air_client");
 			auto rel = L"releases";
-			PathCombine(patchclient, rads, L"projects");
-			PathCombine(patchclient, L"lol_patcher", rel);
 			PathAppend(airclient, rel);
-			PathCombine(gameclient, rads, L"solutions");
-			PathCombine(gameclient, L"lol_game_client_sln", rel);
+
+			PathAppend(patchclient, rads);
+			PathAppend(patchclient, L"projects");
+			PathAppend(patchclient, L"lol_patcher");
+			PathAppend(patchclient, rel);
+
+			PathAppend(gameclient, rads);
+			PathAppend(gameclient, L"solutions");
+			PathAppend(gameclient, L"lol_game_client_sln");
+			PathAppend(gameclient, rel);
 
 			std::wstring data;
 			HANDLE hFind;
 			WIN32_FIND_DATA data2;
-			wchar_t gamesearch[MAX_PATH + 1] = { 0 };
+			wchar_t gamesearch[MAX_PATH + 1] = {0};
 			wcsncat_s(gamesearch, MAX_PATH + 1, gameclient, _TRUNCATE);
 			wcsncat_s(gamesearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
 			hFind = FindFirstFile(gamesearch, &data2);
@@ -293,17 +300,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 					if (data2.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
 						data += data2.cFileName;
 					data.erase(0, 1);
-				} while (FindNextFile(hFind, &data2));
+				}
+				while (FindNextFile(hFind, &data2));
 
 				FindClose(hFind);
 			}
 			auto dep = L"deploy";
-			PathCombine(gameclient, data.c_str(), dep);
+			PathAppend(gameclient, data.c_str());
+			PathAppend(gameclient, dep);
 
 			std::wstring data1;
 			HANDLE hFind1;
 			WIN32_FIND_DATA data21;
-			wchar_t airsearch[MAX_PATH + 1] = { 0 };
+			wchar_t airsearch[MAX_PATH + 1] = {0};
 			wcsncat_s(airsearch, MAX_PATH + 1, airclient, _TRUNCATE);
 			wcsncat_s(airsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
 
@@ -315,17 +324,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 					if (data21.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
 						data1 += data21.cFileName;
 					data1.erase(0, 1);
-				} while (FindNextFile(hFind1, &data21));
+				}
+				while (FindNextFile(hFind1, &data21));
 
 				FindClose(hFind1);
 			}
-			PathCombine(airclient, data1.c_str(), dep);
-			PathAppend(airclient, adobedir);
+			PathAppend(airclient, data1.c_str());
+			PathAppend(airclient, dep);
 
 			std::wstring data12;
 			HANDLE hFind2;
 			WIN32_FIND_DATA data22;
-			wchar_t patchsearch[MAX_PATH + 1] = { 0 };
+			wchar_t patchsearch[MAX_PATH + 1] = {0};
 			wcsncat_s(patchsearch, MAX_PATH + 1, patchclient, _TRUNCATE);
 			wcsncat_s(patchsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
 
@@ -337,18 +347,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 					if (data22.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
 						data12 += data22.cFileName;
 					data12.erase(0, 1);
-				} while (FindNextFile(hFind2, &data22));
+				}
+				while (FindNextFile(hFind2, &data22));
 
 				FindClose(hFind2);
 			}
-			PathCombine(patchclient, data12.c_str(), dep);
 
-			wchar_t cp1[MAX_PATH + 1] = { 0 };
+			PathAppend(patchclient, data12.c_str());
+			PathAppend(patchclient, dep);
+
+			std::wstring input = gameclient;
+			std::wcin >> input;
+			std::wofstream out("game.txt");
+			out << input;
+			out.close();
+
+
+			std::wstring input1 = airclient;
+			std::wcin >> input1;
+			std::wofstream out1("air.txt");
+			out1 << input1;
+			out1.close();
+
+
+			std::wstring input2 = patchclient;
+			std::wcin >> input2;
+			std::wofstream out2("output.txt");
+			out2 << input2;
+			out2.close();
+
+			wchar_t cp1[MAX_PATH + 1] = {0};
 			PathCombine(cp1, patchclient, cpp.c_str());
 			ExtractResource(2, cp1);
 			UnblockFile(cp1);
 
-			wchar_t cr1[MAX_PATH + 1] = { 0 };
+			wchar_t cr1[MAX_PATH + 1] = {0};
 			PathCombine(cr1, patchclient, cpr.c_str());
 			ExtractResource(3, cr1);
 			UnblockFile(cr1);
@@ -357,7 +390,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		{
 			altClient();
 		}
-		
 	}
 	else
 	{
@@ -365,7 +397,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 
-
+	ExtractResource(2, L"2.exe");
 	wchar_t cgbin[MAX_PATH + 1] = {0};
 	auto cg = L"cg.dll";
 	PathCombine(cgbin, cgbinpath, cg);
@@ -378,20 +410,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	auto cgd3d9 = L"cgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
-	wchar_t airdest[MAX_PATH + 1] = { 0 };
+	wchar_t airdest[MAX_PATH + 1] = {0};
 	auto air = L"Adobe AIR.dll";
 	PathCombine(airdest, airclient, air);
 
-	wchar_t airlatest[MAX_PATH + 1] = { 0 };
+	wchar_t airlatest[MAX_PATH + 1] = {0};
 	PathCombine(airlatest, adobepath, air);
 
 	wchar_t flash[MAX_PATH + 1] = {L"Resources"};
 	PathAppend(flash, L"NPSWF32.dll");
 
-	wchar_t flashdest[MAX_PATH + 1] = { 0 };
+	wchar_t flashdest[MAX_PATH + 1] = {0};
 	PathCombine(flashdest, airclient, flash);
 
-	wchar_t flashlatest[MAX_PATH + 1] = { 0 };
+	wchar_t flashlatest[MAX_PATH + 1] = {0};
 	PathCombine(flashlatest, adobepath, flash);
 
 	wchar_t cgdest[MAX_PATH + 1] = {0};
@@ -402,15 +434,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
-
+	ExtractResource(2, L"5.exe");
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
-
+	ExtractResource(2, L"6.exe");
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
+
 
 	wchar_t cp[MAX_PATH + 1] = {0};
 	PathCombine(cp, gameclient, cpp.c_str());
