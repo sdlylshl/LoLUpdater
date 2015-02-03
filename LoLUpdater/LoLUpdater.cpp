@@ -259,7 +259,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PathCombine(instdir, loldir, L"lol.exe");
 	
 	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
-	PathCombine(instdir, loldir, L"lol.launcher_tencent.exe");
+	PathCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
 	
 
 	wchar_t patchclient[MAX_PATH + 1] = { 0 };
@@ -363,6 +363,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		altClient();
 	}
+
+
 
 	wchar_t cgbin[MAX_PATH + 1] = {0};
 	auto cg = L"cg.dll";
