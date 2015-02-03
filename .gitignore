@@ -1,7 +1,7 @@
 *.user
 *.suo
 *.sdf
-*aps
+*.aps
 Release
 *.opensdf
 .sass-cache
