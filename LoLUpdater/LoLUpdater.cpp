@@ -45,6 +45,8 @@ const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t airclient[MAX_PATH + 1] = { 0 };
 wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
+std::wstring cpp(L"msvcp120.dll");
+std::wstring cpr(L"msvcr120.dll");
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -350,6 +352,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			}
 			PathAppend(patchclient, data12.c_str());
 			PathAppend(patchclient, dep);
+
+			wchar_t cp1[MAX_PATH + 1] = { 0 };
+			PathCombine(cp1, patchclient, cpp.c_str());
+			ExtractResource(2, cp1);
+			UnblockFile(cp1);
+
+			wchar_t cr1[MAX_PATH + 1] = { 0 };
+			PathCombine(cr1, patchclient, cpr.c_str());
+			ExtractResource(3, cr1);
+			UnblockFile(cr1);
 		}
 		else
 		{
@@ -408,9 +420,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
 
-	std::wstring cpp(L"msvcp120.dll");
-	std::wstring cpr(L"msvcr120.dll");
-
 	wchar_t cp[MAX_PATH + 1] = {0};
 	PathCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
@@ -420,16 +429,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PathCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
 	UnblockFile(cr);
-
-	wchar_t cp1[MAX_PATH + 1] = { 0 };
-	PathCombine(cp1, patchclient, cpp.c_str());
-	ExtractResource(2, cp1);
-	UnblockFile(cp1);
-
-	wchar_t cr1[MAX_PATH + 1] = { 0 };
-	PathCombine(cr1, patchclient, cpr.c_str());
-	ExtractResource(3, cr1);
-	UnblockFile(cr1);
 
 	finished = true;
 
