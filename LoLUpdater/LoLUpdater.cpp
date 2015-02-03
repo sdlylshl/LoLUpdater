@@ -270,21 +270,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		if (std::wifstream(instdirCN).fail())
 		{
 			auto rads = L"RADS";
-			PathAppend(airclient, rads);
-			PathAppend(airclient, L"projects");
+			PathCombine(airclient, rads, L"projects");
 			PathAppend(airclient, L"lol_air_client");
-
-			PathAppend(patchclient, rads);
-			PathAppend(patchclient, L"projects");
-			PathAppend(patchclient, L"lol_patcher");
-
 			auto rel = L"releases";
-			PathAppend(patchclient, rel);
+			PathCombine(patchclient, rads, L"projects");
+			PathCombine(patchclient, L"lol_patcher", rel);
 			PathAppend(airclient, rel);
-			PathAppend(gameclient, rads);
-			PathAppend(gameclient, L"solutions");
-			PathAppend(gameclient, L"lol_game_client_sln");
-			PathAppend(gameclient, rel);
+			PathCombine(gameclient, rads, L"solutions");
+			PathCombine(gameclient, L"lol_game_client_sln", rel);
 
 			std::wstring data;
 			HANDLE hFind;
@@ -304,9 +297,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 				FindClose(hFind);
 			}
-			PathAppend(gameclient, data.c_str());
 			auto dep = L"deploy";
-			PathAppend(gameclient, dep);
+			PathCombine(gameclient, data.c_str(), dep);
 
 			std::wstring data1;
 			HANDLE hFind1;
@@ -327,8 +319,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 				FindClose(hFind1);
 			}
-			PathAppend(airclient, data1.c_str());
-			PathAppend(airclient, dep);
+			PathCombine(airclient, data1.c_str(), dep);
 			PathAppend(airclient, adobedir);
 
 			std::wstring data12;
@@ -350,8 +341,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 				FindClose(hFind2);
 			}
-			PathAppend(patchclient, data12.c_str());
-			PathAppend(patchclient, dep);
+			PathCombine(patchclient, data12.c_str(), dep);
 
 			wchar_t cp1[MAX_PATH + 1] = { 0 };
 			PathCombine(cp1, patchclient, cpp.c_str());
