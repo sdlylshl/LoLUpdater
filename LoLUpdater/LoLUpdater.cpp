@@ -43,6 +43,8 @@ const std::wstring unblocktag = L":Zone.Identifier";
 const std::wstring airsetup = L"air16_win.exe";
 const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = {0};
+wchar_t airclient[MAX_PATH + 1] = { 0 };
+wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -125,6 +127,14 @@ void threadingbuildingblocks()
 	UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0);
 	downloadFile(finalurl, tbb);
 	UnblockFile(tbb);
+}
+
+void altClient()
+{
+	PathAppend(gameclient, L"Game");
+	wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
+	wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
+	PathAppend(airclient, garenaair);
 }
 
 
@@ -237,116 +247,119 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1);
 
-	wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
-
 	wchar_t adobepath[MAX_PATH + 1] = {0};
 	PathCombine(adobepath, progdrive, adobedir);
 
 	wcsncat_s(gameclient, MAX_PATH + 1, loldir, _TRUNCATE);
-
-	wchar_t airclient[MAX_PATH + 1] = {0};
 	wcsncat_s(airclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
 	wchar_t instdir[MAX_PATH + 1] = {0};
 	PathCombine(instdir, loldir, L"lol.exe");
+	
+	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
+	PathCombine(instdir, loldir, L"lol.launcher_tencent.exe");
+	
 
 	wchar_t patchclient[MAX_PATH + 1] = { 0 };
 	wcsncat_s(patchclient, MAX_PATH + 1, loldir, _TRUNCATE);
 
 	if (std::wifstream(instdir).fail())
 	{
-		auto rads = L"RADS";
-		PathAppend(airclient, rads);
-		PathAppend(airclient, L"projects");
-		PathAppend(airclient, L"lol_air_client");
-
-		PathAppend(patchclient, rads);
-		PathAppend(patchclient, L"projects");
-		PathAppend(patchclient, L"lol_patcher");
-
-		auto rel = L"releases";
-		PathAppend(patchclient, rel);
-		PathAppend(airclient, rel);
-		PathAppend(gameclient, rads);
-		PathAppend(gameclient, L"solutions");
-		PathAppend(gameclient, L"lol_game_client_sln");
-		PathAppend(gameclient, rel);
-
-		std::wstring data;
-		HANDLE hFind;
-		WIN32_FIND_DATA data2;
-		wchar_t gamesearch[MAX_PATH + 1] = {0};
-		wcsncat_s(gamesearch, MAX_PATH + 1, gameclient, _TRUNCATE);
-		wcsncat_s(gamesearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
-		hFind = FindFirstFile(gamesearch, &data2);
-		if (hFind != INVALID_HANDLE_VALUE)
+		if (std::wifstream(instdirCN).fail())
 		{
-			do
+			auto rads = L"RADS";
+			PathAppend(airclient, rads);
+			PathAppend(airclient, L"projects");
+			PathAppend(airclient, L"lol_air_client");
+
+			PathAppend(patchclient, rads);
+			PathAppend(patchclient, L"projects");
+			PathAppend(patchclient, L"lol_patcher");
+
+			auto rel = L"releases";
+			PathAppend(patchclient, rel);
+			PathAppend(airclient, rel);
+			PathAppend(gameclient, rads);
+			PathAppend(gameclient, L"solutions");
+			PathAppend(gameclient, L"lol_game_client_sln");
+			PathAppend(gameclient, rel);
+
+			std::wstring data;
+			HANDLE hFind;
+			WIN32_FIND_DATA data2;
+			wchar_t gamesearch[MAX_PATH + 1] = { 0 };
+			wcsncat_s(gamesearch, MAX_PATH + 1, gameclient, _TRUNCATE);
+			wcsncat_s(gamesearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
+			hFind = FindFirstFile(gamesearch, &data2);
+			if (hFind != INVALID_HANDLE_VALUE)
 			{
-				if (data2.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
-					data += data2.cFileName;
-				data.erase(0, 1);
+				do
+				{
+					if (data2.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						data += data2.cFileName;
+					data.erase(0, 1);
+				} while (FindNextFile(hFind, &data2));
+
+				FindClose(hFind);
 			}
-			while (FindNextFile(hFind, &data2));
+			PathAppend(gameclient, data.c_str());
+			auto dep = L"deploy";
+			PathAppend(gameclient, dep);
 
-			FindClose(hFind);
-		}
-		PathAppend(gameclient, data.c_str());
-		auto dep = L"deploy";
-		PathAppend(gameclient, dep);
+			std::wstring data1;
+			HANDLE hFind1;
+			WIN32_FIND_DATA data21;
+			wchar_t airsearch[MAX_PATH + 1] = { 0 };
+			wcsncat_s(airsearch, MAX_PATH + 1, airclient, _TRUNCATE);
+			wcsncat_s(airsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
 
-		std::wstring data1;
-		HANDLE hFind1;
-		WIN32_FIND_DATA data21;
-		wchar_t airsearch[MAX_PATH + 1] = {0};
-		wcsncat_s(airsearch, MAX_PATH + 1, airclient, _TRUNCATE);
-		wcsncat_s(airsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
-
-		hFind1 = FindFirstFile(airsearch, &data21);
-		if (hFind1 != INVALID_HANDLE_VALUE)
-		{
-			do
+			hFind1 = FindFirstFile(airsearch, &data21);
+			if (hFind1 != INVALID_HANDLE_VALUE)
 			{
-				if (data21.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
-					data1 += data21.cFileName;
-				data1.erase(0, 1);
+				do
+				{
+					if (data21.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						data1 += data21.cFileName;
+					data1.erase(0, 1);
+				} while (FindNextFile(hFind1, &data21));
+
+				FindClose(hFind1);
 			}
-			while (FindNextFile(hFind1, &data21));
+			PathAppend(airclient, data1.c_str());
+			PathAppend(airclient, dep);
+			PathAppend(airclient, adobedir);
 
-			FindClose(hFind1);
-		}
-		PathAppend(airclient, data1.c_str());
-		PathAppend(airclient, dep);
-		PathAppend(airclient, adobedir);
+			std::wstring data12;
+			HANDLE hFind2;
+			WIN32_FIND_DATA data22;
+			wchar_t patchsearch[MAX_PATH + 1] = { 0 };
+			wcsncat_s(patchsearch, MAX_PATH + 1, patchclient, _TRUNCATE);
+			wcsncat_s(patchsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
 
-		std::wstring data12;
-		HANDLE hFind2;
-		WIN32_FIND_DATA data22;
-		wchar_t patchsearch[MAX_PATH + 1] = { 0 };
-		wcsncat_s(patchsearch, MAX_PATH + 1, patchclient, _TRUNCATE);
-		wcsncat_s(patchsearch, MAX_PATH + 1, L"\\*", _TRUNCATE);
-
-		hFind2 = FindFirstFile(patchsearch, &data22);
-		if (hFind2 != INVALID_HANDLE_VALUE)
-		{
-			do
+			hFind2 = FindFirstFile(patchsearch, &data22);
+			if (hFind2 != INVALID_HANDLE_VALUE)
 			{
-				if (data22.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
-					data12 += data22.cFileName;
-				data12.erase(0, 1);
-			} while (FindNextFile(hFind2, &data22));
+				do
+				{
+					if (data22.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						data12 += data22.cFileName;
+					data12.erase(0, 1);
+				} while (FindNextFile(hFind2, &data22));
 
-			FindClose(hFind2);
+				FindClose(hFind2);
+			}
+			PathAppend(patchclient, data12.c_str());
+			PathAppend(patchclient, dep);
 		}
-		PathAppend(patchclient, data12.c_str());
-		PathAppend(patchclient, dep);
+		else
+		{
+			altClient();
+		}
+		
 	}
 	else
 	{
-		PathAppend(gameclient, L"Game");
-		wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
-		wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
-		PathAppend(airclient, garenaair);
+		altClient();
 	}
 
 	wchar_t cgbin[MAX_PATH + 1] = {0};
