@@ -377,8 +377,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		altClient();
 	}
 
-
-	ExtractResource(2, L"2.exe");
 	wchar_t cgbin[MAX_PATH + 1] = {0};
 	auto cg = L"cg.dll";
 	PathCombine(cgbin, cgbinpath, cg);
@@ -423,13 +421,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
 
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
-	ExtractResource(2, L"6.exe");
 
 	wchar_t cp[MAX_PATH + 1] = L"";
 	PathCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
 	UnblockFile(cp);
-	ExtractResource(2, L"7.exe");
+
 	wchar_t cr[MAX_PATH + 1] = L"";
 	PathCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
