@@ -4,6 +4,7 @@
 #include <thread>
 #include <wininet.h>
 #include <fstream>
+#include <Windows.h>
 
 class CLimitSingleInstance
 {
