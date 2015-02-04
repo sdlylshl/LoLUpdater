@@ -43,13 +43,15 @@
     <OutDir>C:\Riot Games\League of Legends</OutDir>
     <IntDir>C:\Riot Games\League of Legends</IntDir>
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
+    <GenerateManifest>false</GenerateManifest>
+    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>C:\</OutDir>
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
     <GenerateManifest>false</GenerateManifest>
     <LinkIncremental>false</LinkIncremental>
-    <EmbedManifest>true</EmbedManifest>
+    <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -75,6 +77,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>Shlwapi.Lib;Urlmon.Lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,8 +119,9 @@
       <AssemblyDebug>false</AssemblyDebug>
       <LinkStatus>true</LinkStatus>
       <PreventDllBinding>false</PreventDllBinding>
-      <LargeAddressAware>true</LargeAddressAware>
-      <TerminalServerAware>true</TerminalServerAware>
+      <AllowIsolation>false</AllowIsolation>
+      <EnableUAC>false</EnableUAC>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
