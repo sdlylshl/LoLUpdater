@@ -131,10 +131,10 @@ void threadingbuildingblocks()
 
 void altClient()
 {
-	PathAppend(gameclient, L"Game");
+	PathCombine(gameclient, loldir, L"Game");
 	wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
 	wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
-	PathAppend(airclient, garenaair);
+	PathCombine(airclient, loldir, garenaair);
 }
 
 std::wstring findlatest(std::wstring const& folder)
@@ -381,26 +381,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
 	PathCombine(cgd3d9dest, gameclient, cgd3d9);
-
+	
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
-
+	
 	copyerrorcheck(CopyFile(cgbin, cgdest, false));
+	ExtractResource(1, L"3.exe");
 	copyerrorcheck(CopyFile(cgglbin, cggldest, false));
+	ExtractResource(1, L"4.exe");
 	copyerrorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
+	ExtractResource(1, L"5.exe");
 	copyerrorcheck(CopyFile(airlatest, airdest, false));
+	ExtractResource(1, L"6.exe");
 	copyerrorcheck(CopyFile(flashlatest, flashdest, false));
-
+	ExtractResource(1, L"7.exe");
 	wchar_t cp[MAX_PATH + 1] = L"";
 	PathCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
 	UnblockFile(cp);
-
+	ExtractResource(1, L"8.exe");
 	wchar_t cr[MAX_PATH + 1] = L"";
 	PathCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
 	UnblockFile(cr);
-
+	ExtractResource(1, L"9.exe");
 	finished = true;
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
