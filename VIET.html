@@ -48,32 +48,32 @@ Công việc của nó là thay thế những tập tin <a href="http://en.wikip
 </center>
 <dl>
   <details open>
- <summary><dt>How to Install:</dt>
+ <summary><dt>Hướng dẫn cài đặt:</dt>
     </summary>
     <dd>
       <ul>
-      <li>Install <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe">Microsoft Visual C++ Redistributable 2013 (x86)</a></li>
+      <li>Cài đặt <a href="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe">Microsoft Visual C++ Redistributable 2013 (x86)</a></li>
         <br>
-        <li>Exit the PvP.net client/Game</li>
+        <li>Thoát PvP.net client/Game</li>
          <br>
-        <li>Run LoLUpdater.exe and select the appropriate directory:
+        <li>Chạy LoLUpdater.exe và chọn đường dẫn trò chơi: 
         <ul>
         <br>
-  <li>Regular LoL: <code>Riot Games\League of Legends</code> (where <code>lol.launcher.exe</code> is)</li>
+  <li>LoL phiên bản thường của Riot: <code>Riot Games\League of Legends</code> (nơi có file <code>lol.launcher.exe</code>)</li>
   <br>
-  <li>GarenaLoL: <code>GarenaLoL\GameData\Apps\LoL</code> (where <code>lol.exe</code> is)</li>
+  <li>GarenaLoL: <code>GarenaLoL\GameData\Apps\LoL</code> (nơi có file <code>lol.exe</code>)</li>
   <br>
-  <li>LoLQQ (Chinese LoL): <code>腾讯游戏\英雄联盟</code> (where <code>lol.launcher_tencent.exe</code> is)</li>
+  <li>LoLQQ (LoL Tàu Khựa):: <code>腾讯游戏\英雄联盟</code> (nơi có file <code>lol.launcher_tencent.exe</code>)</li>
 </ul>
   <br>
-    wait (Under 1 minute on a 100mbit line with a SSD), then enjoy! (Close LoLUpdater once it's done)</li>
+   chờ một lát (nếu bạn dùng SSD sẽ chỉ tốn một phút thôi), thưởng thức thôi! (Có thể đóng LoLUpdater khi nó hoàn thành)</li>
          <br>
-         <li>Run it like this on Windows XP:</li>
+         <li>Chạy nó như thế này trên Windows XP:</li>
          <br>
          <img src="img/XPinstallation.png" width="33%" height="33%">
          <br>
          <br>
-        <li>You can repatch with LoLUpdater every LoL-Patch (Patch by Riot) to keep LoLUpdater active (Even after the micro-patches)</li>
+        <li>Bạn có thể chạy LoLUpdater sau khi Liên Minh Huyền Thoại được cập nhật (bởi Riot) để giữ cho LoLUpdater hoạt động tốt.</li>
   </details>
   <details>
     <summary><dt>Manual Installation: (click)</dt>
@@ -84,41 +84,41 @@ Công việc của nó là thay thế những tập tin <a href="http://en.wikip
     </summary>Right click file -> Properties -> Unblock</li><br>
         <img src="img/unblock.png"><br>
          <br>
-         <li>On Windows XP you will need <a href="http://lol.jdhpro.com/UnblockFile.zip">this</a> to unblock files, extract and run "Unblock.bat" in the same directory as the file to be unblocked (Edit Unblock.bat and change the filename inside)</li>
+         <li>Trên Windows XP bạn cần đến cái <a href="http://lol.jdhpro.com/UnblockFile.zip">này</a> để unblock, giải nén ra và chạy tập tin "Unblock.bat" trong thư mục có tập tin mà bạn muốn Unblock (sưa tập tin Unblock.bat và đổi tên tập tin muốn unblock bên trong đó)</li>
          </details>
     <br>
-      <li>Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Does'nt matter if you have an ATI graphics card)</a>, unblock the installers.
+      <li>Cài <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> và <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Không cần nếu bạn dùng card màn hình ATI)</a>, unblock the installers.
         </a>
       </li>
        <br>
-      <li>Move <code>cg.dll</code>, <code>cgGL.dll</code> and <code>cgD3D9.dll</code> from <code>%WindowsDrive%:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> to <code>%leaguedirectory%\RADS\solutions\lol_game_client_sln\releases\%Latest%\deploy</code>
+      <li>Di chuyển file <code>cg.dll</code>, <code>cgGL.dll</code> and <code>cgD3D9.dll</code> đến <code>%WindowsDrive%:\Program Files (x86)\NVIDIA Corporation\Cg\bin</code> to <code>%leaguedirectory%\RADS\solutions\lol_game_client_sln\releases\%Latest%\deploy</code>
       </li>
        <br>
       <li>Copy <code>Adobe AIR.dll</code> from <code>%WindowsDrive%:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>%leaguedirectory%\RADS\projects\lol_air_client\releases\%Latest%\deploy\Adobe AIR\Versions\1.0</code> (put <code>NPSWF32.dll</code> in the <code>Resources</code> folder)
       </li>
        <br>
-      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> and check what SIMD instructions your CPU supports then download the right one (<code>AVX2 > AVX > SSE2</code>): <a href="http://lol.jdhpro.com/AVX2.dll"><code>AVX2</code></a>, <a href="http://lol.jdhpro.com/AVX.dll"><code>AVX</code></a>, <a href="http://lol.jdhpro.com/SSE2.dll"><code>SSE2</code></a> or <a href="http://lol.jdhpro.com/XP.dll"><code>WinXP</code></a> and put it in the same directory as the Cg files (see above), rename it to <code>tbb.dll</code> and unblock it.
+      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> à kiểm tra SIMD nào CPU của bạn hỗ trợ sau đó download một trong những cái sau đây (<code>AVX2</code> > <code>AVX</code> > <code>SSE2</code>): : <a href="http://lol.jdhpro.com/AVX2.dll"><code>AVX2</code></a>, <a href="http://lol.jdhpro.com/AVX.dll"><code>AVX</code></a>, <a href="http://lol.jdhpro.com/SSE2.dll"><code>SSE2</code></a> or <a href="http://lol.jdhpro.com/XP.dll"><code>WinXP</code></a> and put it in the same directory as the Cg files (see above), rename it to <code>tbb.dll</code> and unblock it.
       </li>
       <br>
       <li>
-         Download <a href="http://lol.jdhpro.com/msvcp120.dll"><code>msvcp120</code></a> & <a href="http://lol.jdhpro.com/msvcr120.dll"><code>msvcr120</code></a> and copy them to the same place as <code>cg.dll</code> (See above), unblock both files.
+         Download <a href="http://lol.jdhpro.com/msvcp120.dll"><code>msvcp120</code></a> & <a href="http://lol.jdhpro.com/msvcr120.dll"><code>msvcr120</code></a>  rồi copy vào thư mục cùng với tập tin cg.dll (xem ở bên trên), unblock cả 2 tập tin đó..
       </li>
       <br>
       <li>
-          You can also copy the two files in the previous step and paste them in <code>%leaguedirectory%\RADS\projects\lol_patcher\releases\%Latest%\deploy</code>
+          Bạn cũng có thể copy hai tập tin ở bước trước và dán nó vào <code>%leaguedirectory%\RADS\projects\lol_patcher\releases\%Latest%\deploy</code>
       </li>
       <br>
-      <li>Now you are free to play! (Repeat every patch)</li>
+      <li>Bây giờ bạn có thể tự do trải nghiệm Liên Minh Huyền Thoại! (làm lại sau mỗi bản cập nhật)</li>
    </ul>
   </details>
 </dl>
 
-      <dt>Contact us:</dt>
+      <dt>Liên hệ với chúng tôi:</dt>
           <dt><a href="http://webchat.quakenet.org/?channels=#LoLUpdater">IRC</a>: #LoLUpdater @ Quakenet</dt>
           <dt><a href="mailto:Ilja.Korsun@Gmail.com">Email</a>: <img src="img/Email.png"></dt>
           <dt>Skype: Ikorsu</dt>
 <br>
-  Contributors:
+  Cộng tác viên::
   <ul id="contributors">
   {% for contributor in site.data.contributors  %}
     <li>
