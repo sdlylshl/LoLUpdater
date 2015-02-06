@@ -146,9 +146,10 @@ void altClient()
 	PathCombine(airclient, loldir, garenaair);
 }
 
+// This function fails for one guy running 8.1 x64 (pt-pt)
 std::wstring findlatest(std::wstring const& folder)
 {
-	wchar_t data[MAX_PATH+1] = {0};
+	std::wstring data;
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 	wchar_t search[MAX_PATH + 1] = { 0 };
@@ -172,7 +173,7 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		wcsncat_s(data, INTERNET_MAX_URL_LENGTH, newest.info.cFileName, _TRUNCATE);
+		data += newest.info.cFileName;
 		FindClose(hFind);
 	}
 	return data;
