@@ -1,5 +1,7 @@
 [Website](http://LoLUpdater.com)
 
+Files changed by LoLUpdater:
+
 msvcp120.dll is the 32bit clr version (From the VS 12 CTP) without any versioninfo 
 
 msvcr120.dll is the 32bit clr version (From the VS 12 CTP) without any version info
