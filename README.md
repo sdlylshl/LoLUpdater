@@ -1,5 +1,6 @@
 LoLUpdater
 ==========
+LoLUpdater is an attempt to increase FPS in the game League of Legends, also upgrades the dependencies of the pvpnet client.
 
 Files changed by LoLUpdater:
 ----------------------------
