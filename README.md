@@ -14,6 +14,6 @@ The adobe air/flash files are installed by downloading the latest adobe air beta
 
 The Cg DLLs are installed using the latest (Although CG is now deprecated) installer (This installer is embedded in the project)
 [Cg Toolkit 3.1 - April 2012 (3.1.0013)](http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe)  
-</br>
-</br>
+<br />
+<br />
 [LoLUpdater Website](http://LoLUpdater.com)
