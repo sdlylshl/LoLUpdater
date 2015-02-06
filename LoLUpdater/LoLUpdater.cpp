@@ -160,11 +160,6 @@ void PAppend(LPTSTR pszPath, LPCTSTR pszMore)
 		throw std::runtime_error("failed to append path");
 }
 
-void SSE2()
-{
-	wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
-}
-
 void threadingbuildingblocks()
 {
 	wchar_t tbb[MAX_PATH + 1] = {0};
@@ -191,22 +186,13 @@ void threadingbuildingblocks()
 		{
 			int cpuInfo[4];
 			__cpuid(cpuInfo, 1);
-
-			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false))
+			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
 			{
-				auto xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
-				if ((xcrFeatureMask & 0x6) || false)
-				{
 					wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
-				}
-				else
-				{
-					SSE2();
-				}
 			}
 			else
 			{
-				SSE2();
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
 			}
 		}
 	}
