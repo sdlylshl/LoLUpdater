@@ -7,6 +7,7 @@
 #include <thread>
 #include <wininet.h>
 #include <fstream>
+#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -41,7 +42,6 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB
 bool finished = false;
 wchar_t loldir[MAX_PATH+1];
 
-wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
 
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
@@ -71,7 +71,7 @@ void errorcheck(BOOL res)
 		throw std::runtime_error("failed to copy/unblock file");
 }
 
-void UnblockFile(std::wstring filename)
+void UnblockFile(std::wstring const& filename)
 {
 	errorcheck(DeleteFile(std::wstring(loldir + filename + unblocktag).c_str()));
 }
@@ -154,10 +154,10 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-std::wstring findlatest(std::wstring folder)
+std::wstring findlatest(std::wstring const& folder)
 {
 	std::wstring data;
-	std::wstring search = { folder + +L"\\*" };
+	std::wstring search = { folder + L"\\*" };
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 
@@ -260,6 +260,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread t{AdobeAirDL};
 	t.join();
 
+	wchar_t* cwd(_wgetcwd(nullptr, 0));
+
 	wchar_t runair[MAX_PATH+1] = {0};
 	PCombine(runair, cwd, airsetup.c_str());
 	errorcheck(DeleteFile(std::wstring(runair + unblocktag).c_str()));
@@ -284,7 +286,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	errorcheck(DeleteFile(airsetup.c_str()));
 	wchar_t progdrive[MAX_PATH+1];
-	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) == S_OK)
+	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
 	{
 		throw std::runtime_error("failed to get path");
 	}
