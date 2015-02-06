@@ -186,7 +186,7 @@ void threadingbuildingblocks()
 			__cpuid(cpuInfo, 1);
 			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
 			{
-					wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
 			}
 			else
 			{
@@ -227,7 +227,7 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		data = + newest.info.cFileName;
+		data = +newest.info.cFileName;
 		errorcheck(FindClose(hFind));
 	}
 	else
@@ -253,12 +253,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		if (hdc == nullptr)
 			throw std::runtime_error("Nothing to render in");
 
-		if(DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
+		if (DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
 			throw std::runtime_error("failed to draw text");
 
 		if (finished)
 		{
-			if(DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
+			if (DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
 		}
 		EndPaint(hwnd, &ps);
