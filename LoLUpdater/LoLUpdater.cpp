@@ -1,4 +1,4 @@
-// Minimum supported processor = Intel Pentium 4 or equivalent (With SSE2)
+// Minimum supported processor = Intel Pentium 4
 // Supported Windows Versions: Windows XP -> Windows 8.1
 
 #include <sstream>
@@ -10,8 +10,6 @@
 #include <stdint.h>
 #include <intrin.h>
 #include <Windows.h>
-
-#include <iostream>
 
 class CLimitSingleInstance
 {
@@ -190,31 +188,31 @@ void threadingbuildingblocks()
 	else
 	{
 
-		if (!can_use_intel_core_4th_gen_features())
+		if (can_use_intel_core_4th_gen_features())
 		{
-				int cpuInfo[4];
-				__cpuid(cpuInfo, 1);
+			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+		}
+		else
+		{
+			int cpuInfo[4];
+			__cpuid(cpuInfo, 1);
 
-				if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false))
+			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false))
+			{
+				auto xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
+				if ((xcrFeatureMask & 0x6) || false)
 				{
-					auto xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
-					if((xcrFeatureMask & 0x6) || false)
-					{
-						wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
-					}
-					else
-					{
-						SSE2();
-					}
+					wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
 				}
 				else
 				{
 					SSE2();
 				}
-		}
-		else
-		{
-			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+			}
+			else
+			{
+				SSE2();
+			}
 		}
 	}
 	if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
@@ -477,11 +475,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PAppend(airclient, dep);
 	PAppend(airclient, adobedir.c_str());
 
-	std::wstring input = airclient;
-	std::wcin >> input;
-	std::wofstream out("output.txt");
-	out << input;
-	out.close();
 	wchar_t airdest[MAX_PATH+1] = {0};
 	auto air = L"Adobe AIR.dll";
 	PCombine(airdest, airclient, air);
