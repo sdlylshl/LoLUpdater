@@ -57,7 +57,12 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void AdobeAirDL()
 {
-	downloadFile(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/air16_win.exe", airsetup.c_str());
+	wchar_t finalurl1[INTERNET_MAX_URL_LENGTH] = { 0 };
+	DWORD dwLength1 = sizeof(finalurl1);
+	wchar_t airupdate[INTERNET_MAX_URL_LENGTH] = { 0 };
+	wcsncat_s(airupdate, INTERNET_MAX_URL_LENGTH, airsetup.c_str(), _TRUNCATE);
+	UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airupdate, finalurl1, &dwLength1, 0);
+	downloadFile(finalurl1, airsetup.c_str());
 }
 
 void copyerrorcheck(BOOL res)
