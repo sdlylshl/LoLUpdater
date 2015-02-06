@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread t{AdobeAirDL};
 	t.join();
 
-	wchar_t* cwd(_wgetcwd(nullptr, 0));
+	auto cwd(_wgetcwd(nullptr, 0));
 
 	wchar_t runair[MAX_PATH+1] = {0};
 	PCombine(runair, cwd, airsetup.c_str());
@@ -284,7 +284,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			DispatchMessage(&Msg);
 		}
 	}
-	errorcheck(DeleteFile(airsetup.c_str()));
+
+	errorcheck(DeleteFile(runair));
 	wchar_t progdrive[MAX_PATH+1];
 	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
 	{
@@ -316,7 +317,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		}
 	}
 
-	errorcheck(DeleteFile(cgsetup.c_str()));
+	errorcheck(DeleteFile(runcg));
 	wchar_t cgbinpath[MAX_PATH+1];
 	if(GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1) == NULL)
 	{
