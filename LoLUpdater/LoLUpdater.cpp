@@ -157,10 +157,10 @@ void threadingbuildingblocks()
 
 std::wstring findlatest(std::wstring const& folder)
 {
-	std::wstring data;
+	std::wstring data = {0};
 	std::wstring search = { folder + L"\\*" };
-	HANDLE hFind;
-	WIN32_FIND_DATA data2;
+	HANDLE hFind ={0};
+	WIN32_FIND_DATA data2 = {0};
 
 	hFind = FindFirstFile(search.c_str(), &data2);
 	if (hFind != INVALID_HANDLE_VALUE)
@@ -265,11 +265,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t runair[MAX_PATH+1] = {0};
 	PCombine(runair, cwd, airsetup.c_str());
-	std::wstring input = runair;
-	std::wcin >> input;
-	std::wofstream out("output.txt");
-	out << input;
-	out.close();
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei = {};
@@ -330,9 +325,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get environmental variable path");
 	}
 
-	wchar_t adobedir[MAX_PATH+1] = L"Adobe AIR\\Versions\\1.0";
+	std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
 	wchar_t adobepath[MAX_PATH+1] = {0};
-	PCombine(adobepath, progdrive, adobedir);
+	PCombine(adobepath, progdrive, adobedir.c_str());
 
 	wchar_t instdir[MAX_PATH+1] = {0};
 	PCombine(instdir, loldir, L"lol.exe");
@@ -350,6 +345,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t airclient[MAX_PATH+1] = { 0 };
 	wchar_t patchclient[MAX_PATH+1] = { 0 };
+
+	wchar_t cp[MAX_PATH + 1] = { 0 };
+	wchar_t cr[MAX_PATH + 1] = { 0 };
 
 	if (std::wifstream(instdir).fail() & std::wifstream(instdirDefault).good() & std::wifstream(instdirCN).fail())
 	{
@@ -373,24 +371,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PAppend(patchclient, findlatest(patchclient).c_str());
 		PAppend(patchclient, dep);
 
-		wchar_t cp1[MAX_PATH+1] = L"";
-		PCombine(cp1, patchclient, cpp.c_str());
-		ExtractResource(2, cp1);
-		UnblockFile(cp1);
+		PCombine(cp, patchclient, cpp.c_str());
+		ExtractResource(2, cp);
+		UnblockFile(cp);
 
-		wchar_t cr1[MAX_PATH+1] = L"";
-		PCombine(cr1, patchclient, cpr.c_str());
-		ExtractResource(3, cr1);
-		UnblockFile(cr1);
+		PCombine(cr, patchclient, cpr.c_str());
+		ExtractResource(3, cr);
+		UnblockFile(cr);
 	}
 	else
 	{
 		if (std::wifstream(instdir).good() || std::wifstream(instdirCN).good())
 		{
 			PCombine(gameclient, loldir, L"Game");
-			wchar_t garenaair[MAX_PATH+1] = L"Air\\";
-			wcsncat_s(garenaair, MAX_PATH+1, adobedir, _TRUNCATE);
-			PCombine(airclient, loldir, garenaair);
+			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
 		}
 		else
 			throw std::runtime_error("Unable to determine LoL version");
@@ -410,8 +404,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	PAppend(airclient, findlatest(airclient).c_str());
 	PAppend(airclient, dep);
-	PAppend(airclient, adobedir);
+	PAppend(airclient, adobedir.c_str());
 
+	std::wstring input = airclient;
+	std::wcin >> input;
+	std::wofstream out("output.txt");
+	out << input;
+	out.close();
 	wchar_t airdest[MAX_PATH+1] = {0};
 	auto air = L"Adobe AIR.dll";
 	PCombine(airdest, airclient, air);
@@ -449,12 +448,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	errorcheck(CopyFile(airlatest, airdest, false));
 	errorcheck(CopyFile(flashlatest, flashdest, false));
 
-	wchar_t cp[MAX_PATH+1] = L"";
+	*cp = '\0';
 	PCombine(cp, gameclient, cpp.c_str());
 	ExtractResource(2, cp);
 	UnblockFile(cp);
 
-	wchar_t cr[MAX_PATH+1] = L"";
+	*cr = '\0';
 	PCombine(cr, gameclient, cpr.c_str());
 	ExtractResource(3, cr);
 	UnblockFile(cr);
