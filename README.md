@@ -13,7 +13,6 @@ tbb.dll is built with the project settings here in the repo, then with the versi
 The adobe air/flash files are installed by downloading the latest adobe air beta installer (url has to be changed manually from code every major update), currently using [Adobe Air Beta 17](http://labs.adobe.com/downloads/air.html)
 
 The Cg DLLs are installed using the latest (Although CG is now deprecated) installer (This installer is embedded in the project)
-[Cg Toolkit 3.1 - April 2012 (3.1.0013)](http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe)
+[Cg Toolkit 3.1 - April 2012 (3.1.0013)](http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe)  
 
-<p></p>
 [LoLUpdater Website](http://LoLUpdater.com)
