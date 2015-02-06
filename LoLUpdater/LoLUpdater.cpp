@@ -1,5 +1,5 @@
 // Minimum supported processor = Intel Pentium 4
-// Supported Windows Versions: Windows XP -> Windows 8.1
+// Supported Windows Versions: Windows XP SP3 -> Windows 8.1
 
 #include <sstream>
 #include <Shlwapi.h>
