@@ -7,7 +7,6 @@
 #include <thread>
 #include <wininet.h>
 #include <fstream>
-#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -48,9 +47,7 @@ const std::wstring unblocktag = L":Zone.Identifier";
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
 
-const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = {0};
-wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -140,14 +137,13 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-std::wstring findlatest(std::wstring folder)
+std::wstring findlatest(wchar_t folder)
 {
-	wchar_t data[MAX_PATH + 1] = { 0 };
-	wchar_t search[MAX_PATH + 1] = { 0 };
+	std::wstring data;
+	wchar_t search[MAX_PATH + 1] = { folder };
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 
-	wcsncat_s(search, MAX_PATH + 1, folder.c_str(), _TRUNCATE);
 	wcsncat_s(search, MAX_PATH + 1, L"\\*", _TRUNCATE);
 	hFind = FindFirstFile(search, &data2);
 	if (hFind != INVALID_HANDLE_VALUE)
@@ -167,7 +163,7 @@ std::wstring findlatest(std::wstring folder)
 				newest.info = data2;
 			}
 		}
-		wcsncat_s(data, INTERNET_MAX_URL_LENGTH, newest.info.cFileName, _TRUNCATE);
+		data =+ newest.info.cFileName;
 		FindClose(hFind);
 	}
 	return data;
@@ -255,6 +251,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t progdrive[MAX_PATH + 1];
 	SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive);
 
+	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	ExtractResource(1, cgsetup.c_str());
 	wchar_t runcg[MAX_PATH + 1] = {0};
 	PathCombine(runcg, cwd, cgsetup.c_str());
@@ -283,6 +280,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1);
 
+	const wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
 	wchar_t adobepath[MAX_PATH + 1] = {0};
 	PathCombine(adobepath, progdrive, adobedir);
 
@@ -295,12 +293,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t instdirDefault[MAX_PATH + 1] = {0};
 	PathCombine(instdirDefault, loldir, L"lol.launcher.exe");
 
-	wchar_t patchclient[MAX_PATH + 1] = {0};
-
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
-	wchar_t dep[MAX_PATH+1] = L"deploy";
+
+	const wchar_t dep[MAX_PATH+1] = L"deploy";
+
 	wchar_t airclient[MAX_PATH + 1] = { 0 };
+	wchar_t patchclient[MAX_PATH + 1] = { 0 };
 
 	if (std::wifstream(instdir).fail() & std::wifstream(instdirDefault).good() & std::wifstream(instdirCN).fail())
 	{
