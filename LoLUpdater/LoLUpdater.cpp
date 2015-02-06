@@ -43,6 +43,7 @@ bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
 wchar_t unblocker[MAX_PATH + 1] = { 0 };
 wchar_t data[MAX_PATH + 1] = { 0 };
+wchar_t search[MAX_PATH + 1] = { 0 };
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
 
@@ -145,9 +146,10 @@ void threadingbuildingblocks()
 std::wstring findlatest(std::wstring const& folder)
 {
 	*data = '\0';
+	*search = '\0';
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
-	wchar_t search[MAX_PATH + 1] = { 0 };
+	
 	wcsncat_s(search, MAX_PATH + 1, folder.c_str(), _TRUNCATE);
 	wcsncat_s(search, MAX_PATH + 1, L"\\*", _TRUNCATE);
 	hFind = FindFirstFile(search, &data2);
