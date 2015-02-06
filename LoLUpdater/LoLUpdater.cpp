@@ -155,12 +155,12 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-std::wstring findlatest(std::wstring const& folder)
+std::wstring findlatest(std::wstring folder)
 {
-	std::wstring data = {0};
+	std::wstring data;
 	std::wstring search = { folder + L"\\*" };
-	HANDLE hFind ={0};
-	WIN32_FIND_DATA data2 = {0};
+	HANDLE hFind;
+	WIN32_FIND_DATA data2;
 
 	hFind = FindFirstFile(search.c_str(), &data2);
 	if (hFind != INVALID_HANDLE_VALUE)
@@ -181,7 +181,7 @@ std::wstring findlatest(std::wstring const& folder)
 			}
 		}
 		data =+ newest.info.cFileName;
-		FindClose(hFind);
+		errorcheck(FindClose(hFind));
 	}
 	else
 		throw std::runtime_error("failed to find file/directory");
@@ -293,6 +293,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get path");
 	}
 
+	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
+	wchar_t adobepath[MAX_PATH + 1] = { 0 };
+	PCombine(adobepath, progdrive, adobedir.c_str());
+
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	ExtractResource(1, cgsetup.c_str());
 	wchar_t runcg[MAX_PATH+1] = {0};
@@ -325,18 +329,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get environmental variable path");
 	}
 
-	std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-	wchar_t adobepath[MAX_PATH+1] = {0};
-	PCombine(adobepath, progdrive, adobedir.c_str());
-
-	wchar_t instdir[MAX_PATH+1] = {0};
-	PCombine(instdir, loldir, L"lol.exe");
+	wchar_t instdirGarena[MAX_PATH+1] = {0};
+	PCombine(instdirGarena, loldir, L"lol.exe");
 
 	wchar_t instdirCN[MAX_PATH+1] = {0};
 	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
 
-	wchar_t instdirDefault[MAX_PATH+1] = {0};
-	PCombine(instdirDefault, loldir, L"lol.launcher.exe");
+	wchar_t instdir[MAX_PATH+1] = {0};
+	PCombine(instdir, loldir, L"lol.launcher.exe");
 
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
@@ -349,7 +349,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t cp[MAX_PATH + 1] = { 0 };
 	wchar_t cr[MAX_PATH + 1] = { 0 };
 
-	if (std::wifstream(instdir).fail() & std::wifstream(instdirDefault).good() & std::wifstream(instdirCN).fail())
+	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
 		auto rads = L"RADS";
 		PCombine(airclient, loldir, rads);
@@ -381,7 +381,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	else
 	{
-		if (std::wifstream(instdir).good() || std::wifstream(instdirCN).good())
+		if (std::wifstream(instdirGarena).good() || std::wifstream(instdirCN).good())
 		{
 			PCombine(gameclient, loldir, L"Game");
 			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
