@@ -7,7 +7,10 @@
 #include <thread>
 #include <wininet.h>
 #include <fstream>
+#include <stdint.h>
+#include <intrin.h>
 #include <Windows.h>
+
 #include <iostream>
 
 class CLimitSingleInstance
@@ -20,6 +23,9 @@ public:
 	explicit CLimitSingleInstance(std::wstring const& strMutexName)
 	{
 		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
+		if (m_hMutex == nullptr)
+			throw std::runtime_error("failed to create mutex");
+
 		m_dwLastError = GetLastError();
 	}
 
@@ -27,7 +33,9 @@ public:
 	{
 		if (m_hMutex)
 		{
-			CloseHandle(m_hMutex);
+			if(CloseHandle(m_hMutex) == NULL)
+				throw std::runtime_error("failed to close handle");
+
 			m_hMutex = nullptr;
 		}
 	}
@@ -49,20 +57,71 @@ const std::wstring unblocktag = L":Zone.Identifier";
 const std::wstring airsetup = L"air17_win.exe";
 
 wchar_t gameclient[MAX_PATH+1] = {0};
+wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
+
+void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
+{
+	__cpuidex(abcd, eax, ecx);
+}
+
+int check_xcr0_ymm()
+{
+	uint32_t xcr0;
+	xcr0 = static_cast<uint32_t>(_xgetbv(0));
+	return ((xcr0 & 6) == 6);
+}
+
+
+int check_4th_gen_intel_core_features()
+{
+	int abcd[4];
+	uint32_t fma_movbe_osxsave_mask = ((1 << 12) | (1 << 22) | (1 << 27));
+	uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
+
+	run_cpuid(1, 0, abcd);
+	if ((abcd[2] & fma_movbe_osxsave_mask) != fma_movbe_osxsave_mask)
+		return 0;
+
+	if (!check_xcr0_ymm())
+		return 0;
+
+	run_cpuid(7, 0, abcd);
+	if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
+		return 0;
+
+	run_cpuid(0x80000001, 0, abcd);
+	if ((abcd[2] & (1 << 5)) == 0)
+		return 0;
+
+	return 1;
+}
+
+
+static int can_use_intel_core_4th_gen_features()
+{
+	static auto the_4th_gen_features_available = -1;
+	if (the_4th_gen_features_available < 0)
+		the_4th_gen_features_available = check_4th_gen_intel_core_features();
+
+	return the_4th_gen_features_available;
+}
+
+
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
 	if (!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
-	{
 		throw std::runtime_error("failed to initialize download");
-	}
 }
 
 void AdobeAirDL()
 {
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
 	DWORD dwLength = sizeof(finalurl);
-	UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airsetup.c_str(), finalurl, &dwLength, 0);
+
+	if (UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airsetup.c_str(), finalurl, &dwLength, 0) != S_OK)
+		throw std::runtime_error("failed to combine Url");
+
 	downloadFile(finalurl, airsetup.c_str());
 }
 
@@ -81,29 +140,35 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 {
 	FILE* f;
 	auto hRes = FindResource(nullptr, MAKEINTRESOURCE(RCDATAID), RT_RCDATA);
+
 	if (hRes == nullptr)
-	{
 		throw std::runtime_error("failed to find resource");
-	}
-	_wfopen_s(&f, filename.c_str(), L"wb");
-	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
-	fclose(f);
+
+	if(_wfopen_s(&f, filename.c_str(), L"wb") != NULL)
+		throw std::runtime_error("failed to open resource");
+
+	if (fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f) == NULL)
+		throw std::runtime_error("failed to write resource");
+	
+	if(fclose(f) != NULL)
+		throw std::runtime_error("failed to close resource");
 }
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
 {
 	if (PathCombine(pszPathOut, pszPathIn, pszMore) == nullptr)
-	{
 		throw std::runtime_error("failed to combine path");
-	}
 }
 
 void PAppend(LPTSTR pszPath, LPCTSTR pszMore)
 {
 	if (PathAppend(pszPath, pszMore) == NULL)
-	{
 		throw std::runtime_error("failed to append path");
-	}
+}
+
+void SSE2()
+{
+	wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
 }
 
 void threadingbuildingblocks()
@@ -113,7 +178,6 @@ void threadingbuildingblocks()
 
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
 	DWORD dwLength = sizeof(finalurl);
-	wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 
 	OSVERSIONINFO osvi{};
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -125,22 +189,28 @@ void threadingbuildingblocks()
 	}
 	else
 	{
-		int abcd[4];
-		uint32_t avx2_bmi12_mask = (1 << 5) | (1 << 3) | (1 << 8);
 
-		__cpuidex(abcd, 7, 0);
-		if ((abcd[1] & avx2_bmi12_mask) != avx2_bmi12_mask)
+		if (!can_use_intel_core_4th_gen_features())
 		{
-			int cpuInfo[4];
-			__cpuid(cpuInfo, 1);
-			if (((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false)) && ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 6))
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
-			}
-			else
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
-			}
+				int cpuInfo[4];
+				__cpuid(cpuInfo, 1);
+
+				if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false))
+				{
+					auto xcrFeatureMask = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
+					if((xcrFeatureMask & 0x6) || false)
+					{
+						wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
+					}
+					else
+					{
+						SSE2();
+					}
+				}
+				else
+				{
+					SSE2();
+				}
 		}
 		else
 		{
@@ -155,7 +225,8 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-std::wstring findlatest(std::wstring folder)
+
+std::wstring findlatest(std::wstring const& folder)
 {
 	std::wstring data;
 	std::wstring search = { folder + L"\\*" };
