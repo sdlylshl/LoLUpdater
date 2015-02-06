@@ -31,7 +31,7 @@ public:
 	{
 		if (m_hMutex)
 		{
-			if(CloseHandle(m_hMutex) == NULL)
+			if (CloseHandle(m_hMutex) == NULL)
 				throw std::runtime_error("failed to close handle");
 
 			m_hMutex = nullptr;
@@ -47,15 +47,15 @@ public:
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
 bool finished = false;
-wchar_t loldir[MAX_PATH+1];
+wchar_t loldir[MAX_PATH + 1];
 
 const std::wstring unblocktag = L":Zone.Identifier";
 
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
 
-wchar_t gameclient[MAX_PATH+1] = {0};
-wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
+wchar_t gameclient[MAX_PATH + 1] = {0};
+wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -68,7 +68,6 @@ int check_xcr0_ymm()
 	xcr0 = static_cast<uint32_t>(_xgetbv(0));
 	return ((xcr0 & 6) == 6);
 }
-
 
 int check_4th_gen_intel_core_features()
 {
@@ -94,7 +93,6 @@ int check_4th_gen_intel_core_features()
 	return 1;
 }
 
-
 static int can_use_intel_core_4th_gen_features()
 {
 	static auto the_4th_gen_features_available = -1;
@@ -103,8 +101,6 @@ static int can_use_intel_core_4th_gen_features()
 
 	return the_4th_gen_features_available;
 }
-
-
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -142,13 +138,13 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	if (hRes == nullptr)
 		throw std::runtime_error("failed to find resource");
 
-	if(_wfopen_s(&f, filename.c_str(), L"wb") != NULL)
+	if (_wfopen_s(&f, filename.c_str(), L"wb") != NULL)
 		throw std::runtime_error("failed to open resource");
 
 	if (fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f) == NULL)
 		throw std::runtime_error("failed to write resource");
-	
-	if(fclose(f) != NULL)
+
+	if (fclose(f) != NULL)
 		throw std::runtime_error("failed to close resource");
 }
 
@@ -171,7 +167,7 @@ void SSE2()
 
 void threadingbuildingblocks()
 {
-	wchar_t tbb[MAX_PATH+1] = {0};
+	wchar_t tbb[MAX_PATH + 1] = {0};
 	PCombine(tbb, gameclient, L"tbb.dll");
 
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
@@ -187,7 +183,6 @@ void threadingbuildingblocks()
 	}
 	else
 	{
-
 		if (can_use_intel_core_4th_gen_features())
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
@@ -223,11 +218,10 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-
 std::wstring findlatest(std::wstring const& folder)
 {
 	std::wstring data;
-	std::wstring search = { folder + L"\\*" };
+	std::wstring search = {folder + L"\\*"};
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 
@@ -249,7 +243,7 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		data =+ newest.info.cFileName;
+		data = + newest.info.cFileName;
 		errorcheck(FindClose(hFind));
 	}
 	else
@@ -301,13 +295,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
-	if(RegisterClassEx(&wc) == NULL)
+	if (RegisterClassEx(&wc) == NULL)
 	{
 		throw std::runtime_error("failed to register windowclass");
 	}
 
 	auto hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
-	
+
 	if (hwnd == nullptr)
 	{
 		throw std::runtime_error("failed to create window");
@@ -332,7 +326,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	auto cwd(_wgetcwd(nullptr, 0));
 
-	wchar_t runair[MAX_PATH+1] = {0};
+	wchar_t runair[MAX_PATH + 1] = {0};
 	PCombine(runair, cwd, airsetup.c_str());
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
 
@@ -356,19 +350,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 	errorcheck(DeleteFile(runair));
-	wchar_t progdrive[MAX_PATH+1];
+	wchar_t progdrive[MAX_PATH + 1];
 	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
 	{
 		throw std::runtime_error("failed to get path");
 	}
 
 	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-	wchar_t adobepath[MAX_PATH + 1] = { 0 };
+	wchar_t adobepath[MAX_PATH + 1] = {0};
 	PCombine(adobepath, progdrive, adobedir.c_str());
 
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	ExtractResource(1, cgsetup.c_str());
-	wchar_t runcg[MAX_PATH+1] = {0};
+	wchar_t runcg[MAX_PATH + 1] = {0};
 	PCombine(runcg, cwd, cgsetup.c_str());
 	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 
@@ -392,31 +386,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 	errorcheck(DeleteFile(runcg));
-	wchar_t cgbinpath[MAX_PATH+1];
-	if(GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH+1) == NULL)
+	wchar_t cgbinpath[MAX_PATH + 1];
+	if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
 	{
 		throw std::runtime_error("failed to get environmental variable path");
 	}
 
-	wchar_t instdirGarena[MAX_PATH+1] = {0};
+	wchar_t instdirGarena[MAX_PATH + 1] = {0};
 	PCombine(instdirGarena, loldir, L"lol.exe");
 
-	wchar_t instdirCN[MAX_PATH+1] = {0};
+	wchar_t instdirCN[MAX_PATH + 1] = {0};
 	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
 
-	wchar_t instdir[MAX_PATH+1] = {0};
+	wchar_t instdir[MAX_PATH + 1] = {0};
 	PCombine(instdir, loldir, L"lol.launcher.exe");
 
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
 
-	wchar_t dep[MAX_PATH+1] = L"deploy";
+	wchar_t dep[MAX_PATH + 1] = L"deploy";
 
-	wchar_t airclient[MAX_PATH+1] = { 0 };
-	wchar_t patchclient[MAX_PATH+1] = { 0 };
+	wchar_t airclient[MAX_PATH + 1] = {0};
+	wchar_t patchclient[MAX_PATH + 1] = {0};
 
-	wchar_t cp[MAX_PATH + 1] = { 0 };
-	wchar_t cr[MAX_PATH + 1] = { 0 };
+	wchar_t cp[MAX_PATH + 1] = {0};
+	wchar_t cr[MAX_PATH + 1] = {0};
 
 	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
@@ -459,15 +453,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			throw std::runtime_error("Unable to determine LoL version");
 	}
 
-	wchar_t cgbin[MAX_PATH+1] = {0};
+	wchar_t cgbin[MAX_PATH + 1] = {0};
 	auto cg = L"cg.dll";
 	PCombine(cgbin, cgbinpath, cg);
 
-	wchar_t cgglbin[MAX_PATH+1] = {0};
+	wchar_t cgglbin[MAX_PATH + 1] = {0};
 	auto cggl = L"cgGL.dll";
 	PCombine(cgglbin, cgbinpath, cggl);
 
-	wchar_t cgd3d9bin[MAX_PATH+1] = {0};
+	wchar_t cgd3d9bin[MAX_PATH + 1] = {0};
 	auto cgd3d9 = L"cgD3D9.dll";
 	PCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
@@ -475,32 +469,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PAppend(airclient, dep);
 	PAppend(airclient, adobedir.c_str());
 
-	wchar_t airdest[MAX_PATH+1] = {0};
+	wchar_t airdest[MAX_PATH + 1] = {0};
 	auto air = L"Adobe AIR.dll";
 	PCombine(airdest, airclient, air);
 
-	wchar_t airlatest[MAX_PATH+1] = {0};
+	wchar_t airlatest[MAX_PATH + 1] = {0};
 	PCombine(airlatest, adobepath, air);
 
-	wchar_t flash[MAX_PATH+1] = {L"Resources"};
+	wchar_t flash[MAX_PATH + 1] = {L"Resources"};
 	PAppend(flash, L"NPSWF32.dll");
 
-	wchar_t flashdest[MAX_PATH+1] = {0};
+	wchar_t flashdest[MAX_PATH + 1] = {0};
 	PCombine(flashdest, airclient, flash);
 
-	wchar_t flashlatest[MAX_PATH+1] = {0};
+	wchar_t flashlatest[MAX_PATH + 1] = {0};
 	PCombine(flashlatest, adobepath, flash);
 
 	PAppend(gameclient, findlatest(gameclient).c_str());
 	PAppend(gameclient, dep);
 
-	wchar_t cgdest[MAX_PATH+1] = {0};
+	wchar_t cgdest[MAX_PATH + 1] = {0};
 	PCombine(cgdest, gameclient, cg);
 
-	wchar_t cggldest[MAX_PATH+1] = {0};
+	wchar_t cggldest[MAX_PATH + 1] = {0};
 	PCombine(cggldest, gameclient, cggl);
 
-	wchar_t cgd3d9dest[MAX_PATH+1] = {0};
+	wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
 	PCombine(cgd3d9dest, gameclient, cgd3d9);
 
 	std::thread t1{threadingbuildingblocks};
