@@ -252,10 +252,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP);
+		if (hdc == nullptr)
+			throw std::runtime_error("Nothing to render in");
+
+		if(DrawText(hdc, L"In Progress, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
+			throw std::runtime_error("failed to draw text");
+
 		if (finished)
 		{
-			DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP);
+			if(DrawText(hdc, L"Finished!, Enjoy a better League!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
+				throw std::runtime_error("failed to draw text");
 		}
 		EndPaint(hwnd, &ps);
 		break;
