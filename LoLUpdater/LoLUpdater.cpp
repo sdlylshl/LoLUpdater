@@ -146,6 +146,7 @@ void altClient()
 	PathCombine(airclient, loldir, garenaair);
 }
 
+// This function fails for one guy running 8.1 x64 (pt-pt)
 std::wstring findlatest(std::wstring const& folder)
 {
 	std::wstring data;
