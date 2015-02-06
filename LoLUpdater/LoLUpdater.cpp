@@ -339,10 +339,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	else
 	{
-		PathCombine(gameclient, loldir, L"Game");
-		wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
-		wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
-		PathCombine(airclient, loldir, garenaair);
+		if (std::wifstream(instdir).good() || std::wifstream(instdirCN).good())
+		{
+			PathCombine(gameclient, loldir, L"Game");
+			wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
+			wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
+			PathCombine(airclient, loldir, garenaair);
+		}
+		else
+			throw std::runtime_error("Unable to determine LoL version");
+
 	}
 
 	wchar_t cgbin[MAX_PATH + 1] = { 0 };
