@@ -41,7 +41,7 @@ wchar_t loldir[MAX_PATH + 1];
 wchar_t unblocker[MAX_PATH + 1] = { 0 };
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
-const std::wstring airsetup = L"air16_win.exe";
+const std::wstring airsetup = L"air17_win.exe";
 const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 wchar_t gameclient[MAX_PATH + 1] = { 0 };
 wchar_t airclient[MAX_PATH + 1] = { 0 };
