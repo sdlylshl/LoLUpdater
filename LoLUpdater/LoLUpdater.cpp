@@ -137,7 +137,7 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-std::wstring findlatest(wchar_t folder)
+std::wstring findlatest(wchar_t const& folder)
 {
 	std::wstring data;
 	wchar_t search[MAX_PATH + 1] = { folder };
@@ -280,7 +280,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t cgbinpath[MAX_PATH + 1];
 	GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1);
 
-	const wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
+	wchar_t adobedir[MAX_PATH + 1] = L"Adobe AIR\\Versions\\1.0";
 	wchar_t adobepath[MAX_PATH + 1] = {0};
 	PathCombine(adobepath, progdrive, adobedir);
 
@@ -296,7 +296,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
 
-	const wchar_t dep[MAX_PATH+1] = L"deploy";
+	wchar_t dep[MAX_PATH+1] = L"deploy";
 
 	wchar_t airclient[MAX_PATH + 1] = { 0 };
 	wchar_t patchclient[MAX_PATH + 1] = { 0 };
@@ -320,7 +320,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PathAppend(gameclient, L"lol_game_client_sln");
 		PathAppend(gameclient, rel);
 
-		PathAppend(patchclient, findlatest(patchclient).c_str());
+		PathAppend(patchclient, findlatest(*patchclient).c_str());
 		PathAppend(patchclient, dep);
 
 		wchar_t cp1[MAX_PATH + 1] = L"";
@@ -358,7 +358,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	auto cgd3d9 = L"cgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
-	PathAppend(airclient, findlatest(airclient).c_str());
+	PathAppend(airclient, findlatest(*airclient).c_str());
 	PathAppend(airclient, dep);
 	PathAppend(airclient, adobedir);
 
@@ -378,7 +378,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t flashlatest[MAX_PATH + 1] = {0};
 	PathCombine(flashlatest, adobepath, flash);
 
-	PathAppend(gameclient, findlatest(gameclient).c_str());
+	PathAppend(gameclient, findlatest(*gameclient).c_str());
 	PathAppend(gameclient, dep);
 
 	wchar_t cgdest[MAX_PATH + 1] = {0};
