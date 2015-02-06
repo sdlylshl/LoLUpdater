@@ -138,14 +138,6 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-void altClient()
-{
-	PathCombine(gameclient, loldir, L"Game");
-	wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
-	wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
-	PathCombine(airclient, loldir, garenaair);
-}
-
 std::wstring findlatest(std::wstring const& folder)
 {
 	wchar_t data[MAX_PATH+1] = {0};
@@ -297,15 +289,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
 	PathCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
 
+	wchar_t instdirDefault[MAX_PATH + 1] = { 0 };
+	PathCombine(instdirDefault, loldir, L"lol.launcher.exe");
+
 	wchar_t patchclient[MAX_PATH + 1] = { 0 };
 
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
 
-	if (std::wifstream(instdir).fail())
+	if (std::wifstream(instdir).fail() & std::wifstream(instdirDefault).good() & std::wifstream(instdirCN).fail())
 	{
-		if (std::wifstream(instdirCN).fail())
-		{
 			auto rads = L"RADS";
 			PathCombine(airclient, loldir, rads);
 			PathAppend(airclient, L"projects");
@@ -343,15 +336,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			PathCombine(cr1, patchclient, cpr.c_str());
 			ExtractResource(3, cr1);
 			UnblockFile(cr1);
-		}
-		else
-		{
-			altClient();
-		}
 	}
 	else
 	{
-		altClient();
+		PathCombine(gameclient, loldir, L"Game");
+		wchar_t garenaair[MAX_PATH + 1] = L"Air\\";
+		wcsncat_s(garenaair, MAX_PATH + 1, adobedir, _TRUNCATE);
+		PathCombine(airclient, loldir, garenaair);
 	}
 
 	wchar_t cgbin[MAX_PATH + 1] = { 0 };
