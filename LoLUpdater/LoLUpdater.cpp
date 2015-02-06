@@ -280,7 +280,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
 	wc.lpszClassName = g_szClassName.c_str();
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	if (wc.hIcon == nullptr)
+		throw std::runtime_error("failed to load icon");
+
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+
+	if (wc.hIconSm == nullptr)
+		throw std::runtime_error("failed to load icon");
+
 	if (RegisterClassEx(&wc) == NULL)
 	{
 		throw std::runtime_error("failed to register windowclass");
