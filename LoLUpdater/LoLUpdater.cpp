@@ -227,7 +227,7 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		data = +newest.info.cFileName;
+		data =+ newest.info.cFileName;
 		errorcheck(FindClose(hFind));
 	}
 	else

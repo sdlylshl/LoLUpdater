@@ -1,8 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include <windows.h>
-
 /////////////////////////////////////////////////////////////////////////////
 // Swedish (Sweden) resources
 
@@ -34,6 +32,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // RCDATA
@@ -58,8 +57,8 @@ MAINICON                ICON                    "icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,1
- PRODUCTVERSION 1,0,1,1
+ FILEVERSION 1,0,1,2
+ PRODUCTVERSION 1,0,1,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -74,14 +73,14 @@ BEGIN
     BEGIN
         BLOCK "000904b0"
         BEGIN
-            VALUE "CompanyName", "LoLUpdater"
+            VALUE "CompanyName", "http://lolupdater.com"
             VALUE "FileDescription", "LoLUpdater - A Performance Patch for the game ""League of Legends"""
-            VALUE "FileVersion", "1.0.1.1"
+            VALUE "FileVersion", "1.0.1.2"
             VALUE "InternalName", "LoLUpdater.exe"
             VALUE "LegalCopyright", "Copyright (C) 2014-2015"
             VALUE "OriginalFilename", "LoLUpdater.exe"
             VALUE "ProductName", "LoLUpdater"
-            VALUE "ProductVersion", "1.0.1.1"
+            VALUE "ProductVersion", "1.0.1.2"
         END
     END
     BLOCK "VarFileInfo"
