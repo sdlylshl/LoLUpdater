@@ -8,6 +8,7 @@
 #include <wininet.h>
 #include <fstream>
 #include <Windows.h>
+#include <iostream>
 
 class CLimitSingleInstance
 {
@@ -73,7 +74,7 @@ void errorcheck(BOOL res)
 
 void UnblockFile(std::wstring const& filename)
 {
-	errorcheck(DeleteFile(std::wstring(loldir + filename + unblocktag).c_str()));
+	DeleteFile(std::wstring(loldir + filename + unblocktag).c_str());
 }
 
 void ExtractResource(int RCDATAID, std::wstring const& filename)
@@ -264,7 +265,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t runair[MAX_PATH+1] = {0};
 	PCombine(runair, cwd, airsetup.c_str());
-	errorcheck(DeleteFile(std::wstring(runair + unblocktag).c_str()));
+	std::wstring input = runair;
+	std::wcin >> input;
+	std::wofstream out("output.txt");
+	out << input;
+	out.close();
+	DeleteFile(std::wstring(runair + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei = {};
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -296,7 +302,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ExtractResource(1, cgsetup.c_str());
 	wchar_t runcg[MAX_PATH+1] = {0};
 	PCombine(runcg, cwd, cgsetup.c_str());
-	errorcheck(DeleteFile(std::wstring(runcg + unblocktag).c_str()));
+	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei1 = {};
 	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
