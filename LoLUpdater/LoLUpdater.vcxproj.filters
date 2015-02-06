@@ -30,13 +30,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cg-3.1_April2012_Setup.exe" />
-    <None Include="msvcr120.dll" />
-    <None Include="msvcp120.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="msvcp120.dll" />
+    <None Include="msvcr120.dll" />
+    <None Include="Cg-3.1_April2012_Setup.exe" />
   </ItemGroup>
 </Project>

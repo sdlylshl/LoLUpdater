@@ -9,7 +9,6 @@
 #include <fstream>
 #include <stdint.h>
 #include <intrin.h>
-#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -46,14 +45,12 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
-bool finished = false;
-wchar_t loldir[MAX_PATH + 1];
-
-const std::wstring unblocktag = L":Zone.Identifier";
-
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
 
+bool finished = false;
+wchar_t loldir[MAX_PATH + 1];
+const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 
