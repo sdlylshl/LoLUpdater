@@ -416,13 +416,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		auto rads = L"RADS";
 		PCombine(airclient, loldir, rads);
-		PAppend(airclient, L"projects");
+		auto proj = L"projects";
+		PAppend(airclient, proj);
 		PAppend(airclient, L"lol_air_client");
 		auto rel = L"releases";
 		PAppend(airclient, rel);
 
 		PCombine(patchclient, loldir, rads);
-		PAppend(patchclient, L"projects");
+		PAppend(patchclient, proj);
 		PAppend(patchclient, L"lol_patcher");
 		PAppend(patchclient, rel);
 
