@@ -1,3 +1,6 @@
+// Minimum supported processor = Intel Pentium 4 or equivalent (With SSE2)
+// Supported Windows Versions: Windows XP -> Windows 8.1
+
 #include <sstream>
 #include <Shlwapi.h>
 #include <Shlobj.h>
@@ -39,6 +42,7 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
 wchar_t unblocker[MAX_PATH + 1] = { 0 };
+wchar_t data[MAX_PATH + 1] = { 0 };
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring unblocktag = L":Zone.Identifier";
 
@@ -140,7 +144,7 @@ void threadingbuildingblocks()
 
 std::wstring findlatest(std::wstring const& folder)
 {
-	wchar_t data[MAX_PATH+1] = {0};
+	*data = '\0';
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 	wchar_t search[MAX_PATH + 1] = { 0 };
