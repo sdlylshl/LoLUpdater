@@ -9,6 +9,7 @@
 #include <fstream>
 #include <stdint.h>
 #include <intrin.h>
+#include <Windows.h>
 
 class CLimitSingleInstance
 {
