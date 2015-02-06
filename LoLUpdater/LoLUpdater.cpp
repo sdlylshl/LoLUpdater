@@ -302,6 +302,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	const std::wstring cpp = L"msvcp120.dll";
 	const std::wstring cpr = L"msvcr120.dll";
+	auto dep = L"deploy";
 
 	if (std::wifstream(instdir).fail() & std::wifstream(instdirDefault).good() & std::wifstream(instdirCN).fail())
 	{
@@ -321,14 +322,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			PathAppend(gameclient, L"solutions");
 			PathAppend(gameclient, L"lol_game_client_sln");
 			PathAppend(gameclient, rel);
-
-			auto dep = L"deploy";
-			PathAppend(gameclient, findlatest(gameclient).c_str());
-			PathAppend(gameclient, dep);
-
-			PathAppend(airclient, findlatest(airclient).c_str());
-			PathAppend(airclient, dep);
-			PathAppend(airclient, adobedir);
 
 			PathAppend(patchclient, findlatest(patchclient).c_str());
 			PathAppend(patchclient, dep);
@@ -369,6 +362,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	auto cgd3d9 = L"cgD3D9.dll";
 	PathCombine(cgd3d9bin, cgbinpath, cgd3d9);
 
+	PathAppend(airclient, findlatest(airclient).c_str());
+	PathAppend(airclient, dep);
+	PathAppend(airclient, adobedir);
+
 	wchar_t airdest[MAX_PATH + 1] = { 0 };
 	auto air = L"Adobe AIR.dll";
 	PathCombine(airdest, airclient, air);
@@ -384,6 +381,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t flashlatest[MAX_PATH + 1] = { 0 };
 	PathCombine(flashlatest, adobepath, flash);
+
+	PathAppend(gameclient, findlatest(gameclient).c_str());
+	PathAppend(gameclient, dep);
 
 	wchar_t cgdest[MAX_PATH + 1] = { 0 };
 	PathCombine(cgdest, gameclient, cg);
