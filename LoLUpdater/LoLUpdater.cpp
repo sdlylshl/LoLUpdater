@@ -159,6 +159,20 @@ void PAppend(LPTSTR pszPath, LPCTSTR pszMore)
 		throw std::runtime_error("failed to append path");
 }
 
+void AVXSSE2detect(std::wstring const& AVXname, std::wstring const& SSE2name)
+{
+	int cpuInfo[4];
+	__cpuid(cpuInfo, 1);
+	if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
+	{
+		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, AVXname.c_str(), _TRUNCATE);
+	}
+	else
+	{
+		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, SSE2name.c_str(), _TRUNCATE);
+	}
+}
+
 void threadingbuildingblocks()
 {
 	wchar_t tbb[MAX_PATH + 1] = {0};
@@ -188,16 +202,7 @@ void threadingbuildingblocks()
 		}
 		else
 		{
-			int cpuInfo[4];
-			__cpuid(cpuInfo, 1);
-			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX-Win7.dll", _TRUNCATE);
-			}
-			else
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2-Win7.dll", _TRUNCATE);
-			}
+			AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
 		}
 	}
 	else
@@ -208,16 +213,7 @@ void threadingbuildingblocks()
 		}
 		else
 		{
-			int cpuInfo[4];
-			__cpuid(cpuInfo, 1);
-			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX.dll", _TRUNCATE);
-			}
-			else
-			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2.dll", _TRUNCATE);
-			}
+			AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
 		}
 	}
 
