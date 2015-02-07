@@ -55,6 +55,7 @@ wchar_t loldir[MAX_PATH + 1];
 const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
+wchar_t runair[MAX_PATH + 1] = { 0 };
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -115,7 +116,7 @@ void AdobeAirDL()
 	if (UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airsetup.c_str(), finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
 
-	downloadFile(finalurl, airsetup.c_str());
+	downloadFile(finalurl, runair);
 }
 
 void errorcheck(BOOL res)
@@ -341,13 +342,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
+	auto cwd(_wgetcwd(nullptr, 0));
+	PCombine(runair, cwd, airsetup.c_str());
 	std::thread t{AdobeAirDL};
 	t.join();
 
-	auto cwd(_wgetcwd(nullptr, 0));
-
-	wchar_t runair[MAX_PATH + 1] = {0};
-	PCombine(runair, cwd, airsetup.c_str());
 	DeleteFile(std::wstring(runair + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei = {};
@@ -380,11 +379,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t adobepath[MAX_PATH + 1] = {0};
 	PCombine(adobepath, progdrive, adobedir.c_str());
 
+	wchar_t runcg[MAX_PATH + 1] = { 0 };
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
-	ExtractResource(1, cgsetup.c_str());
-	wchar_t runcg[MAX_PATH + 1] = {0};
 	PCombine(runcg, cwd, cgsetup.c_str());
 	DeleteFile(std::wstring(runcg + unblocktag).c_str());
+	ExtractResource(1, runcg);
+
 
 	SHELLEXECUTEINFO ei1 = {};
 	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
