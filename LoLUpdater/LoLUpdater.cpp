@@ -389,6 +389,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get environmental variable path");
 	}
 
+	wchar_t cgbin[MAX_PATH + 1] = { 0 };
+	auto cg = L"cg.dll";
+	PCombine(cgbin, cgbinpath, cg);
+
+	wchar_t cgglbin[MAX_PATH + 1] = { 0 };
+	auto cggl = L"cgGL.dll";
+	PCombine(cgglbin, cgbinpath, cggl);
+
+	wchar_t cgd3d9bin[MAX_PATH + 1] = { 0 };
+	auto cgd3d9 = L"cgD3D9.dll";
+	PCombine(cgd3d9bin, cgbinpath, cgd3d9);
+
 	wchar_t instdirGarena[MAX_PATH + 1] = {0};
 	PCombine(instdirGarena, loldir, L"lol.exe");
 
@@ -408,6 +420,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cp[MAX_PATH + 1] = {0};
 	wchar_t cr[MAX_PATH + 1] = {0};
+
+
 
 	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
@@ -439,13 +453,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PCombine(cr, patchclient, cpr.c_str());
 		ExtractResource(3, cr);
 		UnblockFile(cr);
-
-		PAppend(airclient, findlatest(airclient).c_str());
-		PAppend(airclient, dep);
-		PAppend(airclient, adobedir.c_str());
-
-		PAppend(gameclient, findlatest(gameclient).c_str());
-		PAppend(gameclient, dep);
 	}
 	else
 	{
@@ -458,18 +465,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 			throw std::runtime_error("Unable to determine LoL version");
 	}
 
-	wchar_t cgbin[MAX_PATH + 1] = {0};
-	auto cg = L"cg.dll";
-	PCombine(cgbin, cgbinpath, cg);
-
-	wchar_t cgglbin[MAX_PATH + 1] = {0};
-	auto cggl = L"cgGL.dll";
-	PCombine(cgglbin, cgbinpath, cggl);
-
-	wchar_t cgd3d9bin[MAX_PATH + 1] = {0};
-	auto cgd3d9 = L"cgD3D9.dll";
-	PCombine(cgd3d9bin, cgbinpath, cgd3d9);
-
+	if (std::wifstream(instdir).good())
+	{
+		PAppend(airclient, findlatest(airclient).c_str());
+		PAppend(airclient, dep);
+		PAppend(airclient, adobedir.c_str());
+	}
 
 	wchar_t airdest[MAX_PATH + 1] = {0};
 	auto air = L"Adobe AIR.dll";
@@ -486,6 +487,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t flashlatest[MAX_PATH + 1] = {0};
 	PCombine(flashlatest, adobepath, flash);
+
+	if (std::wifstream(instdir).good())
+	{
+		PAppend(gameclient, findlatest(gameclient).c_str());
+		PAppend(gameclient, dep);
+	}
 
 	wchar_t cgdest[MAX_PATH + 1] = {0};
 	PCombine(cgdest, gameclient, cg);
