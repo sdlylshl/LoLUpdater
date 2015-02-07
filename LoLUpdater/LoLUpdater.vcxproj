@@ -91,7 +91,7 @@
       <ErrorReporting>None</ErrorReporting>
       <CompileAs>CompileAsCpp</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -108,6 +108,7 @@
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAsWinRT>false</CompileAsWinRT>
       <StringPooling>true</StringPooling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -119,14 +120,15 @@
       <AdditionalDependencies>Urlmon.Lib;Shlwapi.Lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
       <AssemblyDebug>false</AssemblyDebug>
-      <LinkStatus>true</LinkStatus>
+      <LinkStatus>false</LinkStatus>
       <PreventDllBinding>false</PreventDllBinding>
       <AllowIsolation>false</AllowIsolation>
       <EnableUAC>false</EnableUAC>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IntDir)</AdditionalIncludeDirectories>
