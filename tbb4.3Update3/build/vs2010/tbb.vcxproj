@@ -55,7 +55,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -226,7 +226,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalOptions>/c /GR /Zc:forScope /Zc:wchar_t /D__TBB_LIB_NAME=tbb.lib /DDO_ITT_NOTIFY /volatile:iso /DUSE_WINTHREAD /D_CRT_SECURE_NO_DEPRECATE /D_WIN32_WINNT=0x0501 /D__TBB_BUILD=1 /I../../src /I../../src/rml/include /I../../include</AdditionalOptions>
+      <AdditionalOptions>/c /GR /Zc:forScope /Zc:wchar_t /D__TBB_LIB_NAME=tbb.lib /DDO_ITT_NOTIFY /volatile:iso /DUSE_WINTHREAD /D_CRT_SECURE_NO_DEPRECATE /D_WIN32_WINNT=0x0502 /D__TBB_BUILD=1 /I../../src /I../../src/rml/include /I../../include</AdditionalOptions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -249,11 +249,11 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <CompileAs>CompileAsCpp</CompileAs>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/nologo /DLL /MAP /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/nologo /DLL /MAP /DEBUG /fixed:no /INCREMENTAL:NO  /DEF:"$(IntDir)tbb.def" %(AdditionalOptions)</AdditionalOptions>
       <OutputFile>$(OutDir)tbb.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -554,7 +554,6 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cl /nologo /TC /EP ../../src/tbb/win32-tbb-export.def /DTBB_USE_DEBUG /DDO_ITT_NOTIFY /DUSE_WINTHREAD /D_CRT_SECURE_NO_DEPRECATE /D_WIN32_WINNT=0x0400 /D__TBB_BUILD=1 &gt;"$(IntDir)tbb.def"
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)tbb.def;%(Outputs)</Outputs>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="..\..\src\tbb\win64-tbb-export.def">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-MT|Win32'">true</ExcludedFromBuild>
