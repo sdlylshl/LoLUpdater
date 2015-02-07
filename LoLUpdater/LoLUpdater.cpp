@@ -1,7 +1,7 @@
 // Minimum supported processor = Intel Pentium 4 (Or anything with at least SSE2)
 // Supported Windows Versions: Windows XP SP3 -> Windows 10 Preview (Build 9926)
 // Windows Server is currently not supported
-// Also unsupported on Wine (Will fix this)
+// Unknown behavior on Wine (Untested)
 
 #include <sstream>
 #include <Shlwapi.h>
