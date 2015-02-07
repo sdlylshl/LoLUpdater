@@ -169,9 +169,34 @@ void threadingbuildingblocks()
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	errorcheck(GetVersionEx(&osvi));
 
+	// Unknown how this will do on Wine
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
 	{
 		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
+	}
+	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 0))
+	{
+		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"Vista.dll", _TRUNCATE);
+	}
+	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 1))
+	{
+		if (can_use_intel_core_4th_gen_features())
+		{
+			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win7.dll", _TRUNCATE);
+		}
+		else
+		{
+			int cpuInfo[4];
+			__cpuid(cpuInfo, 1);
+			if ((cpuInfo[2] & (1 << 27) || false) && (cpuInfo[2] & (1 << 28) || false) && check_xcr0_ymm())
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX-Win7.dll", _TRUNCATE);
+			}
+			else
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"SSE2-Win7.dll", _TRUNCATE);
+			}
+		}
 	}
 	else
 	{
@@ -193,6 +218,7 @@ void threadingbuildingblocks()
 			}
 		}
 	}
+
 	if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
 	{
 		throw std::runtime_error("failed to combine Url");
