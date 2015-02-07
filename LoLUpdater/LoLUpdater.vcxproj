@@ -91,7 +91,7 @@
       <ErrorReporting>None</ErrorReporting>
       <CompileAs>CompileAsCpp</CompileAs>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -128,7 +128,7 @@
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
-      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+      <EnableDpiAwareness>false</EnableDpiAwareness>
     </Manifest>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IntDir)</AdditionalIncludeDirectories>

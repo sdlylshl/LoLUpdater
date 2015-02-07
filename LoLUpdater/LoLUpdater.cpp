@@ -9,7 +9,6 @@
 #include <fstream>
 #include <stdint.h>
 #include <intrin.h>
-#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -420,8 +419,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cp[MAX_PATH + 1] = {0};
 	wchar_t cr[MAX_PATH + 1] = {0};
-
-
 
 	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
