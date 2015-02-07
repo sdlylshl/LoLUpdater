@@ -1,4 +1,4 @@
-// Minimum supported processor = Intel Pentium 4 (Or anything with SSE2)
+// Minimum supported processor = Intel Pentium 4 (Or anything with at least SSE2)
 // Supported Windows Versions: Windows XP SP3 -> Windows 10 Preview (Build 9926)
 
 #include <sstream>
