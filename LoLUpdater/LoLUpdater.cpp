@@ -453,23 +453,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PCombine(cr, patchclient, cpr.c_str());
 		ExtractResource(3, cr);
 		UnblockFile(cr);
+
+		PAppend(airclient, findlatest(airclient).c_str());
+		PAppend(airclient, dep);
+		PAppend(airclient, adobedir.c_str());
+
+		PAppend(gameclient, findlatest(gameclient).c_str());
+		PAppend(gameclient, dep);
 	}
 	else
 	{
-		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
+		if (std::wifstream(instdirGarena).good() || std::wifstream(instdirCN).good())
 		{
 			PCombine(gameclient, loldir, L"Game");
 			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
 		}
 		else
 			throw std::runtime_error("Unable to determine LoL version");
-	}
-
-	if (std::wifstream(instdir).good())
-	{
-		PAppend(airclient, findlatest(airclient).c_str());
-		PAppend(airclient, dep);
-		PAppend(airclient, adobedir.c_str());
 	}
 
 	wchar_t airdest[MAX_PATH + 1] = {0};
@@ -487,12 +487,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t flashlatest[MAX_PATH + 1] = {0};
 	PCombine(flashlatest, adobepath, flash);
-
-	if (std::wifstream(instdir).good())
-	{
-		PAppend(gameclient, findlatest(gameclient).c_str());
-		PAppend(gameclient, dep);
-	}
 
 	wchar_t cgdest[MAX_PATH + 1] = {0};
 	PCombine(cgdest, gameclient, cg);
