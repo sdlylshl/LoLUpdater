@@ -54,8 +54,11 @@ bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
 const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t gameclient[MAX_PATH + 1] = {0};
+wchar_t patchclient[MAX_PATH + 1] = { 0 };
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 wchar_t runair[MAX_PATH + 1] = { 0 };
+const std::wstring cpp = L"msvcp120.dll";
+const std::wstring cpr = L"msvcr120.dll";
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -119,12 +122,6 @@ void AdobeAirDL()
 	downloadFile(finalurl, runair);
 }
 
-void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
-{
-	if (!CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists))
-		throw std::runtime_error("failed to copy file");
-}
-
 void UnblockFile(std::wstring const& filename)
 {
 	DeleteFile(std::wstring(loldir + filename + unblocktag).c_str());
@@ -172,6 +169,14 @@ void AVXSSE2detect(std::wstring const& AVXname, std::wstring const& SSE2name)
 	{
 		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, SSE2name.c_str(), _TRUNCATE);
 	}
+}
+
+void msvc(std::wstring const& DEST, int RESID, std::wstring const& RESIDNAME)
+{
+	wchar_t svc[MAX_PATH + 1] = { 0 };
+	PCombine(svc, DEST.c_str(), RESIDNAME.c_str());
+	ExtractResource(RESID, svc);
+	UnblockFile(svc);
 }
 
 void threadingbuildingblocks()
@@ -425,16 +430,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t instdir[MAX_PATH + 1] = {0};
 	PCombine(instdir, loldir, L"lol.launcher.exe");
 
-	const std::wstring cpp = L"msvcp120.dll";
-	const std::wstring cpr = L"msvcr120.dll";
-
 	wchar_t dep[MAX_PATH + 1] = L"deploy";
 
 	wchar_t airclient[MAX_PATH + 1] = {0};
-	wchar_t patchclient[MAX_PATH + 1] = {0};
-
-	wchar_t cp[MAX_PATH + 1] = {0};
-	wchar_t cr[MAX_PATH + 1] = {0};
 
 	wchar_t progdrive[MAX_PATH + 1];
 	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
@@ -467,13 +465,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PAppend(patchclient, findlatest(patchclient).c_str());
 		PAppend(patchclient, dep);
 
-		PCombine(cp, patchclient, cpp.c_str());
-		ExtractResource(2, cp);
-		UnblockFile(cp);
-
-		PCombine(cr, patchclient, cpr.c_str());
-		ExtractResource(3, cr);
-		UnblockFile(cr);
+		msvc(patchclient, 2, cpp.c_str());
+		msvc(patchclient, 3, cpr.c_str());
 
 		PAppend(airclient, findlatest(airclient).c_str());
 		PAppend(airclient, dep);
@@ -521,21 +514,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
 
-	CpFile(cgbin, cgdest, false);
-	CpFile(cgglbin, cggldest, false);
-	CpFile(cgd3d9bin, cgd3d9dest, false);
-	CpFile(airlatest, airdest, false);
-	CpFile(flashlatest, flashdest, false);
+	CopyFile(cgbin, cgdest, false);
+	CopyFile(cgglbin, cggldest, false);
+	CopyFile(cgd3d9bin, cgd3d9dest, false);
+	CopyFile(airlatest, airdest, false);
+	CopyFile(flashlatest, flashdest, false);
 
-	*cp = '\0';
-	PCombine(cp, gameclient, cpp.c_str());
-	ExtractResource(2, cp);
-	UnblockFile(cp);
-
-	*cr = '\0';
-	PCombine(cr, gameclient, cpr.c_str());
-	ExtractResource(3, cr);
-	UnblockFile(cr);
+	msvc(gameclient, 2, cpp.c_str());
+	msvc(gameclient, 3, cpr.c_str());
 
 	finished = true;
 
