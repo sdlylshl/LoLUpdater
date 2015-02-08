@@ -430,8 +430,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t instdir[MAX_PATH + 1] = {0};
 	PCombine(instdir, loldir, L"lol.launcher.exe");
 
-	wchar_t dep[MAX_PATH + 1] = L"deploy";
-
 	wchar_t airclient[MAX_PATH + 1] = {0};
 
 	wchar_t progdrive[MAX_PATH + 1];
@@ -462,6 +460,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PAppend(gameclient, L"lol_game_client_sln");
 		PAppend(gameclient, rel);
 
+		wchar_t dep[MAX_PATH + 1] = L"deploy";
 		PAppend(patchclient, findlatest(patchclient).c_str());
 		PAppend(patchclient, dep);
 
@@ -487,11 +486,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 	wchar_t airdest[MAX_PATH + 1] = {0};
-	auto air = L"Adobe AIR.dll";
-	PCombine(airdest, airclient, air);
+	const std::wstring air = L"Adobe AIR.dll";
+	PCombine(airdest, airclient, air.c_str());
 
 	wchar_t airlatest[MAX_PATH + 1] = {0};
-	PCombine(airlatest, adobepath, air);
+	PCombine(airlatest, adobepath, air.c_str());
 
 	wchar_t flash[MAX_PATH + 1] = {L"Resources"};
 	PAppend(flash, L"NPSWF32.dll");
