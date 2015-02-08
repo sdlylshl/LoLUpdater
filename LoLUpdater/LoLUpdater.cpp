@@ -119,10 +119,10 @@ void AdobeAirDL()
 	downloadFile(finalurl, runair);
 }
 
-void errorcheck(BOOL res)
+void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
 {
-	if (res == NULL)
-		throw std::runtime_error("failed to copy/unblock file");
+	if (!CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists))
+		throw std::runtime_error("failed to copy file");
 }
 
 void UnblockFile(std::wstring const& filename)
@@ -184,7 +184,9 @@ void threadingbuildingblocks()
 
 	OSVERSIONINFO osvi{};
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	errorcheck(GetVersionEx(&osvi));
+	if(!GetVersionEx(&osvi))
+		throw std::runtime_error("failed to get version info");
+
 
 	// Unknown how this will do on Wine
 	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
@@ -252,7 +254,8 @@ std::wstring findlatest(std::wstring const& folder)
 			}
 		}
 		data =+ newest.info.cFileName;
-		errorcheck(FindClose(hFind));
+		if(!FindClose(hFind))
+			throw std::runtime_error("failed to close file handle");
 	}
 	else
 		throw std::runtime_error("failed to find file/directory");
@@ -399,9 +402,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cgbinpath[MAX_PATH + 1];
 	if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
-	{
 		throw std::runtime_error("failed to get environmental variable path");
-	}
 
 	wchar_t cgbin[MAX_PATH + 1] = { 0 };
 	auto cg = L"cg.dll";
@@ -438,6 +439,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wchar_t progdrive[MAX_PATH + 1];
 	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
 		throw std::runtime_error("failed to get path");
+
 	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
 	wchar_t adobepath[MAX_PATH + 1] = { 0 };
 	PCombine(adobepath, progdrive, adobedir.c_str());
@@ -482,7 +484,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	else
 	{
-		if (std::wifstream(instdirGarena).good() || std::wifstream(instdirCN).good())
+		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
 		{
 			PCombine(gameclient, loldir, L"Game");
 			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
@@ -519,11 +521,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
 
-	errorcheck(CopyFile(cgbin, cgdest, false));
-	errorcheck(CopyFile(cgglbin, cggldest, false));
-	errorcheck(CopyFile(cgd3d9bin, cgd3d9dest, false));
-	errorcheck(CopyFile(airlatest, airdest, false));
-	errorcheck(CopyFile(flashlatest, flashdest, false));
+	CpFile(cgbin, cgdest, false);
+	CpFile(cgglbin, cggldest, false);
+	CpFile(cgd3d9bin, cgd3d9dest, false);
+	CpFile(airlatest, airdest, false);
+	CpFile(flashlatest, flashdest, false);
 
 	*cp = '\0';
 	PCombine(cp, gameclient, cpp.c_str());
