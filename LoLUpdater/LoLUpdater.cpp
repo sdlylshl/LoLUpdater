@@ -353,8 +353,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ei.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ei.lpVerb = L"runas";
-	ei.lpFile = runair;
 	ei.lpParameters = L"-silent";
+	ei.lpFile = runair;
 	ei.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei))
@@ -368,23 +368,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		}
 	}
 
-	errorcheck(DeleteFile(runair));
-	wchar_t progdrive[MAX_PATH + 1];
-	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
-	{
-		throw std::runtime_error("failed to get path");
-	}
+	DeleteFile(runair);
 
-	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-	wchar_t adobepath[MAX_PATH + 1] = {0};
-	PCombine(adobepath, progdrive, adobedir.c_str());
-
-	wchar_t runcg[MAX_PATH + 1] = { 0 };
+	wchar_t runcg[MAX_PATH + 1] = {0};
 	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
 	PCombine(runcg, cwd, cgsetup.c_str());
-	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 	ExtractResource(1, runcg);
-
+	DeleteFile(std::wstring(runcg + unblocktag).c_str());
 
 	SHELLEXECUTEINFO ei1 = {};
 	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -405,7 +395,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		}
 	}
 
-	errorcheck(DeleteFile(runcg));
+	DeleteFile(runcg);
+
 	wchar_t cgbinpath[MAX_PATH + 1];
 	if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
 	{
@@ -443,6 +434,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t cp[MAX_PATH + 1] = {0};
 	wchar_t cr[MAX_PATH + 1] = {0};
+
+	wchar_t progdrive[MAX_PATH + 1];
+	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
+		throw std::runtime_error("failed to get path");
+	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
+	wchar_t adobepath[MAX_PATH + 1] = { 0 };
+	PCombine(adobepath, progdrive, adobedir.c_str());
 
 	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
