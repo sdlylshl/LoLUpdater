@@ -1,7 +1,7 @@
 // Minimum supported processor = Intel Pentium 4 (Or anything with at least SSE2)
 // Supported Windows Versions: Windows XP SP3 -> Windows 8.1
 // Windows Server is currently not supported
-// Unknown behavior on Wine (Untested)
+// Wine support is unknown
 
 #include <sstream>
 #include <Shlwapi.h>
@@ -179,6 +179,12 @@ void msvc(std::wstring const& DEST, int RESID, std::wstring const& RESIDNAME)
 	UnblockFile(svc);
 }
 
+void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
+{
+	if (!CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists))
+		throw std::runtime_error("failed to copy file");
+}
+
 void threadingbuildingblocks()
 {
 	wchar_t tbb[MAX_PATH + 1] = {0};
@@ -213,7 +219,7 @@ void threadingbuildingblocks()
 			AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
 		}
 	}
-	else
+	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 2))
 	{
 		if (can_use_intel_core_4th_gen_features())
 		{
@@ -409,31 +415,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get environmental variable path");
 
 	wchar_t cgbin[MAX_PATH + 1] = { 0 };
-	auto cg = L"cg.dll";
-	PCombine(cgbin, cgbinpath, cg);
+	const std::wstring cg = L"cg.dll";
+	PCombine(cgbin, cgbinpath, cg.c_str());
 
 	wchar_t cgglbin[MAX_PATH + 1] = { 0 };
-	auto cggl = L"cgGL.dll";
-	PCombine(cgglbin, cgbinpath, cggl);
+	const std::wstring cggl = L"cgGL.dll";
+	PCombine(cgglbin, cgbinpath, cggl.c_str());
 
 	wchar_t cgd3d9bin[MAX_PATH + 1] = { 0 };
-	auto cgd3d9 = L"cgD3D9.dll";
-	PCombine(cgd3d9bin, cgbinpath, cgd3d9);
+	const std::wstring cgd3d9 = L"cgD3D9.dll";
+	PCombine(cgd3d9bin, cgbinpath, cgd3d9.c_str());
+
+	wchar_t instdir[MAX_PATH + 1] = { 0 };
+	PCombine(instdir, loldir, L"lol.launcher.exe");
+
+	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
+	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
 
 	wchar_t instdirGarena[MAX_PATH + 1] = {0};
 	PCombine(instdirGarena, loldir, L"lol.exe");
 
-	wchar_t instdirCN[MAX_PATH + 1] = {0};
-	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
-
-	wchar_t instdir[MAX_PATH + 1] = {0};
-	PCombine(instdir, loldir, L"lol.launcher.exe");
-
 	wchar_t airclient[MAX_PATH + 1] = {0};
 
 	wchar_t progdrive[MAX_PATH + 1];
-	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
-		throw std::runtime_error("failed to get path");
+	if(SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
+		throw std::runtime_error("Unable to get folder path");
 
 	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
 	wchar_t adobepath[MAX_PATH + 1] = { 0 };
@@ -501,22 +507,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PCombine(flashlatest, adobepath, flash);
 
 	wchar_t cgdest[MAX_PATH + 1] = {0};
-	PCombine(cgdest, gameclient, cg);
+	PCombine(cgdest, gameclient, cg.c_str());
 
 	wchar_t cggldest[MAX_PATH + 1] = {0};
-	PCombine(cggldest, gameclient, cggl);
+	PCombine(cggldest, gameclient, cggl.c_str());
 
 	wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
-	PCombine(cgd3d9dest, gameclient, cgd3d9);
+	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
 
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
 
-	CopyFile(cgbin, cgdest, false);
-	CopyFile(cgglbin, cggldest, false);
-	CopyFile(cgd3d9bin, cgd3d9dest, false);
-	CopyFile(airlatest, airdest, false);
-	CopyFile(flashlatest, flashdest, false);
+	CpFile(cgbin, cgdest, false);
+	CpFile(cgglbin, cggldest, false);
+	CpFile(cgd3d9bin, cgd3d9dest, false);
+	CpFile(airlatest, airdest, false);
+	CpFile(flashlatest, flashdest, false);
 
 	msvc(gameclient, 2, p120.c_str());
 	msvc(gameclient, 3, r120.c_str());
