@@ -57,8 +57,8 @@ wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t patchclient[MAX_PATH + 1] = { 0 };
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 wchar_t runair[MAX_PATH + 1] = { 0 };
-const std::wstring cpp = L"msvcp120.dll";
-const std::wstring cpr = L"msvcr120.dll";
+const std::wstring p120 = L"msvcp120.dll";
+const std::wstring r120 = L"msvcr120.dll";
 
 void run_cpuid(uint32_t eax, uint32_t ecx, int* abcd)
 {
@@ -464,8 +464,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		PAppend(patchclient, findlatest(patchclient).c_str());
 		PAppend(patchclient, dep);
 
-		msvc(patchclient, 2, cpp.c_str());
-		msvc(patchclient, 3, cpr.c_str());
+		msvc(patchclient, 2, p120.c_str());
+		msvc(patchclient, 3, r120.c_str());
 
 		PAppend(airclient, findlatest(airclient).c_str());
 		PAppend(airclient, dep);
@@ -519,8 +519,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	CopyFile(airlatest, airdest, false);
 	CopyFile(flashlatest, flashdest, false);
 
-	msvc(gameclient, 2, cpp.c_str());
-	msvc(gameclient, 3, cpr.c_str());
+	msvc(gameclient, 2, p120.c_str());
+	msvc(gameclient, 3, r120.c_str());
 
 	finished = true;
 
