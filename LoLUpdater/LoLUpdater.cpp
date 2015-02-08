@@ -226,9 +226,8 @@ void threadingbuildingblocks()
 	}
 
 	if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
-	{
 		throw std::runtime_error("failed to combine Url");
-	}
+
 	downloadFile(finalurl, tbb);
 	UnblockFile(tbb);
 }
