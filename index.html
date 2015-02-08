@@ -3,22 +3,22 @@ title: Home
 layout: default
 ---
 
-<span id="hero">LoLUpdater is currently the best <u><a href="https://github.com/Loggan08/LoLUpdater/blob/master/LoLUpdater/LoLUpdater.cpp">(Open-Source)</a></u> tool for increasing the framerate in the game <a href=http://leagueoflegends.com>League of Legends</a>, also makes the <a href="http://pvp.net">PvP.net</a> client more responsive/faster.<br>
+<span id="hero">LoLUpdater is currently the best <u><a href="https://github.com/Loggan08/LoLUpdater/blob/master/LoLUpdater/LoLUpdater.cpp">(Open-Source)</a></u> tool for increasing the framerate in the game <a href=http://leagueoflegends.com>League of Legends</a>, makes the <a href="http://pvp.net">PvP.net</a> client more responsive as well.<br>
 <br>
 Doesn't affect graphics quality.<br>
-Might make the ingame-shop open quicker.<br>
+Reduces the lag when opening the in-game shop.<br>
 <br>
 DavidKNA is working on the OSX version of this patch at the moment!<br>
 <br>
-Works for Regular LoL (All servers), GarenaLoL (All versions) and <a href="http://lol.qq.com/">LoL QQ (Chinese LoL)</a><br>
+Works for "Regular" LoL (All servers), GarenaLoL (All versions) and <a href="http://lol.qq.com/">LoL QQ (Chinese LoL)</a><br>
 <br>
 <a href="http://riotgames.com/">Riot (The makers of League of Legends)</a> has said <a href="http://forums.euw.leagueoflegends.com/board/showthread.php?p=15329279#15329279"><u>this</u></a> about LoLUpdater.<br>
 <br>
 <dt><a href="http://forums.euw.leagueoflegends.com/board/showthread.php?p=15329279#15329279"><img src="img/Riot.png"></a></dt>
 <br>
-LoLUpdater can't get you banned.<br>
+LoLUpdater can't get you banned (It is not considered a cheat)<br>
 <br>
-Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_library">DLL</a> files with the latest ones available from Nvidia/Intel/Adobe/Microsoft, (LoL's files are not the newest).
+Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_library">DLL</a> files with the latest ones available from Nvidia/Intel/Adobe/Microsoft, (LoL's files are not the newest available).
 </span>
 </dt>
 <hr>
@@ -30,7 +30,7 @@ Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_l
 <a href="https://github.com/Loggan08/LoLUpdater/blob/master/LoLUpdater/LoLUpdater.cpp" class="btn">Link to Source-Code</a>
 </dt> 
 <dd>
-  <strong><time>Updated February 8th 2015 12:23 GMT+1</time></strong>
+  <strong><time>Last updated: February 8th 2015 12:23 GMT+1</time></strong>
 </dd>
 <br>
 <br>
@@ -61,21 +61,21 @@ Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_l
         <li>Run LoLUpdater.exe and select the appropriate directory:
         <ul>
         <br>
-  <li>Regular LoL: <code>Riot Games\League of Legends</code> (where <code>lol.launcher.exe</code> is)</li>
+  <li>"Regular" LoL: <code>Riot Games\League of Legends</code> (where <code>lol.launcher.exe</code> is)</li>
   <br>
   <li>GarenaLoL: <code>GarenaLoL\GameData\Apps\LoL</code> (where <code>lol.exe</code> is)</li>
   <br>
   <li>LoLQQ (Chinese LoL): <code>腾讯游戏\英雄联盟</code> (where <code>lol.launcher_tencent.exe</code> is)</li>
 </ul>
   <br>
-    wait (Under 1 minute on a 100mbit line with a SSD), then enjoy! (Close LoLUpdater once it's done)</li>
+   Let LoLUpdater run and the close the window once it's done</li>
          <br>
          <li>Run it like this on Windows XP:</li>
          <br>
-         <img src="img/XPinstallation.png" width="33%" height="33%">
+         <img src="img/XPinstallation.png" width="40%" height="40%">
          <br>
          <br>
-        <li>You can repatch with LoLUpdater every LoL-Patch (Patch by Riot) to keep LoLUpdater active (Even after the micro-patches)</li>
+        <li>Repatch with LoLUpdater every LoL-Patch (Patch by Riot) to keep LoLUpdater active (Even after the micro-patches)</li>
   </details>
   <details>
     <summary><dt>Manual Installation: (click)</dt>
@@ -86,10 +86,8 @@ Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_l
     </summary>Right click file -> Properties -> Unblock</li><br>
         <img src="img/unblock.png"><br>
          <br>
-         <li>On Windows XP you will need <a href="http://lol.jdhpro.com/UnblockFile.zip">this</a> to unblock files, extract and run "Unblock.bat" in the same directory as the file to be unblocked (Edit Unblock.bat and change the filename inside)</li>
-         </details>
-    <br>
-      <li>Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Doesn't matter if you have an ATI graphics card)</a>, unblock the installers.
+        <br>
+      <li>Install <a href="http://labs.adobe.com/downloads/air.html">Adobe Air</a> and <a href="http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012_Setup.exe">NvidiaCG (Yes you will still need this even if you are on ATI hardware)</a>, unblock the installers.
         </a>
       </li>
        <br>
@@ -99,23 +97,23 @@ Works by replacing League's <a href="http://en.wikipedia.org/wiki/Dynamic-link_l
       <li>Copy <code>Adobe AIR.dll</code> from <code>%WindowsDrive%:\Program Files (x86)\Common Files\Adobe AIR\Versions\1.0</code> to <code>%leaguedirectory%\RADS\projects\lol_air_client\releases\%Latest%\deploy\Adobe AIR\Versions\1.0</code> (put <code>NPSWF32.dll</code> in the <code>Resources</code> folder)
       </li>
        <br>
-      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> and check what SIMD instructions your CPU supports then download the right one (<code>AVX2 > AVX > SSE2</code>): <a href="http://lol.jdhpro.com/AVX2.dll"><code>AVX2-Win8</code></a>,<a href="http://lol.jdhpro.com/AVX2-Win7.dll"><code>AVX2-Win7</code></a>, <a href="http://lol.jdhpro.com/AVX.dll"><code>AVX-Win8</code></a>,<a href="http://lol.jdhpro.com/AVX-Win7.dll"><code>AVX-Win7</code></a>, <a href="http://lol.jdhpro.com/SSE2.dll"><code>SSE2-Win8</code></a>, <a href="http://lol.jdhpro.com/SSE2-Win7.dll"><code>SSE2-Win7</code></a>, <a href="http://lol.jdhpro.com/Vista.dll"><code>Vista</code></a> or <a href="http://lol.jdhpro.com/XP.dll"><code>WinXP</code></a> and put it in the same directory as the Cg files (see above), rename it to <code>tbb.dll</code> and unblock it.
+      <li>Download <a href="http://www.cpuid.com/softwares/cpu-z.html">CPU-Z</a> and check what SIMD instructions your CPU supports then download the right one (<code>AVX2 > AVX > SSE2</code>): <a href="http://lol.jdhpro.com/AVX2.dll"><code>AVX2-Win8</code></a>,<a href="http://lol.jdhpro.com/AVX2-Win7.dll"><code>AVX2-Win7</code></a>, <a href="http://lol.jdhpro.com/AVX.dll"><code>AVX-Win8</code></a>,<a href="http://lol.jdhpro.com/AVX-Win7.dll"><code>AVX-Win7</code></a>, <a href="http://lol.jdhpro.com/SSE2.dll"><code>SSE2-Win8</code></a>, <a href="http://lol.jdhpro.com/SSE2-Win7.dll"><code>SSE2-Win7</code></a>, <a href="http://lol.jdhpro.com/Vista.dll"><code>Vista</code></a> or <a href="http://lol.jdhpro.com/XP.dll"><code>WinXP</code></a>, put it in the same directory as <code>cg.dll</code> (see above), rename it to <code>tbb.dll</code> and unblock it.
       </li>
       <br>
       <li>
-         Download <a href="http://lol.jdhpro.com/msvcp120.dll"><code>msvcp120</code></a> & <a href="http://lol.jdhpro.com/msvcr120.dll"><code>msvcr120</code></a> and copy them to the same place as <code>cg.dll</code> (See above), unblock both files.
+         Download <a href="http://lol.jdhpro.com/msvcp120.dll"><code>msvcp120</code></a> and <a href="http://lol.jdhpro.com/msvcr120.dll"><code>msvcr120</code></a> then copy them to the same place as <code>cg.dll</code> (See above), unblock both files.
       </li>
       <br>
       <li>
-          You can also copy the two files in the previous step and paste them in <code>%leaguedirectory%\RADS\projects\lol_patcher\releases\%Latest%\deploy</code>
+          Copy both files in the previous step to <code>%leaguedirectory%\RADS\projects\lol_patcher\releases\%Latest%\deploy</code>
       </li>
       <br>
-      <li>Now you are free to play! (Repeat every patch)</li>
+      <li>Repeat this process after every patch (By Riot), even the micro patches</li>
    </ul>
   </details>
 </dl>
 
-      <dt>Contact us:</dt>
+      <dt>Contact:</dt>
           <dt><a href="http://webchat.quakenet.org/?channels=#LoLUpdater">IRC</a>: #LoLUpdater @ Quakenet</dt>
           <dt><a href="mailto:Ilja.Korsun@Gmail.com">Email</a>: <img src="img/Email.png"></dt>
           <dt>Skype: Ikorsu</dt>
