@@ -107,7 +107,7 @@ static int can_use_intel_core_4th_gen_features()
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	if (!URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) == S_OK)
+	if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 		throw std::runtime_error("failed to initialize download");
 }
 
