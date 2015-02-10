@@ -83,6 +83,10 @@ wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t fileName[MAX_PATH] = L"LoLUpdater.exe";
 bool update = false;
 bool noupdate = false;
+const std::wstring majortxt = std::wstring(cwd + std::wstring(L"\\major.txt"));
+const std::wstring minortxt = std::wstring(cwd + std::wstring(L"\\minor.txt"));
+const std::wstring revisiontxt = std::wstring(cwd + std::wstring(L"\\revision.txt"));
+const std::wstring buildtxt = std::wstring(cwd + std::wstring(L"\\build.txt"));
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -93,6 +97,14 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 void DLUpdate()
 {
 	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
+}
+
+void DLInfo()
+{
+	downloadFile(L"http://lol.jdhpro.com/major.txt", majortxt);
+	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
+	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
+	downloadFile(L"http://lol.jdhpro.com/build.txt", buildtxt);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -171,14 +183,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	const auto majortxt = std::wstring(cwd + std::wstring(L"\\major.txt"));
-	const auto minortxt = std::wstring(cwd + std::wstring(L"\\minor.txt"));
-	const auto revisiontxt = std::wstring(cwd + std::wstring(L"\\revision.txt"));
-	const auto buildtxt = std::wstring(cwd + std::wstring(L"\\build.txt"));
-	downloadFile(L"http://lol.jdhpro.com/major.txt", majortxt);
-	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
-	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
-	downloadFile(L"http://lol.jdhpro.com/build.txt", buildtxt);
+
+	std::thread thread1{ DLInfo };
+	thread1.join();
 
 	std::wifstream t0(majortxt);
 	std::wstringstream buffer0;
@@ -195,11 +202,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::wifstream t3(buildtxt);
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
-
-	auto major = buffer0.str();
-	auto minor = buffer1.str();
-	auto revision = buffer2.str();
-	auto build = buffer3.str();
 
 	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
@@ -218,12 +220,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
 	delete[] versionInfo;
 
-	DeleteFile(majortxt.c_str());
-	DeleteFile(minortxt.c_str());
-	DeleteFile(revisiontxt.c_str());
-	DeleteFile(buildtxt.c_str());
+	DeleteFile(L"major.txt");
+	DeleteFile(L"minor.txt");
+	DeleteFile(L"revision.txt");
+	DeleteFile(L"build.txt");
 
-	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(major + L"." + minor + L"." + revision + L"." + build)))
+	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		std::thread t{ DLUpdate };
 		t.join();
@@ -234,7 +236,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		noupdate = true;
 	}
 
-	auto input = std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]));
+	auto input = std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str());
 	std::wcin >> input;
 	std::wofstream out(L"output.txt");
 	out << input;
