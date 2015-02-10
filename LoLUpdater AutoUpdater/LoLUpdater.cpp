@@ -238,16 +238,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 
+	//Todo: add error checking for this one
 	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
+
 	fileName[size] = NULL;
 	DWORD handle = 0;
 	size = GetFileVersionInfoSize(fileName, &handle);
+	if (size == NULL)
+		throw std::runtime_error("failed to get file version infosize");
+
 	auto versionInfo = new BYTE[size];
-	GetFileVersionInfo(fileName, handle, size, versionInfo);
+	if(!GetFileVersionInfo(fileName, handle, size, versionInfo))
+		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
 	VS_FIXEDFILEINFO* vsfi = nullptr;
-	VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
+	if(VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len) == NULL)
+		throw std::runtime_error("failed to retrive fileversion details");
+
 	delete[] versionInfo;
 
 	if (Version(std::wstring(HIWORD(vsfi->dwFileVersionMS) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
