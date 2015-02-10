@@ -1,17 +1,8 @@
-// Minimum supported processor = Intel Pentium 4 (Or anything with at least SSE2)
-// Supported Windows Versions: Windows XP SP3 -> Windows 8.1
-// Windows Server is currently not supported
-// Wine support is unknown
-
-#include <sstream>
+#include <Windows.h>
+#include <string>
+#include <fstream>
 #include <Shlwapi.h>
 #include <Shlobj.h>
-#include <thread>
-#include <wininet.h>
-#include <fstream>
-#include <stdint.h>
-#include <intrin.h>
-#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -50,10 +41,8 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473RUN1NS74113R-BYL0GG
 
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
-const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t gameclient[MAX_PATH + 1] = { 0 };
 wchar_t patchclient[MAX_PATH + 1] = { 0 };
-wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
 wchar_t runair[MAX_PATH + 1] = { 0 };
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
@@ -86,7 +75,7 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	if (fclose(f) != NULL)
 		throw std::runtime_error("failed to close resource");
 
-	DeleteFile(std::wstring(loldir + filename.c_str() + unblocktag).c_str());
+	DeleteFile(std::wstring(loldir + filename + L":Zone.Identifier").c_str());
 }
 
 std::wstring findlatest(std::wstring const& folder)
@@ -217,13 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	wchar_t airclient[MAX_PATH + 1] = { 0 };
 
-	wchar_t progdrive[MAX_PATH + 1];
-	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
-		throw std::runtime_error("Unable to get folder path");
-
 	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-	wchar_t adobepath[MAX_PATH + 1] = { 0 };
-	PCombine(adobepath, progdrive, adobedir.c_str());
 
 	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
 	{
