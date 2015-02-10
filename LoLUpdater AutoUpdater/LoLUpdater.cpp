@@ -7,7 +7,7 @@
 class CLimitSingleInstance
 {
 protected:
-	DWORD m_dLastError;
+	DWORD m_dwLastError;
 	HANDLE m_hMutex;
 
 public:
@@ -244,5 +244,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
 	}
+
 	return Msg.wParam;
 }
