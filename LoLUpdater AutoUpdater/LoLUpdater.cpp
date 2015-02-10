@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <thread>
+#include <Shlwapi.h>
 
 struct Version
 {
@@ -81,10 +82,16 @@ wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t fileName[MAX_PATH] = L"LoLUpdater.exe";
 bool update = false;
 bool noupdate = false;
-const std::wstring majortxt = std::wstring(cwd + std::wstring(L"\\major.txt"));
-const std::wstring minortxt = std::wstring(cwd + std::wstring(L"\\minor.txt"));
-const std::wstring revisiontxt = std::wstring(cwd + std::wstring(L"\\revision.txt"));
-const std::wstring buildtxt = std::wstring(cwd + std::wstring(L"\\build.txt"));
+
+wchar_t majortxt[MAX_PATH + 1] = { 0 };
+wchar_t minortxt[MAX_PATH + 1] = { 0 };
+wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
+wchar_t buildtxt[MAX_PATH + 1] = { 0 };
+
+const std::wstring major = L"major.txt";
+const std::wstring minor = L"minor.txt";
+const std::wstring revision = L"revision.txt";
+const std::wstring build = L"build.txt";
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -103,6 +110,18 @@ void DLInfo()
 	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
 	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
 	downloadFile(L"http://lol.jdhpro.com/build.txt", buildtxt);
+}
+
+void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
+{
+	if (PathCombine(pszPathOut, pszPathIn, pszMore) == nullptr)
+		throw std::runtime_error("failed to combine path");
+}
+
+void PAppend(LPTSTR pszPath, LPCTSTR pszMore)
+{
+	if (PathAppend(pszPath, pszMore) == NULL)
+		throw std::runtime_error("failed to append path");
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -184,6 +203,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread thread1{DLInfo};
 	thread1.join();
 
+	PCombine(majortxt, cwd, major.c_str());
+	PCombine(minortxt, cwd, minor.c_str());
+	PCombine(revisiontxt, cwd, revision.c_str());
+	PCombine(buildtxt, cwd, build.c_str());
+
 	std::wifstream t0(majortxt);
 	std::wstringstream buffer0;
 	buffer0 << t0.rdbuf();
@@ -228,10 +252,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		noupdate = true;
 	}
 
-	DeleteFile(majortxt.c_str());
-	DeleteFile(minortxt.c_str());
-	DeleteFile(revisiontxt.c_str());
-	DeleteFile(buildtxt.c_str());
+	DeleteFile(majortxt);
+	DeleteFile(minortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
