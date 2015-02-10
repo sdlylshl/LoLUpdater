@@ -4,6 +4,7 @@
 #include <sstream>
 #include <urlmon.h>
 #include <thread>
+#include <iostream>
 
 struct Version
 {
@@ -79,7 +80,7 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-std::wstring fileName = cwd + std::wstring(L"\\LoLUpdater.exe");
+wchar_t fileName[MAX_PATH] = L"LoLUpdater.exe";
 bool update = false;
 bool noupdate = false;
 
@@ -91,7 +92,7 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void DLUpdate()
 {
-	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", fileName);
+	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -200,15 +201,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	auto revision = buffer2.str();
 	auto build = buffer3.str();
 
-	auto size = GetModuleFileName(nullptr, const_cast<LPWSTR>(fileName.c_str()), _MAX_PATH);
+	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
+	size = GetFileVersionInfoSize(fileName, &handle);
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
-	{
-		delete[] versionInfo;
-	}
+	GetFileVersionInfo(fileName, handle, size, versionInfo);
 
 	UINT32 len = 0;
 	int aVersion[4];
@@ -220,7 +218,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
 	delete[] versionInfo;
 
-	if (Version(std::wstring(aVersion[0] + L"." + aVersion[1] + std::wstring(L"." + aVersion[2]) + std::wstring(L"." + aVersion[3]))) < Version(std::wstring(major + L"." + minor + L"." + revision + L"." + build)))
+	DeleteFile(majortxt.c_str());
+	DeleteFile(minortxt.c_str());
+	DeleteFile(revisiontxt.c_str());
+	DeleteFile(buildtxt.c_str());
+
+	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(major + L"." + minor + L"." + revision + L"." + build)))
 	{
 		std::thread t{ DLUpdate };
 		t.join();
@@ -228,13 +231,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	else
 	{
-		update = false;
+		noupdate = true;
 	}
 
-	DeleteFile(majortxt.c_str());
-	DeleteFile(minortxt.c_str());
-	DeleteFile(revisiontxt.c_str());
-	DeleteFile(buildtxt.c_str());
+	auto input = std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]));
+	std::wcin >> input;
+	std::wofstream out(L"output.txt");
+	out << input;
+	out.close();
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
