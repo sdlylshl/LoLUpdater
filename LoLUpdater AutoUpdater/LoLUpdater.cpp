@@ -89,7 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 {
 	const std::wstring latestversion = L"latestversion.txt";
 	downloadFile(L"http://lol.jdhpro.com/latestversion.txt", latestversion.c_str());
-	std::wifstream t(L"file.txt");
+	std::wifstream t(latestversion);
 	std::wstringstream buffer;
 	buffer << t.rdbuf();
 
