@@ -251,7 +251,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	delete[] versionInfo;
 
-	if (Version(std::wstring(HIWORD(vsfi->dwFileVersionMS) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
+	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		std::thread t{DLUpdate};
 		t.join();
