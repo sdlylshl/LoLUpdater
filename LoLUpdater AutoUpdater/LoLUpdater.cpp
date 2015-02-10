@@ -246,16 +246,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	GetFileVersionInfo(fileName, handle, size, versionInfo);
 
 	UINT32 len = 0;
-	int aVersion[4];
 	VS_FIXEDFILEINFO* vsfi = nullptr;
 	VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
-	aVersion[0] = HIWORD(vsfi->dwFileVersionMS);
-	aVersion[1] = LOWORD(vsfi->dwFileVersionMS);
-	aVersion[2] = HIWORD(vsfi->dwFileVersionLS);
-	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
 	delete[] versionInfo;
 
-	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
+	if (Version(std::wstring(HIWORD(vsfi->dwFileVersionMS) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		std::thread t{DLUpdate};
 		t.join();
