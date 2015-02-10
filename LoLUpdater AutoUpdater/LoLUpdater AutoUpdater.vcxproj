@@ -78,7 +78,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Urlmon.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.Lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
     </Link>

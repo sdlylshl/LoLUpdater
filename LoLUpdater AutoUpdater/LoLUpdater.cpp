@@ -202,7 +202,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (!GetFileVersionInfo(fileName, handle, size, versionInfo))
 	{
 		delete[] versionInfo;
-		return;
 	}
 
 	UINT32 len = 0;
