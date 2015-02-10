@@ -83,6 +83,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>Shlwapi.Lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <OutputFile>C:\Riot Games\League of Legends\LoLUpdater Uninstaller.exe</OutputFile>
+      <SubSystem>Windows</SubSystem>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

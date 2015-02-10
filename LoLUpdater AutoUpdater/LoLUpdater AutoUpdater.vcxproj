@@ -83,6 +83,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdaterAutoUpdater.exe</OutputFile>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
