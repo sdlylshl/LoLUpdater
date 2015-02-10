@@ -124,10 +124,10 @@ void UrlComb(PCTSTR pszRelative)
 
 void DLInfo()
 {
-	UrlComb(majortxt);
-	UrlComb(minortxt);
-	UrlComb(revisiontxt);
-	UrlComb(buildtxt);
+	UrlComb(major.c_str());
+	UrlComb(minor.c_str());
+	UrlComb(revision.c_str());
+	UrlComb(build.c_str());
 }
 
 
