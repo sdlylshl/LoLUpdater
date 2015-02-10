@@ -2,10 +2,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <thread>
 #include <Shlwapi.h>
-#include <thread>
 #include <wininet.h>
+#include <thread>
 
 struct Version
 {
@@ -81,7 +80,7 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t fileName[MAX_PATH] = L"LoLUpdater.exe";
+wchar_t fileName[MAX_PATH+1] = L"LoLUpdater.exe";
 bool update = false;
 bool noupdate = false;
 
@@ -98,6 +97,12 @@ const std::wstring build = L"build.txt";
 
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 
+void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
+{
+	if (PathCombine(pszPathOut, pszPathIn, pszMore) == nullptr)
+		throw std::runtime_error("failed to combine path");
+}
+
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
 	if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
@@ -106,7 +111,9 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void DLUpdate()
 {
-	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
+	wchar_t currentdir[MAX_PATH + 1] = { 0 };
+	PCombine(currentdir, cwd, L"LoLUpdater.exe");
+	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", currentdir);
 }
 
 void UrlComb(PCTSTR pszRelative)
@@ -125,18 +132,6 @@ void DLInfo()
 	UrlComb(buildtxt);
 }
 
-
-void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
-{
-	if (PathCombine(pszPathOut, pszPathIn, pszMore) == nullptr)
-		throw std::runtime_error("failed to combine path");
-}
-
-void PAppend(LPTSTR pszPath, LPCTSTR pszMore)
-{
-	if (PathAppend(pszPath, pszMore) == NULL)
-		throw std::runtime_error("failed to append path");
-}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -239,7 +234,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	buffer3 << t3.rdbuf();
 
 	//Todo: add error checking for this one
-	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
+	auto size = GetModuleFileName(nullptr, fileName, MAX_PATH+1);
 
 	fileName[size] = NULL;
 	DWORD handle = 0;
@@ -268,6 +263,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		noupdate = true;
 	}
+
+	buffer0.str(L"");
+	buffer0.clear();
+
+	buffer1.str(L"");
+	buffer1.clear();
+
+	buffer2.str(L"");
+	buffer2.clear();
+
+	buffer3.str(L"");
+	buffer3.clear();
 
 	DeleteFile(majortxt);
 	DeleteFile(minortxt);
