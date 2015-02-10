@@ -110,12 +110,12 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void DLUpdate()
 {
-	PCombine(currentdir, cwd, L"LoLUpdater.exe");
 	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", currentdir);
 }
 
 void UrlComb(PCTSTR pszRelative)
 {
+	*finalurl = '\0';
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
 
@@ -237,22 +237,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fileName[size] = NULL;
 	DWORD handle = 0;
 	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
-	if (size == NULL)
-		throw std::runtime_error("failed to get file version infosize");
+	// if (size == NULL)
+	// 	throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
-		throw std::runtime_error("failed to get file version info");
+	GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo);
+		// throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
 	VS_FIXEDFILEINFO* vsfi = nullptr;
-	if(VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len) == NULL)
-		throw std::runtime_error("failed to retrive fileversion details");
+	VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
+		// throw std::runtime_error("failed to retrive fileversion details");
 
 	delete[] versionInfo;
 
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
+		PCombine(currentdir, cwd, L"LoLUpdater.exe");
 		std::thread t{DLUpdate};
 		t.join();
 		update = true;
@@ -261,18 +262,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		noupdate = true;
 	}
-
-	buffer0.str(L"");
-	buffer0.clear();
-
-	buffer1.str(L"");
-	buffer1.clear();
-
-	buffer2.str(L"");
-	buffer2.clear();
-
-	buffer3.str(L"");
-	buffer3.clear();
 
 	DeleteFile(majortxt);
 	DeleteFile(minortxt);
