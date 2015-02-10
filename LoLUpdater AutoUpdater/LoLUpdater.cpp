@@ -1,7 +1,7 @@
-#include <Windows.h>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <Windows.h>
 
 class CLimitSingleInstance
 {
@@ -44,14 +44,14 @@ struct Version
 
 	explicit Version(const std::wstring& version)
 	{
-		swscanf(version.c_str(), L"%d.%d.%d.%d", &major, &minor, &revision, &build);
+		swscanf_s(version.c_str(), L"%d.%d.%d.%d", &major, &minor, &revision, &build, sizeof(wchar_t));
 		if (major < 0) major = 0;
 		if (minor < 0) minor = 0;
 		if (revision < 0) revision = 0;
 		if (build < 0) build = 0;
 	}
 
-	bool operator < (const Version& other)
+	bool operator <(const Version& other)
 	{
 		if (major < other.major)
 			return true;
@@ -64,7 +64,7 @@ struct Version
 		return false;
 	}
 
-	bool operator == (const Version& other)
+	bool operator ==(const Version& other)
 	{
 		return major == other.major
 			&& minor == other.minor
@@ -72,7 +72,7 @@ struct Version
 			&& build == other.build;
 	}
 
-	friend std::wostream& operator << (std::wostream& stream, const Version& ver)
+	friend std::wostream& operator <<(std::wostream& stream, const Version& ver)
 	{
 		stream << ver.major;
 		stream << '.';
@@ -98,8 +98,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	RECT start = { 2, 0, 0, 0 };
-	RECT end = { 2, 20, 0, 0 };
+	RECT start = {2, 0, 0, 0};
+	RECT end = {2, 20, 0, 0};
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -131,16 +131,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
-
-
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
 
-	MSG Msg = { 0 };
-	WNDCLASSEXW wc = { 0 };
+	MSG Msg = {0};
+	WNDCLASSEXW wc = {0};
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -170,7 +169,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
-
 
 	const std::wstring majortxt = L"major.txt";
 	const std::wstring minortxt = L"minor.txt";
@@ -202,8 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const auto revision = buffer2.str();
 	const auto build = buffer3.str();
 
-
-	wchar_t fileName[MAX_PATH] = { L"LoLUpdater.exe" };
+	wchar_t fileName[MAX_PATH] = {L"LoLUpdater.exe"};
 	auto size = GetModuleFileNameW(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
@@ -234,7 +231,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		noupdate = true;
 	}
-		
+
+	DeleteFile(majortxt.c_str());
+	DeleteFile(minortxt.c_str());
+	DeleteFile(revisiontxt.c_str());
+	DeleteFile(buildtxt.c_str());
+
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{

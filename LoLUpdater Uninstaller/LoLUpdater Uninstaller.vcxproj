@@ -75,6 +75,7 @@
       <OpenMPSupport>false</OpenMPSupport>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>None</ErrorReporting>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
