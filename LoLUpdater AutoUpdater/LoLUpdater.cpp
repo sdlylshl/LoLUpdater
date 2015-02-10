@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <urlmon.h>
+#include <thread>
 
 struct Version
 {
@@ -76,15 +78,19 @@ public:
 };
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
-
-
-bool noupdate = false;
+wchar_t* cwd(_wgetcwd(nullptr, 0));
+std::wstring fileName = cwd + std::wstring(L"\\LoLUpdater.exe");
 bool update = false;
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
 	if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 		throw std::runtime_error("failed to initialize download");
+}
+
+void DLUpdate()
+{
+	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", fileName);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -111,7 +117,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (DrawText(hdc, L"Updated!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
 		}
-		if (noupdate)
+		else
 		{
 			if (DrawText(hdc, L"No update found", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
@@ -163,10 +169,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	const std::wstring majortxt = L"major.txt";
-	const std::wstring minortxt = L"minor.txt";
-	const std::wstring revisiontxt = L"revision.txt";
-	const std::wstring buildtxt = L"build.txt";
+	const auto majortxt = std::wstring(cwd + std::wstring(L"\\major.txt"));
+	const auto minortxt = std::wstring(cwd + std::wstring(L"\\minor.txt"));
+	const auto revisiontxt = std::wstring(cwd + std::wstring(L"\\revision.txt"));
+	const auto buildtxt = std::wstring(cwd + std::wstring(L"\\build.txt"));
 	downloadFile(L"http://lol.jdhpro.com/major.txt", majortxt);
 	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
 	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
@@ -188,18 +194,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 
-	const auto major = buffer0.str();
-	const auto minor = buffer1.str();
-	const auto revision = buffer2.str();
-	const auto build = buffer3.str();
+	auto major = buffer0.str();
+	auto minor = buffer1.str();
+	auto revision = buffer2.str();
+	auto build = buffer3.str();
 
-	wchar_t fileName[MAX_PATH] = {L"LoLUpdater.exe"};
-	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
+	auto size = GetModuleFileName(nullptr, const_cast<LPWSTR>(fileName.c_str()), _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(fileName, &handle);
+	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(fileName, handle, size, versionInfo))
+	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
 	{
 		delete[] versionInfo;
 	}
@@ -216,12 +221,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	if (Version(std::wstring(aVersion[0] + L"." + aVersion[1] + std::wstring(L"." + aVersion[2]) + std::wstring(L"." + aVersion[3]))) < Version(std::wstring(major + L"." + minor + L"." + revision + L"." + build)))
 	{
-		downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
+		std::thread t{ DLUpdate };
+		t.join();
 		update = true;
-	}
-	else
-	{
-		noupdate = true;
 	}
 
 	DeleteFile(majortxt.c_str());
