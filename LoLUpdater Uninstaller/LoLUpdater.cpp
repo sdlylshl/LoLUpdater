@@ -174,7 +174,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to register windowclass");
 	}
 
-	auto hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
+	auto hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater Uninstaller", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 310, 100, nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == nullptr)
 	{
