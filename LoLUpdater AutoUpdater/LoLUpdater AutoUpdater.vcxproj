@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{819F276C-E4CC-465D-AC35-2BDBFD333E10}</ProjectGuid>
-    <RootNamespace>LoLUpdaterUninstaller</RootNamespace>
+    <ProjectGuid>{47F18EC4-B391-489A-A843-863CF50FCFE3}</ProjectGuid>
+    <RootNamespace>LoLUpdaterAutoUpdater</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -24,9 +24,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -65,14 +65,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LoLUpdater.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cg.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cgD3D9.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cgGL.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\msvcp120.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\msvcr120.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\tbb.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

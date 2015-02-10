@@ -57,7 +57,7 @@ const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t patchclient[MAX_PATH + 1] = { 0 };
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
-
+wchar_t runair[MAX_PATH + 1] = { 0 };
 const std::wstring p120 = L"msvcp120.dll";
 const std::wstring r120 = L"msvcr120.dll";
 
@@ -343,7 +343,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 	BROWSEINFO bi = {0};
-	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL installation directory:";
+	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL/LoLQQ installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	if (pidl == nullptr)
 	{
