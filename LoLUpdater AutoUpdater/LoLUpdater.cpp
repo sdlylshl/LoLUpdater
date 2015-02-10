@@ -239,17 +239,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	fileName[size] = NULL;
 	DWORD handle = 0;
 	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
-	// if (size == NULL)
-	// 	throw std::runtime_error("failed to get file version infosize");
+	if (size == NULL)
+		throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo);
-		// throw std::runtime_error("failed to get file version info");
+	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
+		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
 	VS_FIXEDFILEINFO* vsfi = nullptr;
-	VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
-		// throw std::runtime_error("failed to retrive fileversion details");
+	if (VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len) == NULL)
+		throw std::runtime_error("failed to retrive fileversion details");
 
 	delete[] versionInfo;
 
@@ -265,10 +265,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		noupdate = true;
 	}
 
-	DeleteFile(major.c_str());
-	DeleteFile(minor.c_str());
-	DeleteFile(revision.c_str());
-	DeleteFile(build.c_str());
+	DeleteFile(majortxt);
+	DeleteFile(minortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
