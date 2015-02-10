@@ -183,8 +183,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-
-	std::thread thread1{ DLInfo };
+	std::thread thread1{DLInfo};
 	thread1.join();
 
 	std::wifstream t0(majortxt);
@@ -227,7 +226,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
-		std::thread t{ DLUpdate };
+		std::thread t{DLUpdate};
 		t.join();
 		update = true;
 	}
@@ -235,12 +234,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		noupdate = true;
 	}
-
-	auto input = std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str());
-	std::wcin >> input;
-	std::wofstream out(L"output.txt");
-	out << input;
-	out.close();
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
