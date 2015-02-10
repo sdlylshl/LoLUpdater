@@ -20,11 +20,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cgD3D9.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cgGL.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\msvcp120.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\msvcr120.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\tbb.dll" />
-    <None Include="..\..\..\..\..\..\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.74\deploy\cg.dll" />
+    <None Include="Adobe AIR.dll" />
+    <None Include="cg.dll" />
+    <None Include="cgD3D9.dll" />
+    <None Include="cgGL.dll" />
+    <None Include="msvcp120.dll" />
+    <None Include="msvcr120.dll" />
+    <None Include="NPSWF32.dll" />
+    <None Include="tbb.dll" />
   </ItemGroup>
 </Project>

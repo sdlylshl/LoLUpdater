@@ -180,9 +180,9 @@ void msvc(std::wstring const& DEST, int RESID, std::wstring const& RESIDNAME)
 	UnblockFile(svc);
 }
 
-void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
+void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 {
-	if (!CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists))
+	if (!CopyFile(lpExistingFileName, lpNewFileName, false))
 		throw std::runtime_error("failed to copy file");
 }
 
@@ -519,11 +519,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	std::thread t1{threadingbuildingblocks};
 	t1.join();
 
-	CpFile(cgbin, cgdest, false);
-	CpFile(cgglbin, cggldest, false);
-	CpFile(cgd3d9bin, cgd3d9dest, false);
-	CpFile(airlatest, airdest, false);
-	CpFile(flashlatest, flashdest, false);
+	CpFile(cgbin, cgdest);
+	CpFile(cgglbin, cggldest);
+	CpFile(cgd3d9bin, cgd3d9dest);
+	CpFile(airlatest, airdest);
+	CpFile(flashlatest, flashdest);
 
 	msvc(gameclient, 2, p120.c_str());
 	msvc(gameclient, 3, r120.c_str());
