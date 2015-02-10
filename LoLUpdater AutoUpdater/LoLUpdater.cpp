@@ -80,10 +80,10 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t fileName[MAX_PATH+1] = L"LoLUpdater.exe";
+std::wstring fileName = L"LoLUpdater.exe";
 bool update = false;
 bool noupdate = false;
-
+wchar_t currentdir[MAX_PATH + 1] = { 0 };
 wchar_t majortxt[MAX_PATH + 1] = { 0 };
 wchar_t minortxt[MAX_PATH + 1] = { 0 };
 wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
@@ -94,7 +94,6 @@ const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
-
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
@@ -111,7 +110,6 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void DLUpdate()
 {
-	wchar_t currentdir[MAX_PATH + 1] = { 0 };
 	PCombine(currentdir, cwd, L"LoLUpdater.exe");
 	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", currentdir);
 }
@@ -234,16 +232,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	buffer3 << t3.rdbuf();
 
 	//Todo: add error checking for this one
-	auto size = GetModuleFileName(nullptr, fileName, MAX_PATH+1);
+	auto size = GetModuleFileName(nullptr, currentdir, MAX_PATH+1);
 
 	fileName[size] = NULL;
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(fileName, &handle);
+	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
 	if (size == NULL)
 		throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	if(!GetFileVersionInfo(fileName, handle, size, versionInfo))
+	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
 		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
