@@ -36,8 +36,55 @@ public:
 	}
 };
 
-
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
+
+struct Version
+{
+	int major, minor, revision, build;
+
+	explicit Version(const std::wstring& version)
+	{
+		swscanf(version.c_str(), L"%d.%d.%d.%d", &major, &minor, &revision, &build);
+		if (major < 0) major = 0;
+		if (minor < 0) minor = 0;
+		if (revision < 0) revision = 0;
+		if (build < 0) build = 0;
+	}
+
+	bool operator < (const Version& other)
+	{
+		if (major < other.major)
+			return true;
+		if (minor < other.minor)
+			return true;
+		if (revision < other.revision)
+			return true;
+		if (build < other.build)
+			return true;
+		return false;
+	}
+
+	bool operator == (const Version& other)
+	{
+		return major == other.major
+			&& minor == other.minor
+			&& revision == other.revision
+			&& build == other.build;
+	}
+
+	friend std::wostream& operator << (std::wostream& stream, const Version& ver)
+	{
+		stream << ver.major;
+		stream << '.';
+		stream << ver.minor;
+		stream << '.';
+		stream << ver.revision;
+		stream << '.';
+		stream << ver.build;
+		return stream;
+	}
+};
+
 bool noupdate = false;
 bool update = false;
 
@@ -87,12 +134,112 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	LPSTR, int nCmdShow)
 {
-	const std::wstring latestversion = L"latestversion.txt";
-	downloadFile(L"http://lol.jdhpro.com/latestversion.txt", latestversion.c_str());
-	std::wifstream t(latestversion);
-	std::wstringstream buffer;
-	buffer << t.rdbuf();
 
-	finished = true;
-	finished = false;
+
+	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
+		return 0;
+
+	MSG Msg = { 0 };
+	WNDCLASSEXW wc = { 0 };
+	const std::wstring g_szClassName(L"mainwindow");
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.lpfnWndProc = WndProc;
+	wc.hInstance = hInstance;
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wc.lpszClassName = g_szClassName.c_str();
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	if (wc.hIcon == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+
+	if (wc.hIconSm == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	if (RegisterClassExW(&wc) == NULL)
+	{
+		throw std::runtime_error("failed to register windowclass");
+	}
+
+	auto hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater AutoUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
+
+	if (hwnd == nullptr)
+	{
+		throw std::runtime_error("failed to create window");
+	}
+
+	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
+
+
+	const std::wstring majortxt = L"major.txt";
+	const std::wstring minortxt = L"minor.txt";
+	const std::wstring revisiontxt = L"revision.txt";
+	const std::wstring buildtxt = L"build.txt";
+	downloadFile(L"http://lol.jdhpro.com/major.txt", majortxt);
+	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
+	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
+	downloadFile(L"http://lol.jdhpro.com/build.txt", buildtxt);
+
+	std::wifstream t0(majortxt);
+	std::wstringstream buffer0;
+	buffer0 << t0.rdbuf();
+
+	std::wifstream t1(minortxt);
+	std::wstringstream buffer1;
+	buffer1 << t1.rdbuf();
+
+	std::wifstream t2(revisiontxt);
+	std::wstringstream buffer2;
+	buffer2 << t2.rdbuf();
+
+	std::wifstream t3(buildtxt);
+	std::wstringstream buffer3;
+	buffer3 << t3.rdbuf();
+
+	const auto major = buffer0.str();
+	const auto minor = buffer1.str();
+	const auto revision = buffer2.str();
+	const auto build = buffer3.str();
+
+
+	wchar_t fileName[MAX_PATH] = { L"LoLUpdater.exe" };
+	auto size = GetModuleFileNameW(nullptr, fileName, _MAX_PATH);
+	fileName[size] = NULL;
+	DWORD handle = 0;
+	size = GetFileVersionInfoSizeW(fileName, &handle);
+	auto versionInfo = new BYTE[size];
+	if (!GetFileVersionInfoW(fileName, handle, size, versionInfo))
+	{
+		delete[] versionInfo;
+		return;
+	}
+	// we have version information
+	UINT32 len = 0;
+	int aVersion[4];
+	VS_FIXEDFILEINFO* vsfi = nullptr;
+	VerQueryValueW(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
+	aVersion[0] = HIWORD(vsfi->dwFileVersionMS);
+	aVersion[1] = LOWORD(vsfi->dwFileVersionMS);
+	aVersion[2] = HIWORD(vsfi->dwFileVersionLS);
+	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
+	delete[] versionInfo;
+
+	if (Version(std::wstring(aVersion[0] + L"." + aVersion[1] + std::wstring(L"." + aVersion[2]) + std::wstring(L"." + aVersion[3]))) < Version(std::wstring(major + L"." + minor + L"." + revision + L"." + build)))
+	{
+		downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
+		update = true;
+	}
+	else
+	{
+		noupdate = true;
+	}
+		
+	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
+	{
+		TranslateMessage(&Msg);
+		DispatchMessage(&Msg);
+	}
+	return Msg.wParam;
 }
