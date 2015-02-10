@@ -29,14 +29,6 @@ struct Version
 		return false;
 	}
 
-	bool operator ==(const Version& other)
-	{
-		return major == other.major
-			&& minor == other.minor
-			&& revision == other.revision
-			&& build == other.build;
-	}
-
 	friend std::wostream& operator <<(std::wostream& stream, const Version& ver)
 	{
 		stream << ver.major;
@@ -99,8 +91,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	RECT start = { 2, 0, 0, 0 };
-	RECT end = { 2, 20, 0, 0 };
+	RECT start = {2, 0, 0, 0};
+	RECT end = {2, 20, 0, 0};
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -134,13 +126,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-	LPSTR, int nCmdShow)
+                   LPSTR, int nCmdShow)
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
 
-	MSG Msg = { 0 };
-	WNDCLASSEX wc = { 0 };
+	MSG Msg = {0};
+	WNDCLASSEX wc = {0};
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -201,7 +193,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const auto revision = buffer2.str();
 	const auto build = buffer3.str();
 
-	wchar_t fileName[MAX_PATH] = { L"LoLUpdater.exe" };
+	wchar_t fileName[MAX_PATH] = {L"LoLUpdater.exe"};
 	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
