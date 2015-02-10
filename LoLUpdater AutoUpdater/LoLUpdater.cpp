@@ -88,8 +88,6 @@ wchar_t majortxt[MAX_PATH + 1] = { 0 };
 wchar_t minortxt[MAX_PATH + 1] = { 0 };
 wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
 wchar_t buildtxt[MAX_PATH + 1] = { 0 };
-wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
-DWORD dwLength = sizeof(finalurl);
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
@@ -115,12 +113,15 @@ void DLUpdate()
 
 void UrlComb(PCTSTR pszRelative)
 {
-	*finalurl = '\0';
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
+	DWORD dwLength = sizeof(finalurl);
+
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
 
 	downloadFile(finalurl, pszRelative);
 }
+
 
 void DLInfo()
 {
@@ -129,6 +130,7 @@ void DLInfo()
 	UrlComb(revision.c_str());
 	UrlComb(build.c_str());
 }
+
 
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -263,10 +265,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		noupdate = true;
 	}
 
-	DeleteFile(majortxt);
-	DeleteFile(minortxt);
-	DeleteFile(revisiontxt);
-	DeleteFile(buildtxt);
+	DeleteFile(major.c_str());
+	DeleteFile(minor.c_str());
+	DeleteFile(revision.c_str());
+	DeleteFile(build.c_str());
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
