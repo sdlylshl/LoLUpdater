@@ -1,43 +1,7 @@
 #include <Windows.h>
-#include <cwchar>
 #include <string>
 #include <fstream>
 #include <sstream>
-
-class CLimitSingleInstance
-{
-protected:
-	DWORD m_dwLastError;
-	HANDLE m_hMutex;
-
-public:
-	explicit CLimitSingleInstance(std::wstring const& strMutexName)
-	{
-		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
-		if (m_hMutex == nullptr)
-			throw std::runtime_error("failed to create mutex");
-
-		m_dwLastError = GetLastError();
-	}
-
-	~CLimitSingleInstance()
-	{
-		if (m_hMutex)
-		{
-			if (CloseHandle(m_hMutex) == NULL)
-				throw std::runtime_error("failed to close handle");
-
-			m_hMutex = nullptr;
-		}
-	}
-
-	BOOL IsAnotherInstanceRunning()
-	{
-		return (ERROR_ALREADY_EXISTS == m_dwLastError);
-	}
-};
-
-CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
 struct Version
 {
@@ -85,6 +49,42 @@ struct Version
 		return stream;
 	}
 };
+
+class CLimitSingleInstance
+{
+protected:
+	DWORD m_dwLastError;
+	HANDLE m_hMutex;
+
+public:
+	explicit CLimitSingleInstance(std::wstring const& strMutexName)
+	{
+		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
+		if (m_hMutex == nullptr)
+			throw std::runtime_error("failed to create mutex");
+
+		m_dwLastError = GetLastError();
+	}
+
+	~CLimitSingleInstance()
+	{
+		if (m_hMutex)
+		{
+			if (CloseHandle(m_hMutex) == NULL)
+				throw std::runtime_error("failed to close handle");
+
+			m_hMutex = nullptr;
+		}
+	}
+
+	BOOL IsAnotherInstanceRunning()
+	{
+		return (ERROR_ALREADY_EXISTS == m_dwLastError);
+	}
+};
+
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
+
 
 bool noupdate = false;
 bool update = false;
@@ -139,8 +139,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
 
-	MSG Msg = {0};
-	WNDCLASSEX wc = {0};
+	MSG Msg = { 0 };
+	WNDCLASSEX wc = { 0 };
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -201,7 +201,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const auto revision = buffer2.str();
 	const auto build = buffer3.str();
 
-	wchar_t fileName[MAX_PATH] = {L"LoLUpdater.exe"};
+	wchar_t fileName[MAX_PATH] = { L"LoLUpdater.exe" };
 	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		delete[] versionInfo;
 		return;
 	}
-	// we have version information
+
 	UINT32 len = 0;
 	int aVersion[4];
 	VS_FIXEDFILEINFO* vsfi = nullptr;
