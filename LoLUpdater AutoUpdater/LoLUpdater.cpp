@@ -2,9 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <urlmon.h>
 #include <thread>
-#include <iostream>
 
 struct Version
 {
@@ -123,7 +121,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		if (hdc == nullptr)
 			throw std::runtime_error("Nothing to render in");
 
-		if (DrawText(hdc, L"Check for updates, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
+		if (DrawText(hdc, L"Checking for updates, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
 			throw std::runtime_error("failed to draw text");
 
 		if (update)
@@ -219,11 +217,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	aVersion[3] = LOWORD(vsfi->dwFileVersionLS);
 	delete[] versionInfo;
 
-	DeleteFile(L"major.txt");
-	DeleteFile(L"minor.txt");
-	DeleteFile(L"revision.txt");
-	DeleteFile(L"build.txt");
-
 	if (Version(std::wstring(std::to_wstring(aVersion[0]) + L"." + std::to_wstring(aVersion[1]) + L"." + std::to_wstring(aVersion[2]) + L"." + std::to_wstring(aVersion[3]))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		std::thread t{DLUpdate};
@@ -235,7 +228,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		noupdate = true;
 	}
 
+	DeleteFile(majortxt.c_str());
+	DeleteFile(minortxt.c_str());
+	DeleteFile(revisiontxt.c_str());
+	DeleteFile(buildtxt.c_str());
+
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
 		TranslateMessage(&Msg);
