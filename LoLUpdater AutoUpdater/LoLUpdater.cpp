@@ -1,18 +1,19 @@
+#include <Windows.h>
+#include <cwchar>
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <Windows.h>
 
 class CLimitSingleInstance
 {
 protected:
-	DWORD m_dwLastError;
+	DWORD m_dLastError;
 	HANDLE m_hMutex;
 
 public:
 	explicit CLimitSingleInstance(std::wstring const& strMutexName)
 	{
-		m_hMutex = CreateMutexW(nullptr, 0, strMutexName.c_str());
+		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
 		if (m_hMutex == nullptr)
 			throw std::runtime_error("failed to create mutex");
 
@@ -90,7 +91,7 @@ bool update = false;
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
-	if (URLDownloadToFileW(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
+	if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 		throw std::runtime_error("failed to initialize download");
 }
 
@@ -98,8 +99,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	RECT start = {2, 0, 0, 0};
-	RECT end = {2, 20, 0, 0};
+	RECT start = { 2, 0, 0, 0 };
+	RECT end = { 2, 20, 0, 0 };
 	switch (msg)
 	{
 	case WM_DESTROY:
@@ -110,17 +111,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		if (hdc == nullptr)
 			throw std::runtime_error("Nothing to render in");
 
-		if (DrawTextW(hdc, L"Checking for Updates!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
+		if (DrawText(hdc, L"Check for updates, Please Wait!", -1, &start, DT_SINGLELINE | DT_NOCLIP) == NULL)
 			throw std::runtime_error("failed to draw text");
 
 		if (update)
 		{
-			if (DrawTextW(hdc, L"Update Downloaded!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
+			if (DrawText(hdc, L"Updated!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
 		}
 		if (noupdate)
 		{
-			if (DrawTextW(hdc, L"No Update Available", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
+			if (DrawText(hdc, L"No update found", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
 		}
 		EndPaint(hwnd, &ps);
@@ -139,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		return 0;
 
 	MSG Msg = {0};
-	WNDCLASSEXW wc = {0};
+	WNDCLASSEX wc = {0};
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -155,12 +156,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (wc.hIconSm == nullptr)
 		throw std::runtime_error("failed to load icon");
 
-	if (RegisterClassExW(&wc) == NULL)
+	if (RegisterClassEx(&wc) == NULL)
 	{
 		throw std::runtime_error("failed to register windowclass");
 	}
 
-	auto hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater AutoUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
+	auto hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater AutoUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 260, 100, nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == nullptr)
 	{
@@ -201,12 +202,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	const auto build = buffer3.str();
 
 	wchar_t fileName[MAX_PATH] = {L"LoLUpdater.exe"};
-	auto size = GetModuleFileNameW(nullptr, fileName, _MAX_PATH);
+	auto size = GetModuleFileName(nullptr, fileName, _MAX_PATH);
 	fileName[size] = NULL;
 	DWORD handle = 0;
-	size = GetFileVersionInfoSizeW(fileName, &handle);
+	size = GetFileVersionInfoSize(fileName, &handle);
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfoW(fileName, handle, size, versionInfo))
+	if (!GetFileVersionInfo(fileName, handle, size, versionInfo))
 	{
 		delete[] versionInfo;
 		return;
@@ -215,7 +216,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	UINT32 len = 0;
 	int aVersion[4];
 	VS_FIXEDFILEINFO* vsfi = nullptr;
-	VerQueryValueW(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
+	VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len);
 	aVersion[0] = HIWORD(vsfi->dwFileVersionMS);
 	aVersion[1] = LOWORD(vsfi->dwFileVersionMS);
 	aVersion[2] = HIWORD(vsfi->dwFileVersionLS);
