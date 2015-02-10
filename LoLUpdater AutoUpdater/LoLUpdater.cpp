@@ -4,6 +4,8 @@
 #include <sstream>
 #include <thread>
 #include <Shlwapi.h>
+#include <thread>
+#include <wininet.h>
 
 struct Version
 {
@@ -87,11 +89,14 @@ wchar_t majortxt[MAX_PATH + 1] = { 0 };
 wchar_t minortxt[MAX_PATH + 1] = { 0 };
 wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
 wchar_t buildtxt[MAX_PATH + 1] = { 0 };
-
+wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
+DWORD dwLength = sizeof(finalurl);
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
+
+const std::wstring ftp = L"http://lol.jdhpro.com/";
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -104,13 +109,22 @@ void DLUpdate()
 	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", L"LoLUpdater.exe");
 }
 
+void UrlComb(PCTSTR pszRelative)
+{
+	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
+		throw std::runtime_error("failed to combine Url");
+
+	downloadFile(finalurl, pszRelative);
+}
+
 void DLInfo()
 {
-	downloadFile(L"http://lol.jdhpro.com/major.txt", majortxt);
-	downloadFile(L"http://lol.jdhpro.com/minor.txt", minortxt);
-	downloadFile(L"http://lol.jdhpro.com/revision.txt", revisiontxt);
-	downloadFile(L"http://lol.jdhpro.com/build.txt", buildtxt);
+	UrlComb(majortxt);
+	UrlComb(minortxt);
+	UrlComb(revisiontxt);
+	UrlComb(buildtxt);
 }
+
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
 {
