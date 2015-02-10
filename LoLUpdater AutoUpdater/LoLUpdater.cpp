@@ -81,6 +81,7 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R4U70UPD473R-BYL0GG
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 std::wstring fileName = cwd + std::wstring(L"\\LoLUpdater.exe");
 bool update = false;
+bool noupdate = false;
 
 void downloadFile(std::wstring const& url, std::wstring const& file)
 {
@@ -117,7 +118,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (DrawText(hdc, L"Updated!", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
 		}
-		else
+		if (noupdate)
 		{
 			if (DrawText(hdc, L"No update found", -1, &end, DT_SINGLELINE | DT_NOCLIP) == NULL)
 				throw std::runtime_error("failed to draw text");
@@ -224,6 +225,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		std::thread t{ DLUpdate };
 		t.join();
 		update = true;
+	}
+	else
+	{
+		update = false;
 	}
 
 	DeleteFile(majortxt.c_str());
