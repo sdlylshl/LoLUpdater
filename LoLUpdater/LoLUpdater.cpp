@@ -73,8 +73,7 @@ const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
-
-HWND hwnd, hwndButton, hwndButton2;
+HWND hwnd, hwndButton, hwndButton2, hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
@@ -432,6 +431,38 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
 }
 
+	
+
+
+	LRESULT CALLBACK WndProcAbout(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		switch (msg)
+		{
+		case WM_COMMAND:
+		{
+			switch (LOWORD(wParam))
+			{
+			case ID_HELP_CHECKFORUPDATES:
+				break;
+
+			case ID_HELP_ABOUT:
+				ShowWindow(hwnd2, SW_SHOW);
+				UpdateWindow(hwnd2);
+				break;
+			}
+
+		} break;
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+		default:
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+		}
+		return 0;
+	}
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
@@ -451,18 +482,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 		break;
 
-	case WM_COMMAND:
-	{
-		switch (LOWORD(wParam))
-		{
-		case ID_HELP_CHECKFORUPDATES:
-			break;
-		case ID_HELP_ABOUT:
-			break;
-		}
-
-	} break;
-
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -473,7 +492,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-                   LPSTR, int)
+	LPSTR, int nCmdShow)
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
@@ -508,6 +527,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to create window");
 	}
 
+	WNDCLASSEX wc1 = { sizeof(wc1) };
+	const std::wstring g_szClassName1(L"aboutbox");
+	wc1.cbSize = sizeof(WNDCLASSEX);
+	wc1.lpfnWndProc = WndProcAbout;
+	wc1.hInstance = hInstance;
+	wc1.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wc1.lpszClassName = g_szClassName1.c_str();
+	wc1.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
+	if (wc1.hIcon == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	wc1.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
+
+	if (wc1.hIconSm == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	if (RegisterClassEx(&wc1) == NULL)
+	{
+		throw std::runtime_error("failed to register windowclass");
+	}
+
+	hwnd2 = CreateWindow(g_szClassName1.c_str(),
+		L"About LoLUpdater",
+		WS_CHILD | WS_CAPTION
+		| WS_SYSMENU | WS_THICKFRAME
+		| WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		300,
+		300,
+		hwnd,
+		NULL,
+		hInstance,
+		NULL);
+
+	if (hwnd2 == nullptr)
+	{
+		throw std::runtime_error("failed to create window");
+	}
+
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL/LoLQQ installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
@@ -521,7 +580,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get browse path");
 	}
 
-	ShowWindow(hwnd, SW_SHOW);
+	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
 	wchar_t instdir[MAX_PATH + 1] = { 0 };
