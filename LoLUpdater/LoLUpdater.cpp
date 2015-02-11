@@ -469,12 +469,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 
-		hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, NULL, NULL);
+		hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
-		hwndButton2 = CreateWindow(L"button", L"Uninstall",WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, NULL, NULL);
+		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 		
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, g_szClassName1.c_str(), L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, hwnd, nullptr, hInstance, nullptr);
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"Abouxbox", L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, hwnd, nullptr, nullptr, nullptr);
 
 		if (hwnd2 == nullptr)
 		{
