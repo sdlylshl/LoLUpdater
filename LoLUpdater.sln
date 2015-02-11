@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoLUpdater", "LoLUpdater\LoLUpdater.vcxproj", "{0BB86D9C-DAE8-4A49-9902-815A3BBA6625}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoLUpdater Uninstaller", "LoLUpdater Uninstaller\LoLUpdater Uninstaller.vcxproj", "{819F276C-E4CC-465D-AC35-2BDBFD333E10}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoLUpdater AutoUpdater", "LoLUpdater AutoUpdater\LoLUpdater AutoUpdater.vcxproj", "{47F18EC4-B391-489A-A843-863CF50FCFE3}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{0BB86D9C-DAE8-4A49-9902-815A3BBA6625}.Debug|Win32.Build.0 = Debug|Win32
 		{0BB86D9C-DAE8-4A49-9902-815A3BBA6625}.Release|Win32.ActiveCfg = Release|Win32
 		{0BB86D9C-DAE8-4A49-9902-815A3BBA6625}.Release|Win32.Build.0 = Release|Win32
-		{819F276C-E4CC-465D-AC35-2BDBFD333E10}.Debug|Win32.ActiveCfg = Debug|Win32
-		{819F276C-E4CC-465D-AC35-2BDBFD333E10}.Debug|Win32.Build.0 = Debug|Win32
-		{819F276C-E4CC-465D-AC35-2BDBFD333E10}.Release|Win32.ActiveCfg = Release|Win32
-		{819F276C-E4CC-465D-AC35-2BDBFD333E10}.Release|Win32.Build.0 = Release|Win32
 		{47F18EC4-B391-489A-A843-863CF50FCFE3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{47F18EC4-B391-489A-A843-863CF50FCFE3}.Debug|Win32.Build.0 = Debug|Win32
 		{47F18EC4-B391-489A-A843-863CF50FCFE3}.Release|Win32.ActiveCfg = Release|Win32

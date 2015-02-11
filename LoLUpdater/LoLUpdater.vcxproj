@@ -150,6 +150,14 @@
     <None Include="Cg-3.1_April2012_Setup.exe" />
     <None Include="msvcp120.dll" />
     <None Include="msvcr120.dll" />
+    <None Include="Uninstall\Adobe AIR.dll" />
+    <None Include="Uninstall\cg.dll" />
+    <None Include="Uninstall\cgD3D9.dll" />
+    <None Include="Uninstall\cgGL.dll" />
+    <None Include="Uninstall\msvcp120.dll" />
+    <None Include="Uninstall\msvcr120.dll" />
+    <None Include="Uninstall\NPSWF32.dll" />
+    <None Include="Uninstall\tbb.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

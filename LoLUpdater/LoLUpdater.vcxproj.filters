@@ -13,11 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="LoLUpdater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Filter Include="Uninstall">
+      <UniqueIdentifier>{7ecbe52d-263e-41a4-a4c6-fccc1e39d490}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -38,5 +36,34 @@
     <None Include="msvcp120.dll" />
     <None Include="msvcr120.dll" />
     <None Include="Cg-3.1_April2012_Setup.exe" />
+    <None Include="Uninstall\Adobe AIR.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\cg.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\cgD3D9.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\cgGL.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\msvcp120.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\msvcr120.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\NPSWF32.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+    <None Include="Uninstall\tbb.dll">
+      <Filter>Uninstall</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LoLUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

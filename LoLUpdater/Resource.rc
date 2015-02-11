@@ -42,6 +42,15 @@ END
 2                       RCDATA                  "msvcp120.dll"
 3                       RCDATA                  "msvcr120.dll"
 
+101                       RCDATA                  "Uninstall\\Adobe AIR.dll"
+201                       RCDATA                  "Uninstall\cg.dll"
+301                       RCDATA                  "Uninstall\cgD3D9.dll"
+401                       RCDATA                  "Uninstall\cgGL.dll"
+501                       RCDATA                  "Uninstall\msvcp120.dll"
+601                       RCDATA                  "Uninstall\msvcr120.dll"
+701                       RCDATA                  "Uninstall\NPSWF32.dll"
+801                       RCDATA                  "Uninstall\\tbb.dll"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
