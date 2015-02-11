@@ -149,12 +149,6 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 		throw std::runtime_error("failed to initialize download");
 }
 
-void DLUpdate()
-{
-	wchar_t fullpath[MAX_PATH] = {0};
-	PCombine(fullpath, cwd, file2bupdate.c_str());
-	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
-}
 
 void UrlComb(PCTSTR pszRelative)
 {
@@ -167,13 +161,6 @@ void UrlComb(PCTSTR pszRelative)
 	downloadFile(finalurl, pszRelative);
 }
 
-void DLInfo()
-{
-	UrlComb(major.c_str());
-	UrlComb(minor.c_str());
-	UrlComb(revision.c_str());
-	UrlComb(build.c_str());
-}
 
 void killProcessByName(const wchar_t* filename)
 {
@@ -217,22 +204,10 @@ bool IsProcessRunning(const wchar_t* processName)
 
 void Updater()
 {
-	if (IsProcessRunning(L"LoLUpdater.exe"))
-	{
-		killProcessByName(L"LoLUpdater2.exe");
-		file2bupdate = L"LoLUpdater2.exe";
-		file2bremove = L"LoLUpdater.exe";
-	}
-	else
-	{
-		killProcessByName(L"LoLUpdater.exe");
-		file2bupdate = L"LoLUpdater.exe";
-		file2bremove = L"LoLUpdater2.exe";
-	}
-
-
-	std::thread thread1{DLInfo};
-	thread1.join();
+	UrlComb(major.c_str());
+	UrlComb(minor.c_str());
+	UrlComb(revision.c_str());
+	UrlComb(build.c_str());
 
 	PCombine(majortxt, cwd, major.c_str());
 	PCombine(minortxt, cwd, minor.c_str());
@@ -243,32 +218,21 @@ void Updater()
 	std::wstringstream buffer0;
 	buffer0 << t0.rdbuf();
 	t0.close();
-	DeleteFile(majortxt);
-
+	
 	std::wifstream t1(minortxt);
 	std::wstringstream buffer1;
 	buffer1 << t1.rdbuf();
 	t1.close();
-	DeleteFile(minortxt);
-
+	
 	std::wifstream t2(revisiontxt);
 	std::wstringstream buffer2;
 	buffer2 << t2.rdbuf();
 	t2.close();
-	DeleteFile(revisiontxt);
-
+	
 	std::wifstream t3(buildtxt);
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 	t3.close();
-	DeleteFile(buildtxt);
-	
-	
-	
-	
-
-	PCombine(currentdir2, cwd, file2bremove.c_str());
-	PCombine(currentdir, cwd, file2bupdate.c_str());
 
 	std::wstring fileName;
 	auto size = GetModuleFileName(nullptr, currentdir2, MAX_PATH + 1);
@@ -293,22 +257,25 @@ void Updater()
 
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
-		std::thread t{DLUpdate};
-		t.join();
+		wchar_t fullpath[MAX_PATH] = { 0 };
+		PCombine(fullpath, cwd, file2bupdate.c_str());
+		downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
 	}
 
 	SHELLEXECUTEINFO ei0 = {};
 	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei0.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ei0.lpVerb = L"runas";
-	ei0.lpFile = file2bupdate.c_str();
+	ei0.lpFile = currentdir;
 	ei0.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
-	DeleteFile(currentdir2);
-
+	DeleteFile(majortxt);
+	DeleteFile(minortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
 
 	killProcessByName(file2bremove.c_str());
 }
@@ -706,6 +673,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
+
+	if (IsProcessRunning(L"LoLUpdater.exe"))
+	{
+		file2bupdate = L"LoLUpdater2.exe";
+		file2bremove = L"LoLUpdater.exe";
+	}
+	else
+	{
+		file2bupdate = L"LoLUpdater.exe";
+		file2bremove = L"LoLUpdater2.exe";
+	}
+
+	PCombine(currentdir2, cwd, file2bremove.c_str());
+	PCombine(currentdir, cwd, file2bupdate.c_str());
+
+	if (IsProcessRunning(L"LoLUpdater.exe"))
+	{
+		DeleteFile(file2bupdate.c_str());
+	}
+	else
+	{
+		DeleteFile(file2bremove.c_str());
+	}
 
 	MSG Msg = {0};
 	WNDCLASSEX wc = {sizeof(wc)};
