@@ -6,13 +6,11 @@
 #include <Windows.h>
 #include <wininet.h>
 #include <thread>
-#include <string>
 #include <fstream>
 #include <Shlwapi.h>
 #include <Shlobj.h>
 #include <resource.h>
 #include <Tlhelp32.h>
-#include <winbase.h>
 #include <sstream>
 
 struct Version
@@ -511,6 +509,8 @@ void threadingbuildingblocks()
 
 void patch()
 {
+	MSG Msg = { 0 };
+
 	PCombine(runair, cwd, airsetup.c_str());
 	std::thread t{AdobeAirDL};
 	t.join();
@@ -528,7 +528,13 @@ void patch()
 	if (!ShellExecuteEx(&ei))
 		throw std::runtime_error("failed to execute the Adobe AIR Installer");
 
-	WaitForSingleObject(ei.hProcess, INFINITE);
+	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei.hProcess, FALSE, INFINITE, QS_ALLINPUT))
+	{
+		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&Msg);
+		}
+	}
 
 	DeleteFile(runair);
 
@@ -549,7 +555,13 @@ void patch()
 	if (!ShellExecuteEx(&ei1))
 		throw std::runtime_error("failed to execute the NvidiaCG Installer");
 
-	WaitForSingleObject(ei1.hProcess, INFINITE);
+	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei1.hProcess, FALSE, INFINITE, QS_ALLINPUT))
+	{
+		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			DispatchMessage(&Msg);
+		}
+	}
 
 	DeleteFile(runcg);
 
