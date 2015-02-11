@@ -1,5 +1,5 @@
 // Minimum supported processor = Intel Pentium 4 (Or anything with at least SSE2)
-// Supported Windows Versions: Windows XP SP3 -> Windows 8.1
+// Supported Windows Versions: Windows XP SP3 -> Windows 10
 // Windows Server is currently not supported
 // Wine support is unknown
 
