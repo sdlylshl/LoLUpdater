@@ -46,7 +46,7 @@ public:
 	}
 };
 
-CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473RUN1NS74113R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
+CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
