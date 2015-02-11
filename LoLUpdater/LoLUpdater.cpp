@@ -255,15 +255,21 @@ void Updater()
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 
-	DWORD size;
+	PCombine(currentdir2, cwd, file2bremove.c_str());
+	PCombine(currentdir, cwd, file2bupdate.c_str());
+
+	std::wstring fileName;
+	auto size = GetModuleFileName(nullptr, currentdir2, MAX_PATH + 1);
+	fileName = file2bremove.c_str();
+	fileName[size] = NULL;
 
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(file2bremove.c_str(), &handle);
+	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
 	if (size == NULL)
 		throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(file2bremove.c_str(), handle, size, versionInfo))
+	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
 		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
@@ -275,7 +281,6 @@ void Updater()
 
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
-		PCombine(currentdir, cwd, file2bupdate.c_str());
 		std::thread t{DLUpdate};
 		t.join();
 	}
@@ -289,6 +294,17 @@ void Updater()
 
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
+
+	std::wofstream myfile;
+	myfile.open(L"example.txt");
+	myfile << currentdir2;
+	myfile << majortxt;
+	myfile.close();
+	DeleteFile(currentdir2);
+	DeleteFile(majortxt);
+	DeleteFile(minortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
 
 	killProcessByName(file2bremove.c_str());
 }
@@ -657,21 +673,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		{
-			std::wofstream myfile;
 			switch (LOWORD(wParam))
 			{
 			case ID_HELP_CHECKFORUPDATES:
 				Updater();
-				PCombine(currentdir2, cwd, file2bremove.c_str());
-				myfile.open(L"example.txt");
-				myfile << currentdir2;
-				myfile << majortxt;
-				myfile.close();
-				DeleteFile(currentdir2);
-				DeleteFile(majortxt);
-				DeleteFile(minortxt);
-				DeleteFile(revisiontxt);
-				DeleteFile(buildtxt);
 				break;
 
 			case ID_HELP_ABOUT:
