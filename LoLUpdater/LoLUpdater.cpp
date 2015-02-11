@@ -510,19 +510,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (wc.hIconSm == nullptr)
 		throw std::runtime_error("failed to load icon");
 
-	if (RegisterClassEx(&wc) == NULL)
-	{
-		throw std::runtime_error("failed to register windowclass");
-	}
-
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, hInstance, nullptr);
-
-	if (hwnd == nullptr)
-	{
-		throw std::runtime_error("failed to create window");
-	}
-
-	WNDCLASSEX wc1 = {sizeof(wc1)};
+	WNDCLASSEX wc1 = { sizeof(wc1) };
 	const std::wstring g_szClassName1(L"aboutbox");
 	wc1.cbSize = ofsize;
 	wc1.lpfnWndProc = WndProcAbout;
@@ -538,9 +526,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (wc1.hIconSm == nullptr)
 		throw std::runtime_error("failed to load icon");
 
+	if (RegisterClassEx(&wc) == NULL)
+	{
+		throw std::runtime_error("failed to register windowclass");
+	}
+
 	if (RegisterClassEx(&wc1) == NULL)
 	{
 		throw std::runtime_error("failed to register windowclass");
+	}
+
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, hInstance, nullptr);
+
+	if (hwnd == nullptr)
+	{
+		throw std::runtime_error("failed to create window");
 	}
 
 	hwnd2 = CreateWindow(g_szClassName1.c_str(), L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,300,300, nullptr, nullptr, hInstance, nullptr);
