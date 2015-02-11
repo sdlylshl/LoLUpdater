@@ -242,18 +242,30 @@ void Updater()
 	std::wifstream t0(majortxt);
 	std::wstringstream buffer0;
 	buffer0 << t0.rdbuf();
+	t0.close();
+	DeleteFile(majortxt);
 
 	std::wifstream t1(minortxt);
 	std::wstringstream buffer1;
 	buffer1 << t1.rdbuf();
+	t1.close();
+	DeleteFile(minortxt);
 
 	std::wifstream t2(revisiontxt);
 	std::wstringstream buffer2;
 	buffer2 << t2.rdbuf();
+	t2.close();
+	DeleteFile(revisiontxt);
 
 	std::wifstream t3(buildtxt);
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
+	t3.close();
+	DeleteFile(buildtxt);
+	
+	
+	
+	
 
 	PCombine(currentdir2, cwd, file2bremove.c_str());
 	PCombine(currentdir, cwd, file2bupdate.c_str());
@@ -295,16 +307,8 @@ void Updater()
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
-	CloseHandle(currentdir2);
-	CloseHandle(majortxt);
-	CloseHandle(minortxt);
-	CloseHandle(revisiontxt);
-	CloseHandle(buildtxt);
 	DeleteFile(currentdir2);
-	DeleteFile(majortxt);
-	DeleteFile(minortxt);
-	DeleteFile(revisiontxt);
-	DeleteFile(buildtxt);
+
 
 	killProcessByName(file2bremove.c_str());
 }
