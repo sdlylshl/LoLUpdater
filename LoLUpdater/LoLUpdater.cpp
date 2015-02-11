@@ -510,6 +510,17 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
+void processWindowsMessage(MSG *msg)
+{
+	switch (msg->message)
+	{
+	default:
+		TranslateMessage(msg);
+		DispatchMessage(msg);
+		break;
+	}
+}
+
 void patch()
 {
 	MSG Msg = { 0 };
@@ -609,11 +620,7 @@ void patch()
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
-	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
-	{
-		TranslateMessage(&Msg);
-		DispatchMessage(&Msg);
-	}
+	processWindowsMessage(&Msg);
 }
 
 WNDPROC OldButtonProc;
