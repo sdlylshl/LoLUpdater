@@ -5,7 +5,7 @@ LoLUpdater is an attempt to increase FPS in the game League of Legends, also upg
 Files changed by LoLUpdater:
 ----------------------------
 
-msvcp120.dll is the 32bit clr version (From the VS 12 CTP) without any versioninfo 
+msvcp120.dll is the 32bit DLL version (From the VS 14 Preview) without any versioninfo 
 
 msvcr120.dll is the 32bit clr version (From the VS 12 CTP) without any version info
 
