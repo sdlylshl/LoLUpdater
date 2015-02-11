@@ -11,6 +11,7 @@
 #include <Shlwapi.h>
 #include <Shlobj.h>
 #include <resource.h>
+#define IDM_FIRSTCHILD 900001
 
 class CLimitSingleInstance
 {
@@ -74,7 +75,6 @@ const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
 HWND hwnd, hwndButton, hwndButton2, hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK HelloWndProc(HWND, UINT, WPARAM, LPARAM);
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
 {
@@ -433,38 +433,9 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
 }
 
-
-LRESULT CALLBACK HelloWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg)
-	{
-	case WM_COMMAND:
-		{
-			switch (LOWORD(wParam))
-			{
-			case ID_HELP_CHECKFORUPDATES:
-				break;
-
-			case ID_HELP_ABOUT:
-				ShowWindow(hwnd2, SW_SHOW);
-				UpdateWindow(hwnd2);
-				break;
-			}
-		}
-		break;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-	return 0;
-}
-
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	CLIENTCREATESTRUCT MDIClientCreateStruct;
 	switch (msg)
 	{
 	case WM_CREATE:
@@ -474,7 +445,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 		
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"Abouxbox", L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, hwnd, nullptr, nullptr, nullptr);
+		MDIClientCreateStruct.hWindowMenu = nullptr;
+		MDIClientCreateStruct.idFirstChild = IDM_FIRSTCHILD;
+		hwnd2 = CreateWindow(L"MDICLIENT", nullptr, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130,hwnd,nullptr,nullptr,(void*)&MDIClientCreateStruct);
 
 		if (hwnd2 == nullptr)
 		{
@@ -482,6 +455,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		
 		break;
+
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case ID_HELP_CHECKFORUPDATES:
+			break;
+
+		case ID_HELP_ABOUT:
+			ShowWindow(hwnd2, SW_SHOW);
+			UpdateWindow(hwnd2);
+			break;
+		}
+	}
+	break;
+
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
