@@ -144,6 +144,7 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\icon.ico" />
     <Image Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>

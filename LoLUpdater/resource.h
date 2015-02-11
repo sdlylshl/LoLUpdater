@@ -764,6 +764,7 @@
 #define VK_NUMPAD7                      0x67
 #define VK_NUMPAD8                      0x68
 #define LANG_HAUSA                      0x68
+#define IDR_MENU1                       104
 #define VK_NUMPAD9                      0x69
 #define VK_MULTIPLY                     0x6A
 #define LANG_YORUBA                     0x6a
@@ -1476,6 +1477,8 @@
 #define LVS_NOSORTHEADER                0x8000
 #define TVS_NOHSCROLL                   0x8000
 #define TCS_FOCUSNEVER                  0x8000
+#define ID_HELP_CHECKFORUPDATES         40001
+#define ID_HELP_ABOUT                   40002
 #define SC_SIZE                         0xF000
 #define SC_SEPARATOR                    0xF00F
 #define SC_MOVE                         0xF010
@@ -1499,16 +1502,16 @@
 #define LVS_TYPESTYLEMASK               0xfc00
 #define SPVERSION_MASK                  0x0000FF00
 #define HTERROR                         -2
-#define PWR_FAIL                        -1
 #define UNICODE_NOCHAR                  0xFFFF
+#define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
-#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_RESOURCE_VALUE        105
+#define _APS_NEXT_COMMAND_VALUE         40005
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

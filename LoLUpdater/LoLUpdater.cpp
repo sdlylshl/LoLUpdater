@@ -10,6 +10,8 @@
 #include <fstream>
 #include <Shlwapi.h>
 #include <Shlobj.h>
+#include <resource.h>
+
 
 class CLimitSingleInstance
 {
@@ -435,6 +437,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
+
 		hwndButton = CreateWindow(L"button", L"Install",
 			WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
 			10, 10, 100, 50,
@@ -446,9 +449,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			120, 10, 100, 50,
 			hwnd, (HMENU)200, NULL, NULL);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
-
-
 		break;
+
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case ID_HELP_CHECKFORUPDATES:
+			break;
+		case ID_HELP_ABOUT:
+			break;
+		}
+
+	} break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -459,7 +473,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-                   LPSTR, int nCmdShow)
+                   LPSTR, int)
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
@@ -471,12 +485,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 	wc.lpszClassName = g_szClassName.c_str();
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
 	if (wc.hIcon == nullptr)
 		throw std::runtime_error("failed to load icon");
 
-	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(101));
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
 
 	if (wc.hIconSm == nullptr)
 		throw std::runtime_error("failed to load icon");
@@ -486,7 +501,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to register windowclass");
 	}
 
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 110, nullptr, nullptr, hInstance, nullptr);
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == nullptr)
 	{
@@ -506,7 +521,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get browse path");
 	}
 
-	ShowWindow(hwnd, nCmdShow);
+	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
 	wchar_t instdir[MAX_PATH + 1] = { 0 };

@@ -1,12 +1,12 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include <resource.h>
-#include <windows.h>
+#include "resource.h"
 /////////////////////////////////////////////////////////////////////////////
 // Swedish (Sweden) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
 LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
+#pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -41,15 +41,14 @@ END
 1                       RCDATA                  "Cg-3.1_April2012_Setup.exe"
 2                       RCDATA                  "msvcp120.dll"
 3                       RCDATA                  "msvcr120.dll"
-
-101                       RCDATA                  "Uninstall\\Adobe AIR.dll"
-201                       RCDATA                  "Uninstall\cg.dll"
-301                       RCDATA                  "Uninstall\cgD3D9.dll"
-401                       RCDATA                  "Uninstall\cgGL.dll"
-501                       RCDATA                  "Uninstall\msvcp120.dll"
-601                       RCDATA                  "Uninstall\msvcr120.dll"
-701                       RCDATA                  "Uninstall\NPSWF32.dll"
-801                       RCDATA                  "Uninstall\\tbb.dll"
+101                     RCDATA                  "Uninstall\\Adobe AIR.dll"
+201                     RCDATA                  "Uninstall\\cg.dll"
+301                     RCDATA                  "Uninstall\\cgD3D9.dll"
+401                     RCDATA                  "Uninstall\\cgGL.dll"
+501                     RCDATA                  "Uninstall\\msvcp120.dll"
+601                     RCDATA                  "Uninstall\\msvcr120.dll"
+701                     RCDATA                  "Uninstall\\NPSWF32.dll"
+801                     RCDATA                  "Uninstall\\tbb.dll"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -58,7 +57,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-MAINICON                ICON                    "..\icon.ico"
+MAINICON                ICON                    "..\\icon.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -95,6 +94,21 @@ BEGIN
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation", 0x9, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "Help"
+    BEGIN
+        MENUITEM "Check for Updates",           ID_HELP_CHECKFORUPDATES
+        MENUITEM "About",                       ID_HELP_ABOUT
     END
 END
 
