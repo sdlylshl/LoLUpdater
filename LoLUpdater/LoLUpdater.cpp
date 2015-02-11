@@ -410,7 +410,9 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg) {
 	case WM_LBUTTONDOWN:
+		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
 		patch();
+		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
 	return CallWindowProc(OldButtonProc, hwnd, msg, wp, lp);
@@ -420,7 +422,9 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg) {
 	case WM_LBUTTONDOWN:
+		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
 		Uninstall();
+		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
 	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
