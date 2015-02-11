@@ -127,6 +127,7 @@ const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
+wchar_t fullpath[MAX_PATH] = { 0 };
 HWND hwnd, hwndButton, hwndButton2, hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -201,12 +202,23 @@ bool IsProcessRunning(const wchar_t* processName)
 	return exists;
 }
 
-void Updater()
+void DLUpdate()
+{
+	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
+}
+
+void DLstuff()
 {
 	UrlComb(major.c_str());
 	UrlComb(minor.c_str());
 	UrlComb(revision.c_str());
 	UrlComb(build.c_str());
+}
+
+void Updater()
+{
+	std::thread DLInfo{ DLstuff };
+	DLInfo.join();
 
 	PCombine(majortxt, cwd, major.c_str());
 	PCombine(minortxt, cwd, minor.c_str());
@@ -233,18 +245,15 @@ void Updater()
 	buffer3 << t3.rdbuf();
 	t3.close();
 
-	std::wstring fileName;
 	auto size = GetModuleFileName(nullptr, currentdir2, MAX_PATH + 1);
-	fileName = file2bremove.c_str();
-	fileName[size] = NULL;
 
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
+	size = GetFileVersionInfoSize(currentdir2, &handle);
 	if (size == NULL)
 		throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
+	if (!GetFileVersionInfo(currentdir2, handle, size, versionInfo))
 		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
@@ -256,9 +265,9 @@ void Updater()
 
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
-		wchar_t fullpath[MAX_PATH] = { 0 };
 		PCombine(fullpath, cwd, file2bupdate.c_str());
-		downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
+		std::thread superman{ DLUpdate};
+		superman.join();
 	}
 
 	SHELLEXECUTEINFO ei0 = {};
@@ -445,8 +454,6 @@ void Uninstall()
 	ExtractResource(601, msvcrdest);
 	ExtractResource(701, flashdest);
 	ExtractResource(801, tbbdest);
-
-	finished = true;
 }
 
 void threadingbuildingblocks()
@@ -585,8 +592,6 @@ void patch()
 	msvc(gameclient, 2, p120.c_str());
 	msvc(gameclient, 3, r120.c_str());
 
-	finished = true;
-
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
@@ -595,11 +600,12 @@ WNDPROC OldButtonProc2;
 
 LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	std::thread patch1{patch};
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
-		patch();
+		patch1.join();
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
@@ -608,11 +614,12 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	std::thread unist1{ Uninstall };
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
-		Uninstall();
+		unist1.join();
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
