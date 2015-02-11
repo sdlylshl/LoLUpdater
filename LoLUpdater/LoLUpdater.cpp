@@ -644,7 +644,7 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void AboutBox()
 {
-	ShowWindow(hwnd2, SW_SHOW);
+	ShowWindow(hwnd2, SW_RESTORE);
 	UpdateWindow(hwnd2);
 }
 
@@ -660,7 +660,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, (void*)&MDIClientCreateStruct);
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, nullptr, (void*)&MDIClientCreateStruct);
 
 		if (hwnd2 == nullptr)
 		{
@@ -678,6 +678,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
 			case ID_HELP_ABOUT:
+				ShowWindow(hwnd2, SW_SHOWNORMAL);
 				AboutBox();
 				break;
 			}
@@ -753,9 +754,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to create window");
 	}
 
-
 	BROWSEINFO bi = {0};
-	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL/LoLQQ installation directory:";
+	bi.lpszTitle = L"Select your GarenaLoL/League of Legends/LoLQQ installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	if (pidl == nullptr)
 	{
