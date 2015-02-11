@@ -227,21 +227,25 @@ void Updater()
 	std::wstringstream buffer0;
 	buffer0 << t0.rdbuf();
 	t0.close();
-	
+	DeleteFile(majortxt);
+
 	std::wifstream t1(minortxt);
 	std::wstringstream buffer1;
 	buffer1 << t1.rdbuf();
 	t1.close();
-	
+	DeleteFile(minortxt);
+
 	std::wifstream t2(revisiontxt);
 	std::wstringstream buffer2;
 	buffer2 << t2.rdbuf();
 	t2.close();
-	
+	DeleteFile(revisiontxt);
+
 	std::wifstream t3(buildtxt);
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 	t3.close();
+	DeleteFile(buildtxt);
 
 	auto size = GetModuleFileName(nullptr, currentdir2, MAX_PATH + 1);
 
@@ -267,6 +271,10 @@ void Updater()
 		std::thread superman{ DLUpdate};
 		superman.join();
 	}
+	else
+	{
+		return;
+	}
 
 	SHELLEXECUTEINFO ei0 = {};
 	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -277,11 +285,6 @@ void Updater()
 
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
-
-	DeleteFile(majortxt);
-	DeleteFile(minortxt);
-	DeleteFile(revisiontxt);
-	DeleteFile(buildtxt);
 
 	killProcessByName(file2bremove.c_str());
 }
@@ -332,7 +335,7 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		data = +newest.info.cFileName;
+		data =+ newest.info.cFileName;
 		if (!FindClose(hFind))
 			throw std::runtime_error("failed to close file handle");
 	}
