@@ -433,13 +433,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		hwndButton = CreateWindow(L"button", L"Install",
 			WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-			80, 10, 100, 50,
+			10, 10, 100, 50,
 			hwnd, (HMENU)200, NULL, NULL);
 		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 		
 		hwndButton2 = CreateWindow(L"button", L"Uninstall",
 			WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-			200, 10, 100, 50,
+			120, 10, 100, 50,
 			hwnd, (HMENU)200, NULL, NULL);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 
@@ -482,7 +482,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to register windowclass");
 	}
 
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, nullptr, nullptr, hInstance, nullptr);
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 110, nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd == nullptr)
 	{
