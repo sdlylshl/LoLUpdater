@@ -90,6 +90,8 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
+std::wstring file2bremove;
+std::wstring file2bupdate;
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
 wchar_t gameclient[MAX_PATH + 1] = {0};
@@ -97,16 +99,16 @@ wchar_t patchclient[MAX_PATH + 1] = {0};
 wchar_t runair[MAX_PATH + 1] = {0};
 const std::wstring tbbfile = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t currentdir[MAX_PATH + 1] = { 0 };
-wchar_t majortxt[MAX_PATH + 1] = { 0 };
-wchar_t minortxt[MAX_PATH + 1] = { 0 };
-wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
-wchar_t buildtxt[MAX_PATH + 1] = { 0 };
+wchar_t currentdir[MAX_PATH + 1] = {0};
+wchar_t majortxt[MAX_PATH + 1] = {0};
+wchar_t minortxt[MAX_PATH + 1] = {0};
+wchar_t revisiontxt[MAX_PATH + 1] = {0};
+wchar_t buildtxt[MAX_PATH + 1] = {0};
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
-wchar_t currentdir2[MAX_PATH] = { 0 };
+wchar_t currentdir2[MAX_PATH] = {0};
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
@@ -147,14 +149,16 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 		throw std::runtime_error("failed to initialize download");
 }
 
-void DLUpdate(std::wstring const& filename)
+void DLUpdate()
 {
-	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", filename);
+	wchar_t fullpath[MAX_PATH] = {0};
+	PCombine(fullpath, cwd, file2bupdate.c_str());
+	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
 }
 
 void UrlComb(PCTSTR pszRelative)
 {
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
 	DWORD dwLength = sizeof(finalurl);
 
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
@@ -171,7 +175,7 @@ void DLInfo()
 	UrlComb(build.c_str());
 }
 
-void killProcessByName(const wchar_t *filename)
+void killProcessByName(const wchar_t* filename)
 {
 	auto hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
 	PROCESSENTRY32 pEntry;
@@ -182,7 +186,7 @@ void killProcessByName(const wchar_t *filename)
 		if (wcscmp(pEntry.szExeFile, filename) == 0)
 		{
 			auto hProcess = OpenProcess(PROCESS_TERMINATE, 0,
-				static_cast<DWORD>(pEntry.th32ProcessID));
+			                                             static_cast<DWORD>(pEntry.th32ProcessID));
 			if (hProcess != nullptr)
 			{
 				TerminateProcess(hProcess, 9);
@@ -194,7 +198,7 @@ void killProcessByName(const wchar_t *filename)
 	CloseHandle(hSnapShot);
 }
 
-bool IsProcessRunning(const wchar_t *processName)
+bool IsProcessRunning(const wchar_t* processName)
 {
 	auto exists = false;
 	PROCESSENTRY32 entry;
@@ -213,8 +217,6 @@ bool IsProcessRunning(const wchar_t *processName)
 
 void Updater()
 {
-	std::wstring file2bupdate;
-	std::wstring file2bremove;
 	if (IsProcessRunning(L"LoLUpdater.exe"))
 	{
 		killProcessByName(L"LoLUpdater2.exe");
@@ -227,9 +229,9 @@ void Updater()
 		file2bupdate = L"LoLUpdater.exe";
 		file2bremove = L"LoLUpdater2.exe";
 	}
-	
 
-	std::thread thread1{ DLInfo };
+
+	std::thread thread1{DLInfo};
 	thread1.join();
 
 	PCombine(majortxt, cwd, major.c_str());
@@ -274,13 +276,13 @@ void Updater()
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		PCombine(currentdir, cwd, file2bupdate.c_str());
-		std::thread t{ DLUpdate, currentdir };
+		std::thread t{DLUpdate};
 		t.join();
 	}
 
 	SHELLEXECUTEINFO ei0 = {};
 	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ei0.fMask = SEE_MASK_NOCLOSEPROCESS ;
 	ei0.lpVerb = L"runas";
 	ei0.lpFile = file2bupdate.c_str();
 	ei0.nShow = SW_SHOW;
@@ -289,25 +291,6 @@ void Updater()
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
 	killProcessByName(file2bremove.c_str());
-	PCombine(currentdir2, cwd, file2bremove.c_str());
-
-	wchar_t crrdir2[MAX_PATH] = { 0 };
-	wchar_t one[MAX_PATH] = { 0 };
-	wchar_t two[MAX_PATH] = { 0 };
-	wchar_t three[MAX_PATH] = { 0 };
-	wchar_t four[MAX_PATH] = { 0 };
-	PCombine(crrdir2, cwd, currentdir2);
-
-	PCombine(one, cwd, majortxt);
-	PCombine(two, cwd, minortxt);
-	PCombine(three, cwd, revisiontxt);
-	PCombine(four, cwd, buildtxt);
-
-	DeleteFile(crrdir2);
-	DeleteFile(one);
-	DeleteFile(two);
-	DeleteFile(three);
-	DeleteFile(four);
 }
 
 
@@ -410,7 +393,6 @@ static int can_use_intel_core_4th_gen_features()
 
 	return the_4th_gen_features_available;
 }
-
 
 
 void AdobeAirDL()
@@ -662,7 +644,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
-		
+
 		MDIClientCreateStruct.idFirstChild = IDM_FIRSTCHILD;
 		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, (void*)&MDIClientCreateStruct);
 
@@ -670,24 +652,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			throw std::runtime_error("failed to create window");
 		}
-		
+
 		break;
 
 	case WM_COMMAND:
-	{
-		switch (LOWORD(wParam))
 		{
-		case ID_HELP_CHECKFORUPDATES:
-			Updater();
-			break;
+			std::wofstream myfile;
+			switch (LOWORD(wParam))
+			{
+			case ID_HELP_CHECKFORUPDATES:
+				Updater();
+				PCombine(currentdir2, cwd, file2bremove.c_str());
+				myfile.open(L"example.txt");
+				myfile << currentdir2;
+				myfile << majortxt;
+				myfile.close();
+				DeleteFile(currentdir2);
+				DeleteFile(majortxt);
+				DeleteFile(minortxt);
+				DeleteFile(revisiontxt);
+				DeleteFile(buildtxt);
+				break;
 
-		case ID_HELP_ABOUT:
-			ShowWindow(hwnd2, SW_SHOW);
-			UpdateWindow(hwnd2);
-			break;
+			case ID_HELP_ABOUT:
+				ShowWindow(hwnd2, SW_SHOW);
+				UpdateWindow(hwnd2);
+				break;
+			}
 		}
-	}
-	break;
+		break;
 
 
 	case WM_DESTROY:
