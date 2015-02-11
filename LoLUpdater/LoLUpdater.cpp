@@ -295,11 +295,11 @@ void Updater()
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
-	std::wofstream myfile;
-	myfile.open(L"example.txt");
-	myfile << currentdir2;
-	myfile << majortxt;
-	myfile.close();
+	CloseHandle(currentdir2);
+	CloseHandle(majortxt);
+	CloseHandle(minortxt);
+	CloseHandle(revisiontxt);
+	CloseHandle(buildtxt);
 	DeleteFile(currentdir2);
 	DeleteFile(majortxt);
 	DeleteFile(minortxt);
