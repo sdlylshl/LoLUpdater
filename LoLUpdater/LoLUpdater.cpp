@@ -96,7 +96,6 @@ wchar_t gameclient[MAX_PATH + 1] = {0};
 wchar_t patchclient[MAX_PATH + 1] = {0};
 wchar_t runair[MAX_PATH + 1] = {0};
 const std::wstring tbbfile = L"tbb.dll";
-std::wstring fileName = L"LoLUpdater.exe";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 wchar_t currentdir[MAX_PATH + 1] = { 0 };
 wchar_t majortxt[MAX_PATH + 1] = { 0 };
@@ -107,6 +106,7 @@ const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
+wchar_t currentdir2[MAX_PATH] = { 0 };
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
@@ -147,9 +147,9 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 		throw std::runtime_error("failed to initialize download");
 }
 
-void DLUpdate()
+void DLUpdate(std::wstring const& filename)
 {
-	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", currentdir);
+	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", filename);
 }
 
 void UrlComb(PCTSTR pszRelative)
@@ -221,8 +221,7 @@ void Updater()
 		file2bupdate = L"LoLUpdater2.exe";
 		file2bremove = L"LoLUpdater.exe";
 	}
-
-	if (IsProcessRunning(L"LoLUpdater2.exe"))
+	else
 	{
 		killProcessByName(L"LoLUpdater.exe");
 		file2bupdate = L"LoLUpdater.exe";
@@ -254,17 +253,15 @@ void Updater()
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 
-	//Todo: add error checking for this one
-	auto size = GetModuleFileName(nullptr, currentdir, MAX_PATH + 1);
+	DWORD size;
 
-	fileName[size] = NULL;
 	DWORD handle = 0;
-	size = GetFileVersionInfoSize(fileName.c_str(), &handle);
+	size = GetFileVersionInfoSize(file2bremove.c_str(), &handle);
 	if (size == NULL)
 		throw std::runtime_error("failed to get file version infosize");
 
 	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(fileName.c_str(), handle, size, versionInfo))
+	if (!GetFileVersionInfo(file2bremove.c_str(), handle, size, versionInfo))
 		throw std::runtime_error("failed to get file version info");
 
 	UINT32 len = 0;
@@ -277,29 +274,40 @@ void Updater()
 	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		PCombine(currentdir, cwd, file2bupdate.c_str());
-		std::thread t{ DLUpdate };
+		std::thread t{ DLUpdate, currentdir };
 		t.join();
 	}
-
-	DeleteFile(majortxt);
-	DeleteFile(minortxt);
-	DeleteFile(revisiontxt);
-	DeleteFile(buildtxt);
 
 	SHELLEXECUTEINFO ei0 = {};
 	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
 	ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ei0.lpVerb = L"runas";
-	ei0.lpFile = currentdir;
+	ei0.lpFile = file2bupdate.c_str();
 	ei0.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
 	killProcessByName(file2bremove.c_str());
-	wchar_t currentdir2[MAX_PATH] = { 0 };
 	PCombine(currentdir2, cwd, file2bremove.c_str());
-	DeleteFile(currentdir2);
+
+	wchar_t crrdir2[MAX_PATH] = { 0 };
+	wchar_t one[MAX_PATH] = { 0 };
+	wchar_t two[MAX_PATH] = { 0 };
+	wchar_t three[MAX_PATH] = { 0 };
+	wchar_t four[MAX_PATH] = { 0 };
+	PCombine(crrdir2, cwd, currentdir2);
+
+	PCombine(one, cwd, majortxt);
+	PCombine(two, cwd, minortxt);
+	PCombine(three, cwd, revisiontxt);
+	PCombine(four, cwd, buildtxt);
+
+	DeleteFile(crrdir2);
+	DeleteFile(one);
+	DeleteFile(two);
+	DeleteFile(three);
+	DeleteFile(four);
 }
 
 
@@ -670,6 +678,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam))
 		{
 		case ID_HELP_CHECKFORUPDATES:
+			Updater();
 			break;
 
 		case ID_HELP_ABOUT:
