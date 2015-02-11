@@ -204,7 +204,7 @@ bool IsProcessRunning(const wchar_t *processName)
 
 	if (Process32First(snapshot, &entry))
 		while (Process32Next(snapshot, &entry))
-			if (!wcsicmp(entry.szExeFile, processName))
+			if (!_wcsicmp(entry.szExeFile, processName))
 				exists = true;
 
 	CloseHandle(snapshot);
