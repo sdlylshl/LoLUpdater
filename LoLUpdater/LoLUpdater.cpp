@@ -605,6 +605,12 @@ void patch()
 	msvc(gameclient, 3, r120.c_str());
 
 	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+
+	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
+	{
+		TranslateMessage(&Msg);
+		DispatchMessage(&Msg);
+	}
 }
 
 WNDPROC OldButtonProc;
