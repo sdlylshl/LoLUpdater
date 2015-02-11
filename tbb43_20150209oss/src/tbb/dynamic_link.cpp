@@ -270,7 +270,7 @@ OPEN_INTERNAL_NAMESPACE
         HMODULE handle;
         BOOL brc = GetModuleHandleEx(
             GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-            (LPCSTR)( & dynamic_link ), // any function inside the library can be used for the address
+            (LPCWSTR)( & dynamic_link ), // any function inside the library can be used for the address
             & handle
             );
         if ( !brc ) { // Error occurred.
@@ -279,7 +279,7 @@ OPEN_INTERNAL_NAMESPACE
             return;
         }
         // Now get path to our DLL.
-        DWORD drc = GetModuleFileName( handle, ap_data._path, static_cast< DWORD >( PATH_MAX ) );
+        DWORD drc = GetModuleFileName( handle, (LPWSTR)ap_data._path, static_cast< DWORD >( PATH_MAX ) );
         if ( drc == 0 ) { // Error occurred.
             int err = GetLastError();
             DYNAMIC_LINK_WARNING( dl_sys_fail, "GetModuleFileName", err );
@@ -464,7 +464,7 @@ OPEN_INTERNAL_NAMESPACE
         ::tbb::internal::suppress_unused_warning( library );
         dynamic_link_handle library_handle;
 #if _WIN32
-        if ( GetModuleHandleEx( 0, library, &library_handle ) ) {
+        if ( GetModuleHandleEx( 0, (LPCWSTR)library, &library_handle ) ) {
             if ( resolve_symbols( library_handle, descriptors, required ) )
                 return library_handle;
             else
@@ -503,8 +503,8 @@ OPEN_INTERNAL_NAMESPACE
         return LoadLibrary (library);
     #else /* _XBOX */
         size_t const len = PATH_MAX + 1;
-        char path[ len ];
-        size_t rc = abs_path( library, path, len );
+        wchar_t path[ len ];
+        size_t rc = abs_path( library, (LPSTR)path, len );
         if ( 0 < rc && rc < len ) {
     #if _WIN32
             // Prevent Windows from displaying silly message boxes if it fails to load library
