@@ -12,7 +12,6 @@
 #include <Shlobj.h>
 #include <resource.h>
 
-
 class CLimitSingleInstance
 {
 protected:
@@ -474,6 +473,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 		hwndButton2 = CreateWindow(L"button", L"Uninstall",WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, NULL, NULL);
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
+		
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, g_szClassName1.c_str(), L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, hwnd, nullptr, hInstance, nullptr);
+
+		if (hwnd2 == nullptr)
+		{
+			throw std::runtime_error("failed to create window");
+		}
+		
 		break;
 
 	case WM_DESTROY:
@@ -509,28 +516,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (wc.hIconSm == nullptr)
 		throw std::runtime_error("failed to load icon");
 
-	WNDCLASSEX wc1 = { sizeof(wc1) };
-	const std::wstring g_szClassName1(L"aboutbox");
-	wc1.cbSize = sizeof(WNDCLASSEX);
-	wc1.lpfnWndProc = HelloWndProc;
-	wc1.hInstance = hInstance;
-	wc1.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
-	wc1.lpszClassName = g_szClassName1.c_str();
-	wc1.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
-	if (wc1.hIcon == nullptr)
-		throw std::runtime_error("failed to load icon");
-
-	wc1.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
-
-	if (wc1.hIconSm == nullptr)
-		throw std::runtime_error("failed to load icon");
-
 	if (RegisterClassEx(&wc) == NULL)
-	{
-		throw std::runtime_error("failed to register windowclass");
-	}
-
-	if (RegisterClassEx(&wc1) == NULL)
 	{
 		throw std::runtime_error("failed to register windowclass");
 	}
@@ -542,12 +528,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to create window");
 	}
 
-	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, g_szClassName1.c_str(), L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, nullptr, nullptr, hInstance, nullptr);
-
-	if (hwnd2 == nullptr)
-	{
-		throw std::runtime_error("failed to create window");
-	}
 
 	BROWSEINFO bi = {0};
 	bi.lpszTitle = L"Select your (League of Legends)/GarenaLoL/LoLQQ installation directory:";
