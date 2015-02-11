@@ -75,7 +75,7 @@ const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
 HWND hwnd, hwndButton, hwndButton2, hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK WndProcAbout(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK HelloWndProc(HWND, UINT, WPARAM, LPARAM);
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
 {
@@ -435,7 +435,7 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 }
 
 
-LRESULT CALLBACK WndProcAbout(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK HelloWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
@@ -491,11 +491,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
 
-	int ofsize = sizeof(WNDCLASSEX);
 	MSG Msg = {0};
 	WNDCLASSEX wc = {sizeof(wc)};
 	const std::wstring g_szClassName(L"mainwindow");
-	wc.cbSize = ofsize;
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
 	wc.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
@@ -512,8 +511,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	WNDCLASSEX wc1 = { sizeof(wc1) };
 	const std::wstring g_szClassName1(L"aboutbox");
-	wc1.cbSize = ofsize;
-	wc1.lpfnWndProc = WndProcAbout;
+	wc1.cbSize = sizeof(WNDCLASSEX);
+	wc1.lpfnWndProc = HelloWndProc;
 	wc1.hInstance = hInstance;
 	wc1.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
 	wc1.lpszClassName = g_szClassName1.c_str();
@@ -543,7 +542,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to create window");
 	}
 
-	hwnd2 = CreateWindow(g_szClassName1.c_str(), L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,300,300, nullptr, nullptr, hInstance, nullptr);
+	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, g_szClassName1.c_str(), L"About LoLUpdater", WS_POPUP, CW_USEDEFAULT, CW_USEDEFAULT, 300, 300, nullptr, nullptr, hInstance, nullptr);
 
 	if (hwnd2 == nullptr)
 	{
