@@ -618,12 +618,11 @@ WNDPROC OldButtonProc2;
 
 LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	std::thread patch1{patch};
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
-		patch1.join();
+		patch();
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
@@ -632,16 +631,21 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	std::thread unist1{ Uninstall };
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
-		unist1.join();
+		Uninstall();
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
 	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
+}
+
+void AboutBox()
+{
+	ShowWindow(hwnd2, SW_SHOW);
+	UpdateWindow(hwnd2);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -674,8 +678,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
 			case ID_HELP_ABOUT:
-				ShowWindow(hwnd2, SW_SHOW);
-				UpdateWindow(hwnd2);
+				AboutBox();
 				break;
 			}
 		}
