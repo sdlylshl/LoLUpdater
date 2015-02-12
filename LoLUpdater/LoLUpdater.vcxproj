@@ -99,7 +99,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Strict</FloatingPointModel>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
@@ -125,6 +125,7 @@
       <AllowIsolation>false</AllowIsolation>
       <EnableUAC>false</EnableUAC>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
