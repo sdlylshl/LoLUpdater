@@ -203,7 +203,7 @@ bool IsProcessRunning(const wchar_t* processName)
 
 void DLUpdate()
 {
-	downloadFile(L"http://lol.jdhpro.com/LoLUpdater.exe", fullpath);
+	downloadFile(L"http://www.smoothdev.org/mirrors/download.php?user=Loggan&file=T1VRdVdqb3daL1doZ1p6T1JWN3VvUT09", fullpath);
 }
 
 void DLstuff()
