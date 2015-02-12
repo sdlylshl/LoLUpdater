@@ -12,6 +12,7 @@
 #include <resource.h>
 #include <Tlhelp32.h>
 #include <sstream>
+#define IDM_FIRSTCHILD 900001
 
 struct Version
 {
@@ -87,31 +88,52 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
-std::wstring file2bremove, file2bupdate;
+std::wstring file2bremove;
+std::wstring file2bupdate;
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
-wchar_t gameclient[MAX_PATH + 1], patchclient[MAX_PATH + 1], runair[MAX_PATH + 1], currentdir[MAX_PATH + 1], majortxt[MAX_PATH + 1], minortxt[MAX_PATH + 1], revisiontxt[MAX_PATH + 1], airdest[MAX_PATH + 1], buildtxt[MAX_PATH + 1], airlatest[MAX_PATH + 1], flashdest[MAX_PATH + 1], flashlatest[MAX_PATH + 1], cgdest[MAX_PATH + 1], cggldest[MAX_PATH + 1], cgd3d9dest[MAX_PATH + 1], fullpath[MAX_PATH], tbbname[INTERNET_MAX_URL_LENGTH], currentdir2[MAX_PATH] = { 0 };
+wchar_t gameclient[MAX_PATH + 1] = { 0 };
+wchar_t patchclient[MAX_PATH + 1] = { 0 };
+wchar_t runair[MAX_PATH + 1] = { 0 };
 const std::wstring tbbfile = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
+wchar_t currentdir[MAX_PATH + 1] = { 0 };
+wchar_t majortxt[MAX_PATH + 1] = { 0 };
+wchar_t minortxt[MAX_PATH + 1] = { 0 };
+wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
+wchar_t buildtxt[MAX_PATH + 1] = { 0 };
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
+wchar_t currentdir2[MAX_PATH] = { 0 };
 const std::wstring ftp = L"http://lol.jdhpro.com/";
-
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
-
 const std::wstring unblocktag = L":Zone.Identifier";
+wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
 const std::wstring p120 = L"msvcp120.dll";
 const std::wstring r120 = L"msvcr120.dll";
-wchar_t flash[MAX_PATH + 1] = {L"Resources"};
+wchar_t airdest[MAX_PATH + 1] = { 0 };
+wchar_t airlatest[MAX_PATH + 1] = { 0 };
+wchar_t flash[MAX_PATH + 1] = { L"Resources" };
+wchar_t flashdest[MAX_PATH + 1] = { 0 };
+wchar_t flashlatest[MAX_PATH + 1] = { 0 };
+wchar_t cgdest[MAX_PATH + 1] = { 0 };
+wchar_t cggldest[MAX_PATH + 1] = { 0 };
+wchar_t cgd3d9dest[MAX_PATH + 1] = { 0 };
+wchar_t fullpath[MAX_PATH + 1] = { 0 };
 const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
-HWND hwnd, hwnd2, hwndButton, hwndButton2;
+HWND hwnd;
+HWND hwndButton;
+HWND hwndButton2;
+HWND hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK ButtonProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK ButtonProc2(HWND, UINT, WPARAM, LPARAM);
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
 {
@@ -415,70 +437,68 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 		throw std::runtime_error("failed to copy file");
 }
 
-void threadingbuildingblocks()
-{
-	wchar_t tbb[MAX_PATH + 1] = {0};
-	PCombine(tbb, gameclient, tbbfile.c_str());
-
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
-	DWORD dwLength = sizeof(finalurl);
-
-	OSVERSIONINFO osvi{};
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if (!GetVersionEx(&osvi))
-		throw std::runtime_error("failed to get version info");
-
-
-	// Unknown how this will do on Wine
-	if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
-	{
-		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
-	}
-	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 0))
-	{
-		wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"Vista.dll", _TRUNCATE);
-	}
-	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 1))
-	{
-		if (can_use_intel_core_4th_gen_features())
-		{
-			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win7.dll", _TRUNCATE);
-		}
-		else
-		{
-			AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
-		}
-	}
-	if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 2))
-	{
-		if (can_use_intel_core_4th_gen_features())
-		{
-			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
-		}
-		else
-		{
-			AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
-		}
-	}
-
-	if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
-		throw std::runtime_error("failed to combine Url");
-
-	downloadFile(finalurl, tbb);
-	UnblockFile(tbb);
-}
-
 
 WNDPROC OldButtonProc;
 WNDPROC OldButtonProc2;
 
 LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	MSG Msg = { 0 };
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
+		EnableWindow(hwndButton, FALSE);
+		MSG Msg = { 0 };
+		wchar_t tbb[MAX_PATH + 1] = { 0 };
+		PCombine(tbb, gameclient, tbbfile.c_str());
+
+		wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
+		DWORD dwLength = sizeof(finalurl);
+
+		OSVERSIONINFO osvi{};
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if (!GetVersionEx(&osvi))
+			throw std::runtime_error("failed to get version info");
+
+
+		// Unknown how this will do on Wine
+		if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
+		{
+			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
+		}
+		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 0))
+		{
+			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"Vista.dll", _TRUNCATE);
+		}
+		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 1))
+		{
+			if (can_use_intel_core_4th_gen_features())
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win7.dll", _TRUNCATE);
+			}
+			else
+			{
+				AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
+			}
+		}
+		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 2))
+		{
+			if (can_use_intel_core_4th_gen_features())
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+			}
+			else
+			{
+				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+			}
+		}
+
+		if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
+			throw std::runtime_error("failed to combine Url");
+
+		downloadFile(finalurl, tbb);
+		UnblockFile(tbb);
+
 		PCombine(runair, cwd, airsetup.c_str());
 		std::thread t{ AdobeAirDL };
 		t.join();
@@ -557,29 +577,27 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		wchar_t adobepath[MAX_PATH + 1] = { 0 };
 		PCombine(adobepath, progdrive, adobedir.c_str());
 
+		PCombine(airlatest, adobepath, air.c_str());
+		PCombine(flashlatest, adobepath, flash);
+
 		CpFile(cgbin, cgdest);
 		CpFile(cgglbin, cggldest);
 		CpFile(cgd3d9bin, cgd3d9dest);
-		PCombine(airlatest, adobepath, air.c_str());
 		CpFile(airlatest, airdest);
-		PCombine(flashlatest, adobepath, flash);
 		CpFile(flashlatest, flashdest);
 
 		msvc(gameclient, 2, p120.c_str());
 		msvc(gameclient, 3, r120.c_str());
 
-		std::thread t1{ threadingbuildingblocks };
-		t1.join();
-
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
+		
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
-		EnableWindow(hwnd, FALSE);
-		break;
-
+		return 0;
 	}
-	return CallWindowProc(OldButtonProc, hwnd, msg, wp, lp);
+	return CallWindowProc(OldButtonProc, hwndButton, msg, wp, lp);
 }
+
 
 LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -587,6 +605,7 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
+		EnableWindow(hwndButton2, FALSE);
 		wchar_t msvcpdest[MAX_PATH + 1] = { 0 };
 		PCombine(msvcpdest, patchclient, p120.c_str());
 
@@ -605,48 +624,22 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		ExtractResource(701, flashdest);
 		ExtractResource(801, tbbdest);
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
-		EnableWindow(hwnd, FALSE);
 		break;
 	}
-	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
+	return CallWindowProc(OldButtonProc2, hwndButton2, msg, wp, lp);
 }
 
 void AboutBox()
 {
-	ShowWindow(hwnd2, SW_RESTORE);
+	ShowWindow(hwnd2, SW_SHOW);
 	UpdateWindow(hwnd2);
+	UpdateWindow(hwnd);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
-	case WM_CREATE:
-		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
-		hwndButton2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, nullptr, nullptr, nullptr);
-		if (hwndButton2 == nullptr)
-		{
-			throw std::runtime_error("failed to create window");
-		}
-
-		
-
-		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
-		hwndButton = CreateWindowEx(WS_EX_TOOLWINDOW, L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, nullptr, nullptr, nullptr);
-		if (hwndButton == nullptr)
-		{
-			throw std::runtime_error("failed to create button");
-		}
-
-		
-
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, WndProc);
-		if (hwnd2 == nullptr)
-		{
-			throw std::runtime_error("failed to create button");
-		}
-		break;
-
 	case WM_COMMAND:
 		{
 			switch (LOWORD(wParam))
@@ -706,7 +699,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 
 	MSG Msg = {0};
-	WNDCLASSEX wc = {sizeof(wc)};
+	WNDCLASSEX wc = {0};
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -734,6 +727,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	{
 		throw std::runtime_error("failed to create window");
 	}
+	CLIENTCREATESTRUCT MDIClientCreateStruct;
+
+	hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+	OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
+	hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+	OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
+
+	MDIClientCreateStruct.idFirstChild = IDM_FIRSTCHILD;
+	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, (void*)&MDIClientCreateStruct);
+
+	if (hwnd2 == nullptr)
+	{
+		throw std::runtime_error("failed to create window");
+	}
+
 
 	BROWSEINFO bi = {0};
 	bi.lpszTitle = L"Select your GarenaLoL/League of Legends/LoLQQ installation directory:";
