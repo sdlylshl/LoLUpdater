@@ -139,9 +139,6 @@
     <ClCompile Include="LoLUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +157,9 @@
     <None Include="Uninstall\msvcr120.dll" />
     <None Include="Uninstall\NPSWF32.dll" />
     <None Include="Uninstall\tbb.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

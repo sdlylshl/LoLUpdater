@@ -9,7 +9,7 @@
 #include <fstream>
 #include <Shlwapi.h>
 #include <Shlobj.h>
-#include <resource.h>
+#include "resource.h"
 #include <Tlhelp32.h>
 #include <sstream>
 
