@@ -90,14 +90,13 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB
 std::wstring file2bremove, file2bupdate;
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
-wchar_t gameclient[MAX_PATH + 1], patchclient[MAX_PATH + 1], runair[MAX_PATH + 1], currentdir[MAX_PATH + 1], majortxt[MAX_PATH + 1], minortxt[MAX_PATH + 1], revisiontxt[MAX_PATH + 1], airdest[MAX_PATH + 1], buildtxt[MAX_PATH + 1], airlatest[MAX_PATH + 1], flashdest[MAX_PATH + 1], flashlatest[MAX_PATH + 1], cgdest[MAX_PATH + 1], cggldest[MAX_PATH + 1], cgd3d9dest[MAX_PATH + 1], fullpath[MAX_PATH], tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
+wchar_t gameclient[MAX_PATH + 1], patchclient[MAX_PATH + 1], runair[MAX_PATH + 1], currentdir[MAX_PATH + 1], majortxt[MAX_PATH + 1], minortxt[MAX_PATH + 1], revisiontxt[MAX_PATH + 1], airdest[MAX_PATH + 1], buildtxt[MAX_PATH + 1], airlatest[MAX_PATH + 1], flashdest[MAX_PATH + 1], flashlatest[MAX_PATH + 1], cgdest[MAX_PATH + 1], cggldest[MAX_PATH + 1], cgd3d9dest[MAX_PATH + 1], fullpath[MAX_PATH], tbbname[INTERNET_MAX_URL_LENGTH], currentdir2[MAX_PATH] = { 0 };
 const std::wstring tbbfile = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
-wchar_t currentdir2[MAX_PATH] = {0};
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
@@ -111,7 +110,7 @@ const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
-HWND hwnd, hwndButton, hwndButton2, hwnd2;
+HWND hwnd, hwnd2, hwndButton, hwndButton2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 void PCombine(LPTSTR pszPathOut, LPCTSTR pszPathIn, LPCTSTR pszMore)
@@ -131,7 +130,6 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 	if (URLDownloadToFile(nullptr, url.c_str(), file.c_str(), 0, nullptr) != S_OK)
 		throw std::runtime_error("failed to initialize download");
 }
-
 
 void UrlComb(PCTSTR pszRelative)
 {
@@ -229,9 +227,8 @@ void Updater()
 	t3.close();
 	DeleteFile(buildtxt);
 
-	auto size = GetModuleFileName(nullptr, currentdir2, MAX_PATH + 1);
-
 	DWORD handle = 0;
+	DWORD size;
 	size = GetFileVersionInfoSize(currentdir2, &handle);
 	if (size == NULL)
 		throw std::runtime_error("failed to get file version infosize");
@@ -418,27 +415,6 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 		throw std::runtime_error("failed to copy file");
 }
 
-void Uninstall()
-{
-	wchar_t msvcpdest[MAX_PATH + 1] = {0};
-	PCombine(msvcpdest, patchclient, p120.c_str());
-
-	wchar_t msvcrdest[MAX_PATH + 1] = {0};
-	PCombine(msvcrdest, patchclient, r120.c_str());
-
-	wchar_t tbbdest[MAX_PATH + 1] = {0};
-	PCombine(tbbdest, gameclient, tbbfile.c_str());
-
-	ExtractResource(101, airdest);
-	ExtractResource(201, cgdest);
-	ExtractResource(301, cggldest);
-	ExtractResource(401, cgd3d9dest);
-	ExtractResource(501, msvcpdest);
-	ExtractResource(601, msvcrdest);
-	ExtractResource(701, flashdest);
-	ExtractResource(801, tbbdest);
-}
-
 void threadingbuildingblocks()
 {
 	wchar_t tbb[MAX_PATH + 1] = {0};
@@ -492,130 +468,117 @@ void threadingbuildingblocks()
 	UnblockFile(tbb);
 }
 
-void processWindowsMessage(MSG *msg)
-{
-	switch (msg->message)
-	{
-	default:
-		TranslateMessage(msg);
-		DispatchMessage(msg);
-		break;
-	}
-}
 
-void Patch()
-{
-	MSG Msg1 = { 0 };
-
-	PCombine(runair, cwd, airsetup.c_str());
-	std::thread t{AdobeAirDL};
-	t.join();
-
-	DeleteFile(std::wstring(runair + unblocktag).c_str());
-
-	SHELLEXECUTEINFO ei = {};
-	ei.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei.fMask = SEE_MASK_NOCLOSEPROCESS ;
-	ei.lpVerb = L"runas";
-	ei.lpParameters = L"-silent";
-	ei.lpFile = runair;
-	ei.nShow = SW_SHOW;
-
-	if (!ShellExecuteEx(&ei))
-		throw std::runtime_error("failed to execute the Adobe AIR Installer");
-
-	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei.hProcess, FALSE, INFINITE, QS_ALLINPUT))
-	{
-		while (PeekMessage(&Msg1, nullptr, 0, 0, PM_REMOVE))
-		{
-			DispatchMessage(&Msg1);
-		}
-	}
-
-	DeleteFile(runair);
-
-	wchar_t runcg[MAX_PATH + 1] = {0};
-	const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
-	PCombine(runcg, cwd, cgsetup.c_str());
-	ExtractResource(1, runcg);
-	DeleteFile(std::wstring(runcg + unblocktag).c_str());
-
-	SHELLEXECUTEINFO ei1 = {};
-	ei1.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei1.fMask = SEE_MASK_NOCLOSEPROCESS ;
-	ei1.lpVerb = L"runas";
-	ei1.lpFile = runcg;
-	ei1.lpParameters = L"/verysilent /TYPE = compact";
-	ei1.nShow = SW_SHOW;
-
-	if (!ShellExecuteEx(&ei1))
-		throw std::runtime_error("failed to execute the NvidiaCG Installer");
-
-	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei1.hProcess, FALSE, INFINITE, QS_ALLINPUT))
-	{
-		while (PeekMessage(&Msg1, nullptr, 0, 0, PM_REMOVE))
-		{
-			DispatchMessage(&Msg1);
-		}
-	}
-
-	DeleteFile(runcg);
-
-	wchar_t cgbinpath[MAX_PATH + 1];
-	if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
-		throw std::runtime_error("failed to get environmental variable path");
-
-	wchar_t cgbin[MAX_PATH + 1] = {0};
-
-	PCombine(cgbin, cgbinpath, cg.c_str());
-
-	wchar_t cgglbin[MAX_PATH + 1] = {0};
-
-	PCombine(cgglbin, cgbinpath, cggl.c_str());
-
-	wchar_t cgd3d9bin[MAX_PATH + 1] = {0};
-
-	PCombine(cgd3d9bin, cgbinpath, cgd3d9.c_str());
-
-	wchar_t progdrive[MAX_PATH + 1];
-	if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
-		throw std::runtime_error("Unable to get folder path");
-
-	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-	wchar_t adobepath[MAX_PATH + 1] = {0};
-	PCombine(adobepath, progdrive, adobedir.c_str());
-
-	PCombine(airlatest, adobepath, air.c_str());
-	PCombine(flashlatest, adobepath, flash);
-
-	std::thread t1{threadingbuildingblocks};
-	t1.join();
-
-	CpFile(cgbin, cgdest);
-	CpFile(cgglbin, cggldest);
-	CpFile(cgd3d9bin, cgd3d9dest);
-	CpFile(airlatest, airdest);
-	CpFile(flashlatest, flashdest);
-
-	msvc(gameclient, 2, p120.c_str());
-	msvc(gameclient, 3, r120.c_str());
-
-	processWindowsMessage(&Msg1);
-}
-
-WNDPROC OldButtonProc, OldButtonProc2;
+WNDPROC OldButtonProc;
+WNDPROC OldButtonProc2;
 
 LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	MSG Msg = { 0 };
 	switch (msg)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
-		Patch();
+		PCombine(runair, cwd, airsetup.c_str());
+		std::thread t{ AdobeAirDL };
+		t.join();
+
+		DeleteFile(std::wstring(runair + unblocktag).c_str());
+
+		SHELLEXECUTEINFO ei = {};
+		ei.cbSize = sizeof(SHELLEXECUTEINFO);
+		ei.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ei.lpVerb = L"runas";
+		ei.lpParameters = L"-silent";
+		ei.lpFile = runair;
+		ei.nShow = SW_SHOW;
+
+		if (!ShellExecuteEx(&ei))
+			throw std::runtime_error("failed to execute the Adobe AIR Installer");
+
+		while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei.hProcess, FALSE, INFINITE, QS_ALLINPUT))
+		{
+			while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				DispatchMessage(&Msg);
+			}
+		}
+
+		DeleteFile(runair);
+
+		wchar_t runcg[MAX_PATH + 1] = { 0 };
+		const std::wstring cgsetup = L"Cg-3.1_April2012_Setup.exe";
+		PCombine(runcg, cwd, cgsetup.c_str());
+		ExtractResource(1, runcg);
+		DeleteFile(std::wstring(runcg + unblocktag).c_str());
+
+		SHELLEXECUTEINFO ei1 = {};
+		ei1.cbSize = sizeof(SHELLEXECUTEINFO);
+		ei1.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ei1.lpVerb = L"runas";
+		ei1.lpFile = runcg;
+		ei1.lpParameters = L"/verysilent /TYPE = compact";
+		ei1.nShow = SW_SHOW;
+
+		if (!ShellExecuteEx(&ei1))
+			throw std::runtime_error("failed to execute the NvidiaCG Installer");
+
+		while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei1.hProcess, FALSE, INFINITE, QS_ALLINPUT))
+		{
+			while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				DispatchMessage(&Msg);
+			}
+		}
+
+		DeleteFile(runcg);
+
+		wchar_t cgbinpath[MAX_PATH + 1];
+		if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
+			throw std::runtime_error("failed to get environmental variable path");
+
+		wchar_t cgbin[MAX_PATH + 1] = { 0 };
+
+		PCombine(cgbin, cgbinpath, cg.c_str());
+
+		wchar_t cgglbin[MAX_PATH + 1] = { 0 };
+
+		PCombine(cgglbin, cgbinpath, cggl.c_str());
+
+		wchar_t cgd3d9bin[MAX_PATH + 1] = { 0 };
+
+		PCombine(cgd3d9bin, cgbinpath, cgd3d9.c_str());
+
+		wchar_t progdrive[MAX_PATH + 1];
+		if (SHGetFolderPath(nullptr, CSIDL_PROGRAM_FILES_COMMON, nullptr, 0, progdrive) != S_OK)
+			throw std::runtime_error("Unable to get folder path");
+
+		const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
+		wchar_t adobepath[MAX_PATH + 1] = { 0 };
+		PCombine(adobepath, progdrive, adobedir.c_str());
+
+		CpFile(cgbin, cgdest);
+		CpFile(cgglbin, cggldest);
+		CpFile(cgd3d9bin, cgd3d9dest);
+		PCombine(airlatest, adobepath, air.c_str());
+		CpFile(airlatest, airdest);
+		PCombine(flashlatest, adobepath, flash);
+		CpFile(flashlatest, flashdest);
+
+		msvc(gameclient, 2, p120.c_str());
+		msvc(gameclient, 3, r120.c_str());
+
+		std::thread t1{ threadingbuildingblocks };
+		t1.join();
+
+		TranslateMessage(&Msg);
+		DispatchMessage(&Msg);
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
+		EnableWindow(hwnd, FALSE);
 		break;
+
 	}
-	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
+	return CallWindowProc(OldButtonProc, hwnd, msg, wp, lp);
 }
 
 LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -624,8 +587,25 @@ LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
-		Uninstall();
+		wchar_t msvcpdest[MAX_PATH + 1] = { 0 };
+		PCombine(msvcpdest, patchclient, p120.c_str());
+
+		wchar_t msvcrdest[MAX_PATH + 1] = { 0 };
+		PCombine(msvcrdest, patchclient, r120.c_str());
+
+		wchar_t tbbdest[MAX_PATH + 1] = { 0 };
+		PCombine(tbbdest, gameclient, tbbfile.c_str());
+
+		ExtractResource(101, airdest);
+		ExtractResource(201, cgdest);
+		ExtractResource(301, cggldest);
+		ExtractResource(401, cgd3d9dest);
+		ExtractResource(501, msvcpdest);
+		ExtractResource(601, msvcrdest);
+		ExtractResource(701, flashdest);
+		ExtractResource(801, tbbdest);
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
+		EnableWindow(hwnd, FALSE);
 		break;
 	}
 	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
@@ -642,19 +622,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_CREATE:
-
-		hwndButton = CreateWindow( L"button1", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
-		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
-		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
-
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_VISIBLE | WS_CHILD, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, nullptr);
-
-		if (hwnd2 == nullptr)
+		hwndButton2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, nullptr, nullptr, nullptr);
+		if (hwndButton2 == nullptr)
 		{
 			throw std::runtime_error("failed to create window");
 		}
 
+		
+
+		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
+		hwndButton = CreateWindowEx(WS_EX_TOOLWINDOW, L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, nullptr, nullptr, nullptr);
+		if (hwndButton == nullptr)
+		{
+			throw std::runtime_error("failed to create button");
+		}
+
+		
+
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, WndProc);
+		if (hwnd2 == nullptr)
+		{
+			throw std::runtime_error("failed to create button");
+		}
 		break;
 
 	case WM_COMMAND:
@@ -666,13 +656,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
 			case ID_HELP_ABOUT:
-				ShowWindow(hwnd2, SW_SHOWNORMAL);
+				ShowWindow(hwnd2, SW_SHOW);
 				AboutBox();
 				break;
 			}
 		}
 		break;
 
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -684,7 +677,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-                   LPSTR, int nCmdShow)
+                   LPSTR, int)
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
@@ -755,7 +748,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get browse path");
 	}
 
-	ShowWindow(hwnd, nCmdShow);
+	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
 	wchar_t instdir[MAX_PATH + 1] = {0};
@@ -822,7 +815,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PCombine(cgdest, gameclient, cg.c_str());
 	PCombine(cggldest, gameclient, cggl.c_str());
 	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
-
 
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
