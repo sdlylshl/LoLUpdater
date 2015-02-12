@@ -87,45 +87,30 @@ public:
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
-std::wstring file2bremove;
-std::wstring file2bupdate;
+std::wstring file2bremove, file2bupdate;
 bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
-wchar_t gameclient[MAX_PATH + 1] = {0};
-wchar_t patchclient[MAX_PATH + 1] = {0};
-wchar_t runair[MAX_PATH + 1] = {0};
+wchar_t gameclient[MAX_PATH + 1], patchclient[MAX_PATH + 1], runair[MAX_PATH + 1], currentdir[MAX_PATH + 1], majortxt[MAX_PATH + 1], minortxt[MAX_PATH + 1], revisiontxt[MAX_PATH + 1], airdest[MAX_PATH + 1], buildtxt[MAX_PATH + 1], airlatest[MAX_PATH + 1], flashdest[MAX_PATH + 1], flashlatest[MAX_PATH + 1], cgdest[MAX_PATH + 1], cggldest[MAX_PATH + 1], cgd3d9dest[MAX_PATH + 1], fullpath[MAX_PATH], tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
 const std::wstring tbbfile = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t currentdir[MAX_PATH + 1] = {0};
-wchar_t majortxt[MAX_PATH + 1] = {0};
-wchar_t minortxt[MAX_PATH + 1] = {0};
-wchar_t revisiontxt[MAX_PATH + 1] = {0};
-wchar_t buildtxt[MAX_PATH + 1] = {0};
 const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
 wchar_t currentdir2[MAX_PATH] = {0};
 const std::wstring ftp = L"http://lol.jdhpro.com/";
+
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
+
 const std::wstring unblocktag = L":Zone.Identifier";
-wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = {0};
 const std::wstring p120 = L"msvcp120.dll";
 const std::wstring r120 = L"msvcr120.dll";
-wchar_t airdest[MAX_PATH + 1] = {0};
-wchar_t airlatest[MAX_PATH + 1] = {0};
 wchar_t flash[MAX_PATH + 1] = {L"Resources"};
-wchar_t flashdest[MAX_PATH + 1] = {0};
-wchar_t flashlatest[MAX_PATH + 1] = {0};
-wchar_t cgdest[MAX_PATH + 1] = {0};
-wchar_t cggldest[MAX_PATH + 1] = {0};
-wchar_t cgd3d9dest[MAX_PATH + 1] = {0};
 const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
-wchar_t fullpath[MAX_PATH] = { 0 };
 HWND hwnd, hwndButton, hwndButton2, hwnd2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -170,8 +155,7 @@ void killProcessByName(const wchar_t* filename)
 	{
 		if (wcscmp(pEntry.szExeFile, filename) == 0)
 		{
-			auto hProcess = OpenProcess(PROCESS_TERMINATE, 0,
-			                                             static_cast<DWORD>(pEntry.th32ProcessID));
+			auto hProcess = OpenProcess(PROCESS_TERMINATE, 0, static_cast<DWORD>(pEntry.th32ProcessID));
 			if (hProcess != nullptr)
 			{
 				TerminateProcess(hProcess, 9);
@@ -188,9 +172,7 @@ bool IsProcessRunning(const wchar_t* processName)
 	auto exists = false;
 	PROCESSENTRY32 entry;
 	entry.dwSize = sizeof(PROCESSENTRY32);
-
 	auto snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
 	if (Process32First(snapshot, &entry))
 		while (Process32Next(snapshot, &entry))
 			if (!_wcsicmp(entry.szExeFile, processName))
@@ -354,7 +336,7 @@ int check_xcr0_ymm()
 {
 	uint32_t xcr0;
 	xcr0 = static_cast<uint32_t>(_xgetbv(0));
-	return ((xcr0 & 6) == 6);
+	return (xcr0 & 6) == 6;
 }
 
 int check_4th_gen_intel_core_features()
@@ -521,9 +503,9 @@ void processWindowsMessage(MSG *msg)
 	}
 }
 
-void patch()
+void Patch()
 {
-	MSG Msg = { 0 };
+	MSG Msg1 = { 0 };
 
 	PCombine(runair, cwd, airsetup.c_str());
 	std::thread t{AdobeAirDL};
@@ -544,9 +526,9 @@ void patch()
 
 	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei.hProcess, FALSE, INFINITE, QS_ALLINPUT))
 	{
-		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		while (PeekMessage(&Msg1, nullptr, 0, 0, PM_REMOVE))
 		{
-			DispatchMessage(&Msg);
+			DispatchMessage(&Msg1);
 		}
 	}
 
@@ -571,9 +553,9 @@ void patch()
 
 	while (WAIT_OBJECT_0 != MsgWaitForMultipleObjects(1, &ei1.hProcess, FALSE, INFINITE, QS_ALLINPUT))
 	{
-		while (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE))
+		while (PeekMessage(&Msg1, nullptr, 0, 0, PM_REMOVE))
 		{
-			DispatchMessage(&Msg);
+			DispatchMessage(&Msg1);
 		}
 	}
 
@@ -618,13 +600,10 @@ void patch()
 	msvc(gameclient, 2, p120.c_str());
 	msvc(gameclient, 3, r120.c_str());
 
-	RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-
-	processWindowsMessage(&Msg);
+	processWindowsMessage(&Msg1);
 }
 
-WNDPROC OldButtonProc;
-WNDPROC OldButtonProc2;
+WNDPROC OldButtonProc, OldButtonProc2;
 
 LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -632,11 +611,11 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Patching..."));
-		patch();
+		Patch();
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		break;
 	}
-	return CallWindowProc(OldButtonProc, hwnd, msg, wp, lp);
+	return CallWindowProc(OldButtonProc2, hwnd, msg, wp, lp);
 }
 
 LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -660,17 +639,16 @@ void AboutBox()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CLIENTCREATESTRUCT MDIClientCreateStruct;
 	switch (msg)
 	{
 	case WM_CREATE:
 
-		hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
-		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
+		hwndButton = CreateWindow( L"button1", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
 		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 
-		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, nullptr, (void*)&MDIClientCreateStruct);
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_VISIBLE | WS_CHILD, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, nullptr);
 
 		if (hwnd2 == nullptr)
 		{
