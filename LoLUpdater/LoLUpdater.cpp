@@ -12,7 +12,6 @@
 #include <resource.h>
 #include <Tlhelp32.h>
 #include <sstream>
-#define IDM_FIRSTCHILD 900001
 
 struct Version
 {
@@ -441,7 +440,7 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 WNDPROC OldButtonProc;
 WNDPROC OldButtonProc2;
 
-LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
 	{
@@ -599,7 +598,7 @@ LRESULT CALLBACK ButtonProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 }
 
 
-LRESULT CALLBACK ButtonProc2(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
 	{
@@ -729,13 +728,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	}
 	CLIENTCREATESTRUCT MDIClientCreateStruct;
 
-	hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+	hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, nullpt, nullptr, nullptr);
 	OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
-	hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+	hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, nullpt, nullptr, nullptr);
 	OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 
-	MDIClientCreateStruct.idFirstChild = IDM_FIRSTCHILD;
-	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, (void*)&MDIClientCreateStruct);
+	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, nullptr);
 
 	if (hwnd2 == nullptr)
 	{
