@@ -357,6 +357,74 @@ int check_xcr0_ymm()
 	return (xcr0 & 6) == 6;
 }
 
+void Begin()
+{
+	wchar_t instdir[MAX_PATH + 1] = { 0 };
+	PCombine(instdir, loldir, L"lol.launcher.exe");
+
+	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
+	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
+
+	wchar_t instdirGarena[MAX_PATH + 1] = { 0 };
+	PCombine(instdirGarena, loldir, L"lol.exe");
+
+	wchar_t airclient[MAX_PATH + 1] = { 0 };
+
+	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
+
+	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
+	{
+		auto rads = L"RADS";
+		PCombine(airclient, loldir, rads);
+		auto proj = L"projects";
+		PAppend(airclient, proj);
+		PAppend(airclient, L"lol_air_client");
+		auto rel = L"releases";
+		PAppend(airclient, rel);
+
+		PCombine(patchclient, loldir, rads);
+		PAppend(patchclient, proj);
+		PAppend(patchclient, L"lol_patcher");
+		PAppend(patchclient, rel);
+
+		PCombine(gameclient, loldir, rads);
+		PAppend(gameclient, L"solutions");
+		PAppend(gameclient, L"lol_game_client_sln");
+		PAppend(gameclient, rel);
+
+		wchar_t dep[MAX_PATH + 1] = L"deploy";
+		PAppend(patchclient, findlatest(patchclient).c_str());
+		PAppend(patchclient, dep);
+
+		PAppend(airclient, findlatest(airclient).c_str());
+		PAppend(airclient, dep);
+		PAppend(airclient, adobedir.c_str());
+
+		PAppend(gameclient, findlatest(gameclient).c_str());
+		PAppend(gameclient, dep);
+	}
+	else
+	{
+		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
+		{
+			PCombine(gameclient, loldir, L"Game");
+			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
+		}
+		else
+			throw std::runtime_error("Unable to determine LoL version");
+	}
+
+
+	PCombine(airdest, airclient, air.c_str());
+
+	PAppend(flash, L"NPSWF32.dll");
+	PCombine(flashdest, airclient, flash);
+
+	PCombine(cgdest, gameclient, cg.c_str());
+	PCombine(cggldest, gameclient, cggl.c_str());
+	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
+}
+
 int check_4th_gen_intel_core_features()
 {
 	int abcd[4];
@@ -793,70 +861,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
-	wchar_t instdir[MAX_PATH + 1] = {0};
-	PCombine(instdir, loldir, L"lol.launcher.exe");
-
-	wchar_t instdirCN[MAX_PATH + 1] = {0};
-	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
-
-	wchar_t instdirGarena[MAX_PATH + 1] = {0};
-	PCombine(instdirGarena, loldir, L"lol.exe");
-
-	wchar_t airclient[MAX_PATH + 1] = {0};
-
-	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-
-	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
-	{
-		auto rads = L"RADS";
-		PCombine(airclient, loldir, rads);
-		auto proj = L"projects";
-		PAppend(airclient, proj);
-		PAppend(airclient, L"lol_air_client");
-		auto rel = L"releases";
-		PAppend(airclient, rel);
-
-		PCombine(patchclient, loldir, rads);
-		PAppend(patchclient, proj);
-		PAppend(patchclient, L"lol_patcher");
-		PAppend(patchclient, rel);
-
-		PCombine(gameclient, loldir, rads);
-		PAppend(gameclient, L"solutions");
-		PAppend(gameclient, L"lol_game_client_sln");
-		PAppend(gameclient, rel);
-
-		wchar_t dep[MAX_PATH + 1] = L"deploy";
-		PAppend(patchclient, findlatest(patchclient).c_str());
-		PAppend(patchclient, dep);
-
-		PAppend(airclient, findlatest(airclient).c_str());
-		PAppend(airclient, dep);
-		PAppend(airclient, adobedir.c_str());
-
-		PAppend(gameclient, findlatest(gameclient).c_str());
-		PAppend(gameclient, dep);
-	}
-	else
-	{
-		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
-		{
-			PCombine(gameclient, loldir, L"Game");
-			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
-		}
-		else
-			throw std::runtime_error("Unable to determine LoL version");
-	}
-
-
-	PCombine(airdest, airclient, air.c_str());
-
-	PAppend(flash, L"NPSWF32.dll");
-	PCombine(flashdest, airclient, flash);
-
-	PCombine(cgdest, gameclient, cg.c_str());
-	PCombine(cggldest, gameclient, cggl.c_str());
-	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
+	std::thread intro{ Begin };
+	intro.join();
 
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
