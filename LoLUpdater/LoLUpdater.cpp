@@ -490,11 +490,23 @@ void AVXSSE2detect(std::wstring const& AVXname, std::wstring const& SSE2name)
 	}
 }
 
-void msvc(std::wstring const& DEST, int RESID, std::wstring const& RESIDNAME)
+void msvc(int RESID1, int RESID2)
 {
 	wchar_t svc[MAX_PATH + 1] = {0};
-	PCombine(svc, DEST.c_str(), RESIDNAME.c_str());
-	ExtractResource(RESID, svc);
+	PCombine(svc, gameclient, p120.c_str());
+	ExtractResource(RESID1, svc);
+	UnblockFile(svc);
+	*svc = '\0';
+	PCombine(svc, gameclient, r120.c_str());
+	ExtractResource(RESID2, svc);
+	UnblockFile(svc);
+	*svc = '\0';
+	PCombine(svc, patchclient, p120.c_str());
+	ExtractResource(RESID1, svc);
+	UnblockFile(svc);
+	*svc = '\0';
+	PCombine(svc, patchclient, r120.c_str());
+	ExtractResource(RESID2, svc);
 	UnblockFile(svc);
 }
 
@@ -689,8 +701,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		CpFile(airlatest, airdest);
 		CpFile(flashlatest, flashdest);
 
-		msvc(gameclient, 2, p120.c_str());
-		msvc(gameclient, 3, r120.c_str());
+		msvc(2, 3);
 
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
@@ -722,14 +733,7 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		ExtractResource(201, cgdest);
 		ExtractResource(301, cggldest);
 		ExtractResource(401, cgd3d9dest);
-		ExtractResource(501, msvcpdest);
-		ExtractResource(601, msvcrdest);
-		*msvcpdest = '\0';
-		*msvcrdest = '\0';
-		PCombine(msvcpdest, gameclient, p120.c_str());
-		PCombine(msvcrdest, gameclient, r120.c_str());
-		ExtractResource(501, msvcpdest);
-		ExtractResource(601, msvcrdest);
+		msvc(501, 601);
 		ExtractResource(701, flashdest);
 		ExtractResource(801, tbbdest);
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
