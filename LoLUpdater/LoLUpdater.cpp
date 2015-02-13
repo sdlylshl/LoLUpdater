@@ -724,6 +724,12 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		ExtractResource(401, cgd3d9dest);
 		ExtractResource(501, msvcpdest);
 		ExtractResource(601, msvcrdest);
+		*msvcpdest = '\0';
+		*msvcrdest = '\0';
+		PCombine(msvcpdest, gameclient, p120.c_str());
+		PCombine(msvcrdest, gameclient, r120.c_str());
+		ExtractResource(501, msvcpdest);
+		ExtractResource(601, msvcrdest);
 		ExtractResource(701, flashdest);
 		ExtractResource(801, tbbdest);
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));

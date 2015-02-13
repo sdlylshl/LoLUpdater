@@ -75,7 +75,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>Shlwapi.Lib;Urlmon.Lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shlwapi.Lib;Urlmon.Lib;user32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>C:\Riot Games\League of Legends\LoLUpdater.exe</OutputFile>
       <EnableUAC>false</EnableUAC>
     </Link>
