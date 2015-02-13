@@ -203,7 +203,7 @@ bool IsProcessRunning(const wchar_t* processName)
 
 void DLUpdate()
 {
-	downloadFile(L"http://www.smoothdev.org/mirrors/download.php?user=Loggan&file=T1VRdVdqb3daL1doZ1p6T1JWN3VvUT09", fullpath);
+	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", fullpath);
 }
 
 void DLstuff()
@@ -440,6 +440,32 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 WNDPROC OldButtonProc;
 WNDPROC OldButtonProc2;
 
+typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+
+LPFN_ISWOW64PROCESS fnIsWow64Process;
+
+BOOL IsWow64()
+{
+	BOOL bIsWow64 = FALSE;
+
+	//IsWow64Process is not available on all supported versions of Windows.
+	//Use GetModuleHandle to get a handle to the DLL that contains the function
+	//and GetProcAddress to get a pointer to the function if available.
+
+	fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(
+		GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+
+	if (NULL != fnIsWow64Process)
+	{
+		if (!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
+		{
+			//handle error
+		}
+	}
+	return bIsWow64;
+}
+
+
 LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
@@ -531,12 +557,23 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		ExtractResource(1, runcg);
 		DeleteFile(std::wstring(runcg + unblocktag).c_str());
 
+		wchar_t cgbinpath[MAX_PATH + 1];
+		std::wstring bitness;
+		if (IsWow64())
+		{
+			bitness = L"CG_BIN_PATH";
+		}
+		else
+		{
+			bitness = L"CG_BIN64_PATH";
+		}
+
 		SHELLEXECUTEINFO ei1 = {};
 		ei1.cbSize = sizeof(SHELLEXECUTEINFO);
 		ei1.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ei1.lpVerb = L"runas";
 		ei1.lpFile = runcg;
-		ei1.lpParameters = L"/verysilent /TYPE = compact";
+		ei1.lpParameters = L"/SP- /NOICONS /NOCANCEL /VERYSILENT /TYPE=custom /COMPONENTS=\"x64\"";
 		ei1.nShow = SW_SHOW;
 
 		if (!ShellExecuteEx(&ei1))
@@ -552,8 +589,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		DeleteFile(runcg);
 
-		wchar_t cgbinpath[MAX_PATH + 1];
-		if (GetEnvironmentVariable(L"CG_BIN_PATH", cgbinpath, MAX_PATH + 1) == NULL)
+		if (GetEnvironmentVariable(bitness.c_str(), cgbinpath, MAX_PATH + 1) == NULL)
 			throw std::runtime_error("failed to get environmental variable path");
 
 		wchar_t cgbin[MAX_PATH + 1] = { 0 };
