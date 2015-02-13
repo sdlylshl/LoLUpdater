@@ -720,11 +720,6 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_LBUTTONDOWN:
 		SendMessage(hwndButton2, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Uninstalling..."));
 		EnableWindow(hwndButton2, FALSE);
-		wchar_t msvcpdest[MAX_PATH + 1] = { 0 };
-		PCombine(msvcpdest, patchclient, p120.c_str());
-
-		wchar_t msvcrdest[MAX_PATH + 1] = { 0 };
-		PCombine(msvcrdest, patchclient, r120.c_str());
 
 		wchar_t tbbdest[MAX_PATH + 1] = { 0 };
 		PCombine(tbbdest, gameclient, tbbfile.c_str());
