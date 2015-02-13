@@ -126,10 +126,7 @@ const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
-HWND hwnd;
-HWND hwndButton;
-HWND hwndButton2;
-HWND hwnd2;
+HWND hwnd, hwnd2, hwndButton, hwndButton2;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK ButtonProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK ButtonProc2(HWND, UINT, WPARAM, LPARAM);
@@ -517,8 +514,7 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 }
 
 
-WNDPROC OldButtonProc;
-WNDPROC OldButtonProc2;
+WNDPROC OldButtonProc, OldButtonProc2;
 
 typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
@@ -526,14 +522,10 @@ LPFN_ISWOW64PROCESS fnIsWow64Process;
 
 BOOL IsWow64()
 {
-	BOOL bIsWow64 = FALSE;
+	auto bIsWow64 = FALSE;
 
-	//IsWow64Process is not available on all supported versions of Windows.
-	//Use GetModuleHandle to get a handle to the DLL that contains the function
-	//and GetProcAddress to get a pointer to the function if available.
-
-	fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(
-		GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+	fnIsWow64Process = reinterpret_cast<LPFN_ISWOW64PROCESS>(GetProcAddress(
+		GetModuleHandle(L"kernel32"), "IsWow64Process"));
 
 	if (NULL != fnIsWow64Process)
 	{
