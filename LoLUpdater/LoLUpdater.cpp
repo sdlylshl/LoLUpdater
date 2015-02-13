@@ -211,6 +211,7 @@ void DLstuff()
 	UrlComb(build.c_str());
 }
 
+// Todo: Fix
 void Updater()
 {
 	std::thread DLInfo{ DLstuff };
@@ -729,11 +730,11 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	return CallWindowProc(OldButtonProc2, hwndButton2, msg, wp, lp);
 }
 
+// Todo: add content
 void AboutBox()
 {
 	ShowWindow(hwnd2, SW_SHOW);
 	UpdateWindow(hwnd2);
-	UpdateWindow(hwnd);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
