@@ -229,25 +229,18 @@ void Updater()
 	DLInfo.join();
 
 	std::wifstream t0(majortxt);
-	std::wstringstream buffer0;
-	buffer0 << t0.rdbuf();
-	t0.close();
-
+	std::wstringstream buffer[4];
+	buffer[0] << t0.rdbuf();
 
 	std::wifstream t1(minortxt);
-	std::wstringstream buffer1;
-	buffer1 << t1.rdbuf();
-	t1.close();
+	buffer[1] << t1.rdbuf();
 
 	std::wifstream t2(revisiontxt);
-	std::wstringstream buffer2;
-	buffer2 << t2.rdbuf();
-	t2.close();
+	buffer[2] << t2.rdbuf();
 
 	std::wifstream t3(buildtxt);
-	std::wstringstream buffer3;
-	buffer3 << t3.rdbuf();
-	t3.close();
+	buffer[3] << t3.rdbuf();
+
 
 	DWORD dwSize;
 	BYTE* pVersionInfo;
@@ -264,28 +257,37 @@ void Updater()
 	GetFileVersionInfo(exepath, 0, dwSize, pVersionInfo);
 	VerQueryValue(pVersionInfo, L"\\", reinterpret_cast<LPVOID*>(&pFileInfo), &pLenFileInfo);
 
-	if (Version(std::wstring((pFileInfo->dwFileVersionMS >> 16 & 0xffff) + L"." + (pFileInfo->dwFileVersionMS & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS >> 16 & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS & 0xffff))))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
+
+	t0.close();
+	t1.close();
+	t2.close();
+	t3.close();
+	DeleteFile(minortxt);
+	DeleteFile(majortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
+
+	if (Version(std::wstring((pFileInfo->dwFileVersionMS >> 16 & 0xffff) + L"." + (pFileInfo->dwFileVersionMS & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS >> 16 & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS & 0xffff))))) < Version(std::wstring(buffer[0].str() + L"." + buffer[1].str() + L"." + buffer[2].str() + L"." + buffer[3].str())))
 	{
 		PCombine(fullpath, cwd, file2bupdate.c_str());
 
 		std::thread superman{ DLUpdate };
 		superman.join();
+
+		SHELLEXECUTEINFO ei0 = {};
+		ei0.cbSize = sizeof(SHELLEXECUTEINFO);
+		ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
+		ei0.lpVerb = L"runas";
+		ei0.lpFile = fullpath;
+		ei0.nShow = SW_SHOW;
+
+		if (!ShellExecuteEx(&ei0))
+			throw std::runtime_error("failed to execute updated LoLUpdater");
 	}
-
-	SHELLEXECUTEINFO ei0 = {};
-	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
-	ei0.lpVerb = L"runas";
-	ei0.lpFile = fullpath;
-	ei0.nShow = SW_SHOW;
-
-	if (!ShellExecuteEx(&ei0))
-		throw std::runtime_error("failed to execute updated LoLUpdater");
-
-	DeleteFile(minortxt);
-	DeleteFile(majortxt);
-	DeleteFile(revisiontxt);
-	DeleteFile(buildtxt);
+	else
+	{
+		MessageBox(nullptr, L"No Update found!", L"LoLUpdater AutoUpdater", MB_OK | MB_SYSTEMMODAL);
+	}
 }
 
 
