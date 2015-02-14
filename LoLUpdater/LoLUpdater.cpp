@@ -349,6 +349,14 @@ wchar_t *findlatest(wchar_t *folder)
 	else
 		throw std::runtime_error("failed to find file/directory");
 
+	// Dumb ass hack
+	std::wstring input = data;
+	std::wcin >> input;
+	std::wofstream out("output.txt");
+	out << input;
+	out.close();
+	DeleteFile(L"output.txt");
+
 	return data;
 }
 
@@ -541,9 +549,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 		}
 
-		UrlComb(tbbname);
-
-		downloadFile(finalurl, tbb);
+		UrlComb(tbb);
 		UnblockFile(tbb);
 
 		PCombine(runair, cwd, airsetup.c_str());
