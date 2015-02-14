@@ -12,7 +12,6 @@
 #include "resource.h"
 #include <Tlhelp32.h>
 #include <sstream>
-#include <iostream>
 
 class CLimitSingleInstance
 {
@@ -46,7 +45,6 @@ public:
 		return (ERROR_ALREADY_EXISTS == m_dwLastError);
 	}
 };
-
 
 struct Version
 {
@@ -86,7 +84,6 @@ struct Version
 		return stream;
 	}
 };
-
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
@@ -290,7 +287,6 @@ void Updater()
 	}
 }
 
-
 void ExtractResource(int RCDATAID, std::wstring const& filename)
 {
 	FILE* f;
@@ -393,7 +389,6 @@ static int can_use_intel_core_4th_gen_features()
 	return the_4th_gen_features_available;
 }
 
-
 void AdobeAirDL()
 {
 	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
@@ -409,7 +404,6 @@ void UnblockFile(std::wstring const& filename)
 {
 	DeleteFile(std::wstring(loldir + filename + unblocktag).c_str());
 }
-
 
 void AVXSSE2detect(std::wstring const& AVXname, std::wstring const& SSE2name)
 {
@@ -451,7 +445,6 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 		throw std::runtime_error("failed to copy file");
 }
 
-
 WNDPROC OldButtonProc;
 WNDPROC OldButtonProc2;
 
@@ -476,7 +469,6 @@ BOOL IsWow64()
 	return bIsWow64;
 }
 
-
 LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
@@ -492,7 +484,6 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		if (!GetVersionEx(&osvi))
 			throw std::runtime_error("failed to get version info");
-
 
 		// Unknown how this will do on Wine
 		if (osvi.dwMajorVersion == 5 & osvi.dwMinorVersion == 1)
@@ -650,7 +641,6 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	return CallWindowProc(OldButtonProc, hwndButton, msg, wp, lp);
 }
 
-
 LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
@@ -699,7 +689,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		if (hwnd2 == nullptr)
 			throw std::runtime_error("failed to create window");
 		break;
-
 
 	case WM_COMMAND:
 	{
@@ -787,7 +776,6 @@ void Begin()
 			throw std::runtime_error("Unable to determine LoL version");
 	}
 
-
 	PCombine(airdest, airclient, air.c_str());
 
 	PAppend(flash, L"NPSWF32.dll");
@@ -814,7 +802,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		file2bupdate = L"LoLUpdater.exe";
 		file2bremove = L"LoLUpdaterLatest.exe";
 	}
-
 
 	MSG Msg = { 0 };
 	WNDCLASSEX wc = { 0 };
