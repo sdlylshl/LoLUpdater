@@ -126,6 +126,7 @@
       <EnableUAC>false</EnableUAC>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
     </Link>
     <Manifest>
       <VerboseOutput>false</VerboseOutput>
