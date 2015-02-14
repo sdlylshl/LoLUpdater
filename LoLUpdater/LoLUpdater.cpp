@@ -313,14 +313,16 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	DeleteFile(std::wstring(loldir + filename + L":Zone.Identifier").c_str());
 }
 
-wchar_t *findlatest(std::wstring const& folder)
+wchar_t *findlatest(wchar_t *folder)
 {
 	wchar_t data[MAX_PATH+1] = {0};
-	std::wstring search = {folder + L"\\*"};
+	wchar_t search[MAX_PATH + 1] = {0};
+	wcsncat_s(search, MAX_PATH + 1, folder, _TRUNCATE);
+	wcsncat_s(search, MAX_PATH + 1, L"\\*", _TRUNCATE);
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 
-	hFind = FindFirstFile(search.c_str(), &data2);
+	hFind = FindFirstFile(search, &data2);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		struct FileInfo
@@ -496,15 +498,15 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 
 		// Unknown how this will do on Wine
-		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
+		if (osvi.dwMajorVersion == 5 & osvi.dwMinorVersion == 1)
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
 		}
-		if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0)
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 0)
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"Vista.dll", _TRUNCATE);
 		}
-		if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 1)
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 1)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -515,7 +517,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
 			}
 		}
-		if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 2)
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 2)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -527,7 +529,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 		}
 
-		if (osvi.dwMajorVersion == 10 && osvi.dwMinorVersion == 0)
+		if (osvi.dwMajorVersion == 10 & osvi.dwMinorVersion == 0)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -688,6 +690,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
+	case WM_CREATE:
+		CLIENTCREATESTRUCT MDIClientCreateStruct;
+
+		hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
+		hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
+		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
+
+		hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, &MDIClientCreateStruct);
+
+		if (hwnd2 == nullptr)
+			throw std::runtime_error("failed to create window");
+		break;
+
+
 	case WM_COMMAND:
 		{
 			switch (LOWORD(wParam))
@@ -717,92 +734,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-	LPSTR, int nCmdShow)
+void Begin()
 {
-	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
-		return 0;
-
-	if (IsProcessRunning(L"LoLUpdater.exe"))
-	{
-		file2bupdate = L"LoLUpdater2.exe";
-		file2bremove = L"LoLUpdater.exe";
-	}
-	else
-	{
-		file2bupdate = L"LoLUpdater.exe";
-		file2bremove = L"LoLUpdater2.exe";
-	}
-
-	PCombine(currentdir2, cwd, file2bremove.c_str());
-	PCombine(currentdir, cwd, file2bupdate.c_str());
-
-	if (IsProcessRunning(L"LoLUpdater.exe"))
-	{
-		DeleteFile(file2bupdate.c_str());
-	}
-	else
-	{
-		DeleteFile(file2bremove.c_str());
-	}
-
-	MSG Msg = {0};
-	WNDCLASSEX wc = {0};
-	const std::wstring g_szClassName(L"mainwindow");
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.lpfnWndProc = WndProc;
-	wc.hInstance = hInstance;
-	wc.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
-	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
-	wc.lpszClassName = g_szClassName.c_str();
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
-	if (wc.hIcon == nullptr)
-		throw std::runtime_error("failed to load icon");
-
-	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
-
-	if (wc.hIconSm == nullptr)
-		throw std::runtime_error("failed to load icon");
-
-	if (RegisterClassEx(&wc) == NULL)
-	{
-		throw std::runtime_error("failed to register windowclass");
-	}
-
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, hInstance, nullptr);
-
-	if (hwnd == nullptr)
-	{
-		throw std::runtime_error("failed to create window");
-	}
-	CLIENTCREATESTRUCT MDIClientCreateStruct;
-
-	hwndButton = CreateWindow(L"button", L"Install", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 10, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
-	OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
-	hwndButton2 = CreateWindow(L"button", L"Uninstall", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON, 120, 10, 100, 50, hwnd, (HMENU)200, nullptr, nullptr);
-	OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
-
-	hwnd2 = CreateWindowEx(WS_EX_TOOLWINDOW, L"MDICLIENT", L"About LoLUpdater", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, hwnd, nullptr, nullptr, &MDIClientCreateStruct);
-
-	if (hwnd2 == nullptr)
-	{
-		throw std::runtime_error("failed to create window");
-	}
-
-
-	BROWSEINFO bi = {0};
-	bi.lpszTitle = L"Select your GarenaLoL/League of Legends/LoLQQ installation directory:";
-	auto pidl = SHBrowseForFolder(&bi);
-	if (pidl == nullptr)
-	{
-		return NULL;
-	}
-
-	if (SHGetPathFromIDList(pidl, loldir) == NULL)
-	{
-		throw std::runtime_error("failed to get browse path");
-	}
-
 	wchar_t instdir[MAX_PATH + 1] = { 0 };
 	PCombine(instdir, loldir, L"lol.launcher.exe");
 
@@ -867,8 +800,76 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	PCombine(cgdest, gameclient, cg.c_str());
 	PCombine(cggldest, gameclient, cggl.c_str());
 	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
+}
 
-	ShowWindow(hwnd, nCmdShow);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
+	LPSTR, int)
+{
+	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
+		return 0;
+
+	if (IsProcessRunning(L"LoLUpdater.exe"))
+	{
+		file2bupdate = L"LoLUpdater2.exe";
+		file2bremove = L"LoLUpdater.exe";
+	}
+	else
+	{
+		file2bupdate = L"LoLUpdater.exe";
+		file2bremove = L"LoLUpdater2.exe";
+	}
+
+	PCombine(currentdir2, cwd, file2bremove.c_str());
+	PCombine(currentdir, cwd, file2bupdate.c_str());
+
+	if (IsProcessRunning(L"LoLUpdater.exe"))
+	{
+		DeleteFile(file2bupdate.c_str());
+	}
+	else
+	{
+		DeleteFile(file2bremove.c_str());
+	}
+
+	MSG Msg = {0};
+	WNDCLASSEX wc = {0};
+	const std::wstring g_szClassName(L"mainwindow");
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.lpfnWndProc = WndProc;
+	wc.hInstance = hInstance;
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
+	wc.lpszClassName = g_szClassName.c_str();
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
+	if (wc.hIcon == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON));
+
+	if (wc.hIconSm == nullptr)
+		throw std::runtime_error("failed to load icon");
+
+	if (RegisterClassEx(&wc) == NULL)
+		throw std::runtime_error("failed to register windowclass");
+
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName.c_str(), L"LoLUpdater", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 250, 130, nullptr, nullptr, hInstance, nullptr);
+
+	if (hwnd == nullptr)
+		throw std::runtime_error("failed to create window");
+
+	BROWSEINFO bi = {0};
+	bi.lpszTitle = L"Select your GarenaLoL/League of Legends/LoLQQ installation directory:";
+	auto pidl = SHBrowseForFolder(&bi);
+	if (pidl == nullptr)
+		return 0;
+
+	if (SHGetPathFromIDList(pidl, loldir) == NULL)
+		throw std::runtime_error("failed to get browse path");
+
+	std::thread intro{ Begin };
+	intro.join();
+
+	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
 
