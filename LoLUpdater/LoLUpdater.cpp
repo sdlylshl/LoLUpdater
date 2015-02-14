@@ -14,6 +14,40 @@
 #include <sstream>
 #include <iostream>
 
+class CLimitSingleInstance
+{
+protected:
+	DWORD m_dwLastError;
+	HANDLE m_hMutex;
+
+public:
+	explicit CLimitSingleInstance(std::wstring const& strMutexName)
+	{
+		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
+		if (m_hMutex == nullptr)
+			throw std::runtime_error("failed to create mutex");
+
+		m_dwLastError = GetLastError();
+	}
+
+	~CLimitSingleInstance()
+	{
+		if (m_hMutex)
+		{
+			if (CloseHandle(m_hMutex) == NULL)
+				throw std::runtime_error("failed to close handle");
+
+			m_hMutex = nullptr;
+		}
+	}
+
+	BOOL IsAnotherInstanceRunning()
+	{
+		return (ERROR_ALREADY_EXISTS == m_dwLastError);
+	}
+};
+
+
 struct Version
 {
 	int major, minor, revision, build;
@@ -53,38 +87,6 @@ struct Version
 	}
 };
 
-class CLimitSingleInstance
-{
-protected:
-	DWORD m_dwLastError;
-	HANDLE m_hMutex;
-
-public:
-	explicit CLimitSingleInstance(std::wstring const& strMutexName)
-	{
-		m_hMutex = CreateMutex(nullptr, 0, strMutexName.c_str());
-		if (m_hMutex == nullptr)
-			throw std::runtime_error("failed to create mutex");
-
-		m_dwLastError = GetLastError();
-	}
-
-	~CLimitSingleInstance()
-	{
-		if (m_hMutex)
-		{
-			if (CloseHandle(m_hMutex) == NULL)
-				throw std::runtime_error("failed to close handle");
-
-			m_hMutex = nullptr;
-		}
-	}
-
-	BOOL IsAnotherInstanceRunning()
-	{
-		return (ERROR_ALREADY_EXISTS == m_dwLastError);
-	}
-};
 
 CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB-V3RYR4ND0M4NDR4R3MUCH}");
 
@@ -97,7 +99,6 @@ wchar_t patchclient[MAX_PATH + 1] = { 0 };
 wchar_t runair[MAX_PATH + 1] = { 0 };
 const std::wstring tbbfile = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
-wchar_t currentdir[MAX_PATH + 1] = { 0 };
 wchar_t majortxt[MAX_PATH + 1] = { 0 };
 wchar_t minortxt[MAX_PATH + 1] = { 0 };
 wchar_t revisiontxt[MAX_PATH + 1] = { 0 };
@@ -106,7 +107,6 @@ const std::wstring major = L"major.txt";
 const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
-wchar_t currentdir2[MAX_PATH] = { 0 };
 const std::wstring ftp = L"http://lol.jdhpro.com/";
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
@@ -161,8 +161,6 @@ void UrlComb(PCTSTR pszRelative)
 
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
-
-	downloadFile(finalurl, pszRelative);
 }
 
 
@@ -211,85 +209,83 @@ void DLUpdate()
 void DLstuff()
 {
 	UrlComb(major.c_str());
+	downloadFile(finalurl, majortxt);
 	UrlComb(minor.c_str());
+	downloadFile(finalurl, minortxt);
 	UrlComb(revision.c_str());
+	downloadFile(finalurl, revisiontxt);
 	UrlComb(build.c_str());
+	downloadFile(finalurl, buildtxt);
 }
 
-// Todo: Fix
 void Updater()
 {
-	std::thread DLInfo{ DLstuff };
-	DLInfo.join();
-
 	PCombine(majortxt, cwd, major.c_str());
 	PCombine(minortxt, cwd, minor.c_str());
 	PCombine(revisiontxt, cwd, revision.c_str());
 	PCombine(buildtxt, cwd, build.c_str());
 
+	std::thread DLInfo{ DLstuff };
+	DLInfo.join();
+
 	std::wifstream t0(majortxt);
 	std::wstringstream buffer0;
 	buffer0 << t0.rdbuf();
 	t0.close();
-	DeleteFile(majortxt);
+
 
 	std::wifstream t1(minortxt);
 	std::wstringstream buffer1;
 	buffer1 << t1.rdbuf();
 	t1.close();
-	DeleteFile(minortxt);
 
 	std::wifstream t2(revisiontxt);
 	std::wstringstream buffer2;
 	buffer2 << t2.rdbuf();
 	t2.close();
-	DeleteFile(revisiontxt);
 
 	std::wifstream t3(buildtxt);
 	std::wstringstream buffer3;
 	buffer3 << t3.rdbuf();
 	t3.close();
-	DeleteFile(buildtxt);
 
-	DWORD handle = 0;
-	DWORD size;
-	size = GetFileVersionInfoSize(currentdir2, &handle);
-	if (size == NULL)
-		throw std::runtime_error("failed to get file version infosize");
+	DWORD dwSize;
+	BYTE* pVersionInfo;
+	VS_FIXEDFILEINFO* pFileInfo = nullptr;
+	UINT pLenFileInfo = 0;
 
-	auto versionInfo = new BYTE[size];
-	if (!GetFileVersionInfo(currentdir2, handle, size, versionInfo))
-		throw std::runtime_error("failed to get file version info");
+	wchar_t exepath[MAX_PATH + 1] = { 0 };
+	PCombine(exepath, cwd, file2bremove.c_str());
 
-	UINT32 len = 0;
-	VS_FIXEDFILEINFO* vsfi = nullptr;
-	if (VerQueryValue(versionInfo, L"\\", reinterpret_cast<void**>(&vsfi), &len) == NULL)
-		throw std::runtime_error("failed to retrive fileversion details");
+	dwSize = GetFileVersionInfoSize(exepath, nullptr);
 
-	delete[] versionInfo;
+	pVersionInfo = new BYTE[dwSize];
 
-	if (Version(std::wstring(std::to_wstring(HIWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionMS)) + L"." + std::to_wstring(HIWORD(vsfi->dwFileVersionLS)) + L"." + std::to_wstring(LOWORD(vsfi->dwFileVersionLS)))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
+	GetFileVersionInfo(exepath, 0, dwSize, pVersionInfo);
+	VerQueryValue(pVersionInfo, L"\\", reinterpret_cast<LPVOID*>(&pFileInfo), &pLenFileInfo);
+
+	if (Version(std::wstring((pFileInfo->dwFileVersionMS >> 16 & 0xffff) + L"." + (pFileInfo->dwFileVersionMS & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS >> 16 & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS & 0xffff))))) < Version(std::wstring(buffer0.str() + L"." + buffer1.str() + L"." + buffer2.str() + L"." + buffer3.str())))
 	{
 		PCombine(fullpath, cwd, file2bupdate.c_str());
-		std::thread superman{ DLUpdate};
+
+		std::thread superman{ DLUpdate };
 		superman.join();
-	}
-	else
-	{
-		return;
 	}
 
 	SHELLEXECUTEINFO ei0 = {};
 	ei0.cbSize = sizeof(SHELLEXECUTEINFO);
-	ei0.fMask = SEE_MASK_NOCLOSEPROCESS ;
+	ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
 	ei0.lpVerb = L"runas";
-	ei0.lpFile = currentdir;
+	ei0.lpFile = fullpath;
 	ei0.nShow = SW_SHOW;
 
 	if (!ShellExecuteEx(&ei0))
 		throw std::runtime_error("failed to execute updated LoLUpdater");
 
-	killProcessByName(file2bremove.c_str());
+	DeleteFile(minortxt);
+	DeleteFile(majortxt);
+	DeleteFile(revisiontxt);
+	DeleteFile(buildtxt);
 }
 
 
@@ -313,16 +309,15 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	DeleteFile(std::wstring(loldir + filename + L":Zone.Identifier").c_str());
 }
 
-wchar_t *findlatest(wchar_t *folder)
+std::wstring findlatest(wchar_t* folder)
 {
-	wchar_t data[MAX_PATH+1] = {0};
-	wchar_t search[MAX_PATH + 1] = {0};
+	wchar_t data[MAX_PATH + 1] = { 0 };
+	wchar_t search[MAX_PATH + 1] = { 0 };
 	wcsncat_s(search, MAX_PATH + 1, folder, _TRUNCATE);
 	wcsncat_s(search, MAX_PATH + 1, L"\\*", _TRUNCATE);
-	HANDLE hFind;
 	WIN32_FIND_DATA data2;
 
-	hFind = FindFirstFile(search, &data2);
+	auto hFind = FindFirstFile(search, &data2);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		struct FileInfo
@@ -330,6 +325,7 @@ wchar_t *findlatest(wchar_t *folder)
 			HANDLE h;
 			WIN32_FIND_DATA info;
 		} newest;
+
 		newest.h = hFind;
 		newest.info = data2;
 		while (FindNextFile(hFind, &data2))
@@ -346,16 +342,6 @@ wchar_t *findlatest(wchar_t *folder)
 		if (!FindClose(hFind))
 			throw std::runtime_error("failed to close file handle");
 	}
-	else
-		throw std::runtime_error("failed to find file/directory");
-
-	// Dumb ass hack
-	std::wstring input = data;
-	std::wcin >> input;
-	std::wofstream out("output.txt");
-	out << input;
-	out.close();
-	DeleteFile(L"output.txt");
 
 	return data;
 }
@@ -408,7 +394,7 @@ static int can_use_intel_core_4th_gen_features()
 
 void AdobeAirDL()
 {
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
+	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
 	DWORD dwLength = sizeof(finalurl);
 
 	if (UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airsetup.c_str(), finalurl, &dwLength, 0) != S_OK)
@@ -439,7 +425,7 @@ void AVXSSE2detect(std::wstring const& AVXname, std::wstring const& SSE2name)
 
 void msvc(int RESID1, int RESID2)
 {
-	wchar_t svc[MAX_PATH + 1] = {0};
+	wchar_t svc[MAX_PATH + 1] = { 0 };
 	PCombine(svc, gameclient, p120.c_str());
 	ExtractResource(RESID1, svc);
 	UnblockFile(svc);
@@ -464,9 +450,10 @@ void CpFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName)
 }
 
 
-WNDPROC OldButtonProc, OldButtonProc2;
+WNDPROC OldButtonProc;
+WNDPROC OldButtonProc2;
 
-typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS)(HANDLE, PBOOL);
 
 LPFN_ISWOW64PROCESS fnIsWow64Process;
 
@@ -550,7 +537,6 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		}
 
 		UrlComb(tbbname);
-
 		downloadFile(finalurl, tbb);
 		UnblockFile(tbb);
 
@@ -655,7 +641,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
-		
+
 		SendMessage(hwndButton, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(L"Finished!"));
 		return 0;
 	}
@@ -714,20 +700,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 
 	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
 		{
-			switch (LOWORD(wParam))
-			{
-			case ID_HELP_CHECKFORUPDATES:
-				Updater();
-				break;
+		case ID_HELP_CHECKFORUPDATES:
+			Updater();
+			break;
 
-			case ID_HELP_ABOUT:
-				ShowWindow(hwnd2, SW_SHOW);
-				AboutBox();
-				break;
-			}
+		case ID_HELP_ABOUT:
+			ShowWindow(hwnd2, SW_SHOW);
+			AboutBox();
+			break;
 		}
-		break;
+	}
+	break;
 
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
@@ -778,14 +764,14 @@ void Begin()
 		PAppend(gameclient, rel);
 
 		wchar_t dep[MAX_PATH + 1] = L"deploy";
-		PAppend(patchclient, findlatest(patchclient));
+		PAppend(patchclient, findlatest(patchclient).c_str());
 		PAppend(patchclient, dep);
 
-		PAppend(airclient, findlatest(airclient));
+		PAppend(airclient, findlatest(airclient).c_str());
 		PAppend(airclient, dep);
 		PAppend(airclient, adobedir.c_str());
 
-		PAppend(gameclient, findlatest(gameclient));
+		PAppend(gameclient, findlatest(gameclient).c_str());
 		PAppend(gameclient, dep);
 	}
 	else
@@ -818,29 +804,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 
 	if (IsProcessRunning(L"LoLUpdater.exe"))
 	{
-		file2bupdate = L"LoLUpdater2.exe";
+		file2bupdate = L"LoLUpdaterLatest.exe";
 		file2bremove = L"LoLUpdater.exe";
 	}
-	else
+	if (IsProcessRunning(L"LoLUpdaterLatest.exe"))
 	{
 		file2bupdate = L"LoLUpdater.exe";
-		file2bremove = L"LoLUpdater2.exe";
+		file2bremove = L"LoLUpdaterLatest.exe";
 	}
 
-	PCombine(currentdir2, cwd, file2bremove.c_str());
-	PCombine(currentdir, cwd, file2bupdate.c_str());
 
-	if (IsProcessRunning(L"LoLUpdater.exe"))
-	{
-		DeleteFile(file2bupdate.c_str());
-	}
-	else
-	{
-		DeleteFile(file2bremove.c_str());
-	}
-
-	MSG Msg = {0};
-	WNDCLASSEX wc = {0};
+	MSG Msg = { 0 };
+	WNDCLASSEX wc = { 0 };
 	const std::wstring g_szClassName(L"mainwindow");
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
@@ -865,7 +840,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 	if (hwnd == nullptr)
 		throw std::runtime_error("failed to create window");
 
-	BROWSEINFO bi = {0};
+	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = L"Select your GarenaLoL/League of Legends/LoLQQ installation directory:";
 	auto pidl = SHBrowseForFolder(&bi);
 	if (pidl == nullptr)
