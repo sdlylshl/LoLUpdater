@@ -65,8 +65,8 @@ MAINICON                ICON                    "..\\icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,3
- PRODUCTVERSION 1,0,3,3
+ FILEVERSION 1,0,3,4
+ PRODUCTVERSION 1,0,3,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,12 +83,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "http://lolupdater.com"
             VALUE "FileDescription", "LoLUpdater - A Performance Patch for the game ""League of Legends"""
-            VALUE "FileVersion", "1.0.3.3"
+            VALUE "FileVersion", "1.0.3.4"
             VALUE "InternalName", "LoLUpdater.exe"
             VALUE "LegalCopyright", "Copyright (C) 2014-2015"
             VALUE "OriginalFilename", "LoLUpdater.exe"
             VALUE "ProductName", "LoLUpdater"
-            VALUE "ProductVersion", "1.0.3.3"
+            VALUE "ProductVersion", "1.0.3.4"
         END
     END
     BLOCK "VarFileInfo"

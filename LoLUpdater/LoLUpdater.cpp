@@ -879,11 +879,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get browse path");
 	}
 
+	std::thread intro{ Begin };
+	intro.join();
+
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 
-	std::thread intro{ Begin };
-	intro.join();
 
 	while (GetMessage(&Msg, nullptr, 0, 0) > 0)
 	{
