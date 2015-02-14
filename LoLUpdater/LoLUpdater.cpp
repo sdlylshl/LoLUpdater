@@ -549,7 +549,9 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 		}
 
-		UrlComb(tbb);
+		UrlComb(tbbname);
+
+		downloadFile(finalurl, tbb);
 		UnblockFile(tbb);
 
 		PCombine(runair, cwd, airsetup.c_str());
