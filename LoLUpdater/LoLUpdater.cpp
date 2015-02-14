@@ -89,7 +89,6 @@ CLimitSingleInstance g_SingleInstanceObj(L"Global\\{101UPD473R-BYL0GG4N08@G17HUB
 
 std::wstring file2bremove;
 std::wstring file2bupdate;
-bool finished = false;
 wchar_t loldir[MAX_PATH + 1];
 wchar_t gameclient[MAX_PATH + 1] = { 0 };
 wchar_t patchclient[MAX_PATH + 1] = { 0 };
@@ -105,8 +104,10 @@ const std::wstring minor = L"minor.txt";
 const std::wstring revision = L"revision.txt";
 const std::wstring build = L"build.txt";
 const std::wstring ftp = L"http://lol.jdhpro.com/";
+
 // Check if there are updates for this one every now and then http://labs.adobe.com/downloads/air.html
 const std::wstring airsetup = L"air17_win.exe";
+
 const std::wstring unblocktag = L":Zone.Identifier";
 wchar_t tbbname[INTERNET_MAX_URL_LENGTH] = { 0 };
 const std::wstring p120 = L"msvcp120.dll";
@@ -125,6 +126,7 @@ const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
 const std::wstring cgd3d9 = L"cgD3D9.dll";
+DWORD dwLength;
 HWND hwnd;
 HWND hwnd2;
 HWND hwndButton;
@@ -154,33 +156,10 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 void UrlComb(PCTSTR pszRelative)
 {
 	*finalurl = '\0';
-	DWORD dwLength = sizeof(finalurl);
+	dwLength = sizeof(finalurl);
 
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
-}
-
-
-void killProcessByName(const wchar_t* filename)
-{
-	auto hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, NULL);
-	PROCESSENTRY32 pEntry;
-	pEntry.dwSize = sizeof(pEntry);
-	auto hRes = Process32First(hSnapShot, &pEntry);
-	while (hRes)
-	{
-		if (wcscmp(pEntry.szExeFile, filename) == 0)
-		{
-			auto hProcess = OpenProcess(PROCESS_TERMINATE, 0, static_cast<DWORD>(pEntry.th32ProcessID));
-			if (hProcess != nullptr)
-			{
-				TerminateProcess(hProcess, 9);
-				CloseHandle(hProcess);
-			}
-		}
-		hRes = Process32Next(hSnapShot, &pEntry);
-	}
-	CloseHandle(hSnapShot);
 }
 
 bool IsProcessRunning(const wchar_t* processName)
@@ -200,7 +179,7 @@ bool IsProcessRunning(const wchar_t* processName)
 
 void DLUpdate()
 {
-	downloadFile(L"http://www.smoothdev.org/mirrors/user/Loggan/LoLUpdater.exe", fullpath);
+	downloadFile(L"http://www.smoothdev.org/mirrors/download.php?user=Loggan&file=T1VRdVdqb3daL1doZ1p6T1JWN3VvUT09", fullpath);
 }
 
 void DLstuff()
@@ -254,6 +233,18 @@ void Updater()
 	GetFileVersionInfo(exepath, 0, dwSize, pVersionInfo);
 	VerQueryValue(pVersionInfo, L"\\", reinterpret_cast<LPVOID*>(&pFileInfo), &pLenFileInfo);
 
+	if (Version(std::wstring((pFileInfo->dwFileVersionMS >> 16 & 0xffff) + L"." + (pFileInfo->dwFileVersionMS & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS >> 16 & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS & 0xffff))))) < Version(std::wstring(buffer[0].str() + L"." + buffer[1].str() + L"." + buffer[2].str() + L"." + buffer[3].str())))
+	{
+		PCombine(fullpath, cwd, file2bupdate.c_str());
+
+		std::thread superman{ DLUpdate };
+		superman.join();
+
+	}
+	else
+	{
+		MessageBox(nullptr, L"No Update found!", L"LoLUpdater AutoUpdater", MB_OK | MB_SYSTEMMODAL);
+	}
 
 	t0.close();
 	t1.close();
@@ -263,28 +254,6 @@ void Updater()
 	DeleteFile(majortxt);
 	DeleteFile(revisiontxt);
 	DeleteFile(buildtxt);
-
-	if (Version(std::wstring((pFileInfo->dwFileVersionMS >> 16 & 0xffff) + L"." + (pFileInfo->dwFileVersionMS & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS >> 16 & 0xffff) + std::wstring(L"." + (pFileInfo->dwFileVersionLS & 0xffff))))) < Version(std::wstring(buffer[0].str() + L"." + buffer[1].str() + L"." + buffer[2].str() + L"." + buffer[3].str())))
-	{
-		PCombine(fullpath, cwd, file2bupdate.c_str());
-
-		std::thread superman{ DLUpdate };
-		superman.join();
-
-		SHELLEXECUTEINFO ei0 = {};
-		ei0.cbSize = sizeof(SHELLEXECUTEINFO);
-		ei0.fMask = SEE_MASK_NOCLOSEPROCESS;
-		ei0.lpVerb = L"runas";
-		ei0.lpFile = fullpath;
-		ei0.nShow = SW_SHOW;
-
-		if (!ShellExecuteEx(&ei0))
-			throw std::runtime_error("failed to execute updated LoLUpdater");
-	}
-	else
-	{
-		MessageBox(nullptr, L"No Update found!", L"LoLUpdater AutoUpdater", MB_OK | MB_SYSTEMMODAL);
-	}
 }
 
 void ExtractResource(int RCDATAID, std::wstring const& filename)
@@ -391,9 +360,7 @@ static int can_use_intel_core_4th_gen_features()
 
 void AdobeAirDL()
 {
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
-	DWORD dwLength = sizeof(finalurl);
-
+	dwLength = sizeof(finalurl);
 	if (UrlCombine(L"https://labsdownload.adobe.com/pub/labs/flashruntimes/air/", airsetup.c_str(), finalurl, &dwLength, 0) != S_OK)
 		throw std::runtime_error("failed to combine Url");
 
