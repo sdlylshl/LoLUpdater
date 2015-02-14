@@ -563,15 +563,15 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 
 		// Unknown how this will do on Wine
-		if ((osvi.dwMajorVersion == 5) & (osvi.dwMinorVersion == 1))
+		if (osvi.dwMajorVersion == 5 & osvi.dwMinorVersion == 1)
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"XP.dll", _TRUNCATE);
 		}
-		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 0))
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 0)
 		{
 			wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"Vista.dll", _TRUNCATE);
 		}
-		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 1))
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 1)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -582,7 +582,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				AVXSSE2detect(L"AVX-Win7.dll", L"SSE2-Win7.dll");
 			}
 		}
-		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 2))
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 2)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -593,7 +593,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				AVXSSE2detect(L"AVX-Win8.dll", L"SSE2-Win8.dll");
 			}
 		}
-		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 3))
+		if (osvi.dwMajorVersion == 6 & osvi.dwMinorVersion == 3)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
@@ -605,7 +605,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 		}
 
-		if ((osvi.dwMajorVersion == 10) & (osvi.dwMinorVersion == 0))
+		if (osvi.dwMajorVersion == 10 & osvi.dwMinorVersion == 0)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
