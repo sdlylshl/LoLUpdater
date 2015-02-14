@@ -12,6 +12,7 @@
 #include "resource.h"
 #include <Tlhelp32.h>
 #include <sstream>
+#include <iostream>
 
 struct Version
 {
@@ -122,6 +123,7 @@ wchar_t cgdest[MAX_PATH + 1] = { 0 };
 wchar_t cggldest[MAX_PATH + 1] = { 0 };
 wchar_t cgd3d9dest[MAX_PATH + 1] = { 0 };
 wchar_t fullpath[MAX_PATH + 1] = { 0 };
+wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
 const std::wstring air = L"Adobe AIR.dll";
 const std::wstring cg = L"cg.dll";
 const std::wstring cggl = L"cgGL.dll";
@@ -154,7 +156,7 @@ void downloadFile(std::wstring const& url, std::wstring const& file)
 
 void UrlComb(PCTSTR pszRelative)
 {
-	wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = {0};
+	*finalurl = '\0';
 	DWORD dwLength = sizeof(finalurl);
 
 	if (UrlCombine(ftp.c_str(), pszRelative, finalurl, &dwLength, 0) != S_OK)
@@ -313,7 +315,7 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 
 std::wstring findlatest(std::wstring const& folder)
 {
-	std::wstring data;
+	wchar_t data[MAX_PATH+1] = {0};
 	std::wstring search = {folder + L"\\*"};
 	HANDLE hFind;
 	WIN32_FIND_DATA data2;
@@ -336,7 +338,9 @@ std::wstring findlatest(std::wstring const& folder)
 				newest.info = data2;
 			}
 		}
-		data =+ newest.info.cFileName;
+
+		wcsncat_s(data, MAX_PATH + 1, newest.info.cFileName, _TRUNCATE);
+
 		if (!FindClose(hFind))
 			throw std::runtime_error("failed to close file handle");
 	}
@@ -553,9 +557,6 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		wchar_t tbb[MAX_PATH + 1] = { 0 };
 		PCombine(tbb, gameclient, tbbfile.c_str());
 
-		wchar_t finalurl[INTERNET_MAX_URL_LENGTH] = { 0 };
-		DWORD dwLength = sizeof(finalurl);
-
 		OSVERSIONINFO osvi{};
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		if (!GetVersionEx(&osvi))
@@ -607,8 +608,13 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		}
 
 
-		if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
-			throw std::runtime_error("failed to combine Url");
+		UrlComb(tbbname);
+
+		std::wstring input = tbb;
+		std::wcin >> input;
+		std::wofstream out("output1.txt");
+		out << input;
+		out.close();
 
 		downloadFile(finalurl, tbb);
 		UnblockFile(tbb);
