@@ -313,7 +313,7 @@ void ExtractResource(int RCDATAID, std::wstring const& filename)
 	DeleteFile(std::wstring(loldir + filename + L":Zone.Identifier").c_str());
 }
 
-std::wstring findlatest(std::wstring const& folder)
+wchar_t *findlatest(std::wstring const& folder)
 {
 	wchar_t data[MAX_PATH+1] = {0};
 	std::wstring search = {folder + L"\\*"};
@@ -360,74 +360,6 @@ int check_xcr0_ymm()
 	uint32_t xcr0;
 	xcr0 = static_cast<uint32_t>(_xgetbv(0));
 	return (xcr0 & 6) == 6;
-}
-
-void Begin()
-{
-	wchar_t instdir[MAX_PATH + 1] = { 0 };
-	PCombine(instdir, loldir, L"lol.launcher.exe");
-
-	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
-	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
-
-	wchar_t instdirGarena[MAX_PATH + 1] = { 0 };
-	PCombine(instdirGarena, loldir, L"lol.exe");
-
-	wchar_t airclient[MAX_PATH + 1] = { 0 };
-
-	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
-
-	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
-	{
-		auto rads = L"RADS";
-		PCombine(airclient, loldir, rads);
-		auto proj = L"projects";
-		PAppend(airclient, proj);
-		PAppend(airclient, L"lol_air_client");
-		auto rel = L"releases";
-		PAppend(airclient, rel);
-
-		PCombine(patchclient, loldir, rads);
-		PAppend(patchclient, proj);
-		PAppend(patchclient, L"lol_patcher");
-		PAppend(patchclient, rel);
-
-		PCombine(gameclient, loldir, rads);
-		PAppend(gameclient, L"solutions");
-		PAppend(gameclient, L"lol_game_client_sln");
-		PAppend(gameclient, rel);
-
-		wchar_t dep[MAX_PATH + 1] = L"deploy";
-		PAppend(patchclient, findlatest(patchclient).c_str());
-		PAppend(patchclient, dep);
-
-		PAppend(airclient, findlatest(airclient).c_str());
-		PAppend(airclient, dep);
-		PAppend(airclient, adobedir.c_str());
-
-		PAppend(gameclient, findlatest(gameclient).c_str());
-		PAppend(gameclient, dep);
-	}
-	else
-	{
-		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
-		{
-			PCombine(gameclient, loldir, L"Game");
-			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
-		}
-		else
-			throw std::runtime_error("Unable to determine LoL version");
-	}
-
-
-	PCombine(airdest, airclient, air.c_str());
-
-	PAppend(flash, L"NPSWF32.dll");
-	PCombine(flashdest, airclient, flash);
-
-	PCombine(cgdest, gameclient, cg.c_str());
-	PCombine(cggldest, gameclient, cggl.c_str());
-	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
 }
 
 int check_4th_gen_intel_core_features()
@@ -607,14 +539,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 		}
 
-
 		UrlComb(tbbname);
-
-		std::wstring input = tbb;
-		std::wcin >> input;
-		std::wofstream out("output1.txt");
-		out << input;
-		out.close();
 
 		downloadFile(finalurl, tbb);
 		UnblockFile(tbb);
@@ -793,7 +718,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
-                   LPSTR, int)
+	LPSTR, int nCmdShow)
 {
 	if (g_SingleInstanceObj.IsAnotherInstanceRunning())
 		return 0;
@@ -878,10 +803,72 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE,
 		throw std::runtime_error("failed to get browse path");
 	}
 
-	std::thread intro{ Begin };
-	intro.join();
+	wchar_t instdir[MAX_PATH + 1] = { 0 };
+	PCombine(instdir, loldir, L"lol.launcher.exe");
 
-	ShowWindow(hwnd, SW_SHOW);
+	wchar_t instdirCN[MAX_PATH + 1] = { 0 };
+	PCombine(instdirCN, loldir, L"lol.launcher_tencent.exe");
+
+	wchar_t instdirGarena[MAX_PATH + 1] = { 0 };
+	PCombine(instdirGarena, loldir, L"lol.exe");
+
+	wchar_t airclient[MAX_PATH + 1] = { 0 };
+
+	const std::wstring adobedir = L"Adobe AIR\\Versions\\1.0";
+
+	if (std::wifstream(instdirGarena).fail() & std::wifstream(instdir).good() & std::wifstream(instdirCN).fail())
+	{
+		auto rads = L"RADS";
+		PCombine(airclient, loldir, rads);
+		auto proj = L"projects";
+		PAppend(airclient, proj);
+		PAppend(airclient, L"lol_air_client");
+		auto rel = L"releases";
+		PAppend(airclient, rel);
+
+		PCombine(patchclient, loldir, rads);
+		PAppend(patchclient, proj);
+		PAppend(patchclient, L"lol_patcher");
+		PAppend(patchclient, rel);
+
+		PCombine(gameclient, loldir, rads);
+		PAppend(gameclient, L"solutions");
+		PAppend(gameclient, L"lol_game_client_sln");
+		PAppend(gameclient, rel);
+
+		wchar_t dep[MAX_PATH + 1] = L"deploy";
+		PAppend(patchclient, findlatest(patchclient));
+		PAppend(patchclient, dep);
+
+		PAppend(airclient, findlatest(airclient));
+		PAppend(airclient, dep);
+		PAppend(airclient, adobedir.c_str());
+
+		PAppend(gameclient, findlatest(gameclient));
+		PAppend(gameclient, dep);
+	}
+	else
+	{
+		if (std::wifstream(instdirGarena).good() | std::wifstream(instdirCN).good())
+		{
+			PCombine(gameclient, loldir, L"Game");
+			PCombine(airclient, loldir, std::wstring(L"Air\\" + adobedir).c_str());
+		}
+		else
+			throw std::runtime_error("Unable to determine LoL version");
+	}
+
+
+	PCombine(airdest, airclient, air.c_str());
+
+	PAppend(flash, L"NPSWF32.dll");
+	PCombine(flashdest, airclient, flash);
+
+	PCombine(cgdest, gameclient, cg.c_str());
+	PCombine(cggldest, gameclient, cggl.c_str());
+	PCombine(cgd3d9dest, gameclient, cgd3d9.c_str());
+
+	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
 
