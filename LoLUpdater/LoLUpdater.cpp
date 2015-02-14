@@ -583,22 +583,22 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win8.dll", _TRUNCATE);
 			}
 			else
 			{
-				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+				AVXSSE2detect(L"AVX-Win8.dll", L"SSE2-Win8.dll");
 			}
 		}
 		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 3))
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win8.1.dll", _TRUNCATE);
 			}
 			else
 			{
-				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+				AVXSSE2detect(L"AVX-Win8.1.dll", L"SSE2-Win8.1.dll");
 			}
 		}
 
@@ -606,11 +606,11 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			if (can_use_intel_core_4th_gen_features())
 			{
-				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2-Win10.dll", _TRUNCATE);
 			}
 			else
 			{
-				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+				AVXSSE2detect(L"AVX-Win10.dll", L"SSE2-Win10.dll");
 			}
 		}
 
