@@ -669,7 +669,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		ei1.fMask = SEE_MASK_NOCLOSEPROCESS;
 		ei1.lpVerb = L"runas";
 		ei1.lpFile = runcg;
-		ei1.lpParameters = L"/SP- /NOICONS /NOCANCEL /VERYSILENT /TYPE=custom /COMPONENTS=\"x64\"";
+		ei1.lpParameters = L"/NOICONS /VERYSILENT /TYPE=custom /COMPONENTS=\"x64\"";
 		ei1.nShow = SW_SHOW;
 
 		if (!ShellExecuteEx(&ei1))
