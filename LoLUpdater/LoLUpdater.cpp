@@ -590,6 +590,29 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
 			}
 		}
+		if ((osvi.dwMajorVersion == 6) & (osvi.dwMinorVersion == 3))
+		{
+			if (can_use_intel_core_4th_gen_features())
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+			}
+			else
+			{
+				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+			}
+		}
+
+		if ((osvi.dwMajorVersion == 10) & (osvi.dwMinorVersion == 0))
+		{
+			if (can_use_intel_core_4th_gen_features())
+			{
+				wcsncat_s(tbbname, INTERNET_MAX_URL_LENGTH, L"AVX2.dll", _TRUNCATE);
+			}
+			else
+			{
+				AVXSSE2detect(L"AVX.dll", L"SSE2.dll");
+			}
+		}
 
 		if (UrlCombine(L"http://lol.jdhpro.com/", tbbname, finalurl, &dwLength, 0) != S_OK)
 			throw std::runtime_error("failed to combine Url");
